@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  EDITOR
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(OWNER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Auth.js (NextAuth) models if needed for database adapter, 
+  // but for simple email login we can keep it minimal or use standard adapter fields later.
+  // For now, minimal User is enough as requested.
+}
+
+model Post {
+  id            String       @id @default(cuid())
+  title         String
+  slug          String       @unique
+  content       String?      // MDX content
+  excerpt       String?
+  coverImage    String?
+  status        PostStatus   @default(DRAFT)
+  publishedAt   DateTime?
+  readingTime   Int?         // in minutes
+  views         Int          @default(0)
+  
+  // SEO Fields
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String? // Comma separated
+
+  seriesId      String?
+  series        Series?      @relation(fields: [seriesId], references: [id])
+  seriesOrder   Int?         // Order within the series
+
+  // Relations
+  categories     Category[]
+  tags           Tag[]
+  topics        Topic[] // Maintaining legacy support for now, but assume migration to Tags
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?  // Icon name from Lucide
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  
+  posts       Post[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  
+  posts       Post[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Series {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  coverImage    String?
+  targetAudience String? 
+  
+  posts         Post[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Topic {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  
+  posts         Post[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Page {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  content       String?
+  showInMenu    Boolean   @default(false)
+  menuOrder     Int?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Subscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  tags          String[]  // e.g. ["Founder", "SME"]
+  source        String?
+  
+  joinedAt      DateTime  @default(now())
+}
+
+model Media {
+  id            String    @id @default(cuid())
+  filename      String
+  url           String
+  type          String
+  size          Int
+  
+  createdAt     DateTime  @default(now())
+}
