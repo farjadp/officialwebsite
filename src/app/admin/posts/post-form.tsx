@@ -32,11 +32,17 @@ import {
 } from "@/components/ui/select"
 import { RichTextEditor } from '@/components/editor/rich-text-editor'
 import { createPost, updatePost } from '@/app/actions/posts'
-import { Post, Category, Tag, PostStatus } from '@prisma/client'
+import type { Post, Category, Tag } from '@prisma/client'
 import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UploadCloud, Image as ImageIcon, X } from 'lucide-react'
 import { TagInput } from '@/components/admin/tag-input'
+
+enum PostStatus {
+    DRAFT = 'DRAFT',
+    PUBLISHED = 'PUBLISHED',
+    ARCHIVED = 'ARCHIVED'
+}
 
 const postSchema = z.object({
     title: z.string().min(2, {
@@ -74,7 +80,7 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
         slug: post?.slug || "",
         content: post?.content || "",
         excerpt: post?.excerpt || "",
-        status: post?.status || PostStatus.DRAFT,
+        status: (post?.status as unknown as PostStatus) || PostStatus.DRAFT,
         categoryIds: post?.categories?.map((c) => c.id) || [],
         tagIds: post?.tags?.map((t) => t.id) || [],
         coverImage: post?.coverImage || "",
