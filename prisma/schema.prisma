@@ -3,7 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -23,7 +24,7 @@ model User {
   name          String?
   email         String    @unique
   emailVerified DateTime?
-  image         String?
+  image         String?   @db.Text
   role          Role      @default(OWNER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -37,9 +38,9 @@ model Post {
   id            String       @id @default(cuid())
   title         String
   slug          String       @unique
-  content       String?      // MDX content
-  excerpt       String?
-  coverImage    String?
+  content       String?      @db.Text // MDX content
+  excerpt       String?      @db.Text
+  coverImage    String?      @db.Text
   status        PostStatus   @default(DRAFT)
   publishedAt   DateTime?
   readingTime   Int?         // in minutes
@@ -47,8 +48,8 @@ model Post {
   
   // SEO Fields
   seoTitle       String?
-  seoDescription String?
-  seoKeywords    String? // Comma separated
+  seoDescription String?     @db.Text
+  seoKeywords    String?     @db.Text // Comma separated
 
   seriesId      String?
   series        Series?      @relation(fields: [seriesId], references: [id])
@@ -67,8 +68,8 @@ model Category {
   id          String   @id @default(cuid())
   name        String
   slug        String   @unique
-  description String?
-  icon        String?  // Icon name from Lucide
+  description String?  @db.Text
+  icon        String?  @db.Text // Icon name from Lucide
   parentId    String?
   parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
@@ -94,9 +95,9 @@ model Series {
   id            String    @id @default(cuid())
   name          String
   slug          String    @unique
-  description   String?
-  coverImage    String?
-  targetAudience String? 
+  description   String?   @db.Text
+  coverImage    String?   @db.Text
+  targetAudience String?  @db.Text
   
   posts         Post[]
   
@@ -108,7 +109,7 @@ model Topic {
   id            String    @id @default(cuid())
   name          String
   slug          String    @unique
-  description   String?
+  description   String?   @db.Text
   
   posts         Post[]
   
@@ -120,7 +121,7 @@ model Page {
   id            String    @id @default(cuid())
   title         String
   slug          String    @unique
-  content       String?
+  content       String?   @db.Text
   showInMenu    Boolean   @default(false)
   menuOrder     Int?
   
@@ -140,7 +141,7 @@ model Subscriber {
 model Media {
   id            String    @id @default(cuid())
   filename      String
-  url           String
+  url           String    @db.Text
   type          String
   size          Int
   
