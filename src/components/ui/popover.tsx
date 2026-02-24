@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: popover.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: Client Component
+// ============================================================================
+
 import * as React from "react"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 

@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: dropdown-menu.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: Client Component
+// ============================================================================
+
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"

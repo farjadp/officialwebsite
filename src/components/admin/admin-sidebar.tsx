@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: admin-sidebar.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
+
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"

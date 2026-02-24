@@ -1,10 +1,11 @@
-// ============================================================================
-// Hardware Source: src/app/admin/tags/tag-manager.tsx
-// Version: 1.0.0
-// Why: Tag Management (List + Create)
-// ============================================================================
-
 'use client'
+
+// ============================================================================
+// Hardware Source: tag-manager.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Functional module
+// Env / Identity: Client Component
+// ============================================================================
 
 import { useState } from 'react'
 import { Tag } from '@prisma/client'

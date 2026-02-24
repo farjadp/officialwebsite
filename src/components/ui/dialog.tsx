@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: dialog.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: Client Component
+// ============================================================================
+
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"

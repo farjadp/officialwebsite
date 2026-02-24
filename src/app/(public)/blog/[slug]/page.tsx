@@ -1,24 +1,20 @@
 // ============================================================================
-// Hardware Source: src/app/(public)/blog/[slug]/page.tsx
-// Version: 1.0.0
-// Why: Public Blog Detail View (Content + Sharing)
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: Server Action / Module
 // ============================================================================
 
 import { getPost } from "@/app/actions/posts"
 import { notFound } from "next/navigation"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Calendar, Clock, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Metadata } from "next"
-import { ShareButtons } from "@/components/blog/share-buttons"
-
-// Separate component for incremental view count to allow SSG/ISR if needed
-// However, for this MVP we can just do it in the Page component or separate action.
-// To avoid blocking rendering, we can accept that the view count is updated.
-// Actually, updating the DB on GET request is standard for simple hit counters, 
-// though technically against GET idempotency. 
-// Standard robust way: Client side 'useEffect' calls an API route '/api/views/[id]'.
-// I'll stick to a simple DB update here for simplicity.
 
 async function incrementView(id: string) {
     'use server'
@@ -33,13 +29,13 @@ async function incrementView(id: string) {
 }
 
 interface BlogPostPageProps {
-    params: {
+    params: Promise<{
         slug: string
-    }
+    }>
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-    const { slug } = await Promise.resolve(params)
+    const { slug } = await params;
     const post = await getPost(slug)
     if (!post) return { title: 'Post Not Found' }
 
@@ -50,12 +46,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
             title: post.seoTitle || post.title,
             description: post.seoDescription || post.excerpt || undefined,
             images: post.coverImage ? [post.coverImage] : [],
+            type: 'article',
         }
     }
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-    const { slug } = await Promise.resolve(params)
+    const { slug } = await params;
     const post = await getPost(slug)
 
     if (!post) {
@@ -65,62 +62,100 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     // Increment view count (fire and forget promise)
     incrementView(post.id)
 
-    const shareUrl = process.env.NEXT_PUBLIC_APP_URL
-        ? `${process.env.NEXT_PUBLIC_APP_URL}/blog/${post.slug}`
-        : `https://example.com/blog/${post.slug}`
-
     return (
-        <article className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <header className="mb-8 text-center bg-transparent">
-                <div className="flex justify-center gap-2 mb-4">
-                    {post.categories.map(c => (
-                        <Badge key={c.id} variant="secondary">{c.name}</Badge>
+        <article className="min-h-screen bg-background pb-20">
+            {/* Header / Meta */}
+            <div className="bg-slate-50 dark:bg-slate-900/50 border-b py-16">
+                <div className="container px-4 mx-auto max-w-3xl space-y-6">
+                    <Link href="/blog" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors mb-4">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Blog
+                    </Link>
+
+                    <div className="flex flex-wrap gap-2 items-center">
+                        {post.categories.map(c => (
+                            <Badge key={c.id} variant="secondary" className="rounded-full px-3 py-1 font-normal bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300">
+                                {c.name}
+                            </Badge>
+                        ))}
+                    </div>
+
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
+                        {post.title}
+                    </h1>
+
+                    {post.excerpt && (
+                        <p className="text-xl text-muted-foreground leading-relaxed">
+                            {post.excerpt}
+                        </p>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground pt-4">
+                        <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <time dateTime={post.createdAt.toISOString()}>
+                                {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                            </time>
+                        </div>
+                        {post.readingTime && (
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                {post.readingTime} min read
+                            </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                            <span>{post.views} views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="container px-4 mx-auto max-w-3xl py-12">
+                {post.coverImage && (
+                    <div className="mb-12 rounded-xl overflow-hidden shadow-lg aspect-video relative">
+                        <img
+                            src={post.coverImage}
+                            alt={post.title}
+                            className="object-cover w-full h-full"
+                        />
+                    </div>
+                )}
+
+                <div
+                    className="prose prose-lg dark:prose-invert prose-stone max-w-none 
+                    prose-headings:font-bold prose-headings:tracking-tight 
+                    prose-p:leading-relaxed prose-img:rounded-xl prose-img:shadow-md"
+                    dangerouslySetInnerHTML={{ __html: post.content || '' }}
+                />
+
+                <div className="flex flex-wrap gap-2 mt-12 mb-6">
+                    {post.tags.map(t => (
+                        <Badge key={t.id} variant="outline" className="text-sm">
+                            #{t.name}
+                        </Badge>
                     ))}
                 </div>
 
-                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl mb-4 dark:text-white">
-                    {post.title}
-                </h1>
+                <Separator className="my-12" />
 
-                <div className="flex items-center justify-center text-gray-500 dark:text-gray-400 space-x-4">
-                    <time dateTime={post.createdAt.toISOString()}>
-                        {format(new Date(post.createdAt), 'MMMM d, yyyy')}
-                    </time>
-                    {post.readingTime && (
-                        <>
-                            <span>&middot;</span>
-                            <span>{post.readingTime} min read</span>
-                        </>
-                    )}
+                {/* Author / CTA */}
+                <div className="bg-primary/5 rounded-2xl p-8 flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-slate-200 shrink-0">
+                        <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-400">FA</div>
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="font-bold text-lg">Written by Farjad</h3>
+                        <p className="text-muted-foreground">
+                            Insights, stories, and deep dives into everything we build.
+                            If you enjoyed this article, check out our other posts.
+                        </p>
+                        <div className="pt-2">
+                            <Link href="/blog">
+                                <Button>Read more articles</Button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-            </header>
-
-            {post.coverImage && (
-                <div className="mb-8 rounded-xl overflow-hidden shadow-lg aspect-video relative">
-                    <img
-                        src={post.coverImage}
-                        alt={post.title}
-                        className="object-cover w-full h-full"
-                    />
-                </div>
-            )}
-
-            <div className="prose prose-lg dark:prose-invert max-w-none mx-auto mb-12">
-                <div dangerouslySetInnerHTML={{ __html: post.content || '' }} />
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-12 border-t pt-8">
-                <span className="font-semibold mr-2 align-middle my-auto">Tags:</span>
-                {post.tags.map(t => (
-                    <Badge key={t.id} variant="outline" className="text-sm">
-                        #{t.name}
-                    </Badge>
-                ))}
-            </div>
-
-            <div className="border-t border-b py-8 my-8">
-                <h3 className="text-lg font-semibold mb-4">Share this article</h3>
-                <ShareButtons title={post.title} slug={post.slug} />
             </div>
         </article>
     )

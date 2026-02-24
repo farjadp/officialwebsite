@@ -1,5 +1,12 @@
 'use client'
 
+// ============================================================================
+// Hardware Source: tag-input.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
+
 import * as React from "react"
 import { Check, ChevronsUpDown, X, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"

@@ -1,34 +1,68 @@
+// ============================================================================
+// Hardware Source: auth.ts
+// Version: 1.0.0 — 2026-02-24
+// Why: Authentication configuration
+// Env / Identity: TypeScript Module
+// ============================================================================
+
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-// import Resend from "next-auth/providers/resend" 
-// Uncomment when you have Resend API Key
+import * as bcrypt from "bcryptjs"
+import { prisma } from "@/lib/prisma"
+import { authConfig } from "./auth.config"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    ...authConfig,
     providers: [
-        // Placeholder for Email provider
-        // Resend({
-        //   from: "onboarding@resend.dev",
-        // }),
-        // Temporary Credentials provider for development
         Credentials({
             credentials: {
-                email: {},
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" }
             },
             authorize: async (credentials) => {
-                // TODO: Implement actual user lookup
-                if (credentials.email === "admin@example.com") {
-                    return {
-                        id: "1",
-                        name: "Admin",
-                        email: "admin@example.com",
-                        role: "OWNER"
-                    }
+                if (!credentials?.email || !credentials?.password) {
+                    return null;
                 }
-                return null
+
+                const user = await prisma.user.findUnique({
+                    where: { email: credentials.email as string }
+                });
+
+                if (!user || !(user as any).password) {
+                    return null;
+                }
+
+                const passwordsMatch = await bcrypt.compare(
+                    credentials.password as string,
+                    (user as any).password
+                );
+
+                if (passwordsMatch) {
+                    return {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        role: user.role
+                    };
+                }
+
+                return null;
             }
         })
     ],
-    pages: {
-        signIn: "/login",
-    },
 })
+
+declare module "next-auth" {
+    interface Session {
+        user: {
+            id: string;
+            role: string;
+            name?: string | null;
+            email?: string | null;
+            image?: string | null;
+        }
+    }
+    interface User {
+        role: string;
+    }
+}

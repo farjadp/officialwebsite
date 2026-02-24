@@ -1,3 +1,10 @@
+// ============================================================================
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
+// ============================================================================
+
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Download, ExternalLink, FileText } from "lucide-react"

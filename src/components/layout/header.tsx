@@ -1,79 +1,59 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: header.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Global layout shell component
+// Env / Identity: Client Component
+// ============================================================================
+
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Menu, X, Search } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-const navItems = [
-    { title: "Topics", href: "/topics" },
-    { title: "Series", href: "/series" },
-    { title: "Tools", href: "/tools" },
-    { title: "About", href: "/about" },
-]
-
 export function Header() {
-    const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="font-bold text-xl tracking-tight">
-                    Farjad<span className="text-primary">.io</span>
+        <header className="relative z-50 pt-8 pb-8 px-6 md:px-12 border-b border-[#E7E5E4]/60 bg-[#FDFCF8] text-[#1C1917]">
+            <div className="max-w-6xl mx-auto flex justify-between items-center">
+                {/* Logo / Name */}
+                <Link href="/" className="flex flex-col">
+                    <span className="font-serif font-bold text-2xl tracking-tight leading-none text-[#1B4B43]">Farjad.</span>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 mt-1">Idea Library</span>
                 </Link>
 
-                {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-6">
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "text-sm font-medium transition-colors hover:text-primary",
-                                pathname === item.href ? "text-foreground" : "text-muted-foreground"
-                            )}
-                        >
-                            {item.title}
-                        </Link>
-                    ))}
-                </nav>
-
-                {/* Actions */}
-                <div className="hidden md:flex items-center gap-4">
-                    <Button variant="ghost" size="icon" className="text-muted-foreground">
-                        <Search className="h-5 w-5" />
-                    </Button>
-                    <Link href="/newsletter">
-                        <Button>Join Newsletter</Button>
+                {/* Minimal Nav */}
+                <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
+                    <Link href="/blog" className="hover:text-[#1B4B43] transition-colors">Essays</Link>
+                    <Link href="/series" className="hover:text-[#1B4B43] transition-colors">Series</Link>
+                    <Link href="/about" className="hover:text-[#1B4B43] transition-colors">About</Link>
+                    <Link href="/newsletter" className="ml-4 px-4 py-2 rounded-full border border-stone-300 hover:border-[#1B4B43] hover:text-[#1B4B43] transition-all text-xs uppercase tracking-wider font-bold">
+                        Subscribe
                     </Link>
-                </div>
+                </nav>
 
                 {/* Mobile Menu */}
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                    <SheetTrigger asChild className="md:hidden">
-                        <Button variant="ghost" size="icon">
-                            <Menu className="h-5 w-5" />
-                        </Button>
+                    <SheetTrigger className="md:hidden text-stone-600 hover:text-[#1B4B43] transition-colors">
+                        <Menu className="h-6 w-6" />
+                        <span className="sr-only">Toggle menu</span>
                     </SheetTrigger>
-                    <SheetContent side="right">
-                        <div className="flex flex-col gap-6 mt-8">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className="text-lg font-medium"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    {item.title}
-                                </Link>
-                            ))}
-                            <Link href="/newsletter" onClick={() => setIsOpen(false)}>
-                                <Button className="w-full">Join Newsletter</Button>
+                    <SheetContent side="right" className="bg-[#FDFCF8] border-[#E7E5E4]">
+                        <div className="flex flex-col gap-6 mt-12 text-stone-600">
+                            <Link href="/blog" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                Essays
+                            </Link>
+                            <Link href="/series" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                Series
+                            </Link>
+                            <Link href="/about" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                About
+                            </Link>
+                            <Link href="/newsletter" onClick={() => setIsOpen(false)} className="mt-4 px-4 py-3 text-center rounded-full border border-stone-300 hover:border-[#1B4B43] hover:text-[#1B4B43] transition-all text-sm uppercase tracking-wider font-bold">
+                                Subscribe
                             </Link>
                         </div>
                     </SheetContent>

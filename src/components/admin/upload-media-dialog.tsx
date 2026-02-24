@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: upload-media-dialog.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
+
 import { Button } from "@/components/ui/button"
 import {
     Dialog,

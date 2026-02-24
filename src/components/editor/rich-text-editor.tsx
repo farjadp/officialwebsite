@@ -1,10 +1,11 @@
-// ============================================================================
-// Hardware Source: src/components/editor/rich-text-editor.tsx
-// Version: 1.0.0
-// Why: Visual content editing (WYSIWYG) related to Admin updates.
-// ============================================================================
-
 'use client'
+
+// ============================================================================
+// Hardware Source: rich-text-editor.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'

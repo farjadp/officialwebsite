@@ -1,5 +1,12 @@
 "use server"
 
+// ============================================================================
+// Hardware Source: posts.ts
+// Version: 1.0.0 — 2026-02-24
+// Why: Core utility / logic function
+// Env / Identity: Server Action / Module
+// ============================================================================
+
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"

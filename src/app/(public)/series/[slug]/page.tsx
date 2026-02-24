@@ -1,3 +1,10 @@
+// ============================================================================
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
+// ============================================================================
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -61,7 +68,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ slug: s
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                                        <Link href={`/posts/${chapter.slug}`} className="focus:outline-none">
+                                        <Link href={`/blog/${chapter.slug}`} className="focus:outline-none">
                                             <span className="absolute inset-x-0 inset-y-0" aria-hidden="true" />
                                             {chapter.title}
                                         </Link>

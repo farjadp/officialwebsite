@@ -1,12 +1,8 @@
 // ============================================================================
-// File Path: src/app/about/page.tsx
-// Version: 3.0.0 — The "Modern Editorial" Redesign
-// Why: Adds visual richness, photography, and interaction while keeping the "Sage" trust.
-// Style: High-end Magazine (Think: Monocle, HBR, The Atlantic).
-// Features:
-//    - Split-screen Hero with photography.
-//    - "Grayscale to Color" hover effects (sophisticated interaction).
-//    - Richer color palette (Deep Jungle, Burnt Orange, Warm Sand).
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
 // ============================================================================
 
 import React from 'react';
@@ -104,7 +100,6 @@ export default function AboutPageInteractive() {
           </div>
         </section>
 
-
         {/* --- 2. THE CONTEXT (Colorful Bento Grid) --- */}
         <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
           <div className="mb-12 flex items-end justify-between">
@@ -150,7 +145,6 @@ export default function AboutPageInteractive() {
           </div>
         </section>
 
-
         {/* --- 3. THE NARRATIVE (Scrollytelling Vibe) --- */}
         <section className="py-24 bg-[#1C1917] text-stone-200 relative overflow-hidden">
            {/* Abstract Background Image */}
@@ -182,7 +176,6 @@ export default function AboutPageInteractive() {
               </div>
            </div>
         </section>
-
 
         {/* --- 4. INTERACTIVE FOCUS AREAS (Image Reveal) --- */}
         <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
@@ -245,7 +238,6 @@ export default function AboutPageInteractive() {
             </Link>
           </div>
         </section>
-
 
         {/* --- 5. FOOTER / CTA --- */}
         <section className="py-20 bg-[#F5F5F4] border-t border-stone-200 text-center">

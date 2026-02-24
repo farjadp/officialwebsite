@@ -1,7 +1,8 @@
 // ============================================================================
-// Hardware Source: src/app/admin/posts/page.tsx
-// Version: 1.0.0
-// Why: Admin Post List View (Real Data)
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
 // ============================================================================
 
 import { Button } from "@/components/ui/button"

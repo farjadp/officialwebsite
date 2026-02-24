@@ -1,16 +1,8 @@
 // ============================================================================
-// File Path: src/app/work/page.tsx
-// Version: 1.0.0 — The "Project Log" Page
-// Identity: Sage / Creator.
-// Vibe: Transparent, Organized, "Work in Public".
-// Design: "Scholar's Desk" — Structured cards, Status indicators, Clear typography.
-// 
-// Key Sections:
-// 1. The Ledger (Intro)
-// 2. Active Ventures (Current Focus - Highlighted)
-// 3. The Archive (Past Projects - Muted/Grayscale)
-// 4. Advisory Scope (Mentorship context)
-// 5. The Lab (Small bets & Experiments)
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
 // ============================================================================
 
 import React from 'react';

@@ -9,6 +9,7 @@ datasource db {
 enum Role {
   OWNER
   EDITOR
+  USER
 }
 
 enum PostStatus {
@@ -22,15 +23,12 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
+  password      String?
   emailVerified DateTime?
   image         String?
   role          Role      @default(OWNER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
-  // Auth.js (NextAuth) models if needed for database adapter, 
-  // but for simple email login we can keep it minimal or use standard adapter fields later.
-  // For now, minimal User is enough as requested.
 }
 
 model Post {

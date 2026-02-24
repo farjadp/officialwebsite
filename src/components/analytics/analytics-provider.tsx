@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: analytics-provider.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
+
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
 

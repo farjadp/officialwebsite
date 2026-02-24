@@ -1,10 +1,11 @@
-// ============================================================================
-// Hardware Source: src/app/admin/categories/category-manager.tsx
-// Version: 1.1.0
-// Why: Category Management (Hierarchy + Icons + Seeding)
-// ============================================================================
-
 'use client'
+
+// ============================================================================
+// Hardware Source: category-manager.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Functional module
+// Env / Identity: Client Component
+// ============================================================================
 
 import { useState, useMemo } from 'react'
 import { Category } from '@prisma/client'

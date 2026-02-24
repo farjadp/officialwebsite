@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: tiptap-editor.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
+
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Typography from '@tiptap/extension-typography'

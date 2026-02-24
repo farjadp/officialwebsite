@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: command.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: Client Component
+// ============================================================================
+
 import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 import { SearchIcon } from "lucide-react"

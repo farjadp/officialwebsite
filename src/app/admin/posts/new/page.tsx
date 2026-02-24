@@ -1,7 +1,8 @@
 // ============================================================================
-// Hardware Source: src/app/admin/posts/new/page.tsx
-// Version: 1.0.0
-// Why: New Post Creation Page
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
 // ============================================================================
 
 import { PostForm } from "../post-form"

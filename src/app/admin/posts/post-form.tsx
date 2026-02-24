@@ -1,10 +1,11 @@
-// ============================================================================
-// Hardware Source: src/app/admin/posts/post-form.tsx
-// Version: 1.0.0
-// Why: Comprehensive Post Editor Form (Title, Content, SEO, Categories)
-// ============================================================================
-
 'use client'
+
+// ============================================================================
+// Hardware Source: post-form.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Functional module
+// Env / Identity: Client Component
+// ============================================================================
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'

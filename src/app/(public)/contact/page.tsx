@@ -1,13 +1,8 @@
 // ============================================================================
-// File Path: src/app/contact/page.tsx
-// Version: 3.0.0 — Corrected Identity: The "Scholar's Desk"
-// Identity: Sage / Mentor / Personal Library.
-// Vibe: "Writing a letter to a mentor", not "Submitting a ticket".
-// Colors:
-//    - Background: #FDFCF8 (Warm Paper)
-//    - Ink: #1C1917 (Dark Stone)
-//    - Accent: #1B4B43 (Deep Jungle Green - The Brand Signature)
-//    - Paper Lines: #E7E5E4 (Subtle borders)
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
 // ============================================================================
 
 import React from 'react';
@@ -119,7 +114,6 @@ export default function ContactSageStyle() {
             </div>
 
           </div>
-
 
           {/* --- RIGHT COLUMN: The Letter Form --- */}
           <div className="md:col-span-7 bg-white p-8 md:p-12 border border-stone-200 shadow-[8px_8px_0px_0px_rgba(231,229,228,0.5)]">

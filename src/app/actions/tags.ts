@@ -1,10 +1,11 @@
-// ============================================================================
-// Hardware Source: src/app/actions/tags.ts
-// Version: 1.0.0
-// Why: Server Actions for Tag Management
-// ============================================================================
-
 'use server'
+
+// ============================================================================
+// Hardware Source: tags.ts
+// Version: 1.0.0 — 2026-02-24
+// Why: Functional module
+// Env / Identity: Server Action / Module
+// ============================================================================
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"

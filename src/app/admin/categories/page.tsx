@@ -1,7 +1,8 @@
 // ============================================================================
-// Hardware Source: src/app/admin/categories/page.tsx
-// Version: 1.0.0
-// Why: Category Management Page
+// Hardware Source: page.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Main entry page for the route
+// Env / Identity: React Server Component
 // ============================================================================
 
 import { getCategories } from "@/app/actions/categories"

@@ -1,10 +1,11 @@
-// ============================================================================
-// Hardware Source: src/app/actions/posts.ts
-// Version: 1.0.0
-// Why: Server Actions for Article Management (CRUD for Posts)
-// ============================================================================
-
 'use server'
+
+// ============================================================================
+// Hardware Source: posts.ts
+// Version: 1.0.0 — 2026-02-24
+// Why: Functional module
+// Env / Identity: Server Action / Module
+// ============================================================================
 
 import { prisma } from "@/lib/prisma"
 import { Post, PostStatus, Prisma } from "@prisma/client"

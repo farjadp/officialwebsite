@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: toggle.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: Client Component
+// ============================================================================
+
 import * as React from "react"
 import * as TogglePrimitive from "@radix-ui/react-toggle"
 import { cva, type VariantProps } from "class-variance-authority"

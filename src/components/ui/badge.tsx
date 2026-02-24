@@ -1,3 +1,10 @@
+// ============================================================================
+// Hardware Source: badge.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: React UI Component
+// ============================================================================
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"

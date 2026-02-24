@@ -1,7 +1,8 @@
 // ============================================================================
-// Hardware Source: src/app/api/media/upload/route.ts
-// Version: 1.0.0
-// Why: Media Upload Endpoint (Local filesystem storage for MVP)
+// Hardware Source: route.ts
+// Version: 1.0.0 — 2026-02-24
+// Why: API Route Handler
+// Env / Identity: Server Route Handlers
 // ============================================================================
 
 import { NextResponse } from 'next/server'

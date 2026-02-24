@@ -1,5 +1,12 @@
 'use client'
 
+// ============================================================================
+// Hardware Source: share-buttons.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Reusable UI component
+// Env / Identity: Client Component
+// ============================================================================
+
 import { Button } from "@/components/ui/button"
 import { Twitter, Facebook, Linkedin, Link as LinkIcon, Check } from 'lucide-react'
 import { useState } from "react"

@@ -1,3 +1,10 @@
+// ============================================================================
+// Hardware Source: layout.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Routing layout constraint
+// Env / Identity: React Server Component
+// ============================================================================
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";

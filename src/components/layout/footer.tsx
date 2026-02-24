@@ -1,3 +1,10 @@
+// ============================================================================
+// Hardware Source: footer.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: Global layout shell component
+// Env / Identity: TypeScript Module
+// ============================================================================
+
 import Link from "next/link"
 
 export function Footer() {

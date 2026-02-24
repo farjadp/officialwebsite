@@ -1,5 +1,12 @@
 "use client"
 
+// ============================================================================
+// Hardware Source: sonner.tsx
+// Version: 1.0.0 — 2026-02-24
+// Why: shadcn/ui component implementation
+// Env / Identity: Client Component
+// ============================================================================
+
 import {
   CircleCheckIcon,
   InfoIcon,
