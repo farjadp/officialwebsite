@@ -1,18 +1,27 @@
 // ============================================================================
-// Hardware Source: page.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Main entry page for the route
-// Env / Identity: React Server Component
+// File Path: src/app/services/page.tsx
+// Version: 2.0.0 — The "Bento Sage" Redesign
+// Why: Increases engagement using Bento grids, interactive cards, and rich typography.
 // ============================================================================
 
 import React from "react";
-import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { SERVICES, PROCESS_STEPS, CREDIBILITY_BULLETS, FAQS } from "./data";
-import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  XCircle,
+  Compass,
+  Lightbulb,
+  Zap,
+  Key,
+  Briefcase,
+  Globe2,
+  Award,
+  GraduationCap,
+  ChevronDown
+} from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -20,248 +29,410 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export const metadata: Metadata = {
-  title: "Services | Farjad Advisory",
-  description: "Strategic advisory for startup founders, immigrant entrepreneurs, and SMEs.",
-};
+// --- DATA DEFINITIONS (Included here for copy-paste ease) ---
+const SERVICES = [
+  {
+    id: "startup-visa",
+    title: "Startup Visa Strategy",
+    for: "Immigrant founders needing a business case, not just a form filler.",
+    icon: Compass,
+    details: [
+      "Audit concept against SUV criteria.",
+      "Roadmap to early traction.",
+      "Mock incubator interviews."
+    ],
+    outcome: "A defensible business case that stands up to scrutiny."
+  },
+  {
+    id: "founder-advisory",
+    title: "Strategic Advisory",
+    for: "Early-stage founders who need a sparring partner.",
+    icon: Lightbulb,
+    details: [
+      "GTM Strategy validation.",
+      "Business Model stress-testing.",
+      "Prioritization frameworks."
+    ],
+    outcome: "Stop building features nobody wants. Focus on revenue."
+  },
+  {
+    id: "digital-systems",
+    title: "Digital Systems & AI",
+    for: "SMEs bottlenecked by manual work.",
+    icon: Zap,
+    details: [
+      "Operational workflow audit.",
+      "AI integration architecture.",
+      "Tech stack selection."
+    ],
+    outcome: "Reclaim 10+ hours/week and reduce human error."
+  },
+  {
+    id: "private-mentorship",
+    title: "Private Mentorship",
+    for: "High-potential founders.",
+    icon: Key,
+    isLimited: true,
+    details: [
+      "Weekly 1:1 strategy calls.",
+      "Async access (WhatsApp).",
+      "Document review."
+    ],
+    outcome: "A trusted co-pilot to navigate chaos."
+  }
+];
 
-export default function ServicesPage() {
+const CREDIBILITY_BENTO = [
+  {
+    title: "Current Role",
+    desc: "Founder & CSO at AshaVid",
+    sub: "Toronto, Since 2025",
+    icon: Briefcase,
+    col: "md:col-span-2",
+    bg: "bg-[#1B4B43] text-white"
+  },
+  {
+    title: "Exit / Past",
+    desc: "Founder & Director at DPF",
+    sub: "Data Processing (17 Years)",
+    icon: Award,
+    col: "md:col-span-1",
+    bg: "bg-stone-100 text-[#1C1917]"
+  },
+  {
+    title: "Tech Leadership",
+    desc: "Former CTO",
+    sub: "Iran's Gov-backed Cloud Firm",
+    icon: Zap,
+    col: "md:col-span-1",
+    bg: "bg-white text-[#1C1917] border border-stone-200"
+  },
+  {
+    title: "Education",
+    desc: "MSc Software , MA, MSc and PHD at Anthropology, DBA Branding",
+    sub: "Rare mix of Code & Culture",
+    icon: GraduationCap,
+    col: "md:col-span-2",
+    bg: "bg-stone-900 text-stone-200"
+  },
+  {
+    title: "Global Reach",
+    desc: "Based in Newmarket, ON",
+    sub: "Serving Global Founders",
+    icon: Globe2,
+    col: "md:col-span-1",
+    bg: "bg-[#D97706] text-white"
+  },
+  {
+    title: "Certification",
+    desc: "ISO 27001 Lead Auditor",
+    sub: "Information Security",
+    icon: Key,
+    col: "md:col-span-1",
+    bg: "bg-white text-[#1C1917] border border-stone-200"
+  }
+];
+
+const FAQS = [
+  { q: "Do you guarantee immigration results?", a: "No. I am not a lawyer. I help you build a real business that meets the criteria, but the outcome is never guaranteed." },
+  { q: "How do we start?", a: "Book a strategy call. We diagnose the problem in 30 minutes. If it fits, we move forward." },
+  { q: "What is your hourly rate?", a: "I generally work on a retainer or project basis to ensure outcomes, not just hours spent." },
+  { q: "Do you work with non-tech businesses?", a: "Yes, specifically for digital transformation and systemizing operations." },
+];
+
+export default function ServicesPageBento() {
   return (
-    <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans selection:bg-[#1B4B43] selection:text-white">
-      {/* Texture Overlay (Grain) */}
-      <div className="fixed inset-0 opacity-[0.04] pointer-events-none z-0"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+    <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans selection:bg-[#1B4B43] selection:text-white overflow-x-hidden">
+
+      {/* --- Background Assets --- */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.4]"
+        style={{ backgroundImage: 'linear-gradient(#E7E5E4 1px, transparent 1px), linear-gradient(to right, #E7E5E4 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
       </div>
+      <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
       <div className="relative z-10">
-        {/* --- A. Hero Section --- */}
-        <section className="pt-24 pb-20 px-6 md:px-12 max-w-5xl mx-auto text-center border-b border-stone-200">
-          <h1 className="font-serif text-5xl md:text-7xl leading-[1.1] text-[#111827] mb-6">
-            Clarity for the builder.<br />
-            <span className="italic text-stone-500 font-light">Structure for the business.</span>
+
+        {/* --- 1. HERO: The Manifesto --- */}
+        <section className="pt-32 pb-20 px-6 md:px-12 max-w-6xl mx-auto">
+          <Badge className="mb-6 bg-[#1B4B43]/10 text-[#1B4B43] hover:bg-[#1B4B43]/20 border-none uppercase tracking-widest px-3 py-1 rounded-sm">
+            Advisory & Mentorship
+          </Badge>
+
+          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.9] text-[#111827] mb-8 tracking-tight">
+            Clarity for the builder. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1B4B43] to-stone-500 italic">
+              Structure for the business.
+            </span>
           </h1>
-          <p className="text-xl md:text-2xl text-stone-600 font-light max-w-2xl mx-auto leading-relaxed mb-10">
-            Advisory and mentorship for serious founders who value direct feedback over hype.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="#contact" className="w-full sm:w-auto">
-              <Button className="w-full bg-[#1B4B43] hover:bg-[#133832] text-white rounded-none px-8 h-12 md:h-14 text-base font-medium transition-all">
-                Book a Strategy Call
-              </Button>
-            </Link>
-            <Link href="#services" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full rounded-none border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-stone-900 px-8 h-12 md:h-14 text-base font-normal transition-all">
-                See Services
-              </Button>
-            </Link>
+
+          <div className="grid md:grid-cols-12 gap-12 items-end">
+            <div className="md:col-span-7">
+              <p className="text-xl md:text-2xl text-stone-600 font-light leading-relaxed">
+                I help immigrant founders and serious SMEs navigate the chaos of building.
+                No hype. No fake numbers. Just direct, strategic engineering applied to your business.
+              </p>
+            </div>
+            <div className="md:col-span-5 flex flex-col sm:flex-row gap-4">
+              <Link href="/booking" className="w-full">
+                <Button className="w-full bg-[#1B4B43] hover:bg-[#133832] text-white rounded-sm h-14 text-lg font-medium shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                  Book Strategy Call
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 
-        {/* --- B. Who I Work With --- */}
-        <section className="py-24 px-6 md:px-12 bg-white border-b border-stone-200">
-          <div className="max-w-5xl mx-auto">
+
+
+        {/* --- 2. AUDIENCE FIT: The Filter --- */}
+        <section className="py-24 border-y border-stone-200 bg-[#F5F5F4] relative overflow-hidden">
+          {/* Decorative Background Element */}
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/3 opacity-[0.03] pointer-events-none">
+            <Compass className="w-[600px] h-[600px]" />
+          </div>
+
+          <div className="max-w-6xl mx-auto px-6 relative z-10">
+
             <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl text-[#111827]">Audience Fit</h2>
-              <div className="h-0.5 w-12 bg-[#1B4B43] mx-auto mt-6" />
+              <h2 className="font-serif text-4xl text-[#111827] mb-4">Are we a match?</h2>
+              <p className="text-stone-500 max-w-xl mx-auto text-lg font-light">
+                I don't work with everyone. To protect both of our time, let's make sure our expectations align before we hop on a call.
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-12 lg:gap-24">
-              {/* Best Fit */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
-                  <div className="p-2 bg-green-50 rounded-full">
-                    <CheckCircle2 className="w-6 h-6 text-[#1B4B43]" />
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+
+              {/* THE FIT (YES) */}
+              <div className="bg-white border-2 border-[#1B4B43] p-8 md:p-10 shadow-[8px_8px_0px_0px_rgba(27,75,67,1)] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[6px_6px_0px_0px_rgba(27,75,67,1)] transition-all duration-300">
+                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-stone-100">
+                  <div className="p-3 bg-[#1B4B43]/10 text-[#1B4B43] rounded-sm">
+                    <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h3 className="text-2xl font-serif text-[#111827]">Best Fit</h3>
-                </div>
-                <ul className="space-y-4 text-stone-600">
-                  <li className="flex gap-3"><span className="text-[#1B4B43] mt-0.5">•</span><span><strong className="font-medium text-stone-900">Early-stage Founders:</strong> Needing product strategy and structure.</span></li>
-                  <li className="flex gap-3"><span className="text-[#1B4B43] mt-0.5">•</span><span><strong className="font-medium text-stone-900">Immigrant Entrepreneurs:</strong> Especially those launching in Canada.</span></li>
-                  <li className="flex gap-3"><span className="text-[#1B4B43] mt-0.5">•</span><span><strong className="font-medium text-stone-900">SUV Candidates:</strong> Requiring business readiness and market positioning.</span></li>
-                  <li className="flex gap-3"><span className="text-[#1B4B43] mt-0.5">•</span><span><strong className="font-medium text-stone-900">SME Owners:</strong> Seeking digital and AI system improvements.</span></li>
-                </ul>
-              </div>
-
-              {/* Not Fit */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
-                  <div className="p-2 bg-red-50 rounded-full">
-                    <XCircle className="w-6 h-6 text-red-700" />
-                  </div>
-                  <h3 className="text-2xl font-serif text-[#111827]">Not a Fit</h3>
-                </div>
-                <ul className="space-y-4 text-stone-600">
-                  <li className="flex gap-3"><span className="text-red-700 mt-0.5">•</span><span><strong className="font-medium text-stone-900">Want "Yes Men":</strong> If you prefer validation over hard truths.</span></li>
-                  <li className="flex gap-3"><span className="text-red-700 mt-0.5">•</span><span><strong className="font-medium text-stone-900">Looking for Proxies:</strong> I advise; I don't run your company for you.</span></li>
-                  <li className="flex gap-3"><span className="text-red-700 mt-0.5">•</span><span><strong className="font-medium text-stone-900">Get-Rich-Quick Seekers:</strong> Building real businesses takes time.</span></li>
-                  <li className="flex gap-3"><span className="text-red-700 mt-0.5">•</span><span><strong className="font-medium text-stone-900">Just Need a Visa:</strong> I build businesses, not immigration applications.</span></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- C. Services (4 Pillars) --- */}
-        <section id="services" className="py-24 px-6 md:px-12 bg-[#FDFCF8] border-b border-stone-200">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl text-[#111827]">Core Services</h2>
-              <div className="h-0.5 w-12 bg-[#1B4B43] mx-auto mt-6" />
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-8">
-              {SERVICES.map((service) => (
-                <div key={service.id} className="bg-white border border-stone-200 hover:border-stone-300 p-8 md:p-10 hover:shadow-xl transition-all duration-300 flex flex-col h-full relative group">
-                  {service.isLimited && (
-                    <div className="absolute top-0 right-0 p-4">
-                      <Badge variant="secondary" className="bg-stone-100 text-[#111827] font-semibold rounded-none text-[10px] tracking-widest uppercase border border-stone-200 group-hover:bg-[#111827] group-hover:text-white transition-colors">
-                        Limited Capacity
-                      </Badge>
-                    </div>
-                  )}
-
-                  <div className="mb-8 inline-flex p-4 bg-stone-50 border border-stone-100 group-hover:bg-[#1B4B43]/5 transition-colors">
-                    <service.icon className="w-8 h-8 text-[#1B4B43]" strokeWidth={1.5} />
-                  </div>
-
-                  <h3 className="text-3xl font-serif text-[#111827] mb-4">{service.title}</h3>
-                  <p className="text-stone-500 text-base md:text-lg mb-8 italic pb-6 border-b border-stone-100">
-                    "{service.for}"
-                  </p>
-
-                  <div className="space-y-8 flex-grow">
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">What You Get</h4>
-                      <ul className="space-y-3">
-                        {service.whatYouGet.map((item, i) => (
-                          <li key={i} className="flex gap-3 text-stone-700 text-base">
-                            <span className="text-stone-300 font-serif -mt-1 text-lg">›</span> <span className="leading-snug">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#1B4B43]/70 mb-4">Outcomes</h4>
-                      <ul className="space-y-3">
-                        {service.outcomes.map((item, i) => (
-                          <li key={i} className="flex gap-3 text-[#111827] text-base font-medium">
-                            <span className="text-[#1B4B43] mt-0.5">↳</span> <span className="leading-snug">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="pt-10 mt-auto flex">
-                    <Link href="#contact" className="inline-flex items-center text-sm font-bold uppercase tracking-widest text-[#111827] border-b-2 border-transparent hover:border-[#1B4B43] transition-colors pb-1 group-hover:text-[#1B4B43]">
-                      Request Details <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                  <div>
+                    <h3 className="font-serif text-2xl font-bold text-[#111827]">Right Fit</h3>
+                    <p className="text-sm text-stone-500 uppercase tracking-widest mt-1">Who this is for</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* --- D. How I Work (Process) --- */}
-        <section className="py-24 px-6 md:px-12 bg-white border-b border-stone-200">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl text-[#111827]">The Process</h2>
-              <div className="h-0.5 w-12 bg-[#1B4B43] mt-6" />
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-16">
-              {PROCESS_STEPS.map((step, idx) => (
-                <div key={idx} className="relative group">
-                  <div className="absolute -left-6 top-2 text-[120px] font-black text-stone-50 leading-none select-none z-0 group-hover:text-[#1B4B43]/5 transition-colors duration-500">
-                    {step.step}
-                  </div>
-                  <div className="relative z-10 pt-8 pl-4 border-t-2 border-[#111827] mt-8 group-hover:border-[#1B4B43] transition-colors">
-                    <h3 className="text-2xl font-serif text-[#111827] mb-4">{step.title}</h3>
-                    <p className="text-stone-600 text-base leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* --- E. Credibility / Proof --- */}
-        <section className="py-24 px-6 md:px-12 bg-[#FDFCF8] border-b border-stone-200">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-12">
-              <h2 className="font-serif text-3xl md:text-4xl text-[#111827]">Why Me?</h2>
-              <div className="h-0.5 w-12 bg-[#1B4B43] mt-6" />
-            </div>
-
-            <div className="bg-white border border-stone-200 p-8 md:p-16 relative shadow-sm">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-stone-50 border-b border-l border-stone-200 rounded-bl-[100px] -z-0"></div>
-
-              <div className="relative z-10">
-                <p className="text-stone-500 mb-10 text-xl font-light italic border-l-2 border-[#1B4B43] pl-6 py-2">No inflated claims. Just the track record.</p>
-                <div className="grid md:grid-cols-2 gap-x-12 gap-y-6">
-                  {CREDIBILITY_BULLETS.map((bullet, idx) => (
-                    <div key={idx} className="flex gap-4 items-start">
-                      <span className="w-1.5 h-1.5 bg-[#1B4B43] rounded-full mt-2.5 shrink-0 opacity-80" />
-                      <span className="text-stone-700 leading-relaxed">{bullet}</span>
-                    </div>
+                <ul className="space-y-6">
+                  {[
+                    "Founders who want to build a real company, not a visa shell.",
+                    "Immigrants who need to understand the Canadian market code.",
+                    "SME owners tired of manual chaos and ready for AI.",
+                    "Leaders who value brutal honesty over polite lies."
+                  ].map((item, i) => (
+                    <li key={i} className="flex gap-4 items-start group">
+                      <CheckCircle2 className="w-6 h-6 text-[#1B4B43] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                      <span className="text-stone-700 text-lg leading-relaxed">{item}</span>
+                    </li>
                   ))}
+                </ul>
+              </div>
+
+              {/* THE MISFIT (NO) */}
+              <div className="bg-stone-100/50 border border-stone-200 p-8 md:p-10 hover:bg-white hover:border-red-200 hover:shadow-lg transition-all duration-500 group">
+                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-stone-200 group-hover:border-red-100 transition-colors">
+                  <div className="p-3 bg-stone-200 text-stone-500 group-hover:bg-red-50 group-hover:text-red-500 transition-colors rounded-sm">
+                    <XCircle className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-2xl font-bold text-stone-600 group-hover:text-red-900 transition-colors">Wrong Fit</h3>
+                    <p className="text-sm text-stone-400 uppercase tracking-widest mt-1 group-hover:text-red-400 transition-colors">Who this is NOT for</p>
+                  </div>
+                </div>
+                <ul className="space-y-6 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                  {[
+                    "People looking for guaranteed PR or 'easy' visas.",
+                    "Founders who want a 'Yes Man' to validate their ego.",
+                    "Those looking for get-rich-quick shortcuts.",
+                    "Anyone unwilling to do the heavy lifting themselves."
+                  ].map((item, i) => (
+                    <li key={i} className="flex gap-4 items-start">
+                      <XCircle className="w-6 h-6 text-stone-400 group-hover:text-red-400 shrink-0 mt-0.5 transition-colors" />
+                      <span className="text-stone-500 group-hover:text-stone-700 text-lg leading-relaxed transition-colors">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+
+
+        {/* --- 3. SERVICES: Interactive Cards --- */}
+        <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="mb-16 md:flex justify-between items-end">
+            <div>
+              <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-4">Core Services</h2>
+              <p className="text-stone-500 max-w-md">Four ways we can work together. Each designed for a specific stage of maturity.</p>
+            </div>
+            <div className="hidden md:block">
+              <ArrowRight className="w-12 h-12 text-stone-200" />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {SERVICES.map((service) => (
+              <div key={service.id} className="group relative bg-white border border-stone-200 p-6 h-[420px] flex flex-col justify-between hover:border-[#1B4B43] transition-colors duration-300 overflow-hidden">
+
+                {/* Background Hover Effect */}
+                <div className="absolute inset-0 bg-[#1B4B43] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0" />
+
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="p-3 bg-stone-50 group-hover:bg-white/10 rounded-sm transition-colors">
+                      <service.icon className="w-6 h-6 text-[#1B4B43] group-hover:text-white transition-colors" />
+                    </div>
+                    {service.isLimited && (
+                      <Badge className="bg-[#D97706] text-white text-[10px] hover:bg-[#D97706]">LIMITED</Badge>
+                    )}
+                  </div>
+
+                  <h3 className="font-serif text-2xl text-[#111827] group-hover:text-white mb-3 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-stone-500 group-hover:text-white/80 transition-colors leading-relaxed">
+                    {service.for}
+                  </p>
                 </div>
 
-                <Separator className="my-10 border-stone-200" />
+                {/* Reveal Content */}
+                <div className="relative z-10 space-y-4">
+                  <div className="h-px w-12 bg-stone-200 group-hover:bg-white/30" />
+                  <ul className="space-y-2">
+                    {service.details.map((d, i) => (
+                      <li key={i} className="text-xs font-medium text-[#1B4B43] group-hover:text-white flex items-center gap-2">
+                        <span className="w-1 h-1 bg-current rounded-full" /> {d}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/booking" className="block w-full py-3 text-center text-xs font-bold uppercase tracking-widest border border-stone-200 group-hover:border-white text-[#111827] group-hover:text-white mt-4 hover:bg-white hover:text-[#1B4B43] transition-all">
+                    Inquire
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-                <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm font-bold uppercase tracking-widest text-stone-400">
-                  <a href="#" className="hover:text-[#111827] transition-colors">LinkedIn</a>
-                  <a href="#" className="hover:text-[#111827] transition-colors">YouTube</a>
-                  <a href="#" className="hover:text-[#111827] transition-colors">X / Twitter</a>
-                  <a href="#" className="hover:text-[#111827] transition-colors">Telegram</a>
-                  <a href="#" className="hover:text-[#111827] transition-colors">GitHub</a>
+        {/* --- 4. CREDIBILITY: The Bento Grid --- */}
+        <section className="py-24 px-6 md:px-12 bg-[#F5F5F4] border-y border-stone-200">
+          <div className="max-w-6xl mx-auto">
+
+            {/* Minimal Header */}
+            <div className="text-center mb-14">
+              <h2 className="font-serif text-4xl text-[#111827] mb-4">The Track Record</h2>
+              <div className="w-12 h-1 bg-[#1B4B43]/40 mx-auto rounded-full"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
+              {CREDIBILITY_BENTO.map((item, i) => (
+                <div
+                  key={i}
+                  className={`${item.col} ${item.bg} p-6 md:p-8 rounded-xl relative group overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 border border-black/5`}
+                >
+                  {/* Subtle Background Icon Animation */}
+                  <div className="absolute -bottom-6 -right-6 opacity-[0.07] group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-700 pointer-events-none">
+                    <item.icon className="w-40 h-40" />
+                  </div>
+
+                  {/* Top Bar */}
+                  <div className="relative z-10 flex justify-between items-start mb-6">
+                    <span className="text-xs font-bold uppercase tracking-widest opacity-70 block">
+                      {item.title}
+                    </span>
+                    <item.icon className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+
+                  {/* Bottom Content */}
+                  <div className="relative z-10 mt-auto">
+                    <h3 className="font-serif text-2xl md:text-3xl font-medium leading-tight mb-5">
+                      {item.desc}
+                    </h3>
+
+                    <div className="pt-4 border-t border-current border-opacity-15 flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-current opacity-50"></span>
+                      <p className="text-sm font-medium opacity-90">{item.sub}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* --- 5. FAQ: Split Layout --- */}
+        <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto border-t border-stone-100">
+          <div className="grid lg:grid-cols-12 gap-16">
+
+            {/* Left Side: Static Content */}
+            <div className="lg:col-span-5 space-y-6">
+              <Badge className="bg-[#1B4B43]/10 text-[#1B4B43] border-none uppercase tracking-[0.2em] px-3 py-1 rounded-sm text-[10px]">
+                Knowledge Base
+              </Badge>
+              <h2 className="font-serif text-4xl md:text-5xl text-[#111827] leading-[1.1]">
+                Common <br />
+                <span className="italic text-stone-400">Questions</span>
+              </h2>
+              <p className="text-stone-500 text-lg font-light leading-relaxed max-w-sm">
+                Everything you need to know about the process, expectations, and how we build together.
+              </p>
+
+              <div className="pt-8">
+                <div className="inline-flex flex-col p-6 bg-stone-50 border border-stone-200 rounded-xl">
+                  <p className="text-sm text-stone-600 mb-4">Still have questions?</p>
+                  <Link href="mailto:your@email.com" className="text-[#1B4B43] font-bold flex items-center gap-2 group">
+                    Send a direct message
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* --- F. FAQ --- */}
-        <section className="py-24 px-6 md:px-12 bg-white border-b border-stone-200">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl text-[#111827]">Frequent Questions</h2>
-              <div className="h-0.5 w-12 bg-[#1B4B43] mx-auto mt-6" />
+            {/* Right Side: Interactive Accordions */}
+            <div className="lg:col-span-7">
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {FAQS.map((faq, index) => (
+                  <AccordionItem
+                    key={index}
+                    value={`item-${index}`}
+                    className="border border-stone-200 bg-white rounded-xl px-6 py-2 data-[state=open]:border-[#1B4B43] data-[state=open]:shadow-sm transition-all duration-300"
+                  >
+                    <AccordionTrigger className="text-left text-lg md:text-xl font-medium text-[#111827] hover:no-underline hover:text-[#1B4B43] transition-colors py-6">
+                      {faq.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-stone-600 pb-8 text-base md:text-lg leading-relaxed font-light">
+                      <div className="pl-0 border-l-2 border-[#1B4B43]/20 pt-2 px-4">
+                        {faq.a}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
 
-            <Accordion type="single" collapsible className="w-full space-y-4">
-              {FAQS.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`} className="border border-stone-200 px-6 rounded-none bg-stone-50/50 data-[state=open]:bg-white data-[state=open]:border-stone-300 transition-colors">
-                  <AccordionTrigger className="text-left text-lg font-serif text-[#111827] hover:no-underline py-6">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-stone-600 leading-relaxed text-base pb-6">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
           </div>
         </section>
+        {/* --- 6. FINAL CTA --- */}
+        <section id="contact" className="py-32 bg-[#111827] text-white text-center px-6 relative overflow-hidden">
+          {/* Abstract Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1B4B43] rounded-full blur-[120px] opacity-30 pointer-events-none" />
 
-        {/* --- G. Final CTA --- */}
-        <section id="contact" className="py-32 px-6 md:px-12 bg-[#111827] text-white text-center flex flex-col items-center relative overflow-hidden">
-          {/* Dark abstract circle */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 w-full max-w-2xl">
-            <h2 className="font-serif text-4xl md:text-6xl mb-6 leading-tight">Ready to work?</h2>
-            <p className="text-stone-400 text-xl mx-auto mb-12 font-light leading-relaxed">
-              If you’re tired of generic advice and want structured, strategic growth, let’s talk.
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <div className="inline-block mb-6 animate-bounce">
+              <ArrowRight className="w-8 h-8 text-[#D97706] rotate-90" />
+            </div>
+            <h2 className="font-serif text-5xl md:text-6xl mb-6">Ready to work?</h2>
+            <p className="text-stone-400 text-xl mb-10 font-light">
+              I have limited capacity for new advisory clients.<br />
+              If you are serious, let's determine if we are a fit.
             </p>
-            <Button className="w-full sm:w-auto bg-white hover:bg-stone-200 text-[#111827] rounded-none px-12 h-16 text-lg font-bold">
-              Book a Strategy Call
-            </Button>
+            <Link href="/booking">
+              <Button className="bg-white text-[#111827] hover:bg-stone-200 h-16 px-10 text-lg font-bold rounded-sm w-full md:w-auto">
+                Book Strategy Call
+              </Button>
+            </Link>
           </div>
         </section>
 

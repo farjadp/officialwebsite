@@ -36,3 +36,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---
+
+## CHANGELOG (March 2026)
+
+### Added
+- **Mentorship Portfolio Gateway (`/startups`):** A curated Bento-grid page highlighting 25+ advised ventures, rich with metadata (Timeline, Status, Satisfaction).
+- **The Reality Check Dashboard (`/stats`):** An immersive and honest data-viz page displaying 7 years of startup insights (Funding, Screen Time Reality, Coffee Ratios, and Filter Metrics).
+- **Consolidated Navigation:** Re-architected Header and Mobile Menus to group previous disparate pages into a cohesive "Proof of Work" dropdown.
+- **Enhanced Asset Loading:** Optimized image handling for founder shots, branding resources, and transparent scalable SVGs (incl: Google Meet visualization).
+
+### Updated
+- Improved global component spacing on the `Contact` page.
+- Cleaned up and modularized routing configurations for the newly injected Proof of Work structure.
