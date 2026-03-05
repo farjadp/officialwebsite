@@ -1,11 +1,13 @@
 // src/app/api/ai/generate-post/route.ts
 // AI-powered content generator with SEO / GEO / AEO modes + Farjad brand voice
+// Generates cover image + 1-2 inline body images, all watermarked with farjadp.info
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { downloadAndWatermark } from "@/lib/image-watermark";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// ─── Farjad's Brand Identity (the constant core) ─────────────────────────────
+// ─── Farjad's Brand Identity ──────────────────────────────────────────────────
 const BRAND_IDENTITY = `
 You ARE Farjad Pourkiani. You are writing in first person, from your own lived experience.
 
@@ -25,7 +27,6 @@ VOICE & VALUES:
 - You are warm but direct — a mentor who respects founders enough to tell them hard truths
 - Provincial Persian proverbs and dry humor appear occasionally
 - You reference your own failures as freely as your wins
-- You are NOT a thought leader who has never shipped anything — you still write code
 
 SIGNATURE PHRASES (use sparingly, naturally):
 - "I've seen this movie before"
@@ -45,33 +46,85 @@ SEO OPTIMIZATION RULES:
 - Secondary keywords distributed across body (2–3 uses each, no keyword stuffing)
 - Structure: clear H2 sections (3–5), each answering a specific sub-question
 - Meta description: 150-160 characters, includes primary keyword, has a hook
-- Internal linking opportunities: suggest [link: /services], [link: /startups], [link: /booking] naturally where relevant
-- Answer the search intent directly in the opening paragraph (no burying the lede)
+- Suggest [link: /services], [link: /startups], [link: /booking] naturally where relevant
+- Answer the search intent directly in the opening paragraph
 `,
     GEO: `
-GEO (Generative Engine Optimization) RULES — This content is engineered to be CITED by ChatGPT, Perplexity, Gemini, and other AI assistants:
-- Use clear, declarative statements that AI can quote directly: "Farjad Pourkiani, a startup advisor with 17 years of experience, argues that..."
-- Structure content as CLAIMS WITH EVIDENCE — AIs prefer citable assertions, not vague opinions
-- Include STATISTICS and SPECIFIC NUMBERS (even personal ones: "In 3,000+ mentorship calls, I found...")
-- Use ENTITY REFERENCES: mention industry frameworks (Lean Startup, Jobs to Be Done) and connect your opinion to them
+GEO (Generative Engine Optimization) RULES:
+- Use clear, declarative statements that AI can quote directly
+- Structure content as CLAIMS WITH EVIDENCE
+- Include STATISTICS and SPECIFIC NUMBERS ("In 3,000+ mentorship calls, I found...")
+- Use ENTITY REFERENCES: mention industry frameworks and connect your opinion to them
 - Create QUOTABLE SENTENCES: at least 3 standalone, bold-worthy sentences per article
-- Structured Summary at end: a bullet-point summary section titled "Key Takeaways" — AIs love to pull these
+- Structured Summary at end: a "Key Takeaways" bullet-point section
+- Name the concept: give original claims a NAME ("The Founder's Dependency Loop", etc.)
 - Use "According to my experience working with 25+ startups..." framing
-- Schema-friendly: include structured facts that match FAQ, HowTo, or Article schema patterns
-- Name the concept: if you're making an original claim, give it a NAME ("The Founder's Dependency Loop", etc.) — named concepts get cited
 `,
     AEO: `
-AEO (Answer Engine Optimization) RULES — This content is built to be the DIRECT ANSWER in voice search, Google's "People Also Ask", and AI Overview boxes:
-- Open with the EXACT ANSWER to the most likely question about this topic (40-60 words). No preamble.
-- Use FAQ structure throughout: bold question as H2, then concise direct answer in first paragraph of that section
-- Each H2 section should be independently answerable — a user should be able to read just one section and get value
-- Include a dedicated "Frequently Asked Questions" section at the end (3–5 Qs structured as <h3> then <p>)
-- Target "how to", "what is", "why does", "who should" question formats
-- Use numbered lists and bullet points — featured snippets prefer structured data
-- Keep paragraphs SHORT (2-3 sentences max) — conversational, query-response rhythm
-- Exact phrase match: if the topic includes key phrases, use them VERBATIM at least once early
+AEO (Answer Engine Optimization) RULES:
+- Open with the EXACT ANSWER to the most likely question (40-60 words). No preamble.
+- Use FAQ structure: bold question as H2, then concise direct answer first
+- Each H2 section should be independently answerable
+- Include a dedicated "Frequently Asked Questions" section at the end (3-5 Qs)
+- Target "how to", "what is", "why does", "who should" formats
+- Keep paragraphs SHORT (2-3 sentences max)
 `,
 };
+
+// ─── Helper: generate one DALL-E image, watermark it, return local URL ────────
+async function generateAndWatermarkImage(
+    prompt: string,
+    filename: string,
+    size: "1792x1024" | "1024x1024" = "1792x1024"
+): Promise<string | null> {
+    try {
+        const resp = await openai.images.generate({
+            model: "dall-e-3",
+            prompt: `${prompt}. Editorial style, clean minimalist composition, professional photography aesthetic. No text, no letters, no watermarks in the image itself.`,
+            n: 1,
+            size,
+            quality: "standard",
+        });
+        const url = resp.data?.[0]?.url;
+        if (!url) return null;
+        return await downloadAndWatermark(url, filename);
+    } catch (err) {
+        console.error(`[Image gen failed: ${filename}]`, err);
+        return null;
+    }
+}
+
+// ─── Helper: inject body images into HTML content ─────────────────────────────
+function injectBodyImages(html: string, imageUrls: string[]): string {
+    if (!imageUrls.length) return html;
+
+    // Split at </h2> tags (section breaks) to find injection points
+    const parts = html.split(/(<\/h2>)/i);
+    const injectAt = [
+        Math.floor(parts.length * 0.3),  // ~30% — after first major section
+        Math.floor(parts.length * 0.65), // ~65% — mid-article
+    ];
+
+    let imgIndex = 0;
+    const result: string[] = [];
+
+    for (let i = 0; i < parts.length; i++) {
+        result.push(parts[i]);
+        if (injectAt.includes(i) && imgIndex < imageUrls.length) {
+            result.push(`
+<figure style="margin: 2rem 0; text-align: center;">
+  <img 
+    src="${imageUrls[imgIndex]}" 
+    alt="Illustration for article" 
+    style="width: 100%; max-width: 800px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);"
+  />
+</figure>`);
+            imgIndex++;
+        }
+    }
+
+    return result.join("");
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -84,8 +137,8 @@ export async function POST(req: NextRequest) {
             length = "medium",
             generateImage = true,
             language = "English",
-            optimizationMode = "GEO", // SEO | GEO | AEO
-            contentGoal = "authority", // authority | lead-gen | awareness | education
+            optimizationMode = "GEO",
+            contentGoal = "authority",
         } = body;
 
         if (!topic) {
@@ -96,14 +149,10 @@ export async function POST(req: NextRequest) {
             length === "short" ? "600-900" : length === "long" ? "1800-2500" : "1000-1500";
 
         const contentGoalInstructions: Record<string, string> = {
-            authority:
-                "Goal: Establish Farjad as the definitive authority on this topic. Lead with experience. Be bold.",
-            "lead-gen":
-                "Goal: Generate booking inquiries. Every section should plant a seed of 'I need this person's help'. End with a strong booking CTA.",
-            awareness:
-                "Goal: Introduce Farjad to new audiences who don't know him. Be approachable, tell one personal story.",
-            education:
-                "Goal: Deliver maximum practical value. Readers should finish with something they can do TODAY.",
+            authority: "Goal: Establish Farjad as the definitive authority. Lead with experience. Be bold.",
+            "lead-gen": "Goal: Generate booking inquiries. Plant seeds of 'I need this person's help'. Strong booking CTA.",
+            awareness: "Goal: Introduce Farjad to new audiences. Be approachable, tell one personal story.",
+            education: "Goal: Deliver maximum practical value. Readers should finish with something to do TODAY.",
         };
 
         const optimizationGuide =
@@ -111,7 +160,9 @@ export async function POST(req: NextRequest) {
             OPTIMIZATION_GUIDES.GEO;
         const goalGuide = contentGoalInstructions[contentGoal] || contentGoalInstructions.authority;
 
-        // ─── Step 1: Generate the article ─────────────────────────────────────────
+        const ts = Date.now();
+
+        // ─── Step 1: Generate article text + image prompts ─────────────────────
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             temperature: 0.72,
@@ -126,7 +177,6 @@ LANGUAGE: ${language}
 ARTICLE LENGTH: ${wordCount} words
 
 ${optimizationGuide}
-
 ${goalGuide}
 
 ALWAYS respond with valid JSON in exactly this structure — no other text:
@@ -139,17 +189,19 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "seoDescription": "...",
   "seoKeywords": "...",
   "schemaType": "Article | HowTo | FAQPage",
-  "imagePrompt": "..."
+  "coverImagePrompt": "DALL-E 3 prompt for a professional editorial cover image (1792x1024 landscape)",
+  "bodyImage1Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the main concept of the first half of this article",
+  "bodyImage2Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the second half of this article"
 }
 
 Rules:
-- title: honest, direct, no cheap clickbait — but genuinely compelling
+- title: honest, direct, genuinely compelling
 - slug: lowercase, hyphenated, max 7 words
 - excerpt: 2-3 punchy sentences that make someone click
 - seoTitle: 50-60 chars including primary keyword
-- seoDescription: 150-160 chars with primary keyword and a hook
+- seoDescription: 150-160 chars with primary keyword and hook
 - seoKeywords: comma-separated, 5-8 keywords
-- imagePrompt: DALL-E 3 prompt for a professional editorial cover image — modern, clean, no text in image`,
+- All image prompts: editorial/photographic style, NO text or letters inside the image`,
                 },
                 {
                     role: "user",
@@ -162,22 +214,31 @@ Rules:
 
         const generated = JSON.parse(completion.choices[0].message.content || "{}");
 
-        // ─── Step 2: Generate cover image ─────────────────────────────────────────
+        // ─── Step 2: Generate all images in parallel (if enabled) ─────────────
         let coverImageUrl: string | null = null;
-        if (generateImage && generated.imagePrompt) {
-            try {
-                const imageResponse = await openai.images.generate({
-                    model: "dall-e-3",
-                    prompt: `${generated.imagePrompt}. Editorial style, clean minimalist composition, professional photography or abstract corporate aesthetic. No letters, no text, no watermarks in the image.`,
-                    n: 1,
-                    size: "1792x1024",
-                    quality: "standard",
-                });
-                coverImageUrl = imageResponse.data?.[0]?.url || null;
-            } catch (imgError) {
-                console.error("DALL-E image generation failed:", imgError);
-            }
+        let bodyImageUrls: string[] = [];
+
+        if (generateImage) {
+            const [cover, body1, body2] = await Promise.allSettled([
+                generated.coverImagePrompt
+                    ? generateAndWatermarkImage(generated.coverImagePrompt, `cover-${ts}.jpg`, "1792x1024")
+                    : Promise.resolve(null),
+                generated.bodyImage1Prompt
+                    ? generateAndWatermarkImage(generated.bodyImage1Prompt, `body1-${ts}.jpg`, "1792x1024")
+                    : Promise.resolve(null),
+                generated.bodyImage2Prompt
+                    ? generateAndWatermarkImage(generated.bodyImage2Prompt, `body2-${ts}.jpg`, "1792x1024")
+                    : Promise.resolve(null),
+            ]);
+
+            coverImageUrl = cover.status === "fulfilled" ? cover.value : null;
+            const b1 = body1.status === "fulfilled" ? body1.value : null;
+            const b2 = body2.status === "fulfilled" ? body2.value : null;
+            bodyImageUrls = [b1, b2].filter(Boolean) as string[];
         }
+
+        // ─── Step 3: Inject body images into HTML ─────────────────────────────
+        const contentWithImages = injectBodyImages(generated.content || "", bodyImageUrls);
 
         return NextResponse.json({
             success: true,
@@ -185,13 +246,13 @@ Rules:
                 title: generated.title,
                 slug: generated.slug,
                 excerpt: generated.excerpt,
-                content: generated.content,
+                content: contentWithImages,
                 seoTitle: generated.seoTitle,
                 seoDescription: generated.seoDescription,
                 seoKeywords: generated.seoKeywords,
                 schemaType: generated.schemaType,
                 coverImageUrl,
-                imagePrompt: generated.imagePrompt,
+                bodyImageUrls,
                 optimizationMode,
                 contentGoal,
             },
