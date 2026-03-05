@@ -1,281 +1,353 @@
 // ============================================================================
-// Hardware Source: page.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Main entry page for the route
-// Env / Identity: React Server Component
+// File Path: src/app/(public)/page.tsx
+// Server Component — fetches real blog posts from the DB
 // ============================================================================
 
 import React from 'react';
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { ArrowRight, BookOpen, Anchor, MapPin, ArrowUpRight, Feather } from "lucide-react"
 import Link from "next/link"
+import { prisma } from "@/lib/prisma"
+import {
+  CheckCircle2,
+  XCircle,
+  TrendingUp,
+  MessageCircle,
+  ShieldCheck,
+  Code2,
+  Cpu,
+  Rocket,
+  ArrowRight,
+  Clock
+} from "lucide-react"
 
-// --- 1. Content Data (Curated & Serious) ---
-
-const FEATURED_COLLECTIONS = [
-  {
-    id: 'c1',
-    label: "Essential Guide",
-    title: "The Immigrant Founder's Playbook",
-    description: "Navigating the psychological warfare of building a business while your visa is ticking.",
-    stats: "8 Essays",
-    theme: "bg-[#1B4B43] text-white", // Dark Jungle Green
-    link: "/series/immigrant-founder"
-  },
-  {
-    id: 'c2',
-    label: "Mental Models",
-    title: "Thinking in Chaos",
-    description: "Tools to separate signal from noise when everything is burning.",
-    stats: "12 Notes",
-    theme: "bg-[#F0EFEA] text-[#1C1917]", // Paper color
-    link: "/series/mental-models"
-  },
-  {
-    id: 'c3',
-    label: "System",
-    title: "Startup Visa Reality",
-    description: "For investors & co-founders. The unsexy truth about compliance and PR.",
-    stats: "Documentation",
-    theme: "bg-[#E7E5E4] text-[#1C1917]", // Stone-200
-    link: "/series/startup-visa"
+// --- Server-side data fetch: 3 latest PUBLISHED posts ---
+async function getLatestPosts() {
+  try {
+    const posts = await prisma.post.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { publishedAt: "desc" },
+      take: 3,
+      select: {
+        slug: true,
+        title: true,
+        excerpt: true,
+        publishedAt: true,
+        readingTime: true,
+        categories: { select: { name: true }, take: 1 },
+      },
+    });
+    return posts;
+  } catch {
+    return [];
   }
-]
+}
 
-const ESSAYS = [
-  {
-    id: 'e1',
-    date: 'Nov 02',
-    year: '2023',
-    title: 'Why "Passion" is a Dangerous Metric',
-    excerpt: 'In the trenches of a startup, discipline and customer obsession outlast raw emotion every time.',
-    tag: 'Psychology',
-    readTime: '6 min read'
-  },
-  {
-    id: 'e2',
-    date: 'Oct 24',
-    year: '2023',
-    title: 'The Loneliness of Scale',
-    excerpt: 'As your team grows, your circle of honest peers shrinks. How to handle the isolation.',
-    tag: 'Leadership',
-    readTime: '8 min read'
-  },
-  {
-    id: 'e3',
-    date: 'Sep 15',
-    year: '2023',
-    title: 'Writing Code vs. Writing Prose',
-    excerpt: 'Why every engineer should write essays, and why every writer should learn logic.',
-    tag: 'Craft',
-    readTime: '5 min read'
-  }
-]
+export default async function HighConversionHome() {
+  const latestPosts = await getLatestPosts();
 
-export default function FarjadEditorialHome() {
   return (
-    // Base: "Paper" Background with subtle noise texture
-    <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans relative selection:bg-[#1B4B43] selection:text-white">
+    <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans selection:bg-[#1B4B43] selection:text-white overflow-x-hidden pb-24">
 
-      {/* Texture Overlay (Grain) */}
-      <div className="fixed inset-0 opacity-[0.04] pointer-events-none z-0"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
-      </div>
+      {/* --- 1. HERO --- */}
+      <section className="pt-28 md:pt-36 px-6 max-w-7xl mx-auto mb-20">
+        <div className="grid lg:grid-cols-12 gap-12 items-center">
 
-      <main className="relative z-10 px-6 md:px-12 max-w-6xl mx-auto">
+          <div className="lg:col-span-7 space-y-8">
+            <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-none px-4 py-1.5 text-sm font-bold flex items-center gap-2 w-fit rounded-full shadow-sm">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+              </span>
+              Accepting New Teams for Q2
+            </Badge>
 
-        {/* --- 1. Editorial Hero Section --- */}
-        <section className="py-24 md:py-32 grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
-
-          {/* Left: The Manifesto */}
-          <div className="md:col-span-8 space-y-8">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1B4B43]/80 border-b border-[#1B4B43]/20 pb-1">
-              <MapPin className="w-3 h-3" /> Toronto, CA
-            </div>
-
-            <h1 className="font-serif text-5xl md:text-7xl leading-[1.05] text-[#111827]">
-              Building a real life <br />
-              <span className="italic text-stone-500 font-light">requires</span> honest work.
+            <h1 className="font-serif text-5xl md:text-7xl font-bold text-[#111827] leading-[1.05] tracking-tight">
+              Stop building <span className="line-through text-stone-300 decoration-red-400">dead software</span>.<br />
+              Start building <span className="text-[#1B4B43]">scalable companies</span>. 🚀
             </h1>
 
-            <p className="text-xl md:text-2xl text-stone-600 leading-relaxed max-w-2xl font-light">
-              A personal library for founders and immigrants who are tired of fantasies.
-              Here, I write about the <strong className="font-medium text-[#1B4B43]">systems</strong>, <strong className="font-medium text-[#1B4B43]">psychology</strong>, and <strong className="font-medium text-[#1B4B43]">trade-offs</strong> of building a business.
+            <p className="text-xl md:text-2xl text-stone-600 font-light leading-relaxed max-w-2xl">
+              I am <span className="font-bold text-[#111827]">Farjad</span>. I help founders build businesses from scratch, mentor product teams, and engineer custom AI &amp; automation systems that actually generate revenue.
             </p>
 
-            <div className="pt-6 flex gap-6">
-              <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white rounded-none px-8 h-14 text-base tracking-wide font-medium shadow-xl shadow-[#1B4B43]/10">
-                Start Reading
-              </Button>
-              <Button variant="link" className="text-stone-600 hover:text-[#1B4B43] h-14 text-base font-normal underline decoration-stone-300 underline-offset-4 decoration-1">
-                Explore Topics
-              </Button>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <Link href="#services" className="w-full sm:w-auto">
+                <Button className="w-full bg-[#1B4B43] hover:bg-[#111827] text-white h-16 px-10 text-lg font-bold rounded-2xl shadow-xl shadow-[#1B4B43]/20 hover:scale-105 transition-all">
+                  See How I Can Help You 👇
+                </Button>
+              </Link>
+              <Link href="/booking" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full border-2 border-stone-200 text-stone-700 h-16 px-10 text-lg font-bold rounded-2xl hover:bg-stone-100 transition-all flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5" /> Book a Discovery Call
+                </Button>
+              </Link>
             </div>
           </div>
 
-          {/* Right: "Current Status" Card */}
-          <div className="md:col-span-4 mt-8 md:mt-4">
-            <div className="bg-white border border-stone-200 p-6 shadow-[8px_8px_0px_0px_rgba(231,229,228,0.5)] rotate-1 hover:rotate-0 transition-transform duration-500">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">Current Focus</h3>
-              <ul className="space-y-4 text-sm text-stone-700">
-                <li className="flex gap-3 items-start">
-                  <span className="w-1.5 h-1.5 bg-[#1B4B43] rounded-full mt-1.5 shrink-0" />
-                  <span>Mentoring 3 immigrant-led startups on GTM strategy.</span>
-                </li>
-                <li className="flex gap-3 items-start">
-                  <span className="w-1.5 h-1.5 bg-stone-300 rounded-full mt-1.5 shrink-0" />
-                  <span>Writing a deep-dive on "Survivor Bias".</span>
-                </li>
+          <div className="lg:col-span-5 relative">
+            <div className="absolute -top-6 -left-6 z-20 bg-white p-4 rounded-2xl shadow-xl border border-stone-100 flex items-center gap-3">
+              <div className="text-3xl">⚙️</div>
+              <div>
+                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Tech Focus</p>
+                <p className="font-bold text-[#111827] text-lg">AI &amp; Custom Systems</p>
+              </div>
+            </div>
+
+            <div className="relative w-full aspect-square md:aspect-[4/5] rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl bg-stone-200 group">
+              <img
+                src="/images/farjad-personalbranding.png"
+                alt="Farjad - Tech Advisor & Mentor"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+
+            <div className="absolute -bottom-6 -right-6 z-20 bg-[#111827] text-white p-4 rounded-2xl shadow-xl border border-stone-800 flex items-center gap-3">
+              <div className="text-3xl">🤝</div>
+              <div>
+                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Track Record</p>
+                <p className="font-bold text-white text-lg">25+ Startups Mentored</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* --- 2. THE PROBLEM --- */}
+      <section className="bg-white border-y border-stone-200 py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-serif text-3xl md:text-5xl font-bold text-[#111827] mb-4">The &quot;Feature Factory&quot; Trap 🪤</h2>
+            <p className="text-stone-500 text-lg">Most businesses fail because they build the wrong things, the wrong way.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-red-50 p-8 rounded-3xl border border-red-100">
+              <div className="flex items-center gap-3 mb-6">
+                <XCircle className="w-8 h-8 text-red-500" />
+                <h3 className="text-xl font-bold text-red-900">What Agencies Sell You</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3"><span className="text-xl">💸</span> <span className="text-red-800 font-medium">Overpriced, bloated software.</span></li>
+                <li className="flex items-start gap-3"><span className="text-xl">🤡</span> <span className="text-red-800 font-medium">&quot;Yes-Men&quot; who build features nobody wants.</span></li>
+                <li className="flex items-start gap-3"><span className="text-xl">📉</span> <span className="text-red-800 font-medium">Messy code that breaks when you scale.</span></li>
+                <li className="flex items-start gap-3"><span className="text-xl">🐢</span> <span className="text-red-800 font-medium">Manual, slow operations draining your time.</span></li>
+              </ul>
+            </div>
+
+            <div className="bg-[#1B4B43] p-8 rounded-3xl border border-[#1B4B43] shadow-lg shadow-[#1B4B43]/10 text-white">
+              <div className="flex items-center gap-3 mb-6">
+                <CheckCircle2 className="w-8 h-8 text-green-400" />
+                <h3 className="text-xl font-bold text-white">What I Build With You</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3"><span className="text-xl">🏗️</span> <span className="text-white/90 font-medium">Lean, defensible business models from day 1.</span></li>
+                <li className="flex items-start gap-3"><span className="text-xl">🤖</span> <span className="text-white/90 font-medium">Custom AI to automate your manual workflows.</span></li>
+                <li className="flex items-start gap-3"><span className="text-xl">🧠</span> <span className="text-white/90 font-medium">Tough-love mentorship to keep teams focused.</span></li>
+                <li className="flex items-start gap-3"><span className="text-xl">⚡</span> <span className="text-white/90 font-medium">Scalable, secure custom tech architectures.</span></li>
               </ul>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* --- 2. Bento Grid Collections --- */}
-        <section className="py-16 border-t border-stone-200">
-          <div className="flex justify-between items-end mb-10">
-            <h2 className="font-serif text-3xl md:text-4xl text-[#111827]">Curated Collections</h2>
-            <span className="hidden md:block text-stone-400 text-sm font-mono">/ SELECTED WORKS</span>
+
+      {/* --- 3. CORE SERVICES --- */}
+      <section id="services" className="py-24 px-6 max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-orange-100 text-orange-800 hover:bg-orange-200 border-none px-4 py-1 font-bold">Core Expertise 💼</Badge>
+          <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#111827]">Exactly how we can work together.</h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+
+          <div className="bg-white border-2 border-stone-200 rounded-3xl p-8 hover:border-[#1B4B43] hover:shadow-xl transition-all duration-300 flex flex-col group">
+            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Rocket className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-bold text-[#111827] mb-3">0-to-1 Business Launch</h3>
+            <p className="text-stone-500 mb-6 flex-1">
+              Have an idea or capital but no execution power? I act as your technical/strategic co-founder to build your business from scratch.
+            </p>
+            <div className="space-y-3 mb-8">
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-700"><CheckCircle2 className="w-4 h-4 text-green-500" /> Product &amp; GTM Strategy</div>
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-700"><CheckCircle2 className="w-4 h-4 text-green-500" /> Technical Architecture</div>
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-700"><CheckCircle2 className="w-4 h-4 text-green-500" /> Team Hiring &amp; Setup</div>
+            </div>
+            <Link href="/services">
+              <Button className="w-full bg-[#111827] text-white hover:bg-[#1B4B43] rounded-xl h-12 font-bold">Launch Your Idea</Button>
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:h-[400px]">
-            {/* Main Featured Item */}
-            <Link href={FEATURED_COLLECTIONS[0].link} className={`md:col-span-2 relative group overflow-hidden p-8 flex flex-col justify-between ${FEATURED_COLLECTIONS[0].theme} transition-all duration-500 hover:shadow-2xl`}>
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <ArrowUpRight className="w-6 h-6" />
-              </div>
-              <div>
-                <Badge variant="outline" className="border-white/20 text-white/80 font-normal tracking-wider mb-4">
-                  {FEATURED_COLLECTIONS[0].label}
-                </Badge>
-                <h3 className="font-serif text-3xl md:text-5xl leading-tight mb-4">
-                  {FEATURED_COLLECTIONS[0].title}
-                </h3>
-              </div>
-              <p className="text-white/80 max-w-md text-lg leading-relaxed">
-                {FEATURED_COLLECTIONS[0].description}
-              </p>
+          <div className="bg-[#111827] text-white border-2 border-[#111827] rounded-3xl p-8 hover:-translate-y-2 transition-transform duration-300 flex flex-col relative shadow-2xl">
+            <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2">
+              <Badge className="bg-[#D97706] text-white border-none font-bold uppercase tracking-widest px-4 py-1">Most Popular ⭐</Badge>
+            </div>
+            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-3xl mb-6">🧠</div>
+            <h3 className="text-2xl font-bold text-white mb-3">Team Mentorship</h3>
+            <p className="text-stone-400 mb-6 flex-1">
+              I become the strategic sparring partner for you and your team. High-intensity mentorship to fix bottlenecks and accelerate growth.
+            </p>
+            <div className="space-y-3 mb-8">
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-300"><CheckCircle2 className="w-4 h-4 text-green-400" /> Weekly Team Strategy Calls</div>
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-300"><CheckCircle2 className="w-4 h-4 text-green-400" /> Product Roadmap Alignment</div>
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-300"><CheckCircle2 className="w-4 h-4 text-green-400" /> Async Problem Solving</div>
+            </div>
+            <Link href="/startups">
+              <Button className="w-full bg-[#1B4B43] text-white hover:bg-green-600 rounded-xl h-12 font-bold">See Mentored Startups</Button>
             </Link>
+          </div>
 
-            {/* Side Items */}
-            <div className="flex flex-col gap-4 h-full">
-              {FEATURED_COLLECTIONS.slice(1).map((col) => (
-                <Link key={col.id} href={col.link} className={`flex-1 p-6 flex flex-col justify-between group transition-colors duration-300 ${col.theme} hover:brightness-95`}>
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold uppercase tracking-widest opacity-60">{col.label}</span>
-                    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="bg-white border-2 border-stone-200 rounded-3xl p-8 hover:border-[#1B4B43] hover:shadow-xl transition-all duration-300 flex flex-col group">
+            <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Cpu className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-bold text-[#111827] mb-3">AI &amp; Custom Systems</h3>
+            <p className="text-stone-500 mb-6 flex-1">
+              Digital transformation for traditional SMEs. I replace manual chaos with bespoke software and AI-driven automation.
+            </p>
+            <div className="space-y-3 mb-8">
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-700"><CheckCircle2 className="w-4 h-4 text-green-500" /> Workflow Automation</div>
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-700"><CheckCircle2 className="w-4 h-4 text-green-500" /> Custom Software Development</div>
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-700"><CheckCircle2 className="w-4 h-4 text-green-500" /> AI Integration (LLMs)</div>
+            </div>
+            <Link href="/services">
+              <Button className="w-full bg-[#111827] text-white hover:bg-[#1B4B43] rounded-xl h-12 font-bold">Systemize My Business</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
+      {/* --- 4. WHY ME? --- */}
+      <section className="py-20 px-6 bg-[#F5F5F4] border-y border-stone-200">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="font-serif text-4xl font-bold text-[#111827] mb-6">Why trust me with your product? 🤔</h2>
+            <p className="text-stone-600 text-lg mb-8">
+              I am not an agency salesman selling you hours. I am a former CTO, an engineer, and a builder who knows how to scale systems and people.
+            </p>
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm"><Code2 className="w-6 h-6 text-[#D97706]" /></div>
+                <div>
+                  <h4 className="font-bold text-[#111827]">Technical Mastery</h4>
+                  <p className="text-sm text-stone-500">Deep expertise in cloud architecture, AI integration, and custom codebases.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm"><ShieldCheck className="w-6 h-6 text-[#1B4B43]" /></div>
+                <div>
+                  <h4 className="font-bold text-[#111827]">ISO 27001 Lead Auditor</h4>
+                  <p className="text-sm text-stone-500">I build systems that are secure, compliant, and ready for enterprise scale.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm"><TrendingUp className="w-6 h-6 text-blue-600" /></div>
+                <div>
+                  <h4 className="font-bold text-[#111827]">Real World Results</h4>
+                  <p className="text-sm text-stone-500">17+ years in tech, $3M+ raised for mentored teams, and multiple successful product launches.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-lg text-center">
+            <h3 className="text-6xl mb-4">🏆</h3>
+            <h4 className="text-2xl font-bold text-[#111827] mb-2">17 Years in Tech</h4>
+            <p className="text-stone-500 font-medium mb-6">MSc Software &amp; PhD in Anthropology</p>
+            <div className="w-full h-px bg-stone-100 mb-6"></div>
+            <p className="text-sm text-stone-400 italic">&quot;The rare mix of understanding how machines work, and how humans think.&quot;</p>
+            <Link href="/about" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#1B4B43] hover:underline">
+              Full Story <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
+      {/* --- 5. LATEST ARTICLES (Live from DB) --- */}
+      <section className="py-24 px-6 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+          <div>
+            <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-200 border-none px-4 py-1 font-bold">Writings &amp; Thoughts ✍️</Badge>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#111827]">Inside my brain.</h2>
+          </div>
+          <Link href="/blog" className="flex items-center gap-2 text-[#111827] font-bold hover:text-[#1B4B43] group">
+            View Entire Library <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {latestPosts.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-6">
+            {latestPosts.map((post) => {
+              const categoryName = post.categories[0]?.name ?? "Essay";
+              const formattedDate = post.publishedAt
+                ? new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(post.publishedAt)).toUpperCase()
+                : "";
+              return (
+                <Link href={`/blog/${post.slug}`} key={post.slug} className="bg-white border-2 border-stone-200 rounded-3xl p-8 hover:border-[#1B4B43] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] bg-[#1B4B43]/5 px-3 py-1 rounded-full">
+                      {categoryName}
+                    </span>
+                    {post.readingTime && (
+                      <span className="text-[10px] text-stone-400 font-mono flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {post.readingTime} min
+                      </span>
+                    )}
                   </div>
-                  <div>
-                    <h3 className="font-serif text-xl mb-2 font-medium">{col.title}</h3>
-                    <p className="text-sm opacity-70 leading-snug">{col.description}</p>
+                  <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3 group-hover:text-[#1B4B43] transition-colors leading-snug">
+                    {post.title}
+                  </h3>
+                  {post.excerpt && (
+                    <p className="text-stone-500 mb-8 flex-1 leading-relaxed text-sm line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                  )}
+                  <div className="mt-auto border-t border-stone-100 pt-6 flex items-center justify-between">
+                    <span className="text-xs font-bold text-stone-400 font-mono">{formattedDate}</span>
+                    <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-[#1B4B43] group-hover:text-white transition-colors">
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
                   </div>
                 </Link>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        </section>
-
-        {/* --- 3. The Essay List (Minimalist) --- */}
-        <section className="py-24 max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl text-[#111827] mb-4">Latest Writings</h2>
-            <div className="h-1 w-12 bg-[#1B4B43] mx-auto" />
+        ) : (
+          <div className="text-center py-16 border-2 border-dashed border-stone-200 rounded-3xl">
+            <p className="text-2xl mb-3">✍️</p>
+            <p className="text-stone-500 font-medium">New essays coming soon.</p>
+            <Link href="/blog" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#1B4B43] hover:underline">
+              Visit the Blog <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
+        )}
+      </section>
 
-          <div className="space-y-12">
-            {ESSAYS.map((essay) => (
-              <article key={essay.id} className="group relative grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline border-b border-stone-200 pb-12 last:border-0 hover:opacity-100 transition-opacity">
-                {/* Date Side */}
-                <div className="md:col-span-2 text-stone-400 font-mono text-sm text-right md:pr-4">
-                  <span className="block text-stone-900 font-bold">{essay.date}</span>
-                  <span>{essay.year}</span>
-                </div>
 
-                {/* Content Side */}
-                <div className="md:col-span-10 space-y-3">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-[#1B4B43] bg-[#1B4B43]/5 px-2 py-1 rounded-sm">
-                      {essay.tag}
-                    </span>
-                    <span className="text-xs text-stone-400 font-serif italic">{essay.readTime}</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl md:text-3xl text-[#111827] group-hover:text-[#1B4B43] transition-colors cursor-pointer">
-                    <Link href={`/essay/${essay.id}`}>{essay.title}</Link>
-                  </h3>
-
-                  <p className="text-stone-600 text-lg leading-relaxed max-w-2xl">
-                    {essay.excerpt}
-                  </p>
-
-                  <div className="pt-2">
-                    <Link href={`/essay/${essay.id}`} className="inline-flex items-center text-sm font-bold text-[#111827] border-b border-[#111827] pb-0.5 hover:text-[#1B4B43] hover:border-[#1B4B43] transition-colors">
-                      Read Essay
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
+      {/* --- 6. FINAL CTA --- */}
+      <section id="contact" className="py-24 px-6 text-center">
+        <div className="max-w-3xl mx-auto bg-[#1B4B43] rounded-[3rem] p-12 md:p-20 text-white shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-green-400 opacity-20 blur-[100px] rounded-full"></div>
+          <div className="relative z-10">
+            <div className="text-5xl mb-6">🎯</div>
+            <h2 className="font-serif text-4xl md:text-6xl font-bold mb-6">Ready to execute?</h2>
+            <p className="text-lg text-white/80 mb-10 max-w-xl mx-auto">
+              Stop wasting time on noise and bad code. Let&apos;s get on a 30-minute discovery call. We diagnose your bottleneck, and if we are a fit, we start building.
+            </p>
+            <Link href="/booking">
+              <Button className="bg-white text-[#111827] hover:bg-stone-200 h-16 px-10 text-xl font-bold rounded-2xl w-full sm:w-auto shadow-lg hover:scale-105 transition-all">
+                Book Your Discovery Call 📅
+              </Button>
+            </Link>
+            <p className="text-xs text-white/50 mt-6 uppercase tracking-widest font-medium">No fluff. No agency BS. Just facts.</p>
           </div>
+        </div>
+      </section>
 
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg" className="rounded-none border-stone-300 hover:bg-stone-50 text-stone-600">
-              View Archive
-            </Button>
-          </div>
-        </section>
-
-        {/* --- 4. The "Personal Letter" Footer (Newsletter) --- */}
-        <section className="py-24 border-t border-stone-200">
-          <div className="bg-[#111827] text-stone-200 p-8 md:p-16 relative overflow-hidden">
-            {/* Abstract shape */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-
-            <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <Feather className="w-8 h-8 text-stone-400 mb-6" />
-                <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">
-                  Join the inner circle.
-                </h2>
-                <p className="text-stone-400 text-lg leading-relaxed max-w-md">
-                  I send one email a week. It contains honest notes on building businesses and mental models for life. No spam.
-                </p>
-              </div>
-
-              <div className="bg-white/5 p-6 backdrop-blur-sm border border-white/10 rounded-sm">
-                <form className="flex flex-col gap-4">
-                  <label className="text-xs font-bold uppercase tracking-widest text-stone-500">Email Address</label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="founder@example.com"
-                      className="bg-transparent border-white/20 text-white placeholder:text-stone-600 h-12 focus-visible:ring-stone-500"
-                    />
-                    <Button className="bg-white text-black hover:bg-stone-200 h-12 px-6">
-                      Send
-                    </Button>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-2">
-                    "Honesty is the only currency that matters."
-                  </p>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-12 flex flex-col md:flex-row justify-between items-center text-xs text-stone-400 uppercase tracking-widest font-medium">
-            <span>© 2024 Farjad — Toronto, Canada.</span>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <Link href="#" className="hover:text-[#1B4B43]">Twitter</Link>
-              <Link href="#" className="hover:text-[#1B4B43]">LinkedIn</Link>
-              <Link href="#" className="hover:text-[#1B4B43]">RSS</Link>
-            </div>
-          </div>
-        </section>
-
-      </main>
     </div>
   )
 }
