@@ -23,8 +23,25 @@ import { cn } from "@/lib/utils"
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Content Hub",
-  description: "Personal library of deep knowledge.",
+  metadataBase: new URL("https://farjadp.ca"), // Update to actual production domain
+  title: {
+    template: "%s | Farjad Pourkiani",
+    default: "Farjad Pourkiani — Startup Advisor & Systems Architect",
+  },
+  description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://farjadp.ca",
+    siteName: "Farjad Pourkiani",
+    title: "Farjad Pourkiani — Startup Advisor & Systems Architect",
+    description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Farjad Pourkiani — Startup Advisor & Systems Architect",
+    description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+  },
 };
 
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider"

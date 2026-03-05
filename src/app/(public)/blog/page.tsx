@@ -5,7 +5,13 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import type { Metadata } from "next";
 import { getPosts } from "@/app/actions/posts"
+
+export const metadata: Metadata = {
+    title: "Insights & Thoughts",
+    description: "Deep dives into building real businesses, software engineering, and the psychology behind startup survival.",
+};
 import { PostStatus } from "@prisma/client"
 import Link from "next/link"
 import { format } from "date-fns"

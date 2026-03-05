@@ -5,6 +5,12 @@
 // ============================================================================
 
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Services & Execution Partner",
+  description: "Strategic advisory, 0-to-1 launch execution, and AI system design for ambitious founders and SMEs.",
+};
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

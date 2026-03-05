@@ -6,6 +6,13 @@
 // ============================================================================
 
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Me",
+  description: "Learn about my background, philosophy, and the systems I use to build companies.",
+};
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"

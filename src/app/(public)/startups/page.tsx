@@ -1,4 +1,10 @@
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Mentored Startups",
+    description: "A portfolio of the 25+ startups I have mentored, advised, and helped scale.",
+};
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"

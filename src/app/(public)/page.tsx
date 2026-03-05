@@ -4,6 +4,12 @@
 // ============================================================================
 
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Startup Advisor & Product Strategist",
+  description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+};
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
