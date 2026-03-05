@@ -2,8 +2,8 @@
 
 // ============================================================================
 // Hardware Source: posts.ts
-// Version: 1.0.0 — 2026-02-24
-// Why: Functional module
+// Version: 1.1.0 — 2026-03-05
+// Why: Functional module + auto-publish via Content Waterfall
 // Env / Identity: Server Action / Module
 // ============================================================================
 
@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma"
 import { Post, PostStatus, Prisma } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { publishAll, type WaterfallResult } from "@/lib/social-publisher"
 
 export type CreatePostInput = {
     title: string
@@ -134,6 +135,13 @@ export async function createPost(data: CreatePostInput) {
 export async function updatePost(data: UpdatePostInput) {
     const { id, categoryIds, tagIds, content, ...rest } = data
 
+    // Check if this is a publish action (status changing to PUBLISHED)
+    let wasPublished = false
+    if (rest.status === 'PUBLISHED') {
+        const currentPost = await prisma.post.findUnique({ where: { id }, select: { status: true } })
+        wasPublished = currentPost?.status !== 'PUBLISHED'
+    }
+
     // Calculate reading time and excerpt if content is present
     let readingTime = undefined
     let finalExcerpt = rest.excerpt
@@ -143,9 +151,6 @@ export async function updatePost(data: UpdatePostInput) {
         const words = text.trim().split(/\s+/).length
         readingTime = Math.ceil(words / 200)
 
-        // Generate excerpt if missing OR if user cleared it (though here we only check if provided is empty/undefined)
-        // Note: If user wants to explicitly clear it, they might need to send an empty string which we might overwrite here.
-        // Assuming "default" behavior means if NOT provided. 
         if (!finalExcerpt) {
             finalExcerpt = text.slice(0, 377)
             if (text.length > 377) finalExcerpt += '...'
@@ -172,10 +177,48 @@ export async function updatePost(data: UpdatePostInput) {
         })
         revalidatePath('/admin/posts')
         revalidatePath(`/blog/${post.slug}`)
+
+        // ─── Auto-publish to social channels (fire-and-forget) ────────────
+        if (wasPublished && post.slug) {
+            triggerSocialPublish(post.slug).catch((err) =>
+                console.error('[Auto-Publish] Background error:', err)
+            )
+        }
+
         return { success: true, data: post }
     } catch (error) {
         console.error('Error updating post:', error)
         return { success: false, error: 'Failed to update post' }
+    }
+}
+
+// ─── Auto-publish helper (fire-and-forget, non-blocking) ─────────────────────
+async function triggerSocialPublish(slug: string) {
+    const siteUrl = process.env.NEXTAUTH_URL || 'https://farjadp.info'
+    const postUrl = `${siteUrl}/blog/${slug}`
+
+    console.log(`[Auto-Publish] Generating waterfall for: ${slug}`)
+
+    try {
+        // Call the Waterfall API internally
+        const waterfallRes = await fetch(`${siteUrl}/api/ai/content-waterfall`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug }),
+        })
+
+        if (!waterfallRes.ok) {
+            console.error('[Auto-Publish] Waterfall API failed:', waterfallRes.status)
+            return
+        }
+
+        const { data } = await waterfallRes.json() as { data: WaterfallResult }
+
+        // Publish to Telegram + Twitter in parallel
+        const results = await publishAll(data, postUrl)
+        console.log('[Auto-Publish] Results:', results)
+    } catch (err) {
+        console.error('[Auto-Publish] Pipeline error:', err)
     }
 }
 
