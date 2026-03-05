@@ -41,7 +41,7 @@ SIGNATURE PHRASES (use sparingly, naturally):
 - "Systems eat passion for breakfast"
 
 PERMANENT LEAD CTA (always end the article with this, adapted naturally):
-"If this resonated — or if you violently disagreed — I'd like to hear from you. I work with a small number of founding teams each quarter. If you're building something real, [book a discovery call](https://farjadp.ca/booking) or connect with me on [LinkedIn](https://linkedin.com/in/farjadp)."
+"If this resonated — or if you violently disagreed — I'd like to hear from you. I work with a small number of founding teams each quarter. If you're building something real, [book a discovery call](https://farjadp.ca/booking) or connect with me on [LinkedIn](https://linkedin.com/in/farjadpourmohammad)."
 `;
 
 // ─── Optimization mode instructions ──────────────────────────────────────────

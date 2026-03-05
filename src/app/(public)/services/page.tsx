@@ -382,7 +382,7 @@ export default function ServicesPageBento() {
               <div className="pt-8">
                 <div className="inline-flex flex-col p-6 bg-stone-50 border border-stone-200 rounded-xl">
                   <p className="text-sm text-stone-600 mb-4">Still have questions?</p>
-                  <Link href="mailto:your@email.com" className="text-[#1B4B43] font-bold flex items-center gap-2 group">
+                  <Link href="mailto:farjad@ashavid.ca" className="text-[#1B4B43] font-bold flex items-center gap-2 group">
                     Send a direct message
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
