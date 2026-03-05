@@ -6,9 +6,13 @@
 // ============================================================================
 
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
 import { prisma } from '@/lib/prisma'
+import { Storage } from '@google-cloud/storage'
+
+// Initialize Google Cloud Storage
+// On Cloud Run, it automatically uses the attached service account credentials
+const storage = new Storage()
+const BUCKET_NAME = 'officialwebsite-media-bucket'
 
 export async function POST(request: Request) {
     try {
@@ -30,18 +34,17 @@ export async function POST(request: Request) {
         const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '')
         const filename = `${uniqueSuffix}-${originalName}`
 
-        // Ensure upload directory exists
-        const uploadDir = join(process.cwd(), 'public/uploads')
-        try {
-            await mkdir(uploadDir, { recursive: true })
-        } catch (e) {
-            // ignore if exists
-        }
+        // Upload to Google Cloud Storage
+        const bucket = storage.bucket(BUCKET_NAME)
+        const gcsFile = bucket.file(filename)
 
-        const filepath = join(uploadDir, filename)
-        await writeFile(filepath, buffer)
+        await gcsFile.save(buffer, {
+            contentType: file.type,
+            resumable: false, // For small files
+        })
 
-        const url = `/uploads/${filename}`
+        // GCS public URL format
+        const url = `https://storage.googleapis.com/${BUCKET_NAME}/${filename}`
 
         // Save to database
         const media = await prisma.media.create({

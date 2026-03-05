@@ -10,12 +10,11 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import fs from "fs/promises"
-import path from "path"
+import { Storage } from "@google-cloud/storage"
 
-// For Development: Saving to public/uploads
-// In Production: Replace with S3/R2 upload
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads")
+// Initialize Google Cloud Storage
+const storage = new Storage()
+const BUCKET_NAME = "officialwebsite-media-bucket"
 
 export async function uploadFile(formData: FormData) {
     const file = formData.get("file") as File
@@ -27,14 +26,19 @@ export async function uploadFile(formData: FormData) {
     const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`
 
     try {
-        await fs.mkdir(UPLOAD_DIR, { recursive: true })
-        await fs.writeFile(path.join(UPLOAD_DIR, filename), buffer)
+        const bucket = storage.bucket(BUCKET_NAME)
+        const gcsFile = bucket.file(filename)
 
-        const url = `/uploads/${filename}`
+        await gcsFile.save(buffer, {
+            contentType: file.type,
+            resumable: false,
+        })
+
+        const url = `https://storage.googleapis.com/${BUCKET_NAME}/${filename}`
 
         await prisma.media.create({
             data: {
-                filename: file.name,
+                filename: filename,
                 url: url,
                 type: file.type,
                 size: file.size
@@ -51,7 +55,14 @@ export async function uploadFile(formData: FormData) {
 
 export async function deleteFile(id: string) {
     try {
-        // In a real app we would delete from S3/Storage here too
+        const media = await prisma.media.findUnique({ where: { id } })
+        if (media) {
+            // Delete from GCS
+            const filename = media.filename
+            const bucket = storage.bucket(BUCKET_NAME)
+            await bucket.file(filename).delete().catch(console.error)
+        }
+
         await prisma.media.delete({ where: { id } })
         revalidatePath("/admin/media")
         return { success: true }

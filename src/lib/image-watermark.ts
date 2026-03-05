@@ -1,23 +1,23 @@
 // src/lib/image-watermark.ts
-// Downloads a DALL-E URL, adds farjadp.info watermark using Sharp, saves locally
+// Downloads a DALL-E URL, adds farjadp.info watermark using Sharp, saves to GCS
 import sharp from "sharp";
-import path from "path";
-import fs from "fs";
+import { Storage } from "@google-cloud/storage";
 
 const WATERMARK_TEXT = "farjadp.info";
-const PUBLIC_GENERATED = path.join(process.cwd(), "public", "generated");
+const storage = new Storage();
+const BUCKET_NAME = "officialwebsite-media-bucket";
 
 function buildWatermarkSvg(w: number, h: number): Buffer {
-    const fontSize = Math.max(14, Math.round(w * 0.018));
-    const padding = Math.round(fontSize * 0.8);
-    const textW = WATERMARK_TEXT.length * fontSize * 0.58;
-    const textH = fontSize;
-    const bgW = Math.round(textW + padding * 2);
-    const bgH = Math.round(textH + padding);
-    const x = w - bgW - 14;
-    const y = h - bgH - 14;
+  const fontSize = Math.max(14, Math.round(w * 0.018));
+  const padding = Math.round(fontSize * 0.8);
+  const textW = WATERMARK_TEXT.length * fontSize * 0.58;
+  const textH = fontSize;
+  const bgW = Math.round(textW + padding * 2);
+  const bgH = Math.round(textH + padding);
+  const x = w - bgW - 14;
+  const y = h - bgH - 14;
 
-    const svg = `
+  const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
   <rect x="${x}" y="${y}" width="${bgW}" height="${bgH}" rx="5" ry="5"
     fill="black" fill-opacity="0.55"/>
@@ -32,39 +32,39 @@ function buildWatermarkSvg(w: number, h: number): Buffer {
   >${WATERMARK_TEXT}</text>
 </svg>`.trim();
 
-    return Buffer.from(svg);
+  return Buffer.from(svg);
 }
 
 export async function downloadAndWatermark(
-    dalleUrl: string,
-    filename: string
+  dalleUrl: string,
+  filename: string
 ): Promise<string> {
-    // Make sure output dir exists
-    if (!fs.existsSync(PUBLIC_GENERATED)) {
-        fs.mkdirSync(PUBLIC_GENERATED, { recursive: true });
-    }
+  // 1. Fetch from DALL-E (URL expires in ~1h so we save immediately)
+  const response = await fetch(dalleUrl);
+  if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
+  const arrayBuffer = await response.arrayBuffer();
+  const inputBuffer = Buffer.from(arrayBuffer);
 
-    // 1. Fetch from DALL-E (URL expires in ~1h so we save immediately)
-    const response = await fetch(dalleUrl);
-    if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
-    const arrayBuffer = await response.arrayBuffer();
-    const inputBuffer = Buffer.from(arrayBuffer);
+  // 2. Get image dimensions
+  const meta = await sharp(inputBuffer).metadata();
+  const w = meta.width ?? 1792;
+  const h = meta.height ?? 1024;
 
-    // 2. Get image dimensions
-    const meta = await sharp(inputBuffer).metadata();
-    const w = meta.width ?? 1792;
-    const h = meta.height ?? 1024;
+  // 3. Composite the SVG watermark on top
+  const watermarkSvg = buildWatermarkSvg(w, h);
+  const outputBuffer = await sharp(inputBuffer)
+    .composite([{ input: watermarkSvg, blend: "over" }])
+    .jpeg({ quality: 90 })
+    .toBuffer();
 
-    // 3. Composite the SVG watermark on top
-    const watermarkSvg = buildWatermarkSvg(w, h);
-    const outputBuffer = await sharp(inputBuffer)
-        .composite([{ input: watermarkSvg, blend: "over" }])
-        .jpeg({ quality: 90 })
-        .toBuffer();
+  // 4. Save to Google Cloud Storage
+  const bucket = storage.bucket(BUCKET_NAME);
+  const gcsFile = bucket.file(`generated/${filename}`);
 
-    // 4. Save to /public/generated/
-    const outputPath = path.join(PUBLIC_GENERATED, filename);
-    fs.writeFileSync(outputPath, outputBuffer);
+  await gcsFile.save(outputBuffer, {
+    contentType: "image/jpeg",
+    resumable: false,
+  });
 
-    return `/generated/${filename}`;
+  return `https://storage.googleapis.com/${BUCKET_NAME}/generated/${filename}`;
 }
