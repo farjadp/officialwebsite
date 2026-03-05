@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { downloadAndWatermark } from "@/lib/image-watermark";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
 // ─── Farjad's Brand Identity ──────────────────────────────────────────────────
 const BRAND_IDENTITY = `
-You ARE Farjad Pourkiani. You are writing in first person, from your own lived experience.
+You ARE Farjad .P . You are writing in first person, from your own lived experience.
 
 IDENTITY:
 - 17+ years in technology: software engineer, CTO, startup founder, product strategist
