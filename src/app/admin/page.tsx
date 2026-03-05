@@ -7,8 +7,39 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Users, Layers, TrendingUp } from "lucide-react"
+import { prisma } from "@/lib/prisma"
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+    // Analytics Definitions
+    const totalPosts = await prisma.post.count()
+
+    const totalSubscribers = await prisma.subscriber.count()
+
+    const totalSeries = await prisma.series.count()
+
+    // Aggregate sum of all views on posts
+    const viewsAggregation = await prisma.post.aggregate({
+        _sum: { views: true }
+    })
+    const totalViews = viewsAggregation._sum.views || 0
+
+    // Recent Content (taking the 5 most recent posts regardless of status)
+    const recentPosts = await prisma.post.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        where: {
+            status: { in: ['PUBLISHED', 'SCHEDULED'] }
+        },
+        include: { series: true }
+    })
+
+    // Drafts
+    const drafts = await prisma.post.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        where: { status: 'DRAFT' }
+    })
+
     return (
         <div className="space-y-8">
             <div>
@@ -23,8 +54,8 @@ export default function AdminDashboard() {
                         <FileText className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12</div>
-                        <p className="text-xs text-muted-foreground">+2 from last month</p>
+                        <div className="text-2xl font-bold">{totalPosts}</div>
+                        <p className="text-xs text-muted-foreground">Lifetime</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -33,8 +64,8 @@ export default function AdminDashboard() {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+573</div>
-                        <p className="text-xs text-muted-foreground">+201 since last week</p>
+                        <div className="text-2xl font-bold">{totalSubscribers}</div>
+                        <p className="text-xs text-muted-foreground">Lifetime</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -43,8 +74,8 @@ export default function AdminDashboard() {
                         <Layers className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">4</div>
-                        <p className="text-xs text-muted-foreground">2 drafts pending</p>
+                        <div className="text-2xl font-bold">{totalSeries}</div>
+                        <p className="text-xs text-muted-foreground">Available</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -53,8 +84,8 @@ export default function AdminDashboard() {
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">12.5k</div>
-                        <p className="text-xs text-muted-foreground">+14% month over month</p>
+                        <div className="text-2xl font-bold">{totalViews}</div>
+                        <p className="text-xs text-muted-foreground">Across all posts</p>
                     </CardContent>
                 </Card>
             </div>
@@ -66,16 +97,23 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {/* Placeholder list */}
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="flex items-center">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none">The Future of Startup Immigration</p>
-                                        <p className="text-sm text-muted-foreground">Series: Founder Psych</p>
+                            {recentPosts.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">No recent posts found.</p>
+                            ) : (
+                                recentPosts.map((post) => (
+                                    <div key={post.id} className="flex items-center">
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-medium leading-none">{post.title}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {post.series ? `Series: ${post.series.name}` : "Standalone Post"}
+                                            </p>
+                                        </div>
+                                        <div className={`ml-auto font-medium text-sm ${post.status === 'PUBLISHED' ? 'text-green-600' : 'text-blue-600'}`}>
+                                            {post.status.charAt(0) + post.status.slice(1).toLowerCase()}
+                                        </div>
                                     </div>
-                                    <div className="ml-auto font-medium text-sm text-green-600">Published</div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -85,12 +123,16 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {[1, 2].map((i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <p className="text-sm font-medium">Mental Models for 2025</p>
-                                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Draft</span>
-                                </div>
-                            ))}
+                            {drafts.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">No drafts pending.</p>
+                            ) : (
+                                drafts.map((draft) => (
+                                    <div key={draft.id} className="flex items-center justify-between">
+                                        <p className="text-sm font-medium truncate pr-4">{draft.title}</p>
+                                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded shrink-0">Draft</span>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </CardContent>
                 </Card>
