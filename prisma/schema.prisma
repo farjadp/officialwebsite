@@ -144,3 +144,28 @@ model Media {
   
   createdAt     DateTime  @default(now())
 }
+
+model SocialPublishLog {
+  id            String    @id @default(cuid())
+  postId        String
+  postSlug      String
+  postTitle     String
+  
+  // Waterfall analysis
+  coreTruth     String?
+  sentiment     String?
+  
+  // Platform results
+  telegramStatus  String    @default("PENDING") // PENDING, SUCCESS, FAILED, SKIPPED
+  telegramError   String?
+  telegramText    String?
+  
+  twitterStatus   String    @default("PENDING")
+  twitterError    String?
+  twitterText     String?
+  
+  linkedinText    String?   // Stored for manual copy
+  linkedinHook    String?
+  
+  createdAt     DateTime  @default(now())
+}

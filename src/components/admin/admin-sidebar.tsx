@@ -23,6 +23,7 @@ import {
     FolderTree,
     Tag,
     Share2,
+    BarChart3,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -61,6 +62,11 @@ const sidebarItems = [
         title: "Waterfall",
         href: "/admin/waterfall",
         icon: Share2,
+    },
+    {
+        title: "Publish Report",
+        href: "/admin/publish-report",
+        icon: BarChart3,
     },
     {
         title: "Pages",

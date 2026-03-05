@@ -2,7 +2,7 @@
 
 // ============================================================================
 // Hardware Source: posts.ts
-// Version: 1.1.0 — 2026-03-05
+// Version: 1.2.0 — 2026-03-05
 // Why: Functional module + auto-publish via Content Waterfall
 // Env / Identity: Server Action / Module
 // ============================================================================
@@ -11,7 +11,7 @@ import { prisma } from "@/lib/prisma"
 import { Post, PostStatus, Prisma } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { publishAll, type WaterfallResult } from "@/lib/social-publisher"
+import { runWaterfallPipeline } from "@/lib/social-publisher"
 
 export type CreatePostInput = {
     title: string
@@ -98,11 +98,9 @@ export async function createPost(data: CreatePostInput) {
 
     if (content) {
         const text = content.replace(/<[^>]+>/g, '') // Strip HTML tags
-        // Calculate reading time
         const words = text.trim().split(/\s+/).length
         readingTime = Math.ceil(words / 200)
 
-        // Generate excerpt if missing
         if (!finalExcerpt) {
             finalExcerpt = text.slice(0, 377)
             if (text.length > 377) finalExcerpt += '...'
@@ -125,6 +123,18 @@ export async function createPost(data: CreatePostInput) {
             }
         })
         revalidatePath('/admin/posts')
+
+        // ─── Auto-publish if created directly as PUBLISHED ───────────────
+        if (post.status === 'PUBLISHED' && post.content) {
+            runWaterfallPipeline(
+                post.id,
+                post.slug,
+                post.title,
+                post.content,
+                post.excerpt
+            ).catch((err) => console.error('[Auto-Publish] Background error:', err))
+        }
+
         return { success: true, data: post }
     } catch (error) {
         console.error('Error creating post:', error)
@@ -136,13 +146,13 @@ export async function updatePost(data: UpdatePostInput) {
     const { id, categoryIds, tagIds, content, ...rest } = data
 
     // Check if this is a publish action (status changing to PUBLISHED)
-    let wasPublished = false
+    let isNewPublish = false
     if (rest.status === 'PUBLISHED') {
         const currentPost = await prisma.post.findUnique({ where: { id }, select: { status: true } })
-        wasPublished = currentPost?.status !== 'PUBLISHED'
+        isNewPublish = currentPost?.status !== 'PUBLISHED'
     }
 
-    // Calculate reading time and excerpt if content is present
+    // Calculate reading time and excerpt
     let readingTime = undefined
     let finalExcerpt = rest.excerpt
 
@@ -178,47 +188,21 @@ export async function updatePost(data: UpdatePostInput) {
         revalidatePath('/admin/posts')
         revalidatePath(`/blog/${post.slug}`)
 
-        // ─── Auto-publish to social channels (fire-and-forget) ────────────
-        if (wasPublished && post.slug) {
-            triggerSocialPublish(post.slug).catch((err) =>
-                console.error('[Auto-Publish] Background error:', err)
-            )
+        // ─── Auto-publish on first PUBLISH ───────────────────────────────
+        if (isNewPublish && post.content) {
+            runWaterfallPipeline(
+                post.id,
+                post.slug,
+                post.title,
+                post.content,
+                post.excerpt
+            ).catch((err) => console.error('[Auto-Publish] Background error:', err))
         }
 
         return { success: true, data: post }
     } catch (error) {
         console.error('Error updating post:', error)
         return { success: false, error: 'Failed to update post' }
-    }
-}
-
-// ─── Auto-publish helper (fire-and-forget, non-blocking) ─────────────────────
-async function triggerSocialPublish(slug: string) {
-    const siteUrl = process.env.NEXTAUTH_URL || 'https://farjadp.info'
-    const postUrl = `${siteUrl}/blog/${slug}`
-
-    console.log(`[Auto-Publish] Generating waterfall for: ${slug}`)
-
-    try {
-        // Call the Waterfall API internally
-        const waterfallRes = await fetch(`${siteUrl}/api/ai/content-waterfall`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug }),
-        })
-
-        if (!waterfallRes.ok) {
-            console.error('[Auto-Publish] Waterfall API failed:', waterfallRes.status)
-            return
-        }
-
-        const { data } = await waterfallRes.json() as { data: WaterfallResult }
-
-        // Publish to Telegram + Twitter in parallel
-        const results = await publishAll(data, postUrl)
-        console.log('[Auto-Publish] Results:', results)
-    } catch (err) {
-        console.error('[Auto-Publish] Pipeline error:', err)
     }
 }
 
