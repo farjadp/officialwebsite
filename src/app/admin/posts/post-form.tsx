@@ -38,6 +38,7 @@ import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UploadCloud, Image as ImageIcon, X } from 'lucide-react'
 import { TagInput } from '@/components/admin/tag-input'
+import { AIContentGenerator } from '@/components/admin/ai-content-generator'
 
 enum PostStatus {
     DRAFT = 'DRAFT',
@@ -75,6 +76,29 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
+
+    // AI Generation handler — fills all form fields with generated content
+    const handleAIGenerated = (generated: {
+        title: string
+        slug: string
+        excerpt: string
+        content: string
+        seoTitle: string
+        seoDescription: string
+        seoKeywords: string
+        coverImageUrl: string | null
+    }) => {
+        form.setValue('title', generated.title)
+        form.setValue('slug', generated.slug)
+        form.setValue('excerpt', generated.excerpt)
+        form.setValue('content', generated.content)
+        form.setValue('seoTitle', generated.seoTitle)
+        form.setValue('seoDescription', generated.seoDescription)
+        form.setValue('seoKeywords', generated.seoKeywords)
+        if (generated.coverImageUrl) {
+            form.setValue('coverImage', generated.coverImageUrl)
+        }
+    }
 
     const defaultValues: PostFormValues = {
         title: post?.title || "",
@@ -166,6 +190,14 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content - Left Column (2 cols) */}
                     <div className="lg:col-span-2 space-y-8">
+                        {/* AI Generator button bar */}
+                        <div className="flex items-center justify-between p-4 bg-violet-50 border border-violet-200 rounded-xl">
+                            <div>
+                                <p className="font-semibold text-violet-900 text-sm">✨ AI Content Generator</p>
+                                <p className="text-xs text-violet-600">Generate a complete article with cover image using GPT-4o + DALL-E 3</p>
+                            </div>
+                            <AIContentGenerator onGenerated={handleAIGenerated} />
+                        </div>
                         <FormField
                             control={form.control}
                             name="title"
