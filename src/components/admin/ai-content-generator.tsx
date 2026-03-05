@@ -1,12 +1,11 @@
 'use client'
 
 // src/components/admin/ai-content-generator.tsx
-// A modal panel that lets the user specify generation params and
-// get back a fully-filled post ready to publish.
+// AI content generator with SEO / GEO / AEO modes + Brand Voice + Lead Gen
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon } from 'lucide-react'
+import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -33,13 +32,41 @@ interface GeneratedPost {
     seoTitle: string
     seoDescription: string
     seoKeywords: string
+    schemaType?: string
     coverImageUrl: string | null
     imagePrompt: string
+    optimizationMode: string
+    contentGoal: string
 }
 
 interface AIContentGeneratorProps {
     onGenerated: (post: GeneratedPost) => void
 }
+
+const OPTIMIZATION_MODES = [
+    {
+        value: 'GEO',
+        label: '🤖 GEO — Generative Engine Optimization',
+        desc: 'Get cited by ChatGPT, Perplexity, Gemini. Best for authority & AI visibility.',
+    },
+    {
+        value: 'AEO',
+        label: '🎯 AEO — Answer Engine Optimization',
+        desc: 'Win Google Featured Snippets, People Also Ask, and voice search.',
+    },
+    {
+        value: 'SEO',
+        label: '🔍 SEO — Search Engine Optimization',
+        desc: 'Traditional Google ranking. Keyword-driven, structured for SERP.',
+    },
+]
+
+const CONTENT_GOALS = [
+    { value: 'authority', label: '👑 Build Authority — Establish Farjad as #1 expert' },
+    { value: 'lead-gen', label: '📥 Lead Generation — Drive booking inquiries' },
+    { value: 'awareness', label: '📢 Brand Awareness — Introduce Farjad to new audiences' },
+    { value: 'education', label: '📚 Education — Maximum practical value for readers' },
+]
 
 const TONES = [
     { value: 'Professional and insightful', label: 'Professional & Insightful' },
@@ -54,7 +81,8 @@ const AUDIENCES = [
     { value: 'Non-technical SME owners', label: 'Non-Tech SME Owners' },
     { value: 'Product managers and designers', label: 'Product Managers' },
     { value: 'Investors and VCs', label: 'Investors & VCs' },
-    { value: 'Engineering teams and CTOs', label: 'Engineering Teams' },
+    { value: 'Engineering teams and CTOs', label: 'Engineering Teams / CTOs' },
+    { value: 'Immigrant founders navigating Canadian startup ecosystem', label: 'Immigrant Founders (Canada)' },
 ]
 
 const LENGTHS = [
@@ -67,6 +95,12 @@ const LANGUAGES = [
     { value: 'English', label: 'English' },
     { value: 'Persian (Farsi)', label: 'Persian (Farsi)' },
 ]
+
+const modeColors: Record<string, string> = {
+    GEO: 'bg-purple-100 text-purple-800 border-purple-300',
+    AEO: 'bg-orange-100 text-orange-800 border-orange-300',
+    SEO: 'bg-blue-100 text-blue-800 border-blue-300',
+}
 
 export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
     const [open, setOpen] = useState(false)
@@ -82,7 +116,11 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
         length: 'medium',
         generateImage: true,
         language: 'English',
+        optimizationMode: 'GEO',
+        contentGoal: 'authority',
     })
+
+    const selectedMode = OPTIMIZATION_MODES.find(m => m.value === params.optimizationMode)
 
     const handleGenerate = async () => {
         if (!params.topic.trim()) {
@@ -130,27 +168,72 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-xl">
                         <Sparkles className="w-5 h-5 text-violet-600" />
                         AI Content Generator
                     </DialogTitle>
                     <p className="text-sm text-muted-foreground">
-                        Powered by GPT-4o + DALL-E 3. Fill in the details and get a ready-to-publish article.
+                        GPT-4o + DALL-E 3 × Farjad's brand voice. Engineered to dominate search engines AND AI chatbots.
                     </p>
                 </DialogHeader>
 
                 <div className="space-y-5 pt-2">
+
                     {/* Topic */}
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold">Topic / Title Idea*</label>
+                        <label className="text-sm font-semibold">Topic / Title Idea *</label>
                         <Textarea
                             placeholder="e.g. Why most startup MVPs are over-engineered by developers who've never sold anything"
                             value={params.topic}
                             onChange={(e) => setParams({ ...params, topic: e.target.value })}
                             className="resize-none h-20"
                         />
+                    </div>
+
+                    {/* Optimization Mode — full-width, prominently displayed */}
+                    <div className="space-y-3">
+                        <label className="text-sm font-semibold flex items-center gap-1.5">
+                            <Target className="w-4 h-4 text-violet-600" />
+                            Optimization Strategy
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {OPTIMIZATION_MODES.map((mode) => (
+                                <button
+                                    key={mode.value}
+                                    type="button"
+                                    onClick={() => setParams({ ...params, optimizationMode: mode.value })}
+                                    className={`p-3 rounded-xl border-2 text-left transition-all ${params.optimizationMode === mode.value
+                                            ? 'border-violet-500 bg-violet-50'
+                                            : 'border-stone-200 hover:border-stone-300'
+                                        }`}
+                                >
+                                    <p className="font-bold text-xs leading-tight">{mode.label}</p>
+                                </button>
+                            ))}
+                        </div>
+                        {selectedMode && (
+                            <p className="text-xs text-muted-foreground bg-stone-50 p-2.5 rounded-lg border">
+                                {selectedMode.desc}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Content Goal */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-semibold flex items-center gap-1.5">
+                            <TrendingUp className="w-4 h-4 text-orange-500" />
+                            Content Goal
+                        </label>
+                        <Select value={params.contentGoal} onValueChange={(v) => setParams({ ...params, contentGoal: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                {CONTENT_GOALS.map((g) => (
+                                    <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     {/* Tone + Audience */}
@@ -197,6 +280,14 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                         </div>
                     </div>
 
+                    {/* Brand voice reminder */}
+                    <div className="flex items-start gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                        <Brain className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
+                        <span>
+                            <strong>Brand Voice Active:</strong> All content is written as Farjad — first person, with 17y experience, honest mentorship perspective, and a lead-gen CTA embedded naturally.
+                        </span>
+                    </div>
+
                     {/* Advanced toggle */}
                     <button
                         type="button"
@@ -212,7 +303,7 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold">Focus Keywords (comma-separated)</label>
                                 <Input
-                                    placeholder="e.g. startup mentorship, product market fit, fundraising"
+                                    placeholder="e.g. startup mentorship, product market fit, fundraising Canada"
                                     value={params.keywords}
                                     onChange={(e) => setParams({ ...params, keywords: e.target.value })}
                                 />
@@ -243,65 +334,61 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                         {isGenerating ? (
                             <>
                                 <Loader2 className="w-4 h-4 animate-spin" />
-                                Generating article{params.generateImage ? ' + cover image' : ''}...
+                                Writing your article...
                             </>
                         ) : (
                             <>
                                 <Sparkles className="w-4 h-4" />
-                                Generate Article
+                                Generate {params.optimizationMode}-Optimized Article
                             </>
                         )}
                     </Button>
 
                     {isGenerating && (
                         <p className="text-xs text-center text-muted-foreground animate-pulse">
-                            GPT-4o is writing your article{params.generateImage ? ' and DALL-E 3 is creating the cover image' : ''}. This may take 30–60 seconds...
+                            GPT-4o is writing your {params.optimizationMode.toLowerCase()}-optimized article in Farjad&apos;s voice
+                            {params.generateImage ? ' + DALL-E 3 is creating the cover image' : ''}.
+                            This may take 30–60 seconds...
                         </p>
                     )}
 
                     {/* Preview */}
                     {preview && (
                         <div className="border rounded-xl overflow-hidden">
-                            {/* Cover image */}
                             {preview.coverImageUrl && (
                                 <div className="relative aspect-video w-full bg-stone-100">
                                     <img src={preview.coverImageUrl} alt="Generated cover" className="w-full h-full object-cover" />
                                 </div>
                             )}
-
                             <div className="p-5 space-y-3">
+                                {/* Mode badge */}
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${modeColors[preview.optimizationMode] || ''}`}>
+                                        {preview.optimizationMode}
+                                    </span>
+                                    {preview.schemaType && (
+                                        <span className="text-[10px] text-stone-400 font-mono">Schema: {preview.schemaType}</span>
+                                    )}
+                                </div>
+
                                 <h3 className="font-serif text-xl font-bold">{preview.title}</h3>
                                 <p className="text-sm text-muted-foreground italic">{preview.excerpt}</p>
                                 <div className="text-xs text-stone-400 space-y-1 border-t pt-3">
-                                    <p><span className="font-semibold text-stone-600">Slug:</span> {preview.slug}</p>
+                                    <p><span className="font-semibold text-stone-600">Slug:</span> /{preview.slug}</p>
                                     <p><span className="font-semibold text-stone-600">SEO Title:</span> {preview.seoTitle}</p>
                                     <p><span className="font-semibold text-stone-600">Meta Desc:</span> {preview.seoDescription}</p>
+                                    <p><span className="font-semibold text-stone-600">Keywords:</span> {preview.seoKeywords}</p>
                                 </div>
 
                                 <div className="flex gap-3 pt-2">
-                                    <Button
-                                        type="button"
-                                        onClick={handleUse}
-                                        className="flex-1 bg-[#1B4B43] hover:bg-[#133832] text-white font-bold"
-                                    >
+                                    <Button type="button" onClick={handleUse} className="flex-1 bg-[#1B4B43] hover:bg-[#133832] text-white font-bold">
                                         Use This Article ✓
                                     </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => setPreview(null)}
-                                        className="gap-1"
-                                    >
+                                    <Button type="button" variant="outline" onClick={() => setPreview(null)} className="gap-1">
                                         <X className="w-4 h-4" /> Discard
                                     </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={handleGenerate}
-                                        disabled={isGenerating}
-                                        className="gap-1"
-                                    >
-                                        <Sparkles className="w-4 h-4" /> Regenerate
+                                    <Button type="button" variant="outline" onClick={handleGenerate} disabled={isGenerating} className="gap-1">
+                                        <Sparkles className="w-4 h-4" /> Redo
                                     </Button>
                                 </div>
                             </div>
