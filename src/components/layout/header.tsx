@@ -64,6 +64,7 @@ export function Header() {
                     </div>
 
                     <Link href="/blog" className="hover:text-[#1B4B43] transition-colors">Essays</Link>
+                    <Link href="/tools" className="hover:text-[#1B4B43] transition-colors">Tools</Link>
                     <Link href="/about" className="hover:text-[#1B4B43] transition-colors">About</Link>
                     <Link href="/contact" className="ml-4 px-4 py-2 rounded-full border border-stone-300 hover:border-[#1B4B43] hover:text-[#1B4B43] transition-all text-xs uppercase tracking-wider font-bold bg-[#1B4B43] text-white hover:bg-[#133832] hover:text-white">
                         Let's Talk
@@ -100,6 +101,9 @@ export function Header() {
 
                             <Link href="/blog" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 Essays
+                            </Link>
+                            <Link href="/tools" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                Tools
                             </Link>
                             <Link href="/about" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 About
