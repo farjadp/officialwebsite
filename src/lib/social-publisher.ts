@@ -258,20 +258,14 @@ export async function publishToLinkedIn(
         const accessToken = tokenRow.value;
         const authorUrn = urnRow.value;
 
-        // Build the post body (LinkedIn Posts API v2)
+        // Build text-only post (no article card — link goes in first comment)
         const postBody = {
             author: authorUrn,
             lifecycleState: "PUBLISHED",
             specificContent: {
                 "com.linkedin.ugc.ShareContent": {
                     shareCommentary: { text },
-                    shareMediaCategory: "ARTICLE",
-                    media: [
-                        {
-                            status: "READY",
-                            originalUrl: postUrl,
-                        },
-                    ],
+                    shareMediaCategory: "NONE",
                 },
             },
             visibility: {
@@ -294,7 +288,44 @@ export async function publishToLinkedIn(
             return { ok: false, error: `LinkedIn ${res.status}: ${errBody}` };
         }
 
-        console.log("[LinkedIn] Post published successfully");
+        // Get the post URN from response header
+        const postUrn = res.headers.get("X-RestLi-Id") || res.headers.get("x-restli-id");
+
+        console.log("[LinkedIn] Post published successfully:", postUrn);
+
+        // Auto-comment the article link on the post
+        if (postUrn) {
+            try {
+                const commentBody = {
+                    actor: authorUrn,
+                    message: { text: `📖 Read the full article here:\n${postUrl}` },
+                };
+
+                const encodedUrn = encodeURIComponent(postUrn);
+                const commentRes = await fetch(
+                    `https://api.linkedin.com/v2/socialActions/${encodedUrn}/comments`,
+                    {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            "Content-Type": "application/json",
+                            "X-Restli-Protocol-Version": "2.0.0",
+                        },
+                        body: JSON.stringify(commentBody),
+                    }
+                );
+
+                if (commentRes.ok) {
+                    console.log("[LinkedIn] Auto-comment with link added successfully");
+                } else {
+                    const errBody = await commentRes.text();
+                    console.error("[LinkedIn] Failed to add comment:", errBody);
+                }
+            } catch (commentErr) {
+                console.error("[LinkedIn] Comment error:", commentErr);
+            }
+        }
+
         return { ok: true };
     } catch (err) {
         const msg = err instanceof Error ? err.message : "Unknown error";
