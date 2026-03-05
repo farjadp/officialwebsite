@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Users, Layers, TrendingUp } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboard() {
     // Analytics Definitions
     const totalPosts = await prisma.post.count()
