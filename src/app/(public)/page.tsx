@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
+
+export const revalidate = 60; // Revalidate at most every 60 seconds
+
 import {
   CheckCircle2,
   XCircle,
@@ -22,9 +25,13 @@ import {
 } from "lucide-react"
 
 // --- Server-side data fetch: 3 latest PUBLISHED posts ---
+// Promise.race ensures the page never hangs if the DB is unreachable locally
 async function getLatestPosts() {
-  try {
-    const posts = await prisma.post.findMany({
+  const timeout = new Promise<never[]>((resolve) =>
+    setTimeout(() => resolve([]), 3000)
+  );
+  const query = prisma.post
+    .findMany({
       where: { status: "PUBLISHED" },
       orderBy: { publishedAt: "desc" },
       take: 3,
@@ -34,13 +41,13 @@ async function getLatestPosts() {
         excerpt: true,
         publishedAt: true,
         readingTime: true,
+        coverImage: true,
         categories: { select: { name: true }, take: 1 },
       },
-    });
-    return posts;
-  } catch {
-    return [];
-  }
+    })
+    .catch(() => [] as never[]);
+
+  return Promise.race([query, timeout]);
 }
 
 export default async function HighConversionHome() {
@@ -96,9 +103,9 @@ export default async function HighConversionHome() {
 
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl bg-stone-200 group">
               <img
-                src="/images/farjad-personalbranding.png"
-                alt="Farjad - Tech Advisor & Mentor"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                src="/images/farjad.png"
+                alt="Farjad - Startup Advisor & Tech Mentor"
+                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
               />
             </div>
 
@@ -287,29 +294,45 @@ export default async function HighConversionHome() {
                 ? new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(post.publishedAt)).toUpperCase()
                 : "";
               return (
-                <Link href={`/blog/${post.slug}`} key={post.slug} className="bg-white border-2 border-stone-200 rounded-3xl p-8 hover:border-[#1B4B43] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] bg-[#1B4B43]/5 px-3 py-1 rounded-full">
+                <Link href={`/blog/${post.slug}`} key={post.slug} className="bg-white border-2 border-stone-200 rounded-3xl overflow-hidden hover:border-[#1B4B43] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                  {/* Cover image */}
+                  <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-stone-100 to-stone-200 shrink-0">
+                    {post.coverImage ? (
+                      <img
+                        src={post.coverImage}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">
+                        ✍️
+                      </div>
+                    )}
+                    {/* Category pill over image */}
+                    <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
                       {categoryName}
                     </span>
                     {post.readingTime && (
-                      <span className="text-[10px] text-stone-400 font-mono flex items-center gap-1">
+                      <span className="absolute top-3 right-3 text-[10px] text-stone-600 font-mono flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
                         <Clock className="w-3 h-3" /> {post.readingTime} min
                       </span>
                     )}
                   </div>
-                  <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3 group-hover:text-[#1B4B43] transition-colors leading-snug">
-                    {post.title}
-                  </h3>
-                  {post.excerpt && (
-                    <p className="text-stone-500 mb-8 flex-1 leading-relaxed text-sm line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                  )}
-                  <div className="mt-auto border-t border-stone-100 pt-6 flex items-center justify-between">
-                    <span className="text-xs font-bold text-stone-400 font-mono">{formattedDate}</span>
-                    <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-[#1B4B43] group-hover:text-white transition-colors">
-                      <ArrowRight className="w-4 h-4" />
+                  {/* Text content */}
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-serif text-xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors leading-snug">
+                      {post.title}
+                    </h3>
+                    {post.excerpt && (
+                      <p className="text-stone-500 flex-1 leading-relaxed text-sm line-clamp-3 mb-4">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    <div className="mt-auto border-t border-stone-100 pt-4 flex items-center justify-between">
+                      <span className="text-xs font-bold text-stone-400 font-mono">{formattedDate}</span>
+                      <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-[#1B4B43] group-hover:text-white transition-colors">
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
                     </div>
                   </div>
                 </Link>
