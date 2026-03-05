@@ -145,6 +145,7 @@ export async function POST(req: NextRequest) {
             language = "English",
             optimizationMode = "GEO",
             contentGoal = "authority",
+            referenceImageUrls = [],
         } = body;
 
         if (!topic) {
@@ -169,6 +170,32 @@ export async function POST(req: NextRequest) {
         const ts = Date.now();
 
         // ─── Step 1: Generate article text + image prompts ─────────────────────
+        // Build user message parts (text + optional image vision)
+        const hasRefImages = Array.isArray(referenceImageUrls) && referenceImageUrls.length > 0;
+
+        const refImageInstructions = hasRefImages
+            ? `\n\nIMPORTANT — REFERENCE IMAGES PROVIDED:\nThe user has uploaded ${referenceImageUrls.length} reference image(s). Analyze each image carefully.\n- Describe what you see in each image and tie it to the article content.\n- Embed these images naturally in the article HTML using <figure> tags with the EXACT URLs provided below.\n- Format: <figure style="margin: 2rem 0; text-align: center;"><img src="IMAGE_URL" alt="descriptive alt text" style="width: 100%; max-width: 800px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);" /><figcaption style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Caption describing the image</figcaption></figure>\n- Place images at relevant points in the article where they enhance the content.\n- Image URLs: ${referenceImageUrls.join(', ')}\n`
+            : '';
+
+        // Build message parts for vision-capable request
+        type ContentPart = { type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string; detail: 'low' | 'high' | 'auto' } };
+        const userParts: ContentPart[] = [
+            {
+                type: 'text' as const,
+                text: `Write a "${optimizationMode}" optimized article about: "${topic}"${keywords ? `\nFocus keywords: ${keywords}` : ''}${refImageInstructions}`,
+            },
+        ];
+
+        // Add image parts for GPT-4o vision
+        if (hasRefImages) {
+            for (const imgUrl of referenceImageUrls) {
+                userParts.push({
+                    type: 'image_url' as const,
+                    image_url: { url: imgUrl, detail: 'low' as const },
+                });
+            }
+        }
+
         const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             temperature: 0.72,
@@ -190,7 +217,7 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "title": "...",
   "slug": "...",
   "excerpt": "...",
-  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote> tags. Include intro, body sections, Key Takeaways, FAQ if AEO, and the Lead CTA at the end. NO <html>/<body>/<head> tags.)",
+  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote> tags. Include intro, body sections, Key Takeaways, FAQ if AEO, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
   "seoTitle": "...",
   "seoDescription": "...",
   "seoKeywords": "...",
@@ -211,8 +238,7 @@ Rules:
                 },
                 {
                     role: "user",
-                    content: `Write a "${optimizationMode}" optimized article about: "${topic}"${keywords ? `\nFocus keywords: ${keywords}` : ""
-                        }`,
+                    content: userParts,
                 },
             ],
             response_format: { type: "json_object" },

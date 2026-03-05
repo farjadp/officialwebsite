@@ -3,9 +3,9 @@
 // src/components/admin/ai-content-generator.tsx
 // AI content generator with SEO / GEO / AEO modes + Brand Voice + Lead Gen
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { toast } from 'sonner'
-import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp } from 'lucide-react'
+import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp, UploadCloud, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -107,6 +107,9 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
     const [isGenerating, setIsGenerating] = useState(false)
     const [preview, setPreview] = useState<GeneratedPost | null>(null)
     const [showAdvanced, setShowAdvanced] = useState(false)
+    const [uploadedImages, setUploadedImages] = useState<{ url: string; name: string }[]>([])
+    const [isUploading, setIsUploading] = useState(false)
+    const imageInputRef = useRef<HTMLInputElement>(null)
 
     const [params, setParams] = useState({
         topic: '',
@@ -119,6 +122,40 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
         optimizationMode: 'GEO',
         contentGoal: 'authority',
     })
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files || files.length === 0) return
+
+        const remaining = 5 - uploadedImages.length
+        if (remaining <= 0) {
+            toast.error('Maximum 5 images allowed')
+            return
+        }
+
+        const filesToUpload = Array.from(files).slice(0, remaining)
+        setIsUploading(true)
+
+        for (const file of filesToUpload) {
+            const formData = new FormData()
+            formData.append('file', file)
+            try {
+                const res = await fetch('/api/media/upload', { method: 'POST', body: formData })
+                if (!res.ok) throw new Error('Upload failed')
+                const data = await res.json()
+                setUploadedImages(prev => [...prev, { url: data.url, name: file.name }])
+            } catch {
+                toast.error(`Failed to upload ${file.name}`)
+            }
+        }
+
+        setIsUploading(false)
+        if (imageInputRef.current) imageInputRef.current.value = ''
+    }
+
+    const removeImage = (index: number) => {
+        setUploadedImages(prev => prev.filter((_, i) => i !== index))
+    }
 
     const selectedMode = OPTIMIZATION_MODES.find(m => m.value === params.optimizationMode)
 
@@ -133,7 +170,10 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
             const res = await fetch('/api/ai/generate-post', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(params),
+                body: JSON.stringify({
+                    ...params,
+                    referenceImageUrls: uploadedImages.map(img => img.url),
+                }),
             })
             const json = await res.json()
             if (!res.ok || !json.success) throw new Error(json.error || 'Generation failed')
@@ -205,8 +245,8 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                                     type="button"
                                     onClick={() => setParams({ ...params, optimizationMode: mode.value })}
                                     className={`p-3 rounded-xl border-2 text-left transition-all ${params.optimizationMode === mode.value
-                                            ? 'border-violet-500 bg-violet-50'
-                                            : 'border-stone-200 hover:border-stone-300'
+                                        ? 'border-violet-500 bg-violet-50'
+                                        : 'border-stone-200 hover:border-stone-300'
                                         }`}
                                 >
                                     <p className="font-bold text-xs leading-tight">{mode.label}</p>
@@ -278,6 +318,56 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                                 </SelectContent>
                             </Select>
                         </div>
+                    </div>
+
+                    {/* Reference Images Upload */}
+                    <div className="space-y-3">
+                        <label className="text-sm font-semibold flex items-center gap-1.5">
+                            <ImageIcon className="w-4 h-4 text-teal-600" />
+                            Reference Images (optional)
+                        </label>
+                        <p className="text-xs text-muted-foreground -mt-1">
+                            Upload images you want the AI to analyze and embed in the article. Max 5.
+                        </p>
+
+                        {/* Uploaded images grid */}
+                        {uploadedImages.length > 0 && (
+                            <div className="grid grid-cols-3 gap-2">
+                                {uploadedImages.map((img, i) => (
+                                    <div key={i} className="relative group rounded-lg overflow-hidden border bg-stone-50">
+                                        <img src={img.url} alt={img.name} className="w-full aspect-square object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(i)}
+                                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                        </button>
+                                        <p className="text-[10px] text-center truncate px-1 py-0.5 bg-white/80">{img.name}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Upload button */}
+                        {uploadedImages.length < 5 && (
+                            <label className="flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed rounded-xl cursor-pointer hover:bg-stone-50 transition-colors text-sm text-muted-foreground">
+                                {isUploading ? (
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
+                                ) : (
+                                    <><UploadCloud className="w-4 h-4" /> Click to upload images</>
+                                )}
+                                <input
+                                    ref={imageInputRef}
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageUpload}
+                                    disabled={isUploading}
+                                />
+                            </label>
+                        )}
                     </div>
 
                     {/* Brand voice reminder */}
