@@ -33,7 +33,7 @@ async function getLatestPosts() {
   const query = prisma.post
     .findMany({
       where: { status: "PUBLISHED" },
-      orderBy: { publishedAt: "desc" },
+      orderBy: { createdAt: "desc" },
       take: 3,
       select: {
         slug: true,
