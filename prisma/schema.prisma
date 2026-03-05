@@ -164,8 +164,16 @@ model SocialPublishLog {
   twitterError    String?
   twitterText     String?
   
-  linkedinText    String?   // Stored for manual copy
+  linkedinStatus  String    @default("PENDING")
+  linkedinError   String?
+  linkedinText    String?
   linkedinHook    String?
   
   createdAt     DateTime  @default(now())
+}
+
+model AppSetting {
+  key       String    @id
+  value     String
+  updatedAt DateTime  @updatedAt
 }

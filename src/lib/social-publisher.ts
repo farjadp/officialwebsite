@@ -1,5 +1,5 @@
 // src/lib/social-publisher.ts
-// Auto-publish Content Waterfall results to Telegram and X (Twitter)
+// Auto-publish Content Waterfall results to Telegram, X (Twitter), and LinkedIn
 // Also logs results to SocialPublishLog via Prisma
 
 import crypto from "crypto";
@@ -239,6 +239,69 @@ export async function publishToTwitter(
     return { ok: true };
 }
 
+// ─── LinkedIn Publisher (OAuth 2.0 Bearer Token) ─────────────────────────────
+export async function publishToLinkedIn(
+    text: string,
+    postUrl: string
+): Promise<{ ok: boolean; error?: string }> {
+    try {
+        // Get stored token and person URN from DB
+        const [tokenRow, urnRow] = await Promise.all([
+            prisma.appSetting.findUnique({ where: { key: "LINKEDIN_ACCESS_TOKEN" } }),
+            prisma.appSetting.findUnique({ where: { key: "LINKEDIN_PERSON_URN" } }),
+        ]);
+
+        if (!tokenRow?.value || !urnRow?.value) {
+            return { ok: false, error: "LinkedIn not connected. Go to /admin/publish-report and click Connect LinkedIn." };
+        }
+
+        const accessToken = tokenRow.value;
+        const authorUrn = urnRow.value;
+
+        // Build the post body (LinkedIn Posts API v2)
+        const postBody = {
+            author: authorUrn,
+            lifecycleState: "PUBLISHED",
+            specificContent: {
+                "com.linkedin.ugc.ShareContent": {
+                    shareCommentary: { text },
+                    shareMediaCategory: "ARTICLE",
+                    media: [
+                        {
+                            status: "READY",
+                            originalUrl: postUrl,
+                        },
+                    ],
+                },
+            },
+            visibility: {
+                "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
+            },
+        };
+
+        const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+            body: JSON.stringify(postBody),
+        });
+
+        if (!res.ok) {
+            const errBody = await res.text();
+            return { ok: false, error: `LinkedIn ${res.status}: ${errBody}` };
+        }
+
+        console.log("[LinkedIn] Post published successfully");
+        return { ok: true };
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        return { ok: false, error: msg };
+    }
+}
+
 // ─── Full Pipeline: Generate + Publish + Log ─────────────────────────────────
 export async function runWaterfallPipeline(
     postId: string,
@@ -272,6 +335,8 @@ export async function runWaterfallPipeline(
         twitterStatus: string;
         twitterError?: string;
         twitterText?: string;
+        linkedinStatus: string;
+        linkedinError?: string;
         linkedinText?: string;
         linkedinHook?: string;
     } = {
@@ -280,6 +345,7 @@ export async function runWaterfallPipeline(
         postTitle,
         telegramStatus: "PENDING",
         twitterStatus: "PENDING",
+        linkedinStatus: "PENDING",
     };
 
     try {
@@ -293,10 +359,11 @@ export async function runWaterfallPipeline(
         logData.telegramText = result.telegram?.text;
         logData.twitterText = result.twitter?.thread?.join("\n\n---\n\n");
 
-        // Step 2: Publish to Telegram + Twitter in parallel
-        const [tgResult, twResult] = await Promise.allSettled([
+        // Step 2: Publish to Telegram + Twitter + LinkedIn in parallel
+        const [tgResult, twResult, liResult] = await Promise.allSettled([
             publishToTelegram(result.telegram?.text || "", postUrl),
             publishToTwitter(result.twitter?.thread || [], postUrl),
+            publishToLinkedIn(result.linkedin?.text || "", postUrl),
         ]);
 
         // Telegram result
@@ -317,7 +384,16 @@ export async function runWaterfallPipeline(
             logData.twitterError = twResult.reason?.message || "Unknown error";
         }
 
-        console.log(`[Auto-Publish] Done. Telegram: ${logData.telegramStatus}, Twitter: ${logData.twitterStatus}`);
+        // LinkedIn result
+        if (liResult.status === "fulfilled") {
+            logData.linkedinStatus = liResult.value.ok ? "SUCCESS" : "FAILED";
+            logData.linkedinError = liResult.value.error;
+        } else {
+            logData.linkedinStatus = "FAILED";
+            logData.linkedinError = liResult.reason?.message || "Unknown error";
+        }
+
+        console.log(`[Auto-Publish] Done. Telegram: ${logData.telegramStatus}, Twitter: ${logData.twitterStatus}, LinkedIn: ${logData.linkedinStatus}`);
     } catch (err) {
         console.error("[Auto-Publish] Pipeline error:", err);
         const msg = err instanceof Error ? err.message : "Pipeline error";
@@ -325,6 +401,8 @@ export async function runWaterfallPipeline(
         logData.telegramError = msg;
         logData.twitterStatus = "FAILED";
         logData.twitterError = msg;
+        logData.linkedinStatus = "FAILED";
+        logData.linkedinError = msg;
     }
 
     // Step 3: Log to database

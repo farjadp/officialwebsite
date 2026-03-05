@@ -5,7 +5,8 @@
 // Track auto-publish results for Telegram, Twitter, and LinkedIn
 // ============================================================================
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +22,7 @@ import {
     ChevronUp,
     Copy,
     Check,
+    Link2,
 } from "lucide-react"
 
 interface PublishLog {
@@ -36,6 +38,8 @@ interface PublishLog {
     twitterStatus: string
     twitterError: string | null
     twitterText: string | null
+    linkedinStatus: string
+    linkedinError: string | null
     linkedinText: string | null
     linkedinHook: string | null
     createdAt: string
@@ -96,6 +100,7 @@ function LogCard({ log }: { log: PublishLog }) {
                     <div className="flex items-center gap-2 shrink-0">
                         <StatusBadge status={log.telegramStatus} />
                         <StatusBadge status={log.twitterStatus} />
+                        <StatusBadge status={log.linkedinStatus} />
                         {expanded
                             ? <ChevronUp className="h-4 w-4 text-muted-foreground" />
                             : <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -156,34 +161,58 @@ function LogCard({ log }: { log: PublishLog }) {
                         )}
                     </div>
 
-                    {/* LinkedIn (manual copy) */}
-                    {log.linkedinText && (
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Linkedin className="h-4 w-4 text-[#0A66C2]" />
-                                    <span className="text-sm font-medium">LinkedIn</span>
-                                    <span className="text-xs text-muted-foreground">(manual copy)</span>
-                                </div>
-                                <CopyBtn text={log.linkedinText} />
+                    {/* LinkedIn */}
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Linkedin className="h-4 w-4 text-[#0A66C2]" />
+                                <span className="text-sm font-medium">LinkedIn</span>
+                                <StatusBadge status={log.linkedinStatus} />
                             </div>
-                            {log.linkedinHook && (
-                                <p className="text-xs text-muted-foreground">Hook: <em>"{log.linkedinHook}"</em></p>
-                            )}
+                            {log.linkedinText && <CopyBtn text={log.linkedinText} />}
+                        </div>
+                        {log.linkedinError && (
+                            <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded">{log.linkedinError}</p>
+                        )}
+                        {log.linkedinHook && (
+                            <p className="text-xs text-muted-foreground">Hook: <em>&quot;{log.linkedinHook}&quot;</em></p>
+                        )}
+                        {log.linkedinText && (
                             <div className="bg-slate-50 rounded-lg p-3 text-sm whitespace-pre-line leading-relaxed max-h-40 overflow-y-auto">
                                 {log.linkedinText}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </CardContent>
             )}
         </Card>
     )
 }
 
-export default function PublishReportPage() {
+function LinkedInConnect() {
+    const siteUrl = typeof window !== "undefined" ? window.location.origin : ""
+    const clientId = "785zxi5h7u7e6v"
+    const redirectUri = `${siteUrl}/api/auth/callback/linkedin`
+    const scope = "openid profile w_member_social"
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
+
+    return (
+        <a href={authUrl}>
+            <Button variant="outline" size="sm" className="gap-2 border-[#0A66C2] text-[#0A66C2] hover:bg-blue-50">
+                <Link2 className="h-4 w-4" />
+                Connect LinkedIn
+            </Button>
+        </a>
+    )
+}
+
+function PublishReportContent() {
     const [logs, setLogs] = useState<PublishLog[]>([])
     const [loading, setLoading] = useState(true)
+    const searchParams = useSearchParams()
+    const linkedinResult = searchParams.get("linkedin")
+    const linkedinName = searchParams.get("name")
+    const linkedinMsg = searchParams.get("msg")
 
     const fetchLogs = async () => {
         setLoading(true)
@@ -201,10 +230,25 @@ export default function PublishReportPage() {
     const totalPublishes = logs.length
     const telegramSuccess = logs.filter(l => l.telegramStatus === "SUCCESS").length
     const twitterSuccess = logs.filter(l => l.twitterStatus === "SUCCESS").length
-    const failures = logs.filter(l => l.telegramStatus === "FAILED" || l.twitterStatus === "FAILED").length
+    const linkedinSuccess = logs.filter(l => l.linkedinStatus === "SUCCESS").length
+    const failures = logs.filter(l => l.telegramStatus === "FAILED" || l.twitterStatus === "FAILED" || l.linkedinStatus === "FAILED").length
 
     return (
         <div className="max-w-5xl mx-auto py-8 space-y-8">
+            {/* LinkedIn OAuth result banner */}
+            {linkedinResult === "success" && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800 flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                    LinkedIn connected successfully as <strong>{linkedinName}</strong>! Posts will now auto-publish to LinkedIn.
+                </div>
+            )}
+            {linkedinResult === "error" && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800 flex items-center gap-2">
+                    <XCircle className="h-5 w-5 shrink-0" />
+                    LinkedIn connection failed: {linkedinMsg}
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -216,14 +260,17 @@ export default function PublishReportPage() {
                         Track auto-publish results across Telegram, X, and LinkedIn.
                     </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={fetchLogs} className="gap-2">
-                    <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                    Refresh
-                </Button>
+                <div className="flex items-center gap-2">
+                    <LinkedInConnect />
+                    <Button variant="outline" size="sm" onClick={fetchLogs} className="gap-2">
+                        <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                        Refresh
+                    </Button>
+                </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Card>
                     <CardContent className="pt-6">
                         <p className="text-2xl font-bold">{totalPublishes}</p>
@@ -240,6 +287,12 @@ export default function PublishReportPage() {
                     <CardContent className="pt-6">
                         <p className="text-2xl font-bold text-black">{twitterSuccess}</p>
                         <p className="text-xs text-muted-foreground">X / Twitter ✅</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <p className="text-2xl font-bold text-[#0A66C2]">{linkedinSuccess}</p>
+                        <p className="text-xs text-muted-foreground">LinkedIn ✅</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -265,5 +318,13 @@ export default function PublishReportPage() {
                 </div>
             )}
         </div>
+    )
+}
+
+export default function PublishReportPage() {
+    return (
+        <Suspense fallback={<div className="text-center py-12 text-muted-foreground">Loading…</div>}>
+            <PublishReportContent />
+        </Suspense>
     )
 }
