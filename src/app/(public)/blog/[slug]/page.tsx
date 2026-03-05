@@ -48,28 +48,22 @@ async function incrementView(id: string) {
 // ─── Service keyword map — detect if post is related to a service ────────────
 const SERVICE_MAP = [
     {
-        id: "startup-visa",
-        title: "Startup Visa Strategy",
-        href: "/services#startup-visa",
-        keywords: ["visa", "immigration", "startup visa", "incubator", "designated organization", "pr"],
-    },
-    {
         id: "founder-advisory",
-        title: "Founder Strategic Advisory",
+        title: "Strategic Advisory & 0-to-1 Launch",
         href: "/services#founder-advisory",
-        keywords: ["advisory", "strategy", "gtm", "go-to-market", "fundraising", "investor", "pitch"],
+        keywords: ["advisory", "strategy", "gtm", "go-to-market", "fundraising", "investor", "pitch", "launch", "build", "architecture", "architecture"],
     },
     {
         id: "digital-systems",
-        title: "Digital & AI Business Systems",
+        title: "AI & Custom Systems",
         href: "/services#digital-systems",
-        keywords: ["ai", "automation", "digital", "software", "system", "tech", "saas", "product", "mvp", "cto"],
+        keywords: ["ai", "automation", "digital", "software", "system", "tech", "saas", "product", "mvp", "cto", "workflow", "llm"],
     },
     {
         id: "private-mentorship",
-        title: "Private Mentorship",
+        title: "Private Team Mentorship",
         href: "/services#private-mentorship",
-        keywords: ["mentor", "mentorship", "founder", "startup", "team", "growth", "learning"],
+        keywords: ["mentor", "mentorship", "founder", "team", "growth", "learning", "sparring partner", "roadmap"],
     },
 ]
 
@@ -382,7 +376,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         FP
                     </div>
                     <div className="space-y-3 text-center md:text-left">
-                        <h3 className="font-bold text-lg">Written by Farjad Pourkiani</h3>
+                        <h3 className="font-bold text-lg">Written by Farjad</h3>
                         <p className="text-stone-400 text-sm leading-relaxed">
                             Startup advisor, product strategist, and former CTO. I write about the unglamorous truth of building real businesses.
                         </p>
@@ -440,7 +434,7 @@ function CommentsBox({ postSlug }: { postSlug: string }) {
                     </Link>
                     <span className="text-stone-300">•</span>
                     <Link
-                        href="https://linkedin.com/in/farjadp"
+                        href="https://linkedin.com/in/farjadpourmohammad"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:underline"
