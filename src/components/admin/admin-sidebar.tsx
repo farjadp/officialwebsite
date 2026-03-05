@@ -22,6 +22,7 @@ import {
     PenTool,
     FolderTree,
     Tag,
+    Share2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -55,6 +56,11 @@ const sidebarItems = [
         title: "Topics",
         href: "/admin/topics",
         icon: Hash,
+    },
+    {
+        title: "Waterfall",
+        href: "/admin/waterfall",
+        icon: Share2,
     },
     {
         title: "Pages",
