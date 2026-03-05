@@ -45,7 +45,7 @@ const SOCIAL_LINKS = [
   { name: "Farjad Talks (TG)", url: "https://t.me/FarjadTalks", icon: Send, color: "text-[#229ED9]", bg: "bg-[#229ED9]/10" },
   { name: "Farjad Talks (IG)", url: "https://instagram.com/FarjadTalks", icon: Instagram, color: "text-[#E1306C]", bg: "bg-[#E1306C]/10" },
   { name: "Farjad Talks (YT)", url: "https://youtube.com/@FarjadTalks", icon: Youtube, color: "text-[#FF0000]", bg: "bg-[#FF0000]/10" },
-  { name: "LinkedIn Profile", url: "https://www.linkedin.com/in/farjadpourmohammad/", icon: Linkedin, color: "text-[#0077B5]", bg: "bg-[#0077B5]/10" },
+  { name: "LinkedIn Profile", url: "https://www.linkedin.com/in/farjadp/", icon: Linkedin, color: "text-[#0077B5]", bg: "bg-[#0077B5]/10" },
 ];
 
 const VENTURES = [

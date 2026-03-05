@@ -124,7 +124,7 @@ export function Footer() {
                             <a href="https://youtube.com/@FarjadTalks" target="_blank" title="YouTube" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
                                 <Youtube className="w-5 h-5" />
                             </a>
-                            <a href="https://www.linkedin.com/in/farjadpourmohammad/" target="_blank" title="LinkedIn" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
+                            <a href="https://www.linkedin.com/in/farjadp/" target="_blank" title="LinkedIn" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
                                 <Linkedin className="w-5 h-5" />
                             </a>
                         </div>

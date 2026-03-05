@@ -15,6 +15,9 @@ const connectionString = process.env.DATABASE_URL || "postgresql://postgres:post
 
 const pool = new Pool({
     connectionString,
+    max: 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
     ...(connectionString.includes('localhost') || connectionString.includes('127.0.0.1') ? {} : { ssl: { rejectUnauthorized: false } })
 })
 const adapter = new PrismaPg(pool)

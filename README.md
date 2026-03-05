@@ -48,5 +48,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - **Enhanced Asset Loading:** Optimized image handling for founder shots, branding resources, and transparent scalable SVGs (incl: Google Meet visualization).
 
 ### Updated
+- Corrected identity references ("Farjad P.") and updated primary domains to `farjadp.info` across metadata, footers, and AI generation prompts.
 - Improved global component spacing on the `Contact` page.
 - Cleaned up and modularized routing configurations for the newly injected Proof of Work structure.

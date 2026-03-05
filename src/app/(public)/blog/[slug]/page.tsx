@@ -434,7 +434,7 @@ function CommentsBox({ postSlug }: { postSlug: string }) {
                     </Link>
                     <span className="text-stone-300">•</span>
                     <Link
-                        href="https://linkedin.com/in/farjadpourmohammad"
+                        href="https://linkedin.com/in/farjadp"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:underline"
