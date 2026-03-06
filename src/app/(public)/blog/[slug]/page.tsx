@@ -329,7 +329,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             prose-blockquote:border-[#1B4B43] prose-blockquote:bg-[#1B4B43]/5 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
             prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full"
                 >
-                    {(post.content || "").split(/(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\])/g).map((part, index) => {
+                    {(post.content || "").split(/(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\])\s*(?:<\/p>)?/g).map((part, index) => {
+                        if (!part) return null;
+
+                        // We check the exact matched text group
                         if (part === "[SCORECARD]") {
                             return (
                                 <div key={index} className="my-12 not-prose">
