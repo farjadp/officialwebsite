@@ -52,9 +52,9 @@ B. TELEGRAM (Persian / فارسی عامیانه):
 - End with: "📖 مقاله کامل رو اینجا بخون: [Link Placeholder]"
 
 C. X / TWITTER (English):
-- Thread 3-5 tweets or one punchy tweet (max 280 chars).
-- Contrarian opening. USE EMOJIS: 1-2 per tweet.
-- EACH TWEET ends with 2-3 HASHTAGS. Never inside sentences.
+- ONE single tweet combining all key points. Premium account — NO character limit.
+- Contrarian opening. USE EMOJIS: 2-3.
+- END with 2-3 HASHTAGS on separate line. Never inside sentences.
 - If not enough substance, return empty array.
 
 OUTPUT: ONLY valid JSON:
@@ -222,21 +222,9 @@ export async function publishToTwitter(
         return { ok: false, error: "Empty thread — skipped" };
     }
 
-    // Single tweet or first tweet of thread
-    const firstTweet = thread.length === 1
-        ? `${thread[0]}\n\n${postUrl}`
-        : `${thread[0]}\n\n🔗 ${postUrl}`;
-
-    const result = await postTweet(firstTweet.slice(0, 280));
-    if (!result.ok) return result;
-
-    // Remaining tweets in thread
-    for (let i = 1; i < thread.length; i++) {
-        await new Promise((r) => setTimeout(r, 1000));
-        await postTweet(thread[i].slice(0, 280));
-    }
-
-    return { ok: true };
+    // Combine all parts into a single tweet (Premium account — no char limit)
+    const fullText = thread.join("\n\n") + `\n\n🔗 ${postUrl}`;
+    return await postTweet(fullText);
 }
 
 // ─── LinkedIn Publisher (OAuth 2.0 Bearer Token) ─────────────────────────────
