@@ -71,6 +71,8 @@ export default function AIToolsPage() {
         setLoading(false)
     }
 
+    const [activeTab, setActiveTab] = useState("vault")
+
     return (
         <div className="max-w-4xl mx-auto py-8 space-y-8">
             <div>
@@ -80,7 +82,8 @@ export default function AIToolsPage() {
                 </p>
             </div>
 
-            <Tabs defaultValue="vault" className="w-full" onValueChange={(val) => {
+            <Tabs value={activeTab} className="w-full" onValueChange={(val) => {
+                setActiveTab(val)
                 if (val === "archive") fetchArchives()
             }}>
                 <TabsList className="grid w-full grid-cols-3">
