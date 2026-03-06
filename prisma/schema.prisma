@@ -186,3 +186,12 @@ model AppSetting {
   value     String
   updatedAt DateTime  @updatedAt
 }
+
+model Lead {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  score     Int
+  segment   String
+  answers   Json
+  createdAt DateTime @default(now())
+}

@@ -24,6 +24,7 @@ import {
     Tag,
     Share2,
     BarChart3,
+    Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -67,6 +68,11 @@ const sidebarItems = [
         title: "Publish Report",
         href: "/admin/publish-report",
         icon: BarChart3,
+    },
+    {
+        title: "AI Studio",
+        href: "/admin/ai-tools",
+        icon: Sparkles,
     },
     {
         title: "Pages",
