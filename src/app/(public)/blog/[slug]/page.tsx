@@ -31,7 +31,7 @@ import {
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Metadata } from "next"
-
+import { ScorecardWidget } from "@/components/public/scorecard-widget"
 // ─── View counter (fire-and-forget) ─────────────────────────────────────────
 async function incrementView(id: string) {
     "use server"
@@ -327,8 +327,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             prose-a:text-[#1B4B43] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
             prose-blockquote:border-[#1B4B43] prose-blockquote:bg-[#1B4B43]/5 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
             prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full"
-                    dangerouslySetInnerHTML={{ __html: post.content || "" }}
-                />
+                >
+                    {(post.content || "").split("[SCORECARD]").map((part, index, array) => (
+                        <div key={index}>
+                            <div dangerouslySetInnerHTML={{ __html: part }} />
+                            {index < array.length - 1 && (
+                                <div className="my-12 not-prose">
+                                    <ScorecardWidget />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
 
                 <Separator className="my-10" />
 
