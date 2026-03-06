@@ -14,6 +14,11 @@ export interface WaterfallResult {
     linkedin: { text: string; hook: string };
     telegram: { text: string };
     twitter: { thread: string[] };
+    sniper_retargeting?: {
+        analysis: { detected_segment: string; primary_pain_point: string };
+        ad_creative: { platform: string; headline: string; primary_text: string; cta_button: string; visual_directive: string };
+        story_creative: { platform: string; text_overlay_1: string; text_overlay_2: string };
+    };
 }
 
 // ─── Brand + Prompt (duplicated to avoid circular imports) ───────────────────
@@ -57,12 +62,24 @@ C. X / TWITTER (English):
 - END with 2-3 HASHTAGS on separate line. Never inside sentences.
 - If not enough substance, return empty array.
 
+D. SNIPER RETARGETING:
+- Goal: Convert Warm Readers into High-Ticket Leads. NO Immigration/Startup Visa context.
+- Segment A: Overwhelmed SME Owner (Target: AI Automation). Pain: Costs/Speed. Offer: "The 24/7 AI Workforce Blueprint". (Triggers: Admin, Hiring, Costs, Efficiency).
+- Segment B: Legacy Business Owner (Target: Digital Transformation). Pain: Outdated data. Offer: "The Digital Health Audit". (Triggers: Paperless, Cloud, Legacy Software).
+- Segment C: "Smart" Founder (Target: Launch Infrastructure). Pain: Bad MVPs. Offer: "The Lean Launch Roadmap". (Triggers: Incorporation, Tech Stack, MVP).
+- Tone: Clinical, Direct, High-Authority. NO hype words. NO emojis.
+
 OUTPUT: ONLY valid JSON:
 {
   "analysis": { "core_truth": "String", "sentiment": "String" },
   "linkedin": { "text": "String (\\n for line breaks)", "hook": "String" },
   "telegram": { "text": "String — in casual Persian" },
-  "twitter": { "thread": ["Tweet 1", "Tweet 2"] }
+  "twitter": { "thread": ["Tweet 1", "Tweet 2"] },
+  "sniper_retargeting": {
+    "analysis": { "detected_segment": "Segment A | Segment B | Segment C", "primary_pain_point": "String" },
+    "ad_creative": { "platform": "LinkedIn / Instagram Feed", "headline": "String", "primary_text": "String", "cta_button": "String", "visual_directive": "String" },
+    "story_creative": { "platform": "Instagram/LinkedIn Story", "text_overlay_1": "String", "text_overlay_2": "String" }
+  }
 }
 `;
 
@@ -358,6 +375,13 @@ export async function runWaterfallPipeline(
         linkedinError?: string;
         linkedinText?: string;
         linkedinHook?: string;
+        retargetingSegment?: string;
+        retargetingPainPoint?: string;
+        retargetingHeadline?: string;
+        retargetingPrimaryText?: string;
+        retargetingVisual?: string;
+        retargetingStoryHook?: string;
+        retargetingStorySolution?: string;
     } = {
         postId,
         postSlug,
@@ -377,6 +401,13 @@ export async function runWaterfallPipeline(
         logData.linkedinHook = result.linkedin?.hook;
         logData.telegramText = result.telegram?.text;
         logData.twitterText = result.twitter?.thread?.join("\n\n---\n\n");
+        logData.retargetingSegment = result.sniper_retargeting?.analysis?.detected_segment;
+        logData.retargetingPainPoint = result.sniper_retargeting?.analysis?.primary_pain_point;
+        logData.retargetingHeadline = result.sniper_retargeting?.ad_creative?.headline;
+        logData.retargetingPrimaryText = result.sniper_retargeting?.ad_creative?.primary_text;
+        logData.retargetingVisual = result.sniper_retargeting?.ad_creative?.visual_directive;
+        logData.retargetingStoryHook = result.sniper_retargeting?.story_creative?.text_overlay_1;
+        logData.retargetingStorySolution = result.sniper_retargeting?.story_creative?.text_overlay_2;
 
         // Step 2: Publish to Telegram + Twitter + LinkedIn in parallel
         const [tgResult, twResult, liResult] = await Promise.allSettled([

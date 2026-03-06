@@ -71,6 +71,16 @@ C. X / TWITTER (The Spark) — ENGLISH:
 - EACH TWEET must end with 2-3 HASHTAGS (e.g. #Startups #Founders). Hashtags must NEVER appear inside sentences.
 - If the essay doesn't have enough substance for a thread, return an empty array.
 
+PHASE 3 — SNIPER RETARGETING:
+- Goal: Convert "Warm Readers" into "High-Ticket Leads" for AI Automation, Digital Transformation, or Business Infrastructure.
+- CRITICAL: NO Immigration or Startup Visa services. 
+- Assign the reader to ONE of these segments based on the essay:
+  * Segment A: Overwhelmed SME Owner (Target: AI Automation). Pain: Losing money on human error/slow speed. Offer: "The 24/7 AI Workforce Blueprint". (Triggers: Admin, Hiring, Costs, Efficiency).
+  * Segment B: Legacy Business Owner (Target: Digital Transformation). Pain: Competitors are faster, data is a mess. Offer: "The Digital Health Audit". (Triggers: Paperless, Cloud, Legacy Software).
+  * Segment C: "Smart" Founder (Target: Launch Infrastructure). Pain: Don't want to waste $50k on bad MVP/legal setup. Offer: "The Lean Launch Roadmap". (Triggers: Incorporation, Tech Stack, MVP).
+- Tone: Clinical, Direct, High-Authority. Short sentences. No fluff. 
+- FORBIDDEN: NO emojis like 🚀, 🔥, 💰. NO hype words like "Skyrocket", "Explode", "Unleash".
+
 OUTPUT FORMAT — respond with ONLY valid JSON, no other text:
 {
   "analysis": {
@@ -86,64 +96,82 @@ OUTPUT FORMAT — respond with ONLY valid JSON, no other text:
   },
   "twitter": {
     "thread": ["Tweet 1", "Tweet 2", "..."]
+  },
+  "sniper_retargeting": {
+    "analysis": {
+      "detected_segment": "Segment A | Segment B | Segment C",
+      "primary_pain_point": "String - One sentence explaining the pain"
+    },
+    "ad_creative": {
+      "platform": "LinkedIn / Instagram Feed",
+      "headline": "String - max 50 chars",
+      "primary_text": "String - max 280 chars",
+      "cta_button": "Book The Audit | Download Blueprint",
+      "visual_directive": "String - Description of the visual"
+    },
+    "story_creative": {
+      "platform": "Instagram/LinkedIn Story",
+      "text_overlay_1": "String - The Hook",
+      "text_overlay_2": "String - The Solution"
+    }
   }
 }
 `;
 
 export async function POST(req: NextRequest) {
-    try {
-        const body = await req.json();
-        const { slug, text } = body;
+  try {
+    const body = await req.json();
+    const { slug, text } = body;
 
-        if (!slug && !text) {
-            return NextResponse.json(
-                { error: "Provide either a post slug or raw text." },
-                { status: 400 }
-            );
-        }
-
-        // ─── Resolve source text ──────────────────────────────────────────
-        let sourceText = text || "";
-
-        if (slug && !text) {
-            const post = await prisma.post.findUnique({
-                where: { slug },
-                select: { title: true, excerpt: true, content: true },
-            });
-
-            if (!post) {
-                return NextResponse.json({ error: "Post not found." }, { status: 404 });
-            }
-
-            // Strip HTML tags for a clean text input
-            const plainContent = (post.content || "")
-                .replace(/<[^>]+>/g, " ")
-                .replace(/\s+/g, " ")
-                .trim();
-
-            sourceText = `Title: ${post.title}\n\nExcerpt: ${post.excerpt || ""}\n\n${plainContent}`;
-        }
-
-        // ─── Call OpenAI ──────────────────────────────────────────────────
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4o",
-            temperature: 0.65,
-            messages: [
-                { role: "system", content: WATERFALL_SYSTEM },
-                {
-                    role: "user",
-                    content: `Here is the source essay. Transmute it into LinkedIn, Telegram, and X posts:\n\n---\n${sourceText}\n---`,
-                },
-            ],
-            response_format: { type: "json_object" },
-        });
-
-        const result = JSON.parse(completion.choices[0].message.content || "{}");
-
-        return NextResponse.json({ success: true, data: result });
-    } catch (error: unknown) {
-        console.error("[Content Waterfall Error]", error);
-        const message = error instanceof Error ? error.message : "Generation failed";
-        return NextResponse.json({ error: message }, { status: 500 });
+    if (!slug && !text) {
+      return NextResponse.json(
+        { error: "Provide either a post slug or raw text." },
+        { status: 400 }
+      );
     }
+
+    // ─── Resolve source text ──────────────────────────────────────────
+    let sourceText = text || "";
+
+    if (slug && !text) {
+      const post = await prisma.post.findUnique({
+        where: { slug },
+        select: { title: true, excerpt: true, content: true },
+      });
+
+      if (!post) {
+        return NextResponse.json({ error: "Post not found." }, { status: 404 });
+      }
+
+      // Strip HTML tags for a clean text input
+      const plainContent = (post.content || "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      sourceText = `Title: ${post.title}\n\nExcerpt: ${post.excerpt || ""}\n\n${plainContent}`;
+    }
+
+    // ─── Call OpenAI ──────────────────────────────────────────────────
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      temperature: 0.65,
+      messages: [
+        { role: "system", content: WATERFALL_SYSTEM },
+        {
+          role: "user",
+          content: `Here is the source essay. Transmute it into LinkedIn, Telegram, and X posts:\n\n---\n${sourceText}\n---`,
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const result = JSON.parse(completion.choices[0].message.content || "{}");
+
+    return NextResponse.json({ success: true, data: result });
+  } catch (error: unknown) {
+    console.error("[Content Waterfall Error]", error);
+    const message = error instanceof Error ? error.message : "Generation failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

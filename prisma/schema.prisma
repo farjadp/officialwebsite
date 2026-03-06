@@ -169,6 +169,15 @@ model SocialPublishLog {
   linkedinText    String?
   linkedinHook    String?
   
+  // Sniper Retargeting
+  retargetingSegment       String?
+  retargetingPainPoint     String?
+  retargetingHeadline      String?
+  retargetingPrimaryText   String?
+  retargetingVisual        String?
+  retargetingStoryHook     String?
+  retargetingStorySolution String?
+  
   createdAt     DateTime  @default(now())
 }
 

@@ -42,6 +42,13 @@ interface PublishLog {
     linkedinError: string | null
     linkedinText: string | null
     linkedinHook: string | null
+    retargetingSegment: string | null
+    retargetingPainPoint: string | null
+    retargetingHeadline: string | null
+    retargetingPrimaryText: string | null
+    retargetingVisual: string | null
+    retargetingStoryHook: string | null
+    retargetingStorySolution: string | null
     createdAt: string
 }
 
@@ -118,6 +125,33 @@ function LogCard({ log }: { log: PublishLog }) {
                             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Analysis</p>
                             <p className="text-sm"><span className="font-medium">Core Truth:</span> {log.coreTruth}</p>
                             <p className="text-sm"><span className="font-medium">Sentiment:</span> {log.sentiment}</p>
+                        </div>
+                    )}
+
+                    {/* Sniper Retargeting */}
+                    {log.retargetingSegment && (
+                        <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 space-y-3">
+                            <p className="text-xs font-bold uppercase tracking-wider text-indigo-800">🎯 Sniper Retargeting: {log.retargetingSegment}</p>
+                            <p className="text-sm"><span className="font-medium">Pain Point:</span> {log.retargetingPainPoint}</p>
+
+                            <div className="bg-white rounded p-3 text-sm space-y-2 border">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-xs text-muted-foreground uppercase">Feed Ad Copy</span>
+                                    {log.retargetingPrimaryText && <CopyBtn text={`${log.retargetingHeadline}\n\n${log.retargetingPrimaryText}`} />}
+                                </div>
+                                <p className="font-medium text-lg leading-tight">{log.retargetingHeadline}</p>
+                                <p className="whitespace-pre-line text-muted-foreground">{log.retargetingPrimaryText}</p>
+                                {log.retargetingVisual && <p className="text-xs text-indigo-600 bg-indigo-50 p-2 rounded mt-2">📷 Visual: {log.retargetingVisual}</p>}
+                            </div>
+
+                            <div className="bg-white rounded p-3 text-sm space-y-2 border">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-xs text-muted-foreground uppercase">Story Copy</span>
+                                    {log.retargetingStoryHook && <CopyBtn text={`Hook: ${log.retargetingStoryHook}\nSolution: ${log.retargetingStorySolution}`} />}
+                                </div>
+                                <p><strong>Overlay 1:</strong> {log.retargetingStoryHook}</p>
+                                <p><strong>Overlay 2:</strong> {log.retargetingStorySolution}</p>
+                            </div>
                         </div>
                     )}
 
