@@ -195,3 +195,11 @@ model Lead {
   answers   Json
   createdAt DateTime @default(now())
 }
+
+model AIGeneratedAsset {
+  id        String   @id @default(cuid())
+  type      String   // "vault" or "audio"
+  topic     String
+  content   String   // Markdown or Text content
+  createdAt DateTime @default(now())
+}

@@ -1,6 +1,6 @@
-// src/app/api/admin/ai-tools/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { prisma } from "@/lib/prisma";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
@@ -52,6 +52,32 @@ Your goal is to write a script for a 3-minute audio voice note (Telegram/Private
 - Keep it under 400 words.
 `;
 
+export async function GET(req: NextRequest) {
+    try {
+        const type = req.nextUrl.searchParams.get("type");
+        const whereClause = type ? { type } : {};
+
+        const assets = await prisma.aIGeneratedAsset.findMany({
+            where: whereClause,
+            orderBy: { createdAt: "desc" },
+            select: {
+                id: true,
+                type: true,
+                topic: true,
+                createdAt: true,
+                // Don't send huge content payloads here unless necessary. 
+                // We'll send it all for now since it's an internal admin tool and volumes are low.
+                content: true
+            }
+        });
+
+        return NextResponse.json({ success: true, assets });
+    } catch (error: unknown) {
+        console.error("[AI Tools GET Error]", error);
+        return NextResponse.json({ error: "Failed to fetch archive" }, { status: 500 });
+    }
+}
+
 export async function POST(req: NextRequest) {
     try {
         const { promptType, inputTopic } = await req.json();
@@ -59,6 +85,26 @@ export async function POST(req: NextRequest) {
         if (!inputTopic) {
             return NextResponse.json({ error: "Missing topic" }, { status: 400 });
         }
+
+        // --- CACHE CHECK ---
+        const existingAsset = await prisma.aIGeneratedAsset.findFirst({
+            where: {
+                type: promptType,
+                topic: {
+                    equals: inputTopic,
+                    mode: "insensitive"
+                }
+            }
+        });
+
+        if (existingAsset) {
+            return NextResponse.json({
+                success: true,
+                text: existingAsset.content,
+                isCached: true
+            });
+        }
+        // -------------------
 
         let systemPrompt = "";
         let userMessage = "";
@@ -83,7 +129,23 @@ export async function POST(req: NextRequest) {
         });
 
         const result = completion.choices[0].message.content;
-        return NextResponse.json({ success: true, text: result });
+
+        if (result) {
+            // Save to database
+            await prisma.aIGeneratedAsset.create({
+                data: {
+                    type: promptType,
+                    topic: inputTopic,
+                    content: result,
+                }
+            });
+        }
+
+        return NextResponse.json({
+            success: true,
+            text: result,
+            isCached: false
+        });
     } catch (error: unknown) {
         console.error("[AI Tools Error]", error);
         return NextResponse.json({ error: "Generation failed" }, { status: 500 });

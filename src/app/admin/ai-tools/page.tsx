@@ -13,7 +13,27 @@ export default function AIToolsPage() {
 
     const [loading, setLoading] = useState(false)
     const [resultText, setResultText] = useState("")
+    const [isCached, setIsCached] = useState(false)
     const [copied, setCopied] = useState(false)
+
+    // Archive state
+    const [archives, setArchives] = useState<any[]>([])
+    const [loadingArchives, setLoadingArchives] = useState(false)
+
+    // Load archives
+    const fetchArchives = async () => {
+        setLoadingArchives(true)
+        try {
+            const res = await fetch("/api/admin/ai-tools")
+            const data = await res.json()
+            if (data.success) {
+                setArchives(data.assets)
+            }
+        } catch (error) {
+            console.error("Failed to fetch archives", error)
+        }
+        setLoadingArchives(false)
+    }
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(resultText)
@@ -25,6 +45,7 @@ export default function AIToolsPage() {
         if (!topic) return
         setLoading(true)
         setResultText("")
+        setIsCached(false)
         try {
             const res = await fetch("/api/admin/ai-tools", {
                 method: "POST",
@@ -34,6 +55,9 @@ export default function AIToolsPage() {
             const data = await res.json()
             if (data.success) {
                 setResultText(data.text)
+                setIsCached(data.isCached || false)
+                // Refresh archive list in background
+                fetchArchives()
             } else {
                 setResultText(`Error: ${data.error}`)
             }
@@ -52,10 +76,13 @@ export default function AIToolsPage() {
                 </p>
             </div>
 
-            <Tabs defaultValue="vault" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+            <Tabs defaultValue="vault" className="w-full" onValueChange={(val) => {
+                if (val === "archive") fetchArchives()
+            }}>
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="vault" className="gap-2"><FileText className="h-4 w-4" /> The Vault Asset Generator</TabsTrigger>
                     <TabsTrigger value="audio" className="gap-2"><Mic className="h-4 w-4" /> Private Audio Memo Scripter</TabsTrigger>
+                    <TabsTrigger value="archive" className="gap-2"><FileText className="h-4 w-4" /> Archive History</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="vault">
@@ -108,13 +135,20 @@ export default function AIToolsPage() {
             </Tabs>
 
             {resultText && (
-                <Card className="border-indigo-100 bg-slate-50 relative">
+                <Card className="border-indigo-100 bg-slate-50 relative mt-8">
                     <CardContent className="pt-6">
+                        <div className="absolute top-4 left-6 flex items-center gap-4">
+                            {isCached && (
+                                <span className="inline-flex items-center rounded-md bg-stone-100 px-2 py-1 text-xs font-medium text-stone-600 ring-1 ring-inset ring-stone-500/10">
+                                    Loaded from Archive
+                                </span>
+                            )}
+                        </div>
                         <Button variant="outline" size="sm" className="absolute top-4 right-4 gap-2 text-indigo-700 border-indigo-200 hover:bg-indigo-50" onClick={handleCopy}>
                             {copied ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                             {copied ? "Copied!" : "Copy Markdown"}
                         </Button>
-                        <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono mt-4">
+                        <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono mt-8">
                             {resultText}
                         </pre>
                     </CardContent>
