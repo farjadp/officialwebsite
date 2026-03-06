@@ -51,12 +51,13 @@ export async function GET(req: NextRequest) {
         const expiresIn = tokenData.expires_in; // seconds
 
         // Step 2: Get user profile (to get the person URN for posting)
-        const profileRes = await fetch("https://api.linkedin.com/v2/userinfo", {
+        const profileRes = await fetch("https://api.linkedin.com/v2/me", {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
 
         const profile = await profileRes.json();
-        const personUrn = `urn:li:person:${profile.sub}`;
+        const personUrn = `urn:li:person:${profile.id}`;
+        const displayName = [profile.localizedFirstName, profile.localizedLastName].filter(Boolean).join(" ") || "Connected";
 
         // Step 3: Store token + URN in DB
         await prisma.appSetting.upsert({
@@ -77,10 +78,10 @@ export async function GET(req: NextRequest) {
             create: { key: "LINKEDIN_TOKEN_EXPIRES", value: String(Date.now() + expiresIn * 1000) },
         });
 
-        console.log(`[LinkedIn OAuth] Connected as ${profile.name} (${personUrn}). Token expires in ${Math.round(expiresIn / 86400)} days.`);
+        console.log(`[LinkedIn OAuth] Connected as ${displayName} (${personUrn}). Token expires in ${Math.round(expiresIn / 86400)} days.`);
 
         return NextResponse.redirect(
-            `${siteUrl}/admin/publish-report?linkedin=success&name=${encodeURIComponent(profile.name || "Connected")}`
+            `${siteUrl}/admin/publish-report?linkedin=success&name=${encodeURIComponent(displayName)}`
         );
     } catch (err) {
         console.error("[LinkedIn OAuth] Error:", err);

@@ -193,7 +193,7 @@ function LinkedInConnect() {
     const siteUrl = typeof window !== "undefined" ? window.location.origin : ""
     const clientId = "785zxi5h7u7e6v"
     const redirectUri = `${siteUrl}/api/auth/callback/linkedin`
-    const scope = "openid profile w_member_social"
+    const scope = "w_member_social"
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
 
     return (
