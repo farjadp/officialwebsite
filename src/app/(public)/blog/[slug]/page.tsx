@@ -32,6 +32,7 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Metadata } from "next"
 import { ScorecardWidget } from "@/components/public/scorecard-widget"
+import { VaultAssetWidget } from "@/components/public/vault-asset-widget"
 // ─── View counter (fire-and-forget) ─────────────────────────────────────────
 async function incrementView(id: string) {
     "use server"
@@ -328,16 +329,29 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             prose-blockquote:border-[#1B4B43] prose-blockquote:bg-[#1B4B43]/5 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
             prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full"
                 >
-                    {(post.content || "").split("[SCORECARD]").map((part, index, array) => (
-                        <div key={index}>
-                            <div dangerouslySetInnerHTML={{ __html: part }} />
-                            {index < array.length - 1 && (
-                                <div className="my-12 not-prose">
+                    {(post.content || "").split(/(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\])/g).map((part, index) => {
+                        if (part === "[SCORECARD]") {
+                            return (
+                                <div key={index} className="my-12 not-prose">
                                     <ScorecardWidget />
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                            );
+                        }
+
+                        const vaultMatch = part.match(/\[VAULT_ASSET id="([^"]+)"\]/);
+                        if (vaultMatch) {
+                            return (
+                                <div key={index} className="my-12 not-prose">
+                                    <VaultAssetWidget id={vaultMatch[1]} />
+                                </div>
+                            );
+                        }
+
+                        // Fast abort if empty part (caused by regex splitting on boundaries)
+                        if (!part.trim()) return null;
+
+                        return <div key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+                    })}
                 </div>
 
                 <Separator className="my-10" />

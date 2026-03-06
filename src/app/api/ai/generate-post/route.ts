@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { downloadAndWatermark } from "@/lib/image-watermark";
+import { prisma } from "@/lib/prisma";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
@@ -169,7 +170,20 @@ export async function POST(req: NextRequest) {
 
         const ts = Date.now();
 
-        // ─── Step 1: Generate article text + image prompts ─────────────────────
+        // ─── Step 1: Pre-fetch Vault Assets to suggest ─────────────────────────────
+        const vaultAssets = await prisma.aIGeneratedAsset.findMany({
+            where: { type: "vault" },
+            orderBy: { createdAt: "desc" },
+            take: 10,
+            select: { id: true, topic: true }
+        });
+
+        const vaultAssetList = vaultAssets.map((a: { id: string; topic: string }) => `- ID: ${a.id} | Topic: "${a.topic}"`).join("\n");
+        const vaultAssetInstructions = vaultAssets.length > 0
+            ? `\n\nVAULT ASSETS AVAILABLE TO EMBED:\nYou have access to the following 'Vault Assets' (Checklists/Guides) created by Farjad:\n${vaultAssetList}\n\nIf one of these assets is HIGHLY relevant to the article's topic, you MUST embed it naturally in the article by inserting the exact shortcode: [VAULT_ASSET id="THE_ID"] on its own line. Do not invent assets, only use the provided ones. Introduce the asset naturally in the text before embedding it.`
+            : '';
+
+        // ─── Step 2: Generate article text + image prompts ─────────────────────
         // Build user message parts (text + optional image vision)
         const hasRefImages = Array.isArray(referenceImageUrls) && referenceImageUrls.length > 0;
 
@@ -210,7 +224,7 @@ LANGUAGE: ${language}
 ARTICLE LENGTH: ${wordCount} words
 
 ${optimizationGuide}
-${goalGuide}
+${goalGuide}${vaultAssetInstructions}
 
 ALWAYS respond with valid JSON in exactly this structure — no other text:
 {
