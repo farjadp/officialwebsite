@@ -12,9 +12,10 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Toggle } from '@/components/ui/toggle'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
     Bold,
     Italic,
@@ -29,8 +30,16 @@ import {
     Undo,
     Redo,
     Link as LinkIcon,
-    Image as ImageIcon
+    Image as ImageIcon,
+    FileText,
+    Loader2,
 } from 'lucide-react'
+
+interface VaultAsset {
+    id: string
+    topic: string
+    type: string
+}
 
 // Define props for the editor
 interface RichTextEditorProps {
@@ -40,6 +49,10 @@ interface RichTextEditorProps {
 }
 
 export function RichTextEditor({ value = '', onChange, editable = true }: RichTextEditorProps) {
+    const [vaultOpen, setVaultOpen] = useState(false)
+    const [vaultAssets, setVaultAssets] = useState<VaultAsset[]>([])
+    const [loadingVaults, setLoadingVaults] = useState(false)
+
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -63,6 +76,23 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
             },
         },
     })
+
+    const fetchVaultAssets = useCallback(async () => {
+        if (vaultAssets.length > 0) return
+        setLoadingVaults(true)
+        try {
+            const res = await fetch('/api/admin/ai-tools?type=vault')
+            const data = await res.json()
+            if (data.success) setVaultAssets(data.assets)
+        } catch {}
+        setLoadingVaults(false)
+    }, [vaultAssets.length])
+
+    const insertVaultAsset = useCallback((id: string) => {
+        if (!editor) return
+        editor.chain().focus().insertContent(`[VAULT_ASSET id="${id}"]`).run()
+        setVaultOpen(false)
+    }, [editor])
 
     const setLink = useCallback(() => {
         if (!editor) return
@@ -186,6 +216,45 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
                     <Button variant="ghost" size="sm" onClick={addImage}>
                         <ImageIcon className="h-4 w-4" />
                     </Button>
+
+                    <div className="w-px h-6 bg-border mx-1 my-auto" />
+
+                    <Popover open={vaultOpen} onOpenChange={(open) => { setVaultOpen(open); if (open) fetchVaultAssets() }}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                title="Insert Vault Asset"
+                                className="gap-1.5 text-[#1B4B43] hover:bg-[#1B4B43]/10"
+                            >
+                                <FileText className="h-4 w-4" />
+                                <span className="text-xs font-semibold hidden sm:inline">Vault Asset</span>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-2" align="start">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 px-2 pb-2">Insert Vault Asset Shortcode</p>
+                            {loadingVaults ? (
+                                <div className="flex justify-center py-6">
+                                    <Loader2 className="h-5 w-5 animate-spin text-[#1B4B43]" />
+                                </div>
+                            ) : vaultAssets.length === 0 ? (
+                                <p className="text-sm text-center text-muted-foreground py-4">No vault assets found. Generate one first.</p>
+                            ) : (
+                                <div className="space-y-1 max-h-60 overflow-y-auto">
+                                    {vaultAssets.map(asset => (
+                                        <button
+                                            key={asset.id}
+                                            className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-colors"
+                                            onClick={() => insertVaultAsset(asset.id)}
+                                        >
+                                            <p className="text-sm font-medium text-stone-800 leading-snug">{asset.topic}</p>
+                                            <p className="text-[10px] text-stone-400 font-mono mt-0.5">[VAULT_ASSET id=&quot;{asset.id}&quot;]</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </PopoverContent>
+                    </Popover>
 
                     <div className="ml-auto flex gap-1">
                         <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>

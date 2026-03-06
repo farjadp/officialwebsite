@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Mic, FileText, CheckCircle2, Loader2, Copy } from "lucide-react"
+import { Mic, FileText, CheckCircle2, Loader2, Copy, ChevronDown, ChevronUp, Archive, Search } from "lucide-react"
 
 export default function AIToolsPage() {
     const [vaultTopic, setVaultTopic] = useState("")
@@ -19,6 +19,10 @@ export default function AIToolsPage() {
     // Archive state
     const [archives, setArchives] = useState<any[]>([])
     const [loadingArchives, setLoadingArchives] = useState(false)
+    const [archiveFilter, setArchiveFilter] = useState<"all" | "vault" | "audio">("all")
+    const [archiveSearch, setArchiveSearch] = useState("")
+    const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+    const [copiedId, setCopiedId] = useState<string | null>(null)
 
     // Load archives
     const fetchArchives = async () => {
@@ -44,6 +48,35 @@ export default function AIToolsPage() {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
     }
+
+    const handleCopyArchive = async (id: string, content: string) => {
+        await navigator.clipboard.writeText(content)
+        setCopiedId(id)
+        setTimeout(() => setCopiedId(null), 2000)
+    }
+
+    const toggleExpand = (id: string) => {
+        setExpandedIds(prev => {
+            const next = new Set(prev)
+            if (next.has(id)) next.delete(id)
+            else next.add(id)
+            return next
+        })
+    }
+
+    const filteredArchives = useMemo(() => {
+        return archives.filter(a => {
+            if (archiveFilter !== "all" && a.type !== archiveFilter) return false
+            if (archiveSearch.trim() && !a.topic.toLowerCase().includes(archiveSearch.toLowerCase())) return false
+            return true
+        })
+    }, [archives, archiveFilter, archiveSearch])
+
+    const archiveStats = useMemo(() => ({
+        total: archives.length,
+        vault: archives.filter(a => a.type === "vault").length,
+        audio: archives.filter(a => a.type === "audio").length,
+    }), [archives])
 
     const generateContent = async (type: "vault" | "audio", topic: string) => {
         if (!topic) return
@@ -89,7 +122,7 @@ export default function AIToolsPage() {
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="vault" className="gap-2"><FileText className="h-4 w-4" /> The Vault Asset Generator</TabsTrigger>
                     <TabsTrigger value="audio" className="gap-2"><Mic className="h-4 w-4" /> Private Audio Memo Scripter</TabsTrigger>
-                    <TabsTrigger value="archive" className="gap-2"><FileText className="h-4 w-4" /> Archive History</TabsTrigger>
+                    <TabsTrigger value="archive" className="gap-2"><Archive className="h-4 w-4" /> Archive History</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="vault">
@@ -140,7 +173,8 @@ export default function AIToolsPage() {
                     </Card>
                 </TabsContent>
 
-                <TabsContent value="archive" className="space-y-6">
+                <TabsContent value="archive" className="space-y-5">
+                    {/* Header row */}
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-xl font-bold text-[#1B4B43]">Archived Assets</h2>
@@ -152,6 +186,53 @@ export default function AIToolsPage() {
                         </Button>
                     </div>
 
+                    {/* Stats bar */}
+                    {archives.length > 0 && (
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="rounded-lg border bg-slate-50 px-4 py-3 text-center">
+                                <p className="text-2xl font-bold text-[#1B4B43]">{archiveStats.total}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Total Assets</p>
+                            </div>
+                            <div className="rounded-lg border bg-slate-50 px-4 py-3 text-center">
+                                <p className="text-2xl font-bold text-[#1B4B43]">{archiveStats.vault}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Vault Documents</p>
+                            </div>
+                            <div className="rounded-lg border bg-slate-50 px-4 py-3 text-center">
+                                <p className="text-2xl font-bold text-[#1B4B43]">{archiveStats.audio}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Audio Scripts</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Search + Filter */}
+                    {archives.length > 0 && (
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search by topic..."
+                                    value={archiveSearch}
+                                    onChange={e => setArchiveSearch(e.target.value)}
+                                    className="pl-9"
+                                />
+                            </div>
+                            <div className="flex gap-1.5">
+                                {(["all", "vault", "audio"] as const).map(f => (
+                                    <Button
+                                        key={f}
+                                        size="sm"
+                                        variant={archiveFilter === f ? "default" : "outline"}
+                                        className={archiveFilter === f ? "bg-[#1B4B43] hover:bg-[#1B4B43]/90" : ""}
+                                        onClick={() => setArchiveFilter(f)}
+                                    >
+                                        {f === "all" ? `All (${archiveStats.total})` : f === "vault" ? `Vault (${archiveStats.vault})` : `Audio (${archiveStats.audio})`}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* List */}
                     {loadingArchives && archives.length === 0 ? (
                         <div className="flex justify-center py-12">
                             <Loader2 className="h-8 w-8 animate-spin text-[#1B4B43]" />
@@ -162,47 +243,85 @@ export default function AIToolsPage() {
                                 No history found. Generate some content first.
                             </CardContent>
                         </Card>
+                    ) : filteredArchives.length === 0 ? (
+                        <Card>
+                            <CardContent className="py-12 text-center text-muted-foreground">
+                                No results match your search or filter.
+                            </CardContent>
+                        </Card>
                     ) : (
-                        <div className="grid gap-6">
-                            {archives.map((asset) => (
-                                <Card key={asset.id} className="overflow-hidden">
-                                    <CardHeader className="bg-slate-50 border-b pb-4">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${asset.type === 'vault' ? 'bg-[#1B4B43] text-white' : 'bg-stone-200 text-stone-700'}`}>
-                                                        {asset.type}
-                                                    </span>
-                                                    <span className="text-xs font-mono text-stone-500 bg-white border px-1.5 py-0.5 rounded">
-                                                        ID: {asset.id}
-                                                    </span>
-                                                    <span className="text-xs text-stone-500 font-medium">
-                                                        {new Date(asset.createdAt).toLocaleString("fa-IR", { dateStyle: "long", timeStyle: "short" })}
-                                                    </span>
+                        <div className="grid gap-4">
+                            {filteredArchives.map((asset, index) => {
+                                const isExpanded = expandedIds.has(asset.id)
+                                const wordCount = asset.content.trim().split(/\s+/).length
+                                const charCount = asset.content.length
+                                const isCopied = copiedId === asset.id
+                                return (
+                                    <Card key={asset.id} className="overflow-hidden">
+                                        <CardHeader className="bg-slate-50 border-b py-3 px-5">
+                                            <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                                                <div className="space-y-1.5 flex-1 min-w-0">
+                                                    {/* Meta row */}
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <span className="text-xs font-semibold text-stone-400">#{archiveStats.total - index}</span>
+                                                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${asset.type === 'vault' ? 'bg-[#1B4B43] text-white' : 'bg-amber-100 text-amber-800'}`}>
+                                                            {asset.type === "vault" ? <FileText className="h-2.5 w-2.5 mr-1" /> : <Mic className="h-2.5 w-2.5 mr-1" />}
+                                                            {asset.type}
+                                                        </span>
+                                                        <span className="text-xs text-stone-500">
+                                                            {new Date(asset.createdAt).toLocaleString("fa-IR", { dateStyle: "medium", timeStyle: "short" })}
+                                                        </span>
+                                                        <span className="text-xs text-stone-400">·</span>
+                                                        <span className="text-xs text-stone-400">{wordCount.toLocaleString()} words</span>
+                                                        <span className="text-xs text-stone-400">·</span>
+                                                        <span className="text-xs text-stone-400">{charCount.toLocaleString()} chars</span>
+                                                    </div>
+                                                    {/* Topic */}
+                                                    <p className="text-sm font-semibold text-[#111827] leading-snug truncate" title={asset.topic}>
+                                                        {asset.topic}
+                                                    </p>
+                                                    {/* Shortcode (vault only) */}
+                                                    {asset.type === "vault" && (
+                                                        <p className="text-[10px] font-mono text-stone-400 mt-0.5 truncate">
+                                                            [VAULT_ASSET id=&quot;{asset.id}&quot;]
+                                                        </p>
+                                                    )}
                                                 </div>
-                                                <CardTitle className="text-base leading-tight pt-1 text-[#111827]">Topic / Prompt: {asset.topic}</CardTitle>
+                                                {/* Actions */}
+                                                <div className="flex gap-2 shrink-0">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="bg-white gap-1.5 text-xs"
+                                                        onClick={() => handleCopyArchive(asset.id, asset.content)}
+                                                    >
+                                                        {isCopied ? <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+                                                        {isCopied ? "Copied!" : "Copy"}
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="bg-white gap-1.5 text-xs"
+                                                        onClick={() => toggleExpand(asset.id)}
+                                                    >
+                                                        {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                                                        {isExpanded ? "Collapse" : "Expand"}
+                                                    </Button>
+                                                </div>
                                             </div>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="shrink-0 bg-white"
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(asset.content)
-                                                }}
-                                            >
-                                                <Copy className="h-4 w-4 mr-2" /> Copy Content
-                                            </Button>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="p-0">
-                                        <div className="bg-white p-6 max-h-[400px] overflow-y-auto">
-                                            <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono text-stone-700">
-                                                {asset.content}
-                                            </pre>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                                        </CardHeader>
+                                        {isExpanded && (
+                                            <CardContent className="p-0">
+                                                <div className="bg-white p-5 max-h-[500px] overflow-y-auto">
+                                                    <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono text-stone-700">
+                                                        {asset.content}
+                                                    </pre>
+                                                </div>
+                                            </CardContent>
+                                        )}
+                                    </Card>
+                                )
+                            })}
                         </div>
                     )}
                 </TabsContent>

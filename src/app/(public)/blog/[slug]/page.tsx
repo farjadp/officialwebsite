@@ -13,27 +13,61 @@
 import { getPost } from "@/app/actions/posts"
 import { notFound } from "next/navigation"
 import { format } from "date-fns"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
     Calendar,
     Clock,
     ArrowLeft,
-    BookOpen,
-    Users,
-    BarChart3,
-    ExternalLink,
     ArrowRight,
-    Zap,
-    MessageSquare,
 } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Metadata } from "next"
 import { ScorecardWidget } from "@/components/public/scorecard-widget"
 import { VaultAssetWidget } from "@/components/public/vault-asset-widget"
-// ─── View counter (fire-and-forget) ─────────────────────────────────────────
+import { ShareButtons } from "@/components/blog/share-buttons"
+import { ArticleSidebar, type Heading } from "@/components/public/article-sidebar"
+// ─── Real reading time from content ──────────────────────────────────────────
+function calculateReadingTime(html: string): number {
+    const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    const words = text.split(' ').filter(Boolean).length
+    return Math.max(1, Math.ceil(words / 200))
+}
+
+// ─── Parse headings + inject IDs for TOC ─────────────────────────────────────
+function processContent(html: string): { processedHtml: string; headings: Heading[] } {
+    const headings: Heading[] = []
+    const usedIds = new Set<string>()
+
+    const processedHtml = html.replace(
+        /<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi,
+        (match, tag, attrs, content) => {
+            if (/\bid=/i.test(attrs)) return match
+            const level = parseInt(tag[1])
+            const plainText = content.replace(/<[^>]+>/g, '').trim()
+            if (!plainText) return match
+
+            let baseId = plainText
+                .toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .trim()
+                .replace(/\s+/g, '-')
+                .slice(0, 60)
+
+            let id = baseId
+            let n = 1
+            while (usedIds.has(id)) id = `${baseId}-${n++}`
+            usedIds.add(id)
+            headings.push({ id, text: plainText, level })
+            return `<${tag}${attrs} id="${id}">${content}</${tag}>`
+        }
+    )
+
+    return { processedHtml, headings }
+}
+
+// ─── View counter (fire-and-forget) ──────────────────────────────────────────
 async function incrementView(id: string) {
     "use server"
     try {
@@ -173,303 +207,233 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     // Compute difficulty
     const difficulty = getDifficulty(post.categories, post.tags, post.readingTime)
 
-    // Target audience from categories (fallback to generic)
+    // Target audience
     const primaryCategory = post.categories[0]?.name ?? null
     const targetAudience = primaryCategory
         ? `${primaryCategory} practitioners and founders`
         : "Startup founders, operators, and tech entrepreneurs"
 
+    // Real reading time from content word count
+    const realReadingTime = calculateReadingTime(post.content || '')
+
+    // Process content: inject heading IDs + extract TOC list
+    const { processedHtml, headings } = processContent(post.content || '')
+
+    const SHORTCODE_REGEX = /(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\])\s*(?:<\/p>)?/g
+
     return (
         <article className="min-h-screen bg-[#FDFCF8] pb-24">
 
-            {/* ── Header ──────────────────────────────────────────────────────── */}
-            <div className="bg-[#F5F5F4] border-b border-stone-200 py-14">
-                <div className="container px-4 mx-auto max-w-3xl space-y-5">
+            {/* ── HERO ────────────────────────────────────────────────────────── */}
+            <header className="bg-white border-b border-stone-100 pt-8 pb-16">
+                <div className="max-w-3xl mx-auto px-6">
+
                     <Link
                         href="/blog"
-                        className="inline-flex items-center text-sm text-stone-500 hover:text-[#1B4B43] transition-colors mb-2"
+                        className="inline-flex items-center gap-2 text-sm text-stone-400 hover:text-[#1B4B43] transition-colors mb-10 group"
                     >
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Blog
+                        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+                        All Articles
                     </Link>
 
-                    <div className="flex flex-wrap gap-2 items-center">
-                        {post.categories.map((c) => (
-                            <Badge
-                                key={c.id}
-                                variant="secondary"
-                                className="rounded-full px-3 py-1 font-normal bg-[#1B4B43]/10 text-[#1B4B43]"
-                            >
-                                {c.name}
-                            </Badge>
-                        ))}
-                    </div>
-
-                    <h1 className="font-serif text-4xl md:text-5xl font-bold text-[#111827] leading-tight tracking-tight">
-                        {post.title}
-                    </h1>
-
-                    {post.excerpt && (
-                        <p className="text-xl text-stone-500 leading-relaxed">{post.excerpt}</p>
-                    )}
-
-                    <div className="flex flex-wrap items-center gap-6 text-sm text-stone-400 pt-2">
-                        <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            <time dateTime={post.createdAt.toISOString()}>
-                                {format(new Date(post.createdAt), "MMM d, yyyy")}
-                            </time>
-                        </div>
-                        {post.readingTime && (
-                            <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
-                                {post.readingTime} min read
-                            </div>
-                        )}
-                        <div className="flex items-center gap-2">
-                            <span>{post.views} views</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Main content ─────────────────────────────────────────────────── */}
-            <div className="container px-4 mx-auto max-w-3xl py-12 space-y-10">
-
-                {/* Cover image */}
-                {post.coverImage && (
-                    <div className="rounded-2xl overflow-hidden shadow-lg aspect-video relative">
-                        <img
-                            src={post.coverImage}
-                            alt={post.title}
-                            className="object-cover w-full h-full"
-                        />
-                    </div>
-                )}
-
-                {/* ── BOX 1: Article Overview ──────────────────────────────────── */}
-                <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-5">
-                    <h2 className="font-bold text-[#111827] text-base flex items-center gap-2">
-                        <BookOpen className="w-4 h-4 text-[#1B4B43]" />
-                        Before You Read
-                    </h2>
-
-                    <div className="grid sm:grid-cols-3 gap-4">
-                        {/* What this is about */}
-                        <div className="bg-[#F5F5F4] rounded-xl p-4 space-y-1">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">What this covers</p>
-                            <p className="text-sm font-medium text-[#111827] leading-snug">
-                                {post.excerpt
-                                    ? post.excerpt.length > 90
-                                        ? post.excerpt.slice(0, 90) + "…"
-                                        : post.excerpt
-                                    : post.title}
-                            </p>
-                        </div>
-
-                        {/* Target reader */}
-                        <div className="bg-[#F5F5F4] rounded-xl p-4 space-y-1">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 flex items-center gap-1">
-                                <Users className="w-3 h-3" /> For who
-                            </p>
-                            <p className="text-sm font-medium text-[#111827] leading-snug">
-                                {targetAudience}
-                            </p>
-                        </div>
-
-                        {/* Difficulty */}
-                        <div className="bg-[#F5F5F4] rounded-xl p-4 space-y-2">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 flex items-center gap-1">
-                                <BarChart3 className="w-3 h-3" /> Difficulty
-                            </p>
-                            <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full border ${difficulty.color}`}>
-                                {difficulty.label}
-                            </span>
-                            <p className="text-xs text-stone-500 leading-snug">{difficulty.description}</p>
-                        </div>
-                    </div>
-
-                    {/* Tags */}
-                    {post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 pt-1">
-                            {post.tags.map((t) => (
+                    {post.categories.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-5">
+                            {post.categories.map((c) => (
                                 <span
-                                    key={t.id}
-                                    className="text-[10px] bg-stone-100 text-stone-500 px-2.5 py-1 rounded-full font-medium"
+                                    key={c.id}
+                                    className="text-xs font-bold uppercase tracking-widest text-[#1B4B43] bg-[#1B4B43]/8 px-3 py-1 rounded-full"
                                 >
-                                    #{t.name}
+                                    {c.name}
                                 </span>
                             ))}
                         </div>
                     )}
 
-                    {/* Related service CTA */}
-                    {relatedService && (
-                        <div className="flex items-start gap-3 pt-3 border-t border-stone-100">
-                            <Zap className="w-4 h-4 text-[#D97706] mt-0.5 shrink-0" />
-                            <p className="text-sm text-stone-600">
-                                This article relates to one of Farjad&apos;s core services:{" "}
-                                <Link
-                                    href={relatedService.href}
-                                    className="font-bold text-[#1B4B43] underline underline-offset-2 hover:text-[#111827] transition-colors"
-                                >
-                                    {relatedService.title} →
-                                </Link>
-                            </p>
-                        </div>
-                    )}
-                </div>
+                    <h1 className="font-serif text-4xl md:text-5xl font-bold text-[#111827] leading-[1.1] tracking-tight mb-5">
+                        {post.title}
+                    </h1>
 
-                {/* ── Article Body (prose) ─────────────────────────────────────── */}
-                <div
-                    className="prose prose-lg prose-stone max-w-none
-            prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#111827]
-            prose-p:leading-relaxed prose-p:text-stone-700
-            prose-strong:text-[#111827]
-            prose-a:text-[#1B4B43] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
-            prose-blockquote:border-[#1B4B43] prose-blockquote:bg-[#1B4B43]/5 prose-blockquote:py-1 prose-blockquote:rounded-r-lg
-            prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full"
-                >
-                    {(post.content || "").split(/(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\])\s*(?:<\/p>)?/g).map((part, index) => {
-                        if (!part) return null;
-
-                        // We check the exact matched text group
-                        if (part === "[SCORECARD]") {
-                            return (
-                                <div key={index} className="my-12 not-prose">
-                                    <ScorecardWidget />
-                                </div>
-                            );
-                        }
-
-                        const vaultMatch = part.match(/\[VAULT_ASSET id="([^"]+)"\]/);
-                        if (vaultMatch) {
-                            return (
-                                <div key={index} className="my-12 not-prose">
-                                    <VaultAssetWidget id={vaultMatch[1]} />
-                                </div>
-                            );
-                        }
-
-                        // Fast abort if empty part (caused by regex splitting on boundaries)
-                        if (!part.trim()) return null;
-
-                        return <div key={index} dangerouslySetInnerHTML={{ __html: part }} />;
-                    })}
-                </div>
-
-                <Separator className="my-10" />
-
-                {/* ── BOX 2: Related Articles ───────────────────────────────────── */}
-                {relatedPosts.length > 0 && (
-                    <div className="space-y-4">
-                        <h2 className="font-bold text-[#111827] text-lg flex items-center gap-2">
-                            <ExternalLink className="w-5 h-5 text-[#1B4B43]" />
-                            You might also enjoy
-                        </h2>
-                        <div className="grid sm:grid-cols-3 gap-4">
-                            {relatedPosts.map((related) => (
-                                <Link
-                                    key={related.slug}
-                                    href={`/blog/${related.slug}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-white border border-stone-200 rounded-xl p-5 hover:border-[#1B4B43] hover:shadow-md transition-all group flex flex-col"
-                                >
-                                    {related.categories[0] && (
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] mb-2">
-                                            {related.categories[0].name}
-                                        </span>
-                                    )}
-                                    <h3 className="font-serif font-bold text-sm text-[#111827] group-hover:text-[#1B4B43] leading-snug mb-2 transition-colors flex-1">
-                                        {related.title}
-                                    </h3>
-                                    {related.readingTime && (
-                                        <span className="text-[10px] text-stone-400 flex items-center gap-1 mt-1">
-                                            <Clock className="w-3 h-3" /> {related.readingTime} min read
-                                        </span>
-                                    )}
-                                    <span className="text-[10px] text-[#1B4B43] font-bold flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Read in new tab <ArrowRight className="w-3 h-3" />
-                                    </span>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* ── Author CTA ───────────────────────────────────────────────── */}
-                <div className="bg-[#111827] text-white rounded-2xl p-8 flex flex-col md:flex-row gap-6 items-center md:items-start">
-                    <div className="w-16 h-16 rounded-full bg-[#1B4B43] flex items-center justify-center text-xl font-bold shrink-0">
-                        FP
-                    </div>
-                    <div className="space-y-3 text-center md:text-left">
-                        <h3 className="font-bold text-lg">Written by Farjad</h3>
-                        <p className="text-stone-400 text-sm leading-relaxed">
-                            Startup advisor, product strategist, and former CTO. I write about the unglamorous truth of building real businesses.
+                    {post.excerpt && (
+                        <p className="text-lg md:text-xl text-stone-500 leading-relaxed mb-8 max-w-2xl">
+                            {post.excerpt}
                         </p>
-                        <div className="flex flex-wrap gap-3 justify-center md:justify-start pt-1">
-                            <Link href="/booking">
-                                <Button className="bg-[#1B4B43] hover:bg-green-700 text-white text-sm h-9">
-                                    Book a Discovery Call
-                                </Button>
-                            </Link>
-                            <Link href="/blog">
-                                <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 text-sm h-9">
-                                    More Articles
-                                </Button>
-                            </Link>
-                        </div>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-stone-400">
+                        <time className="flex items-center gap-1.5" dateTime={post.createdAt.toISOString()}>
+                            <Calendar className="h-3.5 w-3.5" />
+                            {format(new Date(post.createdAt), "MMMM d, yyyy")}
+                        </time>
+                        <>
+                            <span className="text-stone-200">·</span>
+                            <span className="flex items-center gap-1.5">
+                                <Clock className="h-3.5 w-3.5" />
+                                {realReadingTime} min read
+                            </span>
+                        </>
+                        <span className="text-stone-200">·</span>
+                        <span>{post.views.toLocaleString()} views</span>
+                        <span className="text-stone-200">·</span>
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${difficulty.color}`}>
+                            {difficulty.label}
+                        </span>
                     </div>
                 </div>
+            </header>
 
-                {/* ── Comments Section ─────────────────────────────────────────── */}
-                <div className="space-y-4 pt-4">
-                    <h2 className="font-bold text-[#111827] text-lg flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5 text-[#1B4B43]" />
-                        Comments
-                    </h2>
-                    <CommentsBox postSlug={slug} />
+            {/* ── CONTENT (two-column on lg+) ──────────────────────────────────── */}
+            <div className="max-w-[1180px] mx-auto px-6 pt-10 pb-24">
+                <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-12 lg:items-start">
+
+                    {/* ── LEFT: sticky sidebar ─────────────────────────────────── */}
+                    <aside className="hidden lg:block">
+                        <div className="sticky top-24">
+                            <ArticleSidebar
+                                headings={headings}
+                                excerpt={post.excerpt}
+                                targetAudience={targetAudience}
+                                difficulty={difficulty}
+                                tags={post.tags}
+                                relatedService={relatedService}
+                                postTitle={post.title}
+                                postSlug={post.slug}
+                                realReadingTime={realReadingTime}
+                            />
+                        </div>
+                    </aside>
+
+                    {/* ── RIGHT: main content ──────────────────────────────────── */}
+                    <div className="min-w-0">
+
+                        {/* Cover image */}
+                        {post.coverImage && (
+                            <div className="rounded-2xl overflow-hidden shadow-md aspect-video mb-8">
+                                <img
+                                    src={post.coverImage}
+                                    alt={post.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        )}
+
+                        {/* ── Article body ─────────────────────────────────────── */}
+                        <div
+                            className="prose prose-lg prose-stone max-w-none
+                            prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#111827] prose-headings:scroll-mt-24
+                            prose-h2:text-2xl prose-h3:text-xl
+                            prose-p:leading-[1.85] prose-p:text-stone-700
+                            prose-strong:text-[#111827] prose-strong:font-semibold
+                            prose-a:text-[#1B4B43] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
+                            prose-blockquote:border-l-4 prose-blockquote:border-[#1B4B43] prose-blockquote:bg-[#1B4B43]/5 prose-blockquote:not-italic prose-blockquote:rounded-r-lg
+                            prose-code:bg-stone-100 prose-code:text-[#1B4B43] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+                            prose-pre:bg-[#111827] prose-pre:rounded-xl prose-pre:shadow-md
+                            prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full
+                            prose-hr:border-stone-200
+                            prose-li:text-stone-700"
+                        >
+                            {processedHtml.split(SHORTCODE_REGEX).map((part, index) => {
+                                if (!part) return null
+
+                                if (part === "[SCORECARD]") {
+                                    return (
+                                        <div key={index} className="my-12 not-prose">
+                                            <ScorecardWidget />
+                                        </div>
+                                    )
+                                }
+
+                                const vaultMatch = part.match(/\[VAULT_ASSET id="([^"]+)"\]/)
+                                if (vaultMatch) {
+                                    return (
+                                        <div key={index} className="my-12 not-prose">
+                                            <VaultAssetWidget id={vaultMatch[1]} />
+                                        </div>
+                                    )
+                                }
+
+                                if (!part.trim()) return null
+
+                                return <div key={index} dangerouslySetInnerHTML={{ __html: part }} />
+                            })}
+                        </div>
+
+                        <Separator className="my-10" />
+
+                        {/* Share */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <p className="font-semibold text-[#111827] text-sm">Found this useful?</p>
+                                <p className="text-stone-400 text-xs mt-0.5">Share it with someone who needs to read this.</p>
+                            </div>
+                            <ShareButtons title={post.title} slug={post.slug} />
+                        </div>
+
+                        <Separator className="my-10" />
+
+                        {/* Related Articles */}
+                        {relatedPosts.length > 0 && (
+                            <div className="space-y-5">
+                                <h2 className="font-bold text-[#111827] text-lg">Continue Reading</h2>
+                                <div className="grid sm:grid-cols-3 gap-4">
+                                    {relatedPosts.map((related) => (
+                                        <Link
+                                            key={related.slug}
+                                            href={`/blog/${related.slug}`}
+                                            className="group bg-white border border-stone-200 rounded-xl p-5 hover:border-[#1B4B43] hover:shadow-sm transition-all flex flex-col gap-2"
+                                        >
+                                            {related.categories[0] && (
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43]">
+                                                    {related.categories[0].name}
+                                                </span>
+                                            )}
+                                            <h3 className="font-serif font-bold text-sm text-[#111827] group-hover:text-[#1B4B43] leading-snug transition-colors flex-1">
+                                                {related.title}
+                                            </h3>
+                                            {related.readingTime && (
+                                                <span className="text-[10px] text-stone-400 flex items-center gap-1 mt-auto">
+                                                    <Clock className="w-3 h-3" /> {related.readingTime} min read
+                                                </span>
+                                            )}
+                                            <span className="text-[10px] text-[#1B4B43] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                Read now <ArrowRight className="w-3 h-3" />
+                                            </span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Author */}
+                        <div className="mt-12 bg-white border border-stone-200 rounded-2xl p-7 flex flex-col sm:flex-row items-start gap-5">
+                            <div className="w-12 h-12 rounded-full bg-[#1B4B43] flex items-center justify-center text-sm font-bold text-white shrink-0">
+                                FP
+                            </div>
+                            <div className="space-y-2 flex-1">
+                                <div>
+                                    <p className="font-bold text-[#111827]">Farjad .P</p>
+                                    <p className="text-xs text-stone-400 mt-0.5">Startup Advisor · Product Strategist · Former CTO</p>
+                                </div>
+                                <p className="text-sm text-stone-600 leading-relaxed">
+                                    I write about the unglamorous truth of building real businesses — no hype, no shortcuts, just patterns that work.
+                                </p>
+                                <div className="flex flex-wrap gap-2.5 pt-2">
+                                    <Link href="/booking">
+                                        <Button size="sm" className="bg-[#1B4B43] hover:bg-[#1B4B43]/90 text-white h-8 text-xs px-4">
+                                            Book a Discovery Call
+                                        </Button>
+                                    </Link>
+                                    <Link href="/blog">
+                                        <Button size="sm" variant="outline" className="h-8 text-xs px-4">
+                                            More Articles
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-
             </div>
         </article>
-    )
-}
-
-// ─── Comments Box — collects name + message, saves to DB ─────────────────────
-// Simple native comments (no third-party dependency required)
-function CommentsBox({ postSlug }: { postSlug: string }) {
-    return (
-        <div className="bg-white border border-stone-200 rounded-2xl p-6 space-y-4">
-            <p className="text-sm text-stone-500">
-                Have thoughts on this? Leave a comment — Farjad reads every one.
-            </p>
-            {/* 
-        Full comments with DB storage would require a form action.
-        For now, link to the booking page for direct conversation.
-      */}
-            <div className="bg-stone-50 rounded-xl border border-dashed border-stone-200 p-6 text-center space-y-3">
-                <p className="text-stone-500 text-sm">
-                    Comments are open via direct conversation. Prefer a real discussion over a comment thread.
-                </p>
-                <div className="flex justify-center gap-3">
-                    <Link
-                        href="/contact"
-                        className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1B4B43] hover:underline"
-                    >
-                        Send a message <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <span className="text-stone-300">•</span>
-                    <Link
-                        href="https://linkedin.com/in/farjadp"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:underline"
-                    >
-                        LinkedIn <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                </div>
-            </div>
-        </div>
     )
 }

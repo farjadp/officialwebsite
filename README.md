@@ -42,12 +42,17 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## CHANGELOG (March 2026)
 
 ### Added
+- **AI Content Studio & Archive (`/admin/ai-tools`):** An internal suite to generate Lead Magnets (Vault Assets) and Private Audio Memo scripts, complete with a persistent historical archive tab to view and retrieve past generated assets.
+- **Embeddable Interactive Widgets:** Added support for dynamic shortcodes (`[SCORECARD]` and `[VAULT_ASSET id="..."]`) within generated and manually written blog posts. These render as rich, interactive React client components (like the interactive checklist that saves progress to localStorage) directly inside articles to drive lead conversion.
+- **Admin Dashboard Enhancements:** Integrated embedded PostHog analytics dashboards directly within the admin panel for streamlined user behavior tracking. Added Sniper Retargeting to the AI Content Waterfall.
 - **Mentorship Portfolio Gateway (`/startups`):** A curated Bento-grid page highlighting 25+ advised ventures, rich with metadata (Timeline, Status, Satisfaction).
 - **The Reality Check Dashboard (`/stats`):** An immersive and honest data-viz page displaying 7 years of startup insights (Funding, Screen Time Reality, Coffee Ratios, and Filter Metrics).
 - **Consolidated Navigation:** Re-architected Header and Mobile Menus to group previous disparate pages into a cohesive "Proof of Work" dropdown.
 - **Enhanced Asset Loading:** Optimized image handling for founder shots, branding resources, and transparent scalable SVGs (incl: Google Meet visualization).
 
 ### Updated
+- Improved shortcode regex parsing for Tiptap editor compatibility, ensuring `[VAULT_ASSET]` and `[SCORECARD]` components render reliably in the blog layout.
+- Fixed LinkedIn OAuth requiring 'Sign In with LinkedIn OpenID' product for profile extraction and corrected Twitter thread/single tweet integration.
 - Corrected identity references ("Farjad P.") and updated primary domains to `farjadp.info` across metadata, footers, and AI generation prompts.
 - Improved global component spacing on the `Contact` page.
 - Cleaned up and modularized routing configurations for the newly injected Proof of Work structure.
