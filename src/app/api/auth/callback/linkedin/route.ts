@@ -51,24 +51,23 @@ export async function GET(req: NextRequest) {
         const expiresIn = tokenData.expires_in; // seconds
 
         // Step 2: Get user profile (to get the person URN for posting)
-        const profileRes = await fetch("https://api.linkedin.com/v2/me", {
+        const profileRes = await fetch("https://api.linkedin.com/v2/userinfo", {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
 
         const profile = await profileRes.json();
         console.log("[LinkedIn OAuth] Profile response:", JSON.stringify(profile));
 
-        // LinkedIn /v2/me can return the ID in different fields
-        const personId = profile.id || profile.sub;
+        const personId = profile.sub;
         if (!personId) {
-            console.error("[LinkedIn OAuth] Could not find person ID in profile:", profile);
+            console.error("[LinkedIn OAuth] Could not find person sub in profile:", profile);
             return NextResponse.redirect(
                 `${siteUrl}/admin/publish-report?linkedin=error&msg=${encodeURIComponent("Could not get LinkedIn user ID. Check server logs.")}`
             );
         }
 
         const personUrn = `urn:li:person:${personId}`;
-        const displayName = [profile.localizedFirstName, profile.localizedLastName].filter(Boolean).join(" ") || profile.name || "Connected";
+        const displayName = profile.name || "Connected";
 
         // Step 3: Store token + URN in DB
         await prisma.appSetting.upsert({
