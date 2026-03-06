@@ -34,6 +34,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 
+# PostHog Public Variables (Safe to hardcode as they are public)
+ENV NEXT_PUBLIC_POSTHOG_KEY="phc_94QZDFci3qbG7kjnGMcZ62dmXsab2RH7oEJs5WeojbF"
+ENV NEXT_PUBLIC_POSTHOG_HOST="https://us.i.posthog.com"
+
 RUN npm run build
 
 
