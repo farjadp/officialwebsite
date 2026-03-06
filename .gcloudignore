@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Next.js build output
+.next
+out
+
+# Environment files (NEVER commit these)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Dev tooling
+.eslintrc*
+*.config.js
+*.config.ts
+!next.config.ts
+!prisma.config.ts
+
+# Misc
+.DS_Store
+*.md
+coverage
+.nyc_output
