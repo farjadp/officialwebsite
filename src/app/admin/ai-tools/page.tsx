@@ -132,6 +132,73 @@ export default function AIToolsPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+
+                <TabsContent value="archive" className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-xl font-bold text-[#1B4B43]">Archived Assets</h2>
+                            <p className="text-sm text-muted-foreground mt-1">History of all generated lead magnets and scripts.</p>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={fetchArchives} disabled={loadingArchives}>
+                            {loadingArchives ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                            Refresh
+                        </Button>
+                    </div>
+
+                    {loadingArchives && archives.length === 0 ? (
+                        <div className="flex justify-center py-12">
+                            <Loader2 className="h-8 w-8 animate-spin text-[#1B4B43]" />
+                        </div>
+                    ) : archives.length === 0 ? (
+                        <Card>
+                            <CardContent className="py-12 text-center text-muted-foreground">
+                                No history found. Generate some content first.
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <div className="grid gap-6">
+                            {archives.map((asset) => (
+                                <Card key={asset.id} className="overflow-hidden">
+                                    <CardHeader className="bg-slate-50 border-b pb-4">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${asset.type === 'vault' ? 'bg-[#1B4B43] text-white' : 'bg-stone-200 text-stone-700'}`}>
+                                                        {asset.type}
+                                                    </span>
+                                                    <span className="text-xs font-mono text-stone-500 bg-white border px-1.5 py-0.5 rounded">
+                                                        ID: {asset.id}
+                                                    </span>
+                                                    <span className="text-xs text-stone-500 font-medium">
+                                                        {new Date(asset.createdAt).toLocaleString("fa-IR", { dateStyle: "long", timeStyle: "short" })}
+                                                    </span>
+                                                </div>
+                                                <CardTitle className="text-base leading-tight pt-1 text-[#111827]">Topic / Prompt: {asset.topic}</CardTitle>
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="shrink-0 bg-white"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(asset.content)
+                                                }}
+                                            >
+                                                <Copy className="h-4 w-4 mr-2" /> Copy Content
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <div className="bg-white p-6 max-h-[400px] overflow-y-auto">
+                                            <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono text-stone-700">
+                                                {asset.content}
+                                            </pre>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </TabsContent>
             </Tabs>
 
             {resultText && (
