@@ -235,6 +235,25 @@ function PublishReportContent() {
 
     return (
         <div className="max-w-5xl mx-auto py-8 space-y-8">
+            {/* PostHog Embedded Dashboard */}
+            <div>
+                <h2 className="text-xl font-bold tracking-tight mb-4 flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-indigo-600" />
+                    Live Website Analytics
+                </h2>
+                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                    <iframe
+                        width="100%"
+                        height="400"
+                        frameBorder="0"
+                        allowFullScreen
+                        src="https://us.posthog.com/embedded/TjUzNnDbFm9j9L_fG2hQLTplbC8rfw"
+                        key="0"
+                        sandbox="allow-scripts allow-same-origin allow-popups"
+                    ></iframe>
+                </div>
+            </div>
+
             {/* LinkedIn OAuth result banner */}
             {linkedinResult === "success" && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800 flex items-center gap-2">
