@@ -9,21 +9,26 @@
 
 import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpRight, Github, ExternalLink, Activity, Target, Layers, Briefcase, Zap, BookOpen, Lock, Globe, Star, GitFork } from "lucide-react";
+import { ArrowUpRight, Github, ExternalLink, Activity, Target, Layers, Briefcase, Zap, BookOpen, Lock, Globe, Star, GitFork, Terminal } from "lucide-react";
 import {
     CATEGORIES,
-    Category,
-    STARTUPS_FOUNDED,
-    STRATEGIC_ENGAGEMENTS,
-    TECHNICAL_PROJECTS,
-    GITHUB_REPOS,
-    AI_SYSTEMS,
-    EXPERIMENTAL_LAB
+    PortfolioCategory,
+    PORTFOLIO_ITEMS,
+    FOUNDER_JOURNEY
 } from "./data";
 import { cn } from "@/lib/utils";
 
-export default function PortfolioPageV2() {
-    const [activeCategory, setActiveCategory] = useState<Category>("All");
+const CategoryIcon = ({ category, className }: { category: PortfolioCategory, className?: string }) => {
+    switch (category) {
+        case "My Startups": return <Activity className={className} />;
+        case "Companies & Ventures": return <Briefcase className={className} />;
+        case "GitHub Projects": return <Terminal className={className} />;
+        default: return <Briefcase className={className} />;
+    }
+}
+
+export default function PortfolioPageV3() {
+    const [activeCategory, setActiveCategory] = useState<PortfolioCategory>("My Startups");
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -34,6 +39,10 @@ export default function PortfolioPageV2() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    const filterItems = (category: PortfolioCategory) => {
+        return PORTFOLIO_ITEMS.filter((item) => item.category === category);
+    };
+
     return (
         <div className="min-h-screen bg-[#0C0A09] text-stone-300 font-sans selection:bg-[#D97706] selection:text-white pb-32 overflow-x-hidden">
 
@@ -43,7 +52,7 @@ export default function PortfolioPageV2() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#D97706] rounded-full mix-blend-screen filter blur-[150px] opacity-10"></div>
 
                 {/* Subtle Grid */}
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgNDBoNDBWMHoiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAyKSIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPg==')] opacity-50"></div>
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0wIDhoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgNDBoNDBWMHoiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAyKSIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPg==')] opacity-50"></div>
             </div>
 
             <div className="relative z-10">
@@ -55,10 +64,10 @@ export default function PortfolioPageV2() {
                         </div>
                         <h1 className="font-serif text-5xl md:text-8xl leading-[1.05] text-white mb-8 tracking-tight">
                             Selected Works & <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-stone-400 to-stone-600 font-light italic">Built Architecture</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-stone-400 to-stone-600 font-light italic">Honest Execution</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-stone-400 font-light leading-relaxed max-w-2xl">
-                            A curated archive of companies founded, systems architected, and strategic engagements executed. No fluff.
+                            A curated archive of companies launched, systems architected, and technical projects shipped. Zero fluff.
                         </p>
                     </div>
                 </section>
@@ -89,292 +98,139 @@ export default function PortfolioPageV2() {
                 </div>
 
                 <div className="max-w-6xl mx-auto px-6 md:px-12 space-y-32">
+                    {CATEGORIES.map((category) => {
+                        const isFounderJourney = category === "My Startups";
+                        const items = filterItems(category);
+                        if (!isFounderJourney && items.length === 0) return null;
+                        if (activeCategory !== category) return null;
 
-                    {/* --- 3. Startups I Founded --- */}
-                    {(activeCategory === "All" || activeCategory === "Startups I Founded") && (
-                        <section className="animate-fade-in-up">
-                            <div className="mb-12 flex items-center gap-4">
-                                <div className="p-3 bg-stone-900 border border-stone-800 rounded-xl">
-                                    <Briefcase className="w-6 h-6 text-white" />
-                                </div>
-                                <h2 className="font-serif text-3xl md:text-5xl text-white">Startups Founded</h2>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                {STARTUPS_FOUNDED.map((startup) => (
-                                    <div key={startup.id} className="group relative bg-stone-900/50 border border-stone-800 p-8 rounded-2xl hover:bg-stone-800/50 transition-all duration-500 overflow-hidden">
-                                        {/* Hover Gradient */}
-                                        <div className="absolute inset-0 bg-gradient-to-br from-[#1B4B43]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                                        <div className="relative z-10 flex flex-col h-full">
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div>
-                                                    <h3 className="text-3xl font-serif text-white mb-2">{startup.name}</h3>
-                                                    <span className="text-xs font-bold uppercase tracking-widest text-[#D97706]">{startup.role}</span>
-                                                </div>
-                                                <a href={startup.link} target="_blank" rel="noopener noreferrer" className="p-2 bg-stone-800 rounded-full text-stone-400 hover:text-white hover:bg-stone-700 transition-all group-hover:rotate-45">
-                                                    <ArrowUpRight className="w-5 h-5" />
-                                                </a>
-                                            </div>
-
-                                            <div className="flex flex-wrap gap-2 mb-8">
-                                                {startup.tags.map(tag => (
-                                                    <Badge key={tag} variant="secondary" className="bg-stone-950/50 border border-stone-800 text-stone-300 font-normal">
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-
-                                            <div className="space-y-6 flex-grow">
-                                                <div className="transform transition-transform duration-500 group-hover:translate-x-2">
-                                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">The Problem</h4>
-                                                    <p className="text-stone-300 text-sm leading-relaxed">{startup.problem}</p>
-                                                </div>
-                                                <div className="transform transition-transform duration-500 group-hover:translate-x-2 delay-75">
-                                                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">What Was Built</h4>
-                                                    <p className="text-stone-300 text-sm leading-relaxed">{startup.built}</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-8 pt-6 border-t border-stone-800/50 transform transition-transform duration-500 group-hover:translate-y-[-4px]">
-                                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] mb-2 flex items-center gap-2">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B4B43] animate-pulse"></div> Outcome
-                                                </h4>
-                                                <p className="text-white font-medium text-sm leading-relaxed border-l-2 border-[#1B4B43]/50 pl-3">{startup.outcome}</p>
-                                            </div>
+                        return (
+                            <section key={category} className="animate-fade-in-up">
+                                <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-800/50 pb-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-stone-900 border border-stone-800 rounded-xl">
+                                            <CategoryIcon category={category} className="w-6 h-6 text-white" />
                                         </div>
+                                        <h2 className="font-serif text-3xl md:text-5xl text-white">{category}</h2>
                                     </div>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* --- 4. Strategic Engagements --- */}
-                    {(activeCategory === "All" || activeCategory === "Strategic Engagements") && (
-                        <section className="animate-fade-in-up delay-100">
-                            <div className="mb-12 flex items-center gap-4">
-                                <div className="p-3 bg-stone-900 border border-stone-800 rounded-xl">
-                                    <Target className="w-6 h-6 text-white" />
                                 </div>
-                                <h2 className="font-serif text-3xl md:text-5xl text-white">Strategic Engagements</h2>
-                            </div>
 
-                            <div className="space-y-6">
-                                {STRATEGIC_ENGAGEMENTS.map((engagement) => (
-                                    <div key={engagement.id} className="group flex flex-col md:flex-row gap-6 md:gap-12 p-8 bg-stone-900/30 border border-stone-800/50 rounded-2xl hover:border-[#D97706]/50 hover:bg-stone-900/80 transition-all duration-500">
-                                        <div className="md:w-1/3 shrink-0">
-                                            <h3 className="text-2xl font-serif text-white mb-2">{engagement.organization}</h3>
-                                            <p className="text-xs font-bold uppercase tracking-widest text-[#D97706] mb-4">{engagement.role}</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {engagement.tags.map(tag => (
-                                                    <Badge key={tag} variant="secondary" className="bg-transparent border border-stone-700 text-stone-400 font-mono text-[10px]">
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="md:w-2/3 space-y-6 md:border-l md:border-stone-800 md:pl-12">
-                                            <div>
-                                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">The Challenge</h4>
-                                                <p className="text-stone-300 text-sm leading-relaxed">{engagement.challenge}</p>
-                                            </div>
-                                            <div>
-                                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">Contribution</h4>
-                                                <p className="text-stone-300 text-sm leading-relaxed">{engagement.contribution}</p>
-                                            </div>
-                                            <div className="pt-2">
-                                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-[#D97706] mb-2">Outcome</h4>
-                                                <p className="text-white text-sm leading-relaxed">{engagement.outcome}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    )}
+                                {isFounderJourney ? (
+                                    <div className="space-y-16 relative before:absolute before:inset-0 before:ml-[5px] before:-translate-x-px md:before:ml-[5px] md:before:translate-x-0 before:h-full before:w-[2px] before:bg-stone-800">
+                                        {FOUNDER_JOURNEY.map((startup, idx) => (
+                                            <div key={idx} className="relative pl-8 md:pl-12 group">
+                                                <div className={`absolute left-0 top-3 w-[11px] h-[11px] rounded-full ring-4 ring-[#0C0A09] transition-colors ${startup.status === 'Active' ? 'bg-[#D97706] ring-[#D97706]/20' : startup.status === 'Building' ? 'bg-[#10b981] ring-[#10b981]/20' : startup.status === 'Acquired' ? 'bg-[#10b981] ring-[#10b981]/20' : 'bg-stone-700'}`} />
 
-                    {/* --- 5. Technical Software / AI & Automation --- */}
-                    {(activeCategory === "All" || activeCategory === "Technical Software" || activeCategory === "AI & Automation Systems") && (
-                        <section className="animate-fade-in-up delay-200">
-                            <div className="mb-12 flex items-center gap-4">
-                                <div className="p-3 bg-stone-900 border border-stone-800 rounded-xl">
-                                    <Layers className="w-6 h-6 text-white" />
-                                </div>
-                                <h2 className="font-serif text-3xl md:text-5xl text-white">Technical Systems & AI</h2>
-                            </div>
-
-                            <div className="grid lg:grid-cols-3 gap-6">
-                                {[...TECHNICAL_PROJECTS, ...AI_SYSTEMS]
-                                    .filter(proj => {
-                                        if (activeCategory === "All") return true;
-                                        if (activeCategory === "Technical Software" && TECHNICAL_PROJECTS.some(p => p.id === proj.id)) return true;
-                                        if (activeCategory === "AI & Automation Systems" && AI_SYSTEMS.some(p => p.id === proj.id)) return true;
-                                        return false;
-                                    })
-                                    .map((project) => (
-                                        <div key={project.id} className="group relative bg-[#111111] border border-stone-800 p-8 rounded-2xl flex flex-col h-full hover:border-stone-600 transition-colors">
-                                            {/* Glowing Top Border effect */}
-                                            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#1B4B43] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-
-                                            <div className="flex justify-between items-start mb-6">
-                                                <h3 className="text-xl font-serif text-white pr-4">{project.name}</h3>
-                                                <div className="flex gap-2">
-                                                    {project.github !== "#" && (
-                                                        <a href={project.github} target="_blank" rel="noopener noreferrer" className="p-2 bg-stone-900 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors">
-                                                            <Github className="w-4 h-4" />
-                                                        </a>
-                                                    )}
-                                                    {project.demo !== "#" && (
-                                                        <a href={project.demo} target="_blank" rel="noopener noreferrer" className="p-2 bg-stone-900 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors">
-                                                            <ExternalLink className="w-4 h-4" />
-                                                        </a>
-                                                    )}
+                                                <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4 mb-2">
+                                                    <h3 className="font-serif text-2xl md:text-3xl text-white leading-tight">{startup.name}</h3>
+                                                    <div className={`inline-flex items-center px-2 py-0.5 rounded border font-mono text-[10px] tracking-wider uppercase ${startup.status === 'Active' ? 'border-[#D97706]/30 bg-[#D97706]/10 text-[#D97706]' : startup.status === 'Dead' ? 'border-stone-800 bg-stone-900/50 text-stone-500' : 'border-[#10b981]/30 bg-[#10b981]/10 text-[#10b981]'}`}>
+                                                        {startup.statusLabel}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <p className="text-stone-400 text-sm leading-relaxed mb-6 font-light">{project.description}</p>
+                                                <p className="font-mono text-xs text-stone-400 font-bold mb-4">
+                                                    {startup.role} <span className="text-stone-700 font-normal mx-2">/</span> <span className="text-stone-500 font-normal">{startup.years}</span>
+                                                </p>
 
-                                            <div className="mb-6 flex-grow">
-                                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] mb-2 font-mono">{`// Problem_Solved`}</h4>
-                                                <p className="text-stone-300 text-sm leading-relaxed border-l border-stone-800 pl-3">{project.problem}</p>
-                                            </div>
-
-                                            <div className="mt-auto pt-6 border-t border-stone-800/50">
-                                                <div className="flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                                                    {project.techStack.map((tech, i) => (
-                                                        <span key={i} className="bg-stone-900 border border-stone-800 px-2 py-1 rounded">{tech}</span>
+                                                <div className="space-y-4 max-w-2xl bg-stone-900/30 p-6 rounded-2xl border border-stone-800/50 group-hover:bg-stone-800/50 group-hover:border-stone-700 transition-all">
+                                                    {startup.description.map((p, pIdx) => (
+                                                        <p key={pIdx} className="text-stone-400 text-sm md:text-base leading-relaxed font-light">{p}</p>
                                                     ))}
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* --- 6. GitHub Repositories --- */}
-                    {(activeCategory === "All" || activeCategory === "GitHub Repositories") && (
-                        <section className="animate-fade-in-up delay-[250ms]">
-                            <div className="mb-12 flex items-center justify-between border-b border-stone-800 pb-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-stone-900 border border-stone-800 rounded-xl">
-                                        <Github className="w-6 h-6 text-white" />
+                                        ))}
                                     </div>
-                                    <h2 className="font-serif text-3xl md:text-5xl text-white">GitHub Repositories</h2>
-                                </div>
-                                <span className="hidden md:flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-                                    <span className="w-2 h-2 rounded-full bg-blue-500"></span> Source Code
-                                </span>
-                            </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        {items.map((item) => (
+                                            <div key={item.id} className="group relative bg-stone-900/50 border border-stone-800 p-8 rounded-2xl hover:bg-stone-800/50 transition-all duration-500 overflow-hidden flex flex-col h-full">
+                                                <div className="absolute inset-0 bg-gradient-to-br from-stone-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                            <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                {GITHUB_REPOS.map((repo) => (
-                                    <a
-                                        key={repo.id}
-                                        href={repo.github}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="group relative flex flex-col justify-between bg-stone-900/40 border border-stone-800/60 p-6 md:p-8 rounded-2xl hover:bg-stone-800/50 transition-all duration-300 hover:border-stone-600 block shadow-sm hover:shadow-lg overflow-hidden"
-                                    >
-                                        {/* Subtle Hover Gradient Background */}
-                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                                        <div className="relative z-10">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex items-start gap-4">
-                                                    <div className="p-2 bg-stone-950 border border-stone-800 rounded-lg shrink-0 group-hover:border-stone-700 transition-colors mt-0.5">
-                                                        <BookOpen className="w-5 h-5 text-stone-400 group-hover:text-stone-300" />
+                                                <div className="relative z-10 flex flex-col flex-grow">
+                                                    <div className="flex justify-between items-start mb-6">
+                                                        <div>
+                                                            <h3 className="text-2xl font-bold text-white mb-2">{item.title}</h3>
+                                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-stone-950 border border-stone-800 text-xs font-mono text-[#D97706]">
+                                                                Role: {item.role}
+                                                            </div>
+                                                        </div>
+                                                        {item.visibility && (
+                                                            <Badge variant="outline" className={cn(
+                                                                "font-mono text-[10px] uppercase tracking-wider",
+                                                                item.visibility === "Public" ? "border-stone-700 text-stone-400" : "border-stone-800 text-stone-600"
+                                                            )}>
+                                                                {item.visibility === "Private" && <Lock className="w-3 h-3 mr-1" />}
+                                                                {item.visibility}
+                                                            </Badge>
+                                                        )}
                                                     </div>
-                                                    <div>
-                                                        <h3 className="font-serif text-xl sm:text-2xl text-blue-400 group-hover:text-blue-300 transition-colors break-words line-clamp-2 leading-tight mb-1">
-                                                            <span className="text-stone-500 font-sans text-sm block mb-1">farjadp / </span>
-                                                            <span className="font-bold">{repo.name}</span>
-                                                        </h3>
+
+                                                    <p className="text-stone-400 leading-relaxed mb-6 font-light">
+                                                        {item.summary}
+                                                    </p>
+
+                                                    <div className="space-y-4 mb-8 flex-grow">
+                                                        {item.problem && (
+                                                            <div className="bg-stone-950/50 rounded-lg p-4 border border-stone-800/50">
+                                                                <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                                                    <Target className="w-3 h-3" /> The Context
+                                                                </p>
+                                                                <p className="text-sm text-stone-300 leading-relaxed">{item.problem}</p>
+                                                            </div>
+                                                        )}
+
+                                                        {item.contribution && (
+                                                            <div className="bg-[#0F3F35]/10 rounded-lg p-4 border border-[#0F3F35]/30">
+                                                                <p className="text-xs font-bold text-[#0F3F35] uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                                                    <Activity className="w-3 h-3" /> Contribution
+                                                                </p>
+                                                                <p className="text-sm text-stone-300 leading-relaxed">{item.contribution}</p>
+                                                            </div>
+                                                        )}
+
+                                                        {item.outcome && (
+                                                            <div className="bg-[#D97706]/5 rounded-lg p-4 border border-[#D97706]/20">
+                                                                <p className="text-xs font-bold text-[#D97706] uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                                                    <Zap className="w-3 h-3" /> Outcome
+                                                                </p>
+                                                                <p className="text-sm text-stone-300 leading-relaxed">{item.outcome}</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                                <Badge variant="secondary" className={cn(
-                                                    "flex items-center gap-1.5 rounded-full border shrink-0 text-[10px] ml-4 font-mono font-normal tracking-wide px-2 py-0.5",
-                                                    repo.visibility === "Private"
-                                                        ? "border-[#D97706]/30 bg-[#D97706]/10 text-[#D97706]"
-                                                        : "border-stone-700 bg-stone-950 text-stone-400"
-                                                )}>
-                                                    {repo.visibility === "Private" ? <Lock className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
-                                                    {repo.visibility}
-                                                </Badge>
-                                            </div>
-                                            <p className="text-stone-400 text-sm leading-relaxed mb-8 font-light line-clamp-3">
-                                                {repo.description}
-                                            </p>
-                                        </div>
 
-                                        <div className="relative z-10 flex items-center gap-6 mt-auto pt-5 border-t border-stone-800/50">
-                                            {repo.language && (
-                                                <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-stone-400">
-                                                    <span className={cn(
-                                                        "w-2 h-2 rounded-full",
-                                                        repo.language === "TypeScript" ? "bg-blue-500" :
-                                                            repo.language === "JavaScript" ? "bg-yellow-400" :
-                                                                repo.language === "Python" ? "bg-blue-300" : "bg-stone-500"
-                                                    )}></span>
-                                                    {repo.language}
+                                                <div className="relative z-10 pt-6 border-t border-stone-800 mt-auto flex items-center justify-between gap-4">
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {item.tags?.map(tag => (
+                                                            <span key={tag} className="text-[11px] font-mono text-stone-500 px-2.5 py-1 bg-stone-950 border border-stone-800 rounded">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        {item.github && (
+                                                            <a href={item.github} target="_blank" rel="noopener noreferrer"
+                                                                className="w-10 h-10 rounded-full bg-stone-900 border border-stone-700 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-800 transition-colors tooltip group/link relative">
+                                                                <Github className="w-4 h-4" />
+                                                                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-stone-800 text-xs px-2 py-1 rounded opacity-0 group-hover/link:opacity-100 transition-opacity">Source</span>
+                                                            </a>
+                                                        )}
+                                                        {item.link && (
+                                                            <a href={item.link} target="_blank" rel="noopener noreferrer"
+                                                                className="w-10 h-10 rounded-full bg-[#0F3F35] text-white flex items-center justify-center hover:bg-[#092822] transition-colors tooltip group/link relative">
+                                                                <ArrowUpRight className="w-4 h-4" />
+                                                                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0F3F35] text-xs px-2 py-1 rounded opacity-0 group-hover/link:opacity-100 transition-opacity">Visit</span>
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            )}
-                                            <div className="flex items-center gap-4 text-xs font-mono text-stone-500 ml-auto">
-                                                <span className="flex items-center gap-1.5 hover:text-stone-300 transition-colors"><Star className="w-3.5 h-3.5" /> </span>
-                                                <span className="flex items-center gap-1.5 hover:text-stone-300 transition-colors"><GitFork className="w-3.5 h-3.5" /> </span>
                                             </div>
-                                        </div>
-                                    </a>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* --- 7. Experimental Lab --- */}
-                    {(activeCategory === "All" || activeCategory === "Experimental Lab") && (
-                        <section className="animate-fade-in-up delay-300">
-                            <div className="mb-12 flex items-center justify-between border-b border-stone-800 pb-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-stone-900 border border-stone-800 rounded-xl">
-                                        <Activity className="w-6 h-6 text-white" />
+                                        ))}
                                     </div>
-                                    <h2 className="font-serif text-3xl md:text-5xl text-white">Experimental Lab</h2>
-                                </div>
-                                <span className="hidden md:flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-500">
-                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Prototypes
-                                </span>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-8">
-                                {EXPERIMENTAL_LAB.map((project) => (
-                                    <div key={project.id} className="relative bg-transparent border border-dashed border-stone-700 p-8 rounded-2xl flex flex-col h-full hover:bg-stone-900/30 transition-colors group">
-                                        <div className="absolute top-0 right-0 px-3 py-1 bg-stone-800 text-[10px] font-mono uppercase tracking-widest text-stone-400 rounded-bl-xl rounded-tr-xl">Alpha</div>
-
-                                        <div className="flex justify-between items-start mb-6">
-                                            <h3 className="text-2xl font-serif text-white">{project.name}</h3>
-                                            {project.github !== "#" && (
-                                                <a href={project.github} target="_blank" rel="noopener noreferrer" className="p-2 bg-stone-900 rounded-full text-stone-400 hover:text-white transition-colors">
-                                                    <Github className="w-4 h-4" />
-                                                </a>
-                                            )}
-                                        </div>
-                                        <p className="text-stone-400 text-sm leading-relaxed mb-6 font-light">{project.description}</p>
-                                        <div className="mb-6 flex-grow">
-                                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2 font-mono">{`> Rationale`}</h4>
-                                            <p className="text-stone-300 text-sm leading-relaxed font-mono text-xs">{project.problem}</p>
-                                        </div>
-                                        <div className="mt-4 pt-4 border-t border-dashed border-stone-800">
-                                            <div className="flex flex-wrap gap-2 text-[10px] font-mono text-stone-500">
-                                                {project.techStack.map((tech, i) => (
-                                                    <span key={i} className="px-2 py-1 bg-stone-900 rounded">{tech}</span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    )}
+                                )}
+                            </section>
+                        );
+                    })}
                 </div>
             </div>
         </div>

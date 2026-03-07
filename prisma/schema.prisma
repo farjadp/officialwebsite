@@ -187,12 +187,26 @@ model AppSetting {
   updatedAt DateTime  @updatedAt
 }
 
+
 model Lead {
   id        String   @id @default(cuid())
-  email     String   @unique
+  email     String
+  name      String?
+  toolId    String   @default("unknown")
   score     Int
   segment   String
   answers   Json
+  createdAt DateTime @default(now())
+
+  @@unique([email, toolId])
+}
+
+model ToolUsage {
+  id        String   @id @default(cuid())
+  toolId    String
+  score     Int
+  ip        String?
+  country   String?
   createdAt DateTime @default(now())
 }
 
