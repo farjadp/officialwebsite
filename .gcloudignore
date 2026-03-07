@@ -21,6 +21,7 @@ out
 *.config.ts
 !next.config.ts
 !prisma.config.ts
+!src/auth.config.ts
 
 # Misc
 .DS_Store
