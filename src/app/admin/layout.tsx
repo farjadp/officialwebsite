@@ -6,12 +6,18 @@
 // ============================================================================
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import { connection } from "next/server"
 
-export default function AdminLayout({
+export const dynamic = "force-dynamic"
+
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    // Ensure all /admin routes render at request time (avoids build-time DB access).
+    await connection()
+
     return (
         <div className="flex h-screen w-full bg-slate-50">
             <aside className="hidden md:block">

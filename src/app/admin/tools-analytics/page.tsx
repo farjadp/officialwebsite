@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma"
 import { format } from "date-fns"
 import { Activity, Globe, Cpu, BarChart3, Users } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 const TOOL_LABELS: Record<string, string> = {
     "business-model-score": "Business Model Score",
     "ai-adoption-score": "AI Adoption Score",
