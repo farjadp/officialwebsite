@@ -78,16 +78,49 @@ AEO (Answer Engine Optimization) RULES:
 `,
 };
 
+// ─── Image Style System ─────────────────────────────────────────────────────
+function getImageStyleSuffix(topic: string): string {
+    const t = topic.toLowerCase();
+
+    // AI / Systems / Automation / Process articles
+    if (
+        t.includes("ai") ||
+        t.includes("automation") ||
+        t.includes("system") ||
+        t.includes("workflow") ||
+        t.includes("process") ||
+        t.includes("architecture")
+    ) {
+        return `Editorial photography with architectural composition, structured geometry, clean lines, visual depth, premium minimalism, cinematic shadows, modern systems aesthetic, highly realistic, subtle atmosphere, sophisticated color grading, shot on a professional full-frame camera. Prefer environments, objects, spatial structure, and symbolic scenes. Avoid illustrations, futuristic UI overlays, handshake scenes, and generic corporate teamwork visuals. No text, no letters, no watermarks in the image itself.`;
+    }
+
+    // Founder psychology / deep thinking / hard truths
+    if (
+        t.includes("burnout") ||
+        t.includes("failure") ||
+        t.includes("decision") ||
+        t.includes("psychology") ||
+        t.includes("identity") ||
+        t.includes("truth")
+    ) {
+        return `Moody editorial photography, cinematic low-key lighting, intelligent minimalist composition, subtle emotional tension, realistic environments, premium magazine aesthetic, nuanced shadows, restrained tone, highly detailed and realistic, natural textures, shot on a professional full-frame camera. Avoid commercial stock-photo style, glossy advertising visuals, exaggerated emotions, and cartoonish AI aesthetics. No text, no letters, no watermarks in the image itself.`;
+    }
+
+    // Default: business / startup / mentorship
+    return `Editorial photography, realistic human scenes, cinematic natural lighting, shallow depth of field, subtle contrast, premium magazine aesthetic, modern business editorial, emotionally grounded, highly detailed, realistic textures, restrained composition, shot on a professional full-frame camera. Avoid stock-photo clichés, exaggerated smiles, fake office staging, handshake scenes, rocket metaphors, and generic startup visuals. No text, no letters, no watermarks in the image itself.`;
+}
+
 // ─── Helper: generate one DALL-E image, watermark it, return local URL ────────
 async function generateAndWatermarkImage(
     prompt: string,
     filename: string,
+    topic: string,
     size: "1792x1024" | "1024x1024" = "1792x1024"
 ): Promise<string | null> {
     try {
         const resp = await openai.images.generate({
             model: "dall-e-3",
-            prompt: `${prompt}. Editorial style, clean minimalist composition, professional photography aesthetic. No text, no letters, no watermarks in the image itself.`,
+            prompt: `${prompt}. ${getImageStyleSuffix(topic)}`,
             n: 1,
             size,
             quality: "standard",
@@ -248,7 +281,17 @@ Rules:
 - seoTitle: 50-60 chars including primary keyword
 - seoDescription: 150-160 chars with primary keyword and hook
 - seoKeywords: comma-separated, 5-8 keywords
-- All image prompts: editorial/photographic style, NO text or letters inside the image`,
+
+IMAGE PROMPT RULES:
+- Write image prompts as instructions for a top editorial photographer, not an illustrator
+- For the cover image, prioritize a symbolic editorial scene — it must feel like a premium magazine feature, not a blog illustration
+- For body images, make one human-centered (a realistic founder/human moment) and one systems/environment-centered (architecture, objects, space)
+- Prefer realistic scenes, environments, architecture, objects, and thoughtful human presence
+- Use strong editorial metaphors: crossroads, empty desks, city streets, industrial spaces, quiet moments of decision
+- Avoid cliché startup visuals: people shaking hands, rocket ships, light bulbs, groups smiling at laptops, fake office teamwork
+- Avoid illustrations, UI mockups, holographic interfaces, floating overlays, or futuristic CGI
+- All prompts must produce realistic photography, not digital art or illustration
+- No text or letters inside the image`,
                 },
                 {
                     role: "user",
@@ -267,13 +310,13 @@ Rules:
         if (generateImage) {
             const [cover, body1, body2] = await Promise.allSettled([
                 generated.coverImagePrompt
-                    ? generateAndWatermarkImage(generated.coverImagePrompt, `cover-${ts}.jpg`, "1792x1024")
+                    ? generateAndWatermarkImage(generated.coverImagePrompt, `cover-${ts}.jpg`, topic, "1792x1024")
                     : Promise.resolve(null),
                 generated.bodyImage1Prompt
-                    ? generateAndWatermarkImage(generated.bodyImage1Prompt, `body1-${ts}.jpg`, "1792x1024")
+                    ? generateAndWatermarkImage(generated.bodyImage1Prompt, `body1-${ts}.jpg`, topic, "1792x1024")
                     : Promise.resolve(null),
                 generated.bodyImage2Prompt
-                    ? generateAndWatermarkImage(generated.bodyImage2Prompt, `body2-${ts}.jpg`, "1792x1024")
+                    ? generateAndWatermarkImage(generated.bodyImage2Prompt, `body2-${ts}.jpg`, topic, "1792x1024")
                     : Promise.resolve(null),
             ]);
 
