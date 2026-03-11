@@ -59,6 +59,7 @@ export async function downloadAndWatermark(
   const { url } = await put(`generated/${filename}`, outputBuffer, {
     access: 'public',
     contentType: 'image/jpeg',
+    token: process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN,
   });
 
   return url;

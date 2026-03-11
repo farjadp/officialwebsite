@@ -25,6 +25,7 @@ export async function uploadFile(formData: FormData) {
         const { url } = await put(filename, buffer, {
             access: 'public',
             contentType: file.type,
+            token: process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN,
         })
 
         await prisma.media.create({
@@ -49,7 +50,9 @@ export async function deleteFile(id: string) {
         const media = await prisma.media.findUnique({ where: { id } })
         if (media) {
             // Delete from Vercel Blob
-            await del(media.url).catch(console.error)
+            await del(media.url, {
+                token: process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN
+            }).catch(console.error)
         }
 
         await prisma.media.delete({ where: { id } })

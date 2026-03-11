@@ -33,6 +33,7 @@ export async function POST(request: Request) {
         const { url } = await put(filename, buffer, {
             access: 'public',
             contentType: file.type,
+            token: process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN
         })
 
         // Save to database
