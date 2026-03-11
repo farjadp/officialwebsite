@@ -10,11 +10,7 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import { Storage } from "@google-cloud/storage"
-
-// Initialize Google Cloud Storage
-const storage = new Storage()
-const BUCKET_NAME = "officialwebsite-media-bucket"
+import { put, del } from "@vercel/blob"
 
 export async function uploadFile(formData: FormData) {
     const file = formData.get("file") as File
@@ -26,15 +22,10 @@ export async function uploadFile(formData: FormData) {
     const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`
 
     try {
-        const bucket = storage.bucket(BUCKET_NAME)
-        const gcsFile = bucket.file(filename)
-
-        await gcsFile.save(buffer, {
+        const { url } = await put(filename, buffer, {
+            access: 'public',
             contentType: file.type,
-            resumable: false,
         })
-
-        const url = `https://storage.googleapis.com/${BUCKET_NAME}/${filename}`
 
         await prisma.media.create({
             data: {
@@ -57,10 +48,8 @@ export async function deleteFile(id: string) {
     try {
         const media = await prisma.media.findUnique({ where: { id } })
         if (media) {
-            // Delete from GCS
-            const filename = media.filename
-            const bucket = storage.bucket(BUCKET_NAME)
-            await bucket.file(filename).delete().catch(console.error)
+            // Delete from Vercel Blob
+            await del(media.url).catch(console.error)
         }
 
         await prisma.media.delete({ where: { id } })

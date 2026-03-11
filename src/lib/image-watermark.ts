@@ -1,11 +1,9 @@
 // src/lib/image-watermark.ts
-// Downloads a DALL-E URL, adds farjadp.info watermark using Sharp, saves to GCS
+// Downloads a DALL-E URL, adds farjadp.info watermark using Sharp, saves to Vercel Blob
 import sharp from "sharp";
-import { Storage } from "@google-cloud/storage";
+import { put } from "@vercel/blob";
 
 const WATERMARK_TEXT = "farjadp.info";
-const storage = new Storage();
-const BUCKET_NAME = "officialwebsite-media-bucket";
 
 function buildWatermarkSvg(w: number, h: number): Buffer {
   const fontSize = Math.max(14, Math.round(w * 0.018));
@@ -57,14 +55,11 @@ export async function downloadAndWatermark(
     .jpeg({ quality: 90 })
     .toBuffer();
 
-  // 4. Save to Google Cloud Storage
-  const bucket = storage.bucket(BUCKET_NAME);
-  const gcsFile = bucket.file(`generated/${filename}`);
-
-  await gcsFile.save(outputBuffer, {
-    contentType: "image/jpeg",
-    resumable: false,
+  // 4. Save to Vercel Blob
+  const { url } = await put(`generated/${filename}`, outputBuffer, {
+    access: 'public',
+    contentType: 'image/jpeg',
   });
 
-  return `https://storage.googleapis.com/${BUCKET_NAME}/generated/${filename}`;
+  return url;
 }

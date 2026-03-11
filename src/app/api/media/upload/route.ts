@@ -7,12 +7,7 @@
 
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { Storage } from '@google-cloud/storage'
-
-// Initialize Google Cloud Storage
-// On Cloud Run, it automatically uses the attached service account credentials
-const storage = new Storage()
-const BUCKET_NAME = 'officialwebsite-media-bucket'
+import { put } from '@vercel/blob'
 
 export async function POST(request: Request) {
     try {
@@ -34,17 +29,11 @@ export async function POST(request: Request) {
         const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '')
         const filename = `${uniqueSuffix}-${originalName}`
 
-        // Upload to Google Cloud Storage
-        const bucket = storage.bucket(BUCKET_NAME)
-        const gcsFile = bucket.file(filename)
-
-        await gcsFile.save(buffer, {
+        // Upload to Vercel Blob
+        const { url } = await put(filename, buffer, {
+            access: 'public',
             contentType: file.type,
-            resumable: false, // For small files
         })
-
-        // GCS public URL format
-        const url = `https://storage.googleapis.com/${BUCKET_NAME}/${filename}`
 
         // Save to database
         const media = await prisma.media.create({
