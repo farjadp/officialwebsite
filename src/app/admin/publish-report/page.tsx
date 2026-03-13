@@ -232,12 +232,12 @@ function LinkedInConnect() {
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
 
     return (
-        <a href={authUrl}>
-            <Button variant="outline" size="sm" className="gap-2 border-[#0A66C2] text-[#0A66C2] hover:bg-blue-50">
+        <Button variant="outline" size="sm" className="gap-2 border-[#0A66C2] text-[#0A66C2] hover:bg-blue-50" asChild>
+            <a href={authUrl}>
                 <Link2 className="h-4 w-4" />
                 Connect LinkedIn
-            </Button>
-        </a>
+            </a>
+        </Button>
     )
 }
 
