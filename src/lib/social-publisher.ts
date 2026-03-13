@@ -46,8 +46,8 @@ RULES:
 A. LINKEDIN (English):
 - Hook → Problem → Shift → Solution → Conclusion. Under 1500 chars.
 - USE EMOJIS: 3-5 (✅, 📌, 💡, ⚡, 🎯, 🧠, 📊). Place at start of key lines.
-- END WITH 3-5 HASHTAGS on separate line. Never inside sentences.
-- End main text with: "I dive deeper into this in the full essay. Link in the comments."
+- The SECOND TO LAST line must be: "I dive deeper into this in the full essay. Link in the comments."
+- The VERY LAST line must be 3-5 HASHTAGS starting with # separated by spaces.
 
 B. TELEGRAM (Persian / فارسی عامیانه):
 - Write ENTIRELY in casual, colloquial Persian. Like a mentor texting a student.
@@ -59,7 +59,7 @@ B. TELEGRAM (Persian / فارسی عامیانه):
 C. X / TWITTER (English):
 - ONE single tweet combining all key points. Premium account — NO character limit.
 - Contrarian opening. USE EMOJIS: 2-3.
-- END with 2-3 HASHTAGS on separate line. Never inside sentences.
+- The VERY LAST line must be 2-3 HASHTAGS starting with # separated by spaces.
 - If not enough substance, return empty array.
 
 D. SNIPER RETARGETING:
