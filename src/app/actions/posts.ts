@@ -12,6 +12,7 @@ import { Post, PostStatus, Prisma } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { runWaterfallPipeline } from "@/lib/social-publisher"
+import { waitUntil } from "@vercel/functions"
 
 export type CreatePostInput = {
     title: string
@@ -126,13 +127,15 @@ export async function createPost(data: CreatePostInput) {
 
         // ─── Auto-publish if created directly as PUBLISHED ───────────────
         if (post.status === 'PUBLISHED' && post.content) {
-            runWaterfallPipeline(
-                post.id,
-                post.slug,
-                post.title,
-                post.content,
-                post.excerpt
-            ).catch((err) => console.error('[Auto-Publish] Background error:', err))
+            waitUntil(
+                runWaterfallPipeline(
+                    post.id,
+                    post.slug,
+                    post.title,
+                    post.content,
+                    post.excerpt
+                ).catch((err) => console.error('[Auto-Publish] Background error:', err))
+            )
         }
 
         return { success: true, data: post }
@@ -190,13 +193,15 @@ export async function updatePost(data: UpdatePostInput) {
 
         // ─── Auto-publish on first PUBLISH ───────────────────────────────
         if (isNewPublish && post.content) {
-            runWaterfallPipeline(
-                post.id,
-                post.slug,
-                post.title,
-                post.content,
-                post.excerpt
-            ).catch((err) => console.error('[Auto-Publish] Background error:', err))
+            waitUntil(
+                runWaterfallPipeline(
+                    post.id,
+                    post.slug,
+                    post.title,
+                    post.content,
+                    post.excerpt
+                ).catch((err) => console.error('[Auto-Publish] Background error:', err))
+            )
         }
 
         return { success: true, data: post }
