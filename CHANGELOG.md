@@ -2,6 +2,14 @@
 
 All notable changes to the Official Website project will be documented in this file.
 
+## [2026-03-13 16:25] - Social Publishing Bug Fixes
+
+### Fixed
+- **LinkedIn OAuth Flow**: Fixed a rendering bug causing Next.js router interception and hardcoded parameters to bypass strict URI validation and caching bugs.
+- **Background Actions**: Wrapped Vercel Server Actions in `@vercel/functions` `waitUntil()` to prevent premature termination of the OpenAI-powered `runWaterfallPipeline`.
+- **Hashtag Formatting**: Updated OpenAI prompts for LinkedIn and X (Twitter) to strictly place hashtags at the absolute end of the generated post, preventing overrides by the Call-to-Action.
+
+
 ## [2026-03-07 16:13] - Platform Overhaul & Strategic Realignment
 
 ### Added
