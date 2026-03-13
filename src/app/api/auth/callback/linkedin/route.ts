@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest) {
     const code = req.nextUrl.searchParams.get("code");
     const error = req.nextUrl.searchParams.get("error");
-    const siteUrl = process.env.NEXTAUTH_URL || "https://farjadp.info";
+    const siteUrl = "https://farjadp.info";
 
     if (error || !code) {
         return NextResponse.redirect(
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    const clientId = process.env.LINKEDIN_CLIENT_ID?.trim();
+    const clientId = "785zxi5h7u7e6v";
     const clientSecret = process.env.LINKEDIN_CLIENT_SECRET?.trim();
     const redirectUri = `${siteUrl}/api/auth/callback/linkedin`;
 
