@@ -224,7 +224,8 @@ function LogCard({ log }: { log: PublishLog }) {
 }
 
 function LinkedInConnect() {
-    const siteUrl = typeof window !== "undefined" ? window.location.origin : ""
+    // Hardcode the primary domain to ensure exact match with LinkedIn dev console and backend token exchange
+    const siteUrl = "https://farjadp.info"
     const clientId = "785zxi5h7u7e6v"
     const redirectUri = `${siteUrl}/api/auth/callback/linkedin`
     const scope = "openid profile w_member_social"
