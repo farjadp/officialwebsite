@@ -14,8 +14,8 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    const clientId = process.env.LINKEDIN_CLIENT_ID;
-    const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
+    const clientId = process.env.LINKEDIN_CLIENT_ID?.trim();
+    const clientSecret = process.env.LINKEDIN_CLIENT_SECRET?.trim();
     const redirectUri = `${siteUrl}/api/auth/callback/linkedin`;
 
     if (!clientId || !clientSecret) {

@@ -6,7 +6,7 @@ import crypto from "crypto";
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY?.trim() || "dummy_key_for_build" });
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export interface WaterfallResult {
@@ -103,8 +103,8 @@ export async function generateWaterfall(sourceText: string): Promise<WaterfallRe
 
 // ─── Telegram Publisher ──────────────────────────────────────────────────────
 export async function publishToTelegram(text: string, postUrl: string): Promise<{ ok: boolean; error?: string }> {
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const channelId = process.env.TELEGRAM_CHANNEL_ID;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
+    const channelId = process.env.TELEGRAM_CHANNEL_ID?.trim();
 
     if (!botToken || !channelId) {
         return { ok: false, error: "Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHANNEL_ID" };
@@ -183,10 +183,10 @@ function buildOAuthHeader(params: Record<string, string>): string {
 }
 
 async function postTweet(text: string): Promise<{ ok: boolean; error?: string }> {
-    const consumerKey = process.env.TWITTER_API_KEY;
-    const consumerSecret = process.env.TWITTER_API_SECRET;
-    const accessToken = process.env.TWITTER_ACCESS_TOKEN;
-    const accessTokenSecret = process.env.TWITTER_ACCESS_SECRET;
+    const consumerKey = process.env.TWITTER_API_KEY?.trim();
+    const consumerSecret = process.env.TWITTER_API_SECRET?.trim();
+    const accessToken = process.env.TWITTER_ACCESS_TOKEN?.trim();
+    const accessTokenSecret = process.env.TWITTER_ACCESS_SECRET?.trim();
 
     if (!consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) {
         return { ok: false, error: "Missing Twitter API credentials (API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_SECRET)" };
@@ -346,7 +346,7 @@ export async function runWaterfallPipeline(
     postContent: string,
     postExcerpt?: string | null
 ): Promise<void> {
-    const siteUrl = process.env.NEXTAUTH_URL || "https://farjadp.info";
+    const siteUrl = process.env.NEXTAUTH_URL?.trim() || "https://farjadp.info";
     const postUrl = `${siteUrl}/blog/${postSlug}`;
 
     console.log(`[Auto-Publish] Starting pipeline for: "${postTitle}" (${postSlug})`);
