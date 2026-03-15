@@ -1,0 +1,56 @@
+name: Automated Google Drive Backup
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  repository_dispatch:
+    types: [trigger-backup] # Allows triggering from Next.js API
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Backup Type (full, db-only, code-only)'
+        required: true
+        default: 'full'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        if: github.event.inputs.type == 'full' || github.event.inputs.type == 'code-only' || github.event.action == 'trigger-backup'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+        if: github.event.inputs.type == 'full' || github.event.inputs.type == 'code-only' || github.event.action == 'trigger-backup'
+
+      - name: Setup PostgreSQL Client
+        if: github.event.inputs.type == 'full' || github.event.inputs.type == 'db-only' || github.event.action == 'trigger-backup'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run Backup Script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          BACKUP_TYPE: ${{ github.event.client_payload.type || github.event.inputs.type || 'full' }}
+          NODE_ENV: production
+        run: |
+          # Write Google Drive credentials to a temp file securely
+          echo "$GDRIVE_CREDENTIALS" > /tmp/gdrive.json
+          export GDRIVE_CREDENTIALS_PATH=/tmp/gdrive.json
+          
+          # Install googleapis for the script to use
+          npm install googleapis @prisma/client
+
+          # Run the new serverless-compatible backup script
+          node scripts/backup-drive.mjs $BACKUP_TYPE

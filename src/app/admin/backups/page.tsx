@@ -184,10 +184,9 @@ export default function BackupsPage() {
                         Code Only
                     </Button>
 
-                    <div className="w-full mt-1 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
-                        ⚠️ <strong>Local backups only.</strong> Files are saved to <code className="font-mono bg-amber-100 px-1 rounded">~/Backups/officialwebsite/</code> on this machine.
-                        The automatic backup runs every <strong>24 hours</strong> via launchd.
-                        To set it up: <code className="font-mono bg-amber-100 px-1 rounded">bash scripts/setup-cron.sh</code>
+                    <div className="w-full mt-1 p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-xs text-indigo-800">
+                        ☁️ <strong>Cloud Backups:</strong> Files are securely generated via GitHub Actions and sent directly to your <strong>Google Drive</strong>.
+                        The automatic backup runs every <strong>24 hours</strong> at midnight UTC.
                     </div>
                 </CardContent>
             </Card>

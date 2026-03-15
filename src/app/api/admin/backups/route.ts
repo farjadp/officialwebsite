@@ -31,20 +31,35 @@ export async function POST(req: NextRequest) {
         const body = await req.json().catch(() => ({}))
         const type = (body.type as string) || 'full'
 
-        const scriptPath = resolve(process.cwd(), 'scripts', 'backup.mjs')
-        const nodeBin = process.execPath
+        // Fire a GitHub Repository Dispatch event rather than running a background script
+        const GITHUB_TOKEN = process.env.GITHUB_PAT
+        const REPO_OWNER = 'farjadp'
+        const REPO_NAME = 'officialwebsite'
 
-        // Fire and forget — runs in background
-        const child = execFile(nodeBin, [scriptPath, type], {
-            env: { ...process.env },
-            cwd: process.cwd(),
-        })
+        if (!GITHUB_TOKEN) {
+            return NextResponse.json({ error: 'GitHub PAT is not configured in Vercel.' }, { status: 500 })
+        }
 
-        child.on('error', (err: Error) => {
-            console.error('[Backup API] Background script error:', err.message)
-        })
+        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                event_type: 'trigger-backup',
+                client_payload: { type },
+            }),
+        });
 
-        return NextResponse.json({ success: true, message: `Backup started (${type})` })
+        if (!response.ok) {
+            const errBody = await response.text()
+            console.error('[Backup API] GitHub Action trigger failed:', response.status, errBody)
+            throw new Error(`GitHub Action trigger failed: ${response.status}`)
+        }
+
+        return NextResponse.json({ success: true, message: `Backup sent to GitHub Actions (${type})` })
     } catch (error) {
         const msg = error instanceof Error ? error.message : 'Unknown error'
         return NextResponse.json({ error: msg }, { status: 500 })
