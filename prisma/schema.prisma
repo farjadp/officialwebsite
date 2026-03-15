@@ -264,3 +264,39 @@ model BackupLog {
   notes       String?
   createdAt   DateTime @default(now())
 }
+
+model Project {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  description   String?
+  content       String?   // Markdown content
+  coverImage    String?
+  featured      Boolean   @default(false)
+  technologies  String[]  // e.g. ["Next.js", "Tailwind"]
+  websiteUrl    String?
+  githubUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  company   String?
+  role      String?
+  content   String
+  avatar    String?
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
