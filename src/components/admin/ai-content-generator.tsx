@@ -5,7 +5,7 @@
 
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
-import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp, UploadCloud, Trash2 } from 'lucide-react'
+import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp, UploadCloud, Trash2, Send, Twitter, Linkedin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -37,6 +37,7 @@ interface GeneratedPost {
     imagePrompt: string
     optimizationMode: string
     contentGoal: string
+    socialPlatforms?: { telegram: boolean; twitter: boolean; linkedin: boolean }
 }
 
 interface AIContentGeneratorProps {
@@ -46,26 +47,26 @@ interface AIContentGeneratorProps {
 const OPTIMIZATION_MODES = [
     {
         value: 'GEO',
-        label: '🤖 GEO — Generative Engine Optimization',
+        label: '\uD83E\uDD16 GEO — Generative Engine Optimization',
         desc: 'Get cited by ChatGPT, Perplexity, Gemini. Best for authority & AI visibility.',
     },
     {
         value: 'AEO',
-        label: '🎯 AEO — Answer Engine Optimization',
+        label: '\uD83C\uDFAF AEO — Answer Engine Optimization',
         desc: 'Win Google Featured Snippets, People Also Ask, and voice search.',
     },
     {
         value: 'SEO',
-        label: '🔍 SEO — Search Engine Optimization',
+        label: '\uD83D\uDD0D SEO — Search Engine Optimization',
         desc: 'Traditional Google ranking. Keyword-driven, structured for SERP.',
     },
 ]
 
 const CONTENT_GOALS = [
-    { value: 'authority', label: '👑 Build Authority — Establish Farjad as #1 expert' },
-    { value: 'lead-gen', label: '📥 Lead Generation — Drive booking inquiries' },
-    { value: 'awareness', label: '📢 Brand Awareness — Introduce Farjad to new audiences' },
-    { value: 'education', label: '📚 Education — Maximum practical value for readers' },
+    { value: 'authority', label: '\uD83D\uDC51 Build Authority — Establish Farjad as #1 expert' },
+    { value: 'lead-gen', label: '\uD83D\uDCE5 Lead Generation — Drive booking inquiries' },
+    { value: 'awareness', label: '\uD83D\uDCE2 Brand Awareness — Introduce Farjad to new audiences' },
+    { value: 'education', label: '\uD83D\uDCDA Education — Maximum practical value for readers' },
 ]
 
 const TONES = [
@@ -110,6 +111,12 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
     const [uploadedImages, setUploadedImages] = useState<{ url: string; name: string }[]>([])
     const [isUploading, setIsUploading] = useState(false)
     const imageInputRef = useRef<HTMLInputElement>(null)
+
+    const [socialPlatforms, setSocialPlatforms] = useState({
+        telegram: true,
+        twitter: true,
+        linkedin: true,
+    })
 
     const [params, setParams] = useState({
         topic: '',
@@ -189,10 +196,19 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
 
     const handleUse = () => {
         if (!preview) return
-        onGenerated(preview)
+        const anySelected = socialPlatforms.telegram || socialPlatforms.twitter || socialPlatforms.linkedin
+        onGenerated({ ...preview, socialPlatforms: anySelected ? socialPlatforms : undefined })
         setOpen(false)
         setPreview(null)
-        toast.success('Content applied to the editor ✓')
+        const platformNames = [
+            socialPlatforms.telegram && 'Telegram',
+            socialPlatforms.twitter && 'X/Twitter',
+            socialPlatforms.linkedin && 'LinkedIn',
+        ].filter(Boolean).join(', ')
+        toast.success(anySelected
+            ? `Content applied \u2713 \u2014 will publish to ${platformNames} after saving`
+            : 'Content applied to the editor \u2713'
+        )
     }
 
     return (
@@ -215,7 +231,7 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                         AI Content Generator
                     </DialogTitle>
                     <p className="text-sm text-muted-foreground">
-                        GPT-4o + DALL-E 3 × Farjad's brand voice. Engineered to dominate search engines AND AI chatbots.
+                        GPT-4o + DALL-E 3 \u00d7 Farjad&apos;s brand voice. Engineered to dominate search engines AND AI chatbots.
                     </p>
                 </DialogHeader>
 
@@ -225,7 +241,7 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                     <div className="space-y-2">
                         <label className="text-sm font-semibold">Topic / Title Idea *</label>
                         <Textarea
-                            placeholder="e.g. Why most startup MVPs are over-engineered by developers who've never sold anything"
+                            placeholder="e.g. Why most startup MVPs are over-engineered by developers who&apos;ve never sold anything"
                             value={params.topic}
                             onChange={(e) => setParams({ ...params, topic: e.target.value })}
                             className="resize-none h-20"
@@ -374,8 +390,64 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                     <div className="flex items-start gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
                         <Brain className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
                         <span>
-                            <strong>Brand Voice Active:</strong> All content is written as Farjad — first person, with 17y experience, honest mentorship perspective, and a lead-gen CTA embedded naturally.
+                            <strong>Brand Voice Active:</strong> All content is written as Farjad \u2014 first person, with 17y experience, honest mentorship perspective, and a lead-gen CTA embedded naturally.
                         </span>
+                    </div>
+
+                    {/* Social Auto-Publish */}
+                    <div className="space-y-2.5 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <label className="text-sm font-semibold flex items-center gap-2">
+                            <Send className="w-4 h-4 text-slate-600" />
+                            Auto-Publish to Social After Saving
+                        </label>
+                        <p className="text-xs text-muted-foreground -mt-1">Select which platforms to auto-publish to when you save this article.</p>
+                        <div className="flex gap-4 mt-1">
+                            {/* Telegram */}
+                            <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all text-sm font-medium ${
+                                socialPlatforms.telegram
+                                    ? 'border-[#229ED9] bg-[#229ED9]/10 text-[#1a7ba8]'
+                                    : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={socialPlatforms.telegram}
+                                    onChange={(e) => setSocialPlatforms(p => ({ ...p, telegram: e.target.checked }))}
+                                    className="hidden"
+                                />
+                                <Send className="w-3.5 h-3.5" />
+                                Telegram
+                            </label>
+                            {/* Twitter/X */}
+                            <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all text-sm font-medium ${
+                                socialPlatforms.twitter
+                                    ? 'border-black bg-black/10 text-black'
+                                    : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={socialPlatforms.twitter}
+                                    onChange={(e) => setSocialPlatforms(p => ({ ...p, twitter: e.target.checked }))}
+                                    className="hidden"
+                                />
+                                <Twitter className="w-3.5 h-3.5" />
+                                X / Twitter
+                            </label>
+                            {/* LinkedIn */}
+                            <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all text-sm font-medium ${
+                                socialPlatforms.linkedin
+                                    ? 'border-[#0A66C2] bg-[#0A66C2]/10 text-[#0A66C2]'
+                                    : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={socialPlatforms.linkedin}
+                                    onChange={(e) => setSocialPlatforms(p => ({ ...p, linkedin: e.target.checked }))}
+                                    className="hidden"
+                                />
+                                <Linkedin className="w-3.5 h-3.5" />
+                                LinkedIn
+                            </label>
+                        </div>
                     </div>
 
                     {/* Advanced toggle */}
@@ -438,7 +510,7 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                         <p className="text-xs text-center text-muted-foreground animate-pulse">
                             GPT-4o is writing your {params.optimizationMode.toLowerCase()}-optimized article in Farjad&apos;s voice
                             {params.generateImage ? ' + DALL-E 3 is creating the cover image' : ''}.
-                            This may take 30–60 seconds...
+                            This may take 30\u201360 seconds...
                         </p>
                     )}
 
@@ -472,7 +544,7 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
 
                                 <div className="flex gap-3 pt-2">
                                     <Button type="button" onClick={handleUse} className="flex-1 bg-[#1B4B43] hover:bg-[#133832] text-white font-bold">
-                                        Use This Article ✓
+                                        Use This Article \u2713
                                     </Button>
                                     <Button type="button" variant="outline" onClick={() => setPreview(null)} className="gap-1">
                                         <X className="w-4 h-4" /> Discard
