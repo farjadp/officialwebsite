@@ -2,8 +2,8 @@
 
 // ============================================================================
 // Hardware Source: admin-sidebar.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Reusable UI component
+// Version: 1.1.0 — 2026-03-15
+// Why: Reusable UI component + Backup Manager link
 // Env / Identity: Client Component
 // ============================================================================
 
@@ -27,6 +27,9 @@ import {
     Sparkles,
     Inbox,
     Activity,
+    BookOpen,
+    Globe,
+    HardDrive,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -72,6 +75,11 @@ const sidebarItems = [
         icon: BarChart3,
     },
     {
+        title: "Backup Manager",
+        href: "/admin/backups",
+        icon: HardDrive,
+    },
+    {
         title: "AI Studio",
         href: "/admin/ai-tools",
         icon: Sparkles,
@@ -97,9 +105,14 @@ const sidebarItems = [
         icon: ImageIcon,
     },
     {
+        title: "Users",
+        href: "/admin/users",
+        icon: Users,
+    },
+    {
         title: "Newsletter",
         href: "/admin/newsletter",
-        icon: Users,
+        icon: Inbox,
     },
     {
         title: "Settings",
