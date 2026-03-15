@@ -26,9 +26,41 @@ model User {
   password      String?
   emailVerified DateTime?
   image         String?
-  role          Role      @default(OWNER)
+  bio           String?
+  phone         String?
+  isActive      Boolean   @default(true)
+  role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  passwordResetTokens      PasswordResetToken[]
+  emailVerificationTokens  EmailVerificationToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  email     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([token])
 }
 
 model Post {
@@ -216,4 +248,19 @@ model AIGeneratedAsset {
   topic     String
   content   String   // Markdown or Text content
   createdAt DateTime @default(now())
+}
+
+model BackupLog {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  status      String   // "success" | "failed" | "running"
+  type        String   // "full" | "db-only" | "code-only"
+  dbFile      String?  // local path to DB dump file
+  codeFile    String?  // local path to code zip file
+  dbSizeBytes BigInt?
+  codeSizeBytes BigInt?
+  durationMs  Int?
+  error       String?
+  notes       String?
+  createdAt   DateTime @default(now())
 }
