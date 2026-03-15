@@ -75,16 +75,7 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto py-8 px-4 space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
-                    <Settings2 className="h-8 w-8 text-violet-600" />
-                    System Settings
-                </h1>
-                <p className="text-muted-foreground mt-2">
-                    Manage global configuration, website metadata, and third-party API keys.
-                </p>
-            </div>
+        <div className="max-w-4xl mx-auto space-y-8">
 
             <Tabs defaultValue="general" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 max-w-md mb-8">

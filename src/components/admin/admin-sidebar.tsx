@@ -74,12 +74,6 @@ const sidebarGroups = [
         title: "Settings",
         items: [
             { title: "General Settings", href: "/admin/settings", icon: Settings },
-            { title: "Users", href: "/admin/users", icon: Users },
-            { title: "Media", href: "/admin/media", icon: ImageIcon, placeholder: true },
-            { title: "Categories", href: "/admin/categories", icon: FolderTree },
-            { title: "Tags", href: "/admin/tags", icon: Tag },
-            { title: "Topics", href: "/admin/topics", icon: Hash },
-            { title: "Backup Manager", href: "/admin/backups", icon: HardDrive },
         ]
     }
 ]
