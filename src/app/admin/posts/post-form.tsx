@@ -2,8 +2,8 @@
 
 // ============================================================================
 // Hardware Source: post-form.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Functional module
+// Version: 1.1.0 — 2026-03-15
+// Why: Functional module + social auto-publish toggle
 // Env / Identity: Client Component
 // ============================================================================
 
@@ -39,6 +39,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UploadCloud, Image as ImageIcon, X } from 'lucide-react'
 import { TagInput } from '@/components/admin/tag-input'
 import { AIContentGenerator } from '@/components/admin/ai-content-generator'
+
+type SocialPlatforms = { telegram: boolean; twitter: boolean; linkedin: boolean }
 
 enum PostStatus {
     DRAFT = 'DRAFT',
@@ -76,6 +78,7 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
+    const [socialPublishConfig, setSocialPublishConfig] = useState<SocialPlatforms | null>(null)
 
     // AI Generation handler — fills all form fields with generated content
     const handleAIGenerated = (generated: {
@@ -87,6 +90,7 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
         seoDescription: string
         seoKeywords: string
         coverImageUrl: string | null
+        socialPlatforms?: SocialPlatforms
     }) => {
         form.setValue('title', generated.title)
         form.setValue('slug', generated.slug)
@@ -98,6 +102,8 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
         if (generated.coverImageUrl) {
             form.setValue('coverImage', generated.coverImageUrl)
         }
+        // Store social platform config for auto-publish after save
+        setSocialPublishConfig(generated.socialPlatforms || null)
     }
 
     const defaultValues: PostFormValues = {
@@ -143,8 +149,43 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
                     toast.error(result.error || "Something went wrong")
                 }
             } else {
-                const result = await createPost(data)
-                if (result.success) {
+                const result = await createPost({ ...data, ...(socialPublishConfig ? { skipAutoPublish: true } : {}) })
+                if (result.success && result.data?.id) {
+                    const postId = result.data.id
+                    toast.success("Post created successfully")
+
+                    // Trigger social auto-publish in background if configured
+                    if (socialPublishConfig) {
+                        const anyEnabled = socialPublishConfig.telegram || socialPublishConfig.twitter || socialPublishConfig.linkedin
+                        if (anyEnabled) {
+                            const platformNames = [
+                                socialPublishConfig.telegram && 'Telegram',
+                                socialPublishConfig.twitter && 'X/Twitter',
+                                socialPublishConfig.linkedin && 'LinkedIn',
+                            ].filter(Boolean).join(', ')
+                            toast.loading(`Publishing to ${platformNames}...`, { id: 'social-publish' })
+
+                            fetch(`/api/admin/posts/${postId}/publish-social`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ platforms: socialPublishConfig }),
+                            })
+                                .then(r => r.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        toast.success(`Published to ${platformNames} \u2713`, { id: 'social-publish' })
+                                    } else {
+                                        toast.error(`Social publish failed: ${data.error}`, { id: 'social-publish' })
+                                    }
+                                })
+                                .catch(() => {
+                                    toast.error('Social publish request failed', { id: 'social-publish' })
+                                })
+                        }
+                    }
+
+                    router.push("/admin/posts")
+                } else if (result.success) {
                     toast.success("Post created successfully")
                     router.push("/admin/posts")
                 } else {
