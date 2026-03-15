@@ -30,6 +30,9 @@ import {
     BookOpen,
     Globe,
     HardDrive,
+    MessageSquareQuote,
+    FolderGit2,
+    Mail,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -48,11 +51,15 @@ const sidebarGroups = [
         items: [
             { title: "Posts", href: "/admin/posts", icon: FileText },
             { title: "Series", href: "/admin/series", icon: Layers },
-            { title: "Topics", href: "/admin/topics", icon: Hash },
-            { title: "Categories", href: "/admin/categories", icon: FolderTree },
-            { title: "Tags", href: "/admin/tags", icon: Tag },
             { title: "Pages", href: "/admin/pages", icon: PenTool, placeholder: true },
-            { title: "Media", href: "/admin/media", icon: ImageIcon, placeholder: true },
+        ]
+    },
+    {
+        title: "Business",
+        items: [
+            { title: "Inbox", href: "/admin/inbox", icon: Mail },
+            { title: "Projects", href: "/admin/portfolio", icon: FolderGit2 },
+            { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
         ]
     },
     {
@@ -64,11 +71,15 @@ const sidebarGroups = [
         ]
     },
     {
-        title: "System",
+        title: "Settings",
         items: [
+            { title: "General Settings", href: "/admin/settings", icon: Settings },
             { title: "Users", href: "/admin/users", icon: Users },
+            { title: "Media", href: "/admin/media", icon: ImageIcon, placeholder: true },
+            { title: "Categories", href: "/admin/categories", icon: FolderTree },
+            { title: "Tags", href: "/admin/tags", icon: Tag },
+            { title: "Topics", href: "/admin/topics", icon: Hash },
             { title: "Backup Manager", href: "/admin/backups", icon: HardDrive },
-            { title: "Settings", href: "/admin/settings", icon: Settings },
         ]
     }
 ]
