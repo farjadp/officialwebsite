@@ -68,7 +68,7 @@ const sidebarGroups = [
         items: [
             { title: "Users", href: "/admin/users", icon: Users },
             { title: "Backup Manager", href: "/admin/backups", icon: HardDrive },
-            { title: "Settings", href: "/admin/settings", icon: Settings, placeholder: true },
+            { title: "Settings", href: "/admin/settings", icon: Settings },
         ]
     }
 ]
