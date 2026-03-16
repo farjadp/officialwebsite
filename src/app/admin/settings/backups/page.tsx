@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { HardDrive, Database, Archive, Play, Trash2, RefreshCw, CheckCircle2, XCircle, Loader2, Clock } from 'lucide-react'
+import { HardDrive, Database, Archive, Trash2, RefreshCw, CheckCircle2, XCircle, Loader2, Clock, DownloadCloud } from 'lucide-react'
 
 type BackupLog = {
     id: string
@@ -54,7 +54,7 @@ function StatusBadge({ status }: { status: string }) {
 export default function BackupsPage() {
     const [logs, setLogs] = useState<BackupLog[]>([])
     const [loading, setLoading] = useState(true)
-    const [triggering, setTriggering] = useState(false)
+
 
     const fetchLogs = async () => {
         setLoading(true)
@@ -71,27 +71,7 @@ export default function BackupsPage() {
 
     useEffect(() => { fetchLogs() }, [])
 
-    const triggerBackup = async (type: 'full' | 'db-only' | 'code-only') => {
-        setTriggering(true)
-        try {
-            const res = await fetch('/api/admin/backups', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type }),
-            })
-            const data = await res.json()
-            if (data.success) {
-                toast.success(`${data.message} — check logs in a moment`)
-                setTimeout(fetchLogs, 3000)
-            } else {
-                toast.error(data.error || 'Backup failed')
-            }
-        } catch {
-            toast.error('Failed to trigger backup')
-        } finally {
-            setTriggering(false)
-        }
-    }
+
 
     const deleteLog = async (id: string) => {
         if (!confirm('Delete this log entry? (Does not delete the backup file)')) return
@@ -151,42 +131,26 @@ export default function BackupsPage() {
                 </Card>
             </div>
 
-            {/* Trigger buttons */}
+            {/* Backup Actions */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Manual Trigger</CardTitle>
+                    <CardTitle className="text-base">Backup Actions</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-3">
-                    <Button
-                        onClick={() => triggerBackup('full')}
-                        disabled={triggering}
-                        className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
-                    >
-                        {triggering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                        Full Backup (DB + Code)
-                    </Button>
-                    <Button
-                        onClick={() => triggerBackup('db-only')}
-                        disabled={triggering}
-                        variant="outline"
-                        className="gap-2"
-                    >
-                        <Database className="w-4 h-4 text-blue-600" />
-                        DB Only
-                    </Button>
-                    <Button
-                        onClick={() => triggerBackup('code-only')}
-                        disabled={triggering}
-                        variant="outline"
-                        className="gap-2"
-                    >
-                        <Archive className="w-4 h-4 text-orange-600" />
-                        Code Only
-                    </Button>
+                <CardContent className="flex flex-col gap-4">
+                    <div className="flex flex-wrap gap-3">
+                        <Button
+                            asChild
+                            className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
+                        >
+                            <a href="/api/admin/backups/download" download>
+                                <DownloadCloud className="w-5 h-5" />
+                                Download Full Backup (DB + Code)
+                            </a>
+                        </Button>
+                    </div>
 
                     <div className="w-full mt-1 p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-xs text-indigo-800">
-                        ☁️ <strong>Cloud Backups:</strong> Files are securely generated via GitHub Actions and sent directly to your <strong>Google Drive</strong>.
-                        The automatic backup runs every <strong>24 hours</strong> at midnight UTC.
+                        ☁️ <strong>Vercel Cloud Backup:</strong> Your JSON database structure and crucial configurations will be safely zipped and streamed directly to your browser.
                     </div>
                 </CardContent>
             </Card>
@@ -216,7 +180,9 @@ export default function BackupsPage() {
                                         <th className="text-left py-2 pr-4 font-semibold">Status</th>
                                         <th className="text-left py-2 pr-4 font-semibold">Type</th>
                                         <th className="text-left py-2 pr-4 font-semibold">DB Size</th>
+                                        <th className="text-left py-2 pr-4 font-semibold">DB File</th>
                                         <th className="text-left py-2 pr-4 font-semibold">Code Size</th>
+                                        <th className="text-left py-2 pr-4 font-semibold">Code File</th>
                                         <th className="text-left py-2 pr-4 font-semibold">Duration</th>
                                         <th className="text-left py-2 font-semibold">Error</th>
                                         <th />
@@ -231,7 +197,31 @@ export default function BackupsPage() {
                                                 <span className="text-xs text-stone-500 font-medium">{log.type}</span>
                                             </td>
                                             <td className="py-2.5 pr-4 font-mono text-xs">{formatBytes(log.dbSizeBytes)}</td>
+                                            <td className="py-2.5 pr-4 text-xs">
+                                                {log.dbFile ? (
+                                                    <a
+                                                        className="text-violet-600 hover:underline"
+                                                        href={log.dbFile}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                    >
+                                                        Download
+                                                    </a>
+                                                ) : '—'}
+                                            </td>
                                             <td className="py-2.5 pr-4 font-mono text-xs">{formatBytes(log.codeSizeBytes)}</td>
+                                            <td className="py-2.5 pr-4 text-xs">
+                                                {log.codeFile ? (
+                                                    <a
+                                                        className="text-violet-600 hover:underline"
+                                                        href={log.codeFile}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                    >
+                                                        Download
+                                                    </a>
+                                                ) : '—'}
+                                            </td>
                                             <td className="py-2.5 pr-4 text-xs">
                                                 {log.durationMs ? `${(log.durationMs / 1000).toFixed(1)}s` : '—'}
                                             </td>
