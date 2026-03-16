@@ -1,194 +1,117 @@
-"use client";
+"use client"
 
-// ============================================================================
-// Hardware Source: register-form.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Functional module
-// Env / Identity: Client Component
-// ============================================================================
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { registerUser } from "@/app/actions/authActions"
+import { signIn } from "next-auth/react"
+import { Mail, Lock, User, Loader2, Eye, EyeOff } from "lucide-react"
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { registerUser } from "@/app/actions/authActions";
-import { signIn } from "next-auth/react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, Lock, User, UserPlus, Loader2, ArrowRight } from "lucide-react";
-
-const registerSchema = z.object({
+const schema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
     email: z.string().email("Please enter a valid email address."),
-    password: z.string().min(8, "Password must be at least 8 characters.")
-});
+    password: z.string().min(8, "Password must be at least 8 characters."),
+})
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type Values = z.infer<typeof schema>
 
 export function RegisterForm() {
-    const router = useRouter();
-    const [isPending, setIsPending] = useState(false);
-    const [globalError, setGlobalError] = useState<string | null>(null);
+    const router = useRouter()
+    const [isPending, setIsPending] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState(false)
+    const [showPw, setShowPw] = useState(false)
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<RegisterFormValues>({
-        resolver: zodResolver(registerSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            password: "",
-        },
-    });
+    const { register, handleSubmit, formState: { errors } } = useForm<Values>({
+        resolver: zodResolver(schema),
+        defaultValues: { name: "", email: "", password: "" },
+    })
 
-    async function onSubmit(data: RegisterFormValues) {
-        setIsPending(true);
-        setGlobalError(null);
-
+    async function onSubmit(data: Values) {
+        setIsPending(true)
+        setError(null)
         try {
-            // Register via Server Action
-            const result = await registerUser(data);
+            const result = await registerUser(data)
+            if (!result.success) { setError(result.error || "Registration failed."); return }
 
-            if (!result.success) {
-                setGlobalError(result.error || "Registration failed. Please try again.");
-                setIsPending(false);
-                return;
-            }
+            setSuccess(true)
+            // Auto sign-in
+            const res = await signIn("credentials", { redirect: false, email: data.email, password: data.password })
+            if (!res?.error) { router.push("/profile"); router.refresh() }
+        } catch { setError("An unexpected error occurred. Please try again.") }
+        finally { setIsPending(false) }
+    }
 
-            // Immediately sign them in
-            const signInResult = await signIn("credentials", {
-                redirect: false,
-                email: data.email,
-                password: data.password,
-            });
-
-            if (signInResult?.error) {
-                setGlobalError("Account created, but couldn't log in automatically. Please log in manually.");
-                setIsPending(false);
-            } else {
-                router.push("/profile");
-                router.refresh();
-            }
-        } catch (error) {
-            setGlobalError("An unexpected error occurred. Please try again later.");
-            setIsPending(false);
-        }
+    if (success) {
+        return (
+            <div className="text-center space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center mx-auto">
+                    <svg className="w-7 h-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <h2 className="text-xl font-bold text-white">Account created!</h2>
+                <p className="text-slate-400 text-sm">A verification email has been sent. Redirecting...</p>
+            </div>
+        )
     }
 
     return (
-        <div className="backdrop-blur-2xl bg-white/5 border border-white/10 p-8 sm:p-10 rounded-[2rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] relative overflow-hidden group">
-            {/* Subtle inner top highlight */}
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-
-            <div className="mb-10 text-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform duration-500 ease-out">
-                    <UserPlus className="h-8 w-8 text-white" />
-                </div>
-                <h1 className="text-3xl font-bold tracking-tight text-white mb-2 font-sans">
-                    Create Account
-                </h1>
-                <p className="text-slate-400 text-sm">
-                    Join us to access exclusive content and features.
-                </p>
+        <div className="w-full max-w-sm">
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-white">Create account</h1>
+                <p className="text-slate-500 text-sm mt-1">Join and get access to all features.</p>
             </div>
 
-            {globalError && (
-                <Alert variant="destructive" className="mb-6 bg-red-500/10 border-red-500/20 text-red-400">
-                    <AlertDescription>{globalError}</AlertDescription>
-                </Alert>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative z-10" dir="ltr">
-                <div className="space-y-2">
-                    <Label className="text-slate-300 font-medium ml-1">Full Name</Label>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <User className="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                        </div>
-                        <Input
-                            {...register("name")}
-                            className="bg-black/20 border-white/10 text-white placeholder:text-slate-600 pl-11 h-12 rounded-xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all hover:bg-black/30"
-                            placeholder="John Doe"
-                            autoComplete="name"
-                            disabled={isPending}
-                        />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5 tracking-wide uppercase">Full Name</label>
+                    <div className="relative">
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                        <input {...register("name")} type="text" placeholder="John Doe" autoComplete="name"
+                            className="w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm pl-10 pr-4 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06]" />
                     </div>
-                    {errors.name && (
-                        <p className="text-sm text-red-400 mt-1.5 ml-1">{errors.name.message}</p>
-                    )}
+                    {errors.name && <p className="text-red-400 text-xs mt-1.5">{errors.name.message}</p>}
                 </div>
 
-                <div className="space-y-2">
-                    <Label className="text-slate-300 font-medium ml-1">Email Address</Label>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                        </div>
-                        <Input
-                            {...register("email")}
-                            type="email"
-                            className="bg-black/20 border-white/10 text-white placeholder:text-slate-600 pl-11 h-12 rounded-xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all hover:bg-black/30"
-                            placeholder="you@example.com"
-                            autoComplete="email"
-                            disabled={isPending}
-                        />
+                <div>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5 tracking-wide uppercase">Email</label>
+                    <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                        <input {...register("email")} type="email" placeholder="you@example.com" autoComplete="email"
+                            className="w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm pl-10 pr-4 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06]" />
                     </div>
-                    {errors.email && (
-                        <p className="text-sm text-red-400 mt-1.5 ml-1">{errors.email.message}</p>
-                    )}
+                    {errors.email && <p className="text-red-400 text-xs mt-1.5">{errors.email.message}</p>}
                 </div>
 
-                <div className="space-y-2">
-                    <Label className="text-slate-300 font-medium ml-1">Password</Label>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                        </div>
-                        <Input
-                            {...register("password")}
-                            type="password"
-                            className="bg-black/20 border-white/10 text-white placeholder:text-slate-600 pl-11 h-12 rounded-xl focus:border-blue-500/50 focus:ring-blue-500/20 transition-all hover:bg-black/30"
-                            placeholder="••••••••"
-                            autoComplete="new-password"
-                            disabled={isPending}
-                        />
+                <div>
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5 tracking-wide uppercase">Password</label>
+                    <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+                        <input {...register("password")} type={showPw ? "text" : "password"} placeholder="Min. 8 characters" autoComplete="new-password"
+                            className="w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm pl-10 pr-10 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06]" />
+                        <button type="button" onClick={() => setShowPw(p => !p)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
+                            {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                     </div>
-                    {errors.password && (
-                        <p className="text-sm text-red-400 mt-1.5 ml-1">{errors.password.message}</p>
-                    )}
+                    {errors.password && <p className="text-red-400 text-xs mt-1.5">{errors.password.message}</p>}
                 </div>
 
-                <Button
-                    type="submit"
-                    className="w-full h-12 bg-white hover:bg-slate-100 text-black font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] mt-8"
-                    disabled={isPending}
-                >
-                    {isPending ? (
-                        <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Creating account...
-                        </>
-                    ) : (
-                        <>
-                            Sign Up <ArrowRight className="ml-2 h-5 w-5" />
-                        </>
-                    )}
-                </Button>
+                {error && (
+                    <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm">{error}</div>
+                )}
+
+                <button type="submit" disabled={isPending}
+                    className="w-full mt-2 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+                    {isPending ? <><Loader2 className="h-4 w-4 animate-spin" />Creating account...</> : "Create Account"}
+                </button>
             </form>
 
-            <div className="mt-8 text-center text-sm text-slate-400 relative z-10">
+            <p className="text-center text-slate-600 text-sm mt-6">
                 Already have an account?{" "}
-                <Link href="/login" className="text-blue-400 hover:text-blue-300 hover:underline transition-colors font-medium">
-                    Log in here
-                </Link>
-            </div>
+                <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Sign in</Link>
+            </p>
         </div>
-    );
+    )
 }

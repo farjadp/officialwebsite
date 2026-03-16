@@ -11,6 +11,8 @@ import { createWriteStream, existsSync, mkdirSync, statSync, createReadStream } 
 import { resolve, join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import pg from 'pg'
 import { google } from 'googleapis'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -22,7 +24,15 @@ try {
     config({ path: join(PROJECT_ROOT, '.env') })
 } catch { /* dotenv optional in CI */ }
 
-const prisma = new PrismaClient()
+const dbUrl = process.env.POSTGRES_URL_NON_POOLING || process.env.DATABASE_URL
+const pool = new pg.Pool({
+    connectionString: dbUrl,
+    max: 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+    ...(dbUrl && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1')) ? {} : { ssl: { rejectUnauthorized: false } })
+})
+const prisma = new PrismaClient({ adapter: new PrismaPg(pool) })
 
 // ─── Config ────────────────────────────────────────────────────────────────────────────
 const BACKUP_DIR = '/tmp' // Ephemeral storage in GitHub Actions/Vercel
@@ -122,6 +132,7 @@ async function uploadToDrive(filePath, fileName, mimeType) {
     log(`Uploading to Google Drive: ${fileName}...`)
     try {
         const response = await drive.files.create({
+            supportsAllDrives: true,
             requestBody: {
                 name: fileName,
                 parents: [FOLDER_ID],

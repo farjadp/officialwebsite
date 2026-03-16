@@ -8,6 +8,7 @@
 import type { NextAuthConfig } from "next-auth"
 
 export const authConfig = {
+    trustHost: true,
     providers: [], // We'll add the DB-dependent credentials provider in auth.ts
     callbacks: {
         async jwt({ token, user, trigger, session }) {

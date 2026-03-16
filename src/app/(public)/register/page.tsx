@@ -1,42 +1,49 @@
-// ============================================================================
-// Hardware Source: page.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Main entry page for the route
-// Env / Identity: React Server Component
-// ============================================================================
+import { Suspense } from "react"
+import { RegisterForm } from "./register-form"
 
-import Image from "next/image";
-import { RegisterForm } from "./register-form";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "Register | Ashavid",
-    description: "Create an account to join the community.",
-};
+export const metadata = {
+    title: "Create Account | farjadp.info",
+    description: "Sign up for a new account.",
+}
 
 export default function RegisterPage() {
     return (
-        <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-black selection:bg-blue-500/30">
-            {/* Background Image & Overlay */}
-            <div className="absolute inset-0 z-0">
-                <Image
-                    src="/images/bg-login.png" // Reusing the premium login background
-                    alt="Premium Abstract Background"
-                    fill
-                    priority
-                    className="object-cover opacity-60 mix-blend-screen scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent backdrop-blur-[1px]"></div>
+        <div className="min-h-screen flex bg-[#030712]">
+            {/* Left panel */}
+            <div className="hidden lg:flex w-1/2 relative overflow-hidden flex-col items-start justify-end p-16">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-[#0f0c29] to-[#030712]" />
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-600/10 rounded-full blur-3xl" />
+                <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+                <div className="relative z-10 mb-8">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium mb-6">
+                        <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                        farjadp.info
+                    </div>
+                    <h2 className="text-4xl font-bold text-white leading-tight mb-4">
+                        Start your<br />journey here.
+                    </h2>
+                    <p className="text-slate-400 text-base leading-relaxed max-w-xs">
+                        Create a free account to explore all content, tools, and resources available on the platform.
+                    </p>
+                </div>
             </div>
 
-            {/* Decorative ambient glowing blobs */}
-            <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-pulse z-0 delay-500"></div>
-            <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[120px] animate-pulse z-0 delay-1000"></div>
-
-            {/* Main Form Container */}
-            <div className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700 ease-out">
-                <RegisterForm />
+            {/* Right form panel */}
+            <div className="flex-1 flex items-center justify-center px-6 py-16 relative">
+                <div className="absolute inset-0 lg:hidden">
+                    <div className="absolute top-0 right-0 w-72 h-72 bg-violet-700/15 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-700/10 rounded-full blur-3xl" />
+                </div>
+                <div className="relative z-10 w-full max-w-sm">
+                    <div className="mb-8 lg:hidden text-center">
+                        <span className="text-xl font-bold text-white">farjadp.info</span>
+                    </div>
+                    <Suspense>
+                        <RegisterForm />
+                    </Suspense>
+                </div>
             </div>
         </div>
-    );
+    )
 }

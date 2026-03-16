@@ -26,6 +26,7 @@ export type CreatePostInput = {
     seoKeywords?: string
     categoryIds?: string[]
     tagIds?: string[]
+    skipAutoPublish?: boolean
 }
 
 export type UpdatePostInput = Partial<CreatePostInput> & {
@@ -91,7 +92,7 @@ export async function getPost(idOrSlug: string) {
 }
 
 export async function createPost(data: CreatePostInput) {
-    const { categoryIds, tagIds, content, ...rest } = data
+    const { categoryIds, tagIds, content, skipAutoPublish, ...rest } = data
 
     // Calculate reading time
     let readingTime = 0
@@ -125,8 +126,8 @@ export async function createPost(data: CreatePostInput) {
         })
         revalidatePath('/admin/posts')
 
-        // ─── Auto-publish if created directly as PUBLISHED ───────────────
-        if (post.status === 'PUBLISHED' && post.content) {
+        // ─── Auto-publish if created directly as PUBLISHED (unless caller handles it) ───────────────
+        if (!skipAutoPublish && post.status === 'PUBLISHED' && post.content) {
             waitUntil(
                 runWaterfallPipeline(
                     post.id,

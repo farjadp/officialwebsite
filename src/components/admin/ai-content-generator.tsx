@@ -5,7 +5,7 @@
 
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
-import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp, UploadCloud, Trash2 } from 'lucide-react'
+import { Sparkles, Loader2, X, ChevronDown, ChevronUp, Image as ImageIcon, Brain, Target, TrendingUp, UploadCloud, Trash2, Send, Twitter, Linkedin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -37,6 +37,7 @@ interface GeneratedPost {
     imagePrompt: string
     optimizationMode: string
     contentGoal: string
+    socialPlatforms?: { telegram: boolean; twitter: boolean; linkedin: boolean }
 }
 
 interface AIContentGeneratorProps {
@@ -110,6 +111,12 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
     const [uploadedImages, setUploadedImages] = useState<{ url: string; name: string }[]>([])
     const [isUploading, setIsUploading] = useState(false)
     const imageInputRef = useRef<HTMLInputElement>(null)
+
+    const [socialPlatforms, setSocialPlatforms] = useState({
+        telegram: true,
+        twitter: true,
+        linkedin: true,
+    })
 
     const [params, setParams] = useState({
         topic: '',
@@ -189,10 +196,19 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
 
     const handleUse = () => {
         if (!preview) return
-        onGenerated(preview)
+        const anySelected = socialPlatforms.telegram || socialPlatforms.twitter || socialPlatforms.linkedin
+        onGenerated({ ...preview, socialPlatforms: anySelected ? socialPlatforms : undefined })
         setOpen(false)
         setPreview(null)
-        toast.success('Content applied to the editor ✓')
+        const platformNames = [
+            socialPlatforms.telegram && 'Telegram',
+            socialPlatforms.twitter && 'X/Twitter',
+            socialPlatforms.linkedin && 'LinkedIn',
+        ].filter(Boolean).join(', ')
+        toast.success(anySelected
+            ? `Content applied ✓ — will publish to ${platformNames} after saving`
+            : 'Content applied to the editor ✓'
+        )
     }
 
     return (
@@ -376,6 +392,62 @@ export function AIContentGenerator({ onGenerated }: AIContentGeneratorProps) {
                         <span>
                             <strong>Brand Voice Active:</strong> All content is written as Farjad — first person, with 17y experience, honest mentorship perspective, and a lead-gen CTA embedded naturally.
                         </span>
+                    </div>
+
+                    {/* Social Auto-Publish */}
+                    <div className="space-y-2.5 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <label className="text-sm font-semibold flex items-center gap-2">
+                            <Send className="w-4 h-4 text-slate-600" />
+                            Auto-Publish to Social After Saving
+                        </label>
+                        <p className="text-xs text-muted-foreground -mt-1">Select which platforms to auto-publish to when you save this article.</p>
+                        <div className="flex gap-4 mt-1">
+                            {/* Telegram */}
+                            <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all text-sm font-medium ${
+                                socialPlatforms.telegram
+                                    ? 'border-[#229ED9] bg-[#229ED9]/10 text-[#1a7ba8]'
+                                    : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={socialPlatforms.telegram}
+                                    onChange={(e) => setSocialPlatforms(p => ({ ...p, telegram: e.target.checked }))}
+                                    className="hidden"
+                                />
+                                <Send className="w-3.5 h-3.5" />
+                                Telegram
+                            </label>
+                            {/* Twitter/X */}
+                            <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all text-sm font-medium ${
+                                socialPlatforms.twitter
+                                    ? 'border-black bg-black/10 text-black'
+                                    : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={socialPlatforms.twitter}
+                                    onChange={(e) => setSocialPlatforms(p => ({ ...p, twitter: e.target.checked }))}
+                                    className="hidden"
+                                />
+                                <Twitter className="w-3.5 h-3.5" />
+                                X / Twitter
+                            </label>
+                            {/* LinkedIn */}
+                            <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all text-sm font-medium ${
+                                socialPlatforms.linkedin
+                                    ? 'border-[#0A66C2] bg-[#0A66C2]/10 text-[#0A66C2]'
+                                    : 'border-slate-200 text-slate-400 hover:border-slate-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={socialPlatforms.linkedin}
+                                    onChange={(e) => setSocialPlatforms(p => ({ ...p, linkedin: e.target.checked }))}
+                                    className="hidden"
+                                />
+                                <Linkedin className="w-3.5 h-3.5" />
+                                LinkedIn
+                            </label>
+                        </div>
                     </div>
 
                     {/* Advanced toggle */}
