@@ -297,7 +297,8 @@ IMAGE PROMPT RULES:
 - Avoid cliché startup visuals: people shaking hands, rocket ships, light bulbs, groups smiling at laptops, fake office teamwork
 - Avoid illustrations, UI mockups, holographic interfaces, floating overlays, or futuristic CGI
 - All prompts must produce realistic photography, not digital art or illustration
-- No text or letters inside the image`,
+- No text or letters inside the image
+- CRITICAL CULTURAL RESTRICTION: ABSOLUTELY NO Islamic, Arabic, Middle Eastern, or religious cultural elements or clothing (like hijabs or headscarves). DO NOT mention "Iran", "Middle East", "Islam", or related terms in your image prompts. Keep the subjects culturally neutral, international, or Western business attire.`,
                 },
                 {
                     role: "user",
