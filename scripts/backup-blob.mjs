@@ -49,10 +49,9 @@ async function main() {
             const fileStream = fs.createReadStream(dbFilePath)
             
             const dbBlob = await put(`backups/database-${dateStr}.sql`, fileStream, {
-                access: 'public',
                 token: blobToken,
                 addRandomSuffix: false
-            })
+            }) 
             
             dbFileUrl = dbBlob.url
             console.log(`Database uploaded: ${dbFileUrl}`)
@@ -73,7 +72,6 @@ async function main() {
             const fileStream = fs.createReadStream(codeFilePath)
 
             const codeBlob = await put(`backups/codebase-${dateStr}.tar.gz`, fileStream, {
-                access: 'public',
                 token: blobToken,
                 addRandomSuffix: false
             })
@@ -102,7 +100,6 @@ async function main() {
         const manifestStream = fs.createReadStream(manifestFilePath)
         
         await put(`backups/manifests/manifest-${dateStr}.json`, manifestStream, {
-            access: 'public',
             token: blobToken,
             addRandomSuffix: false
         })
@@ -130,7 +127,6 @@ async function main() {
             fs.writeFileSync(manifestFilePath, JSON.stringify(manifest))
             const manifestStream = fs.createReadStream(manifestFilePath)
             await put(`backups/manifests/manifest-${dateStr}-failed.json`, manifestStream, {
-                access: 'public',
                 token: blobToken,
                 addRandomSuffix: false
             })
