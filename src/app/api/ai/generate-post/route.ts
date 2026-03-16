@@ -187,9 +187,9 @@ export async function POST(req: NextRequest) {
 
         const wordCount =
             length === "extra-long" ? "3000+" :
-            length === "long" ? "1800-2500" :
-            length === "short" ? "600-900" :
-            "1000-1500";
+                length === "long" ? "1800-2500" :
+                    length === "short" ? "600-900" :
+                        "1000-1500";
 
         const contentGoalInstructions: Record<string, string> = {
             authority: "Goal: Establish Farjad as the definitive authority. Lead with experience. Be bold.",
@@ -289,16 +289,29 @@ Rules:
 - **FAQ**: You MUST include a "Frequently Asked Questions" section containing 3-4 highly relevant Q&As near the end of the article, regardless of the optimization mode.
 
 IMAGE PROMPT RULES:
-- Write image prompts as instructions for a top editorial photographer, not an illustrator
-- For the cover image, prioritize a symbolic editorial scene — it must feel like a premium magazine feature, not a blog illustration
-- For body images, make one human-centered (a realistic founder/human moment) and one systems/environment-centered (architecture, objects, space)
-- Prefer realistic scenes, environments, architecture, objects, and thoughtful human presence
-- Use strong editorial metaphors: crossroads, empty desks, city streets, industrial spaces, quiet moments of decision
-- Avoid cliché startup visuals: people shaking hands, rocket ships, light bulbs, groups smiling at laptops, fake office teamwork
-- Avoid illustrations, UI mockups, holographic interfaces, floating overlays, or futuristic CGI
-- All prompts must produce realistic photography, not digital art or illustration
-- No text or letters inside the image
-- CRITICAL CULTURAL RESTRICTION: ABSOLUTELY NO Islamic, Arabic, Middle Eastern, or religious cultural elements or clothing (like hijabs or headscarves). DO NOT mention "Iran", "Middle East", "Islam", or related terms in your image prompts. Keep the subjects culturally neutral, international, or Western business attire.`,
+- Write image prompts as instructions for a top editorial photographer, not an illustrator.
+- All images must look like real editorial photography, not digital art, CGI, illustration, UI mockups, or futuristic concept art.
+- The overall visual tone should feel intelligent, modern, calm, premium, and strategically human.
+- Match the style of a serious business or culture magazine feature, with thoughtful composition and emotional restraint.
+- Use naturalistic lighting, realistic textures, believable environments, and cinematic but credible photography.
+- Prefer scenes with architectural depth, urban atmosphere, objects with meaning, and subtle human presence.
+- Avoid cliché startup visuals such as handshakes, fake teamwork, cheering groups, rocket imagery, light bulbs, or staged laptop smiles.
+- Avoid floating interfaces, holograms, excessive screen graphics, or anything that looks like stock-tech fantasy.
+- No text, letters, signage focus, or readable words inside the image.
+- Keep wardrobe and styling globally professional, contemporary, and culturally neutral, with no overly ceremonial or region-specific visual signals unless the article explicitly requires them.
+- CRITICAL CULTURAL RESTRICTION: ABSOLUTELY NO Islamic, Arabic, Middle Eastern, or religious cultural elements or clothing (like hijabs or headscarves). DO NOT mention "UAE", "Middle East", "Islam", or related terms in your image prompts. Keep the subjects culturally neutral, international, or Western business attire.
+
+PALETTE:
+Primary colors: Deep graphite (#1F1F1F), Soft white (#F5F5F5)
+Accent colors: Muted cobalt blue (#2F5BFF), Warm amber (#D9A441)
+Optional subtle tone: Steel grey (#6E6E73)
+
+IMAGE MOOD:
+- slightly desaturated, natural daylight, cool shadows, warm highlights, realistic skin tones, low saturation environments.
+- AVOID: neon colors, cyberpunk lighting, glowing screens, purple startup gradients, oversaturated Instagram tones.
+
+COVER IMAGE COMPOSITION:
+Your cover images (1792x1024) should follow a pattern: wide landscape orientation, negative space on left or top, main subject on right third. This allows headline overlay.`,
                 },
                 {
                     role: "user",
