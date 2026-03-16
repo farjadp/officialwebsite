@@ -80,7 +80,6 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
     const [isUploading, setIsUploading] = useState(false)
     const [socialPublishConfig, setSocialPublishConfig] = useState<SocialPlatforms | null>(null)
 
-    // AI Generation handler — fills all form fields with generated content
     const handleAIGenerated = (generated: {
         title: string
         slug: string
@@ -90,6 +89,8 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
         seoDescription: string
         seoKeywords: string
         coverImageUrl: string | null
+        categoryName?: string
+        subcategoryName?: string
         socialPlatforms?: SocialPlatforms
     }) => {
         form.setValue('title', generated.title)
@@ -102,6 +103,23 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
         if (generated.coverImageUrl) {
             form.setValue('coverImage', generated.coverImageUrl)
         }
+
+        // Auto-select generated categories
+        if (generated.categoryName || generated.subcategoryName) {
+            const selectedIds: string[] = []
+            if (generated.categoryName) {
+                const parent = categories.find(c => c.name.toLowerCase() === generated.categoryName?.toLowerCase())
+                if (parent) selectedIds.push(parent.id)
+            }
+            if (generated.subcategoryName) {
+                const child = categories.find(c => c.name.toLowerCase() === generated.subcategoryName?.toLowerCase())
+                if (child) selectedIds.push(child.id)
+            }
+            if (selectedIds.length > 0) {
+                form.setValue('categoryIds', selectedIds)
+            }
+        }
+
         // Store social platform config for auto-publish after save
         setSocialPublishConfig(generated.socialPlatforms || null)
     }

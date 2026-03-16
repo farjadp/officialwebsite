@@ -23,6 +23,43 @@ const VERIFIED_BIO = {
     }
 };
 
+// ─── Post Category Taxonomy ───────────────────────────────────────────────────
+const CATEGORY_TAXONOMY = `
+AVAILABLE CATEGORIES AND SUBCATEGORIES:
+You MUST choose exactly ONE Category and exactly ONE Subcategory from the following strict tree. DO NOT invent new categories or subcategories.
+
+Insights
+  ├── Startup Strategy
+  ├── Founder Mindset
+  ├── Product–Market Fit
+  └── Go-To-Market
+
+Digital Acceleration
+  ├── Growth Systems
+  ├── Automation
+  └── AI Infrastructure
+
+AI & Automation
+  ├── AI for Startups
+  ├── LLM Systems
+  └── Workflow Automation
+
+Marketing Systems
+  ├── AdTech
+  ├── Growth Marketing
+  └── Content Strategy
+
+Founder Infrastructure
+  ├── Productivity
+  ├── Decision Systems
+  └── Team Operations
+
+Mentorship & Founder Lessons
+  ├── Founder Stories
+  ├── Startup Mentorship
+  └── Hard Truths
+`;
+
 // ─── Farjad's Brand Identity ──────────────────────────────────────────────────
 const BRAND_IDENTITY = `
 You ARE Farjad. You are writing in first person, from your own lived experience.
@@ -267,6 +304,8 @@ TARGET AUDIENCE: ${targetAudience}
 LANGUAGE: ${language}
 ARTICLE LENGTH: ${wordCount} words
 
+${CATEGORY_TAXONOMY}
+
 ${optimizationGuide}
 ${goalGuide}${vaultAssetInstructions}
 
@@ -274,6 +313,8 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
 {
   "title": "...",
   "slug": "...",
+  "categoryName": "... (Must exactly match a parent Category from the taxonomy)",
+  "subcategoryName": "... (Must exactly match a child Subcategory under your chosen category)",
   "excerpt": "...",
   "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote>, <mark>, <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. Include intro, body sections, Key Takeaways, a Frequently Asked Questions (FAQ) section, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
   "seoTitle": "...",
@@ -363,6 +404,8 @@ Your cover images (1792x1024) should follow a pattern: wide landscape orientatio
             data: {
                 title: generated.title,
                 slug: generated.slug,
+                categoryName: generated.categoryName,
+                subcategoryName: generated.subcategoryName,
                 excerpt: generated.excerpt,
                 content: contentWithImages,
                 seoTitle: generated.seoTitle,

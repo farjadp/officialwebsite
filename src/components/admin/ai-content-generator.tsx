@@ -27,6 +27,8 @@ import {
 interface GeneratedPost {
     title: string
     slug: string
+    categoryName?: string
+    subcategoryName?: string
     excerpt: string
     content: string
     seoTitle: string
