@@ -90,6 +90,7 @@ const LENGTHS = [
     { value: 'short', label: 'Short (600–900 words)' },
     { value: 'medium', label: 'Medium (1000–1500 words)' },
     { value: 'long', label: 'Long (1800–2500 words)' },
+    { value: 'extra-long', label: 'Extra Long (3000+ words)' },
 ]
 
 const LANGUAGES = [

@@ -187,7 +187,10 @@ export async function POST(req: NextRequest) {
         }
 
         const wordCount =
-            length === "short" ? "600-900" : length === "long" ? "1800-2500" : "1000-1500";
+            length === "extra-long" ? "3000+" :
+            length === "long" ? "1800-2500" :
+            length === "short" ? "600-900" :
+            "1000-1500";
 
         const contentGoalInstructions: Record<string, string> = {
             authority: "Goal: Establish Farjad as the definitive authority. Lead with experience. Be bold.",
@@ -264,7 +267,7 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "title": "...",
   "slug": "...",
   "excerpt": "...",
-  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote>, <mark>, <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. Include intro, body sections, Key Takeaways, FAQ if AEO, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
+  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote>, <mark>, <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. Include intro, body sections, Key Takeaways, a Frequently Asked Questions (FAQ) section, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
   "seoTitle": "...",
   "seoDescription": "...",
   "seoKeywords": "...",
@@ -284,6 +287,7 @@ Rules:
 - **TABLES**: Include at least one well-structured HTML <table> whenever comparing concepts, listing pros/cons, or presenting structured data.
 - **QUOTES**: Include at least one highly relevant, profound quote from a famous founder, philosopher, or influential figure using <blockquote>.
 - **FORMATTING**: Use <strong> aggressively to bold key concepts. Use <mark> to highlight the 2-3 most critical sentences or takeaways in the entire article to make the text highly scannable.
+- **FAQ**: You MUST include a "Frequently Asked Questions" section containing 3-4 highly relevant Q&As near the end of the article, regardless of the optimization mode.
 
 IMAGE PROMPT RULES:
 - Write image prompts as instructions for a top editorial photographer, not an illustrator
