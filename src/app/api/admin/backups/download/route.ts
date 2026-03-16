@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest) {
     // 1. Authenticate Admin
     const session = await auth()
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

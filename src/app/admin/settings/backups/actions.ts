@@ -4,7 +4,7 @@ import { auth } from '@/auth'
 
 export async function triggerBackupAction(type: 'full' | 'db-only' | 'code-only') {
     const session = await auth()
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {
         return { success: false, error: 'NextAuth Unauthorized: Session invalid or not admin' }
     }
 
