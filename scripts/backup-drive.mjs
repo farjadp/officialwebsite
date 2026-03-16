@@ -91,7 +91,13 @@ async function dumpDatabase(outPath) {
             }
         })
 
-        pgDump.on('error', err => reject(new Error(`pg_dump error: ${err.message}`)))
+        pgDump.on('error', err => {
+            if (err.code === 'ENOENT') {
+                reject(new Error(`pg_dump not found in environment PATH. Please install postgresql-client.`))
+            } else {
+                reject(new Error(`pg_dump error: ${err.message}`))
+            }
+        })
     })
 }
 
@@ -170,9 +176,15 @@ async function main() {
 
     try {
         if (backupType === 'full' || backupType === 'db-only') {
-            await dumpDatabase(dbFile)
-            dbSizeBytes = BigInt(fileSize(dbFile))
-            await uploadToDrive(dbFile, `db-${ts}.dump`, 'application/octet-stream')
+            try {
+                await dumpDatabase(dbFile)
+                dbSizeBytes = BigInt(fileSize(dbFile))
+                await uploadToDrive(dbFile, `db-${ts}.dump`, 'application/octet-stream')
+            } catch (dbError) {
+                // If it's a full backup and DB fails, log it but don't abort code backup
+                log(`Database backup skipped or failed: ${dbError.message}`)
+                if (backupType === 'db-only') throw dbError
+            }
         }
 
         if (backupType === 'full' || backupType === 'code-only') {

@@ -19,7 +19,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        if: github.event.inputs.type == 'full' || github.event.inputs.type == 'code-only' || github.event.action == 'trigger-backup'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,13 +27,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        if: github.event.inputs.type == 'full' || github.event.inputs.type == 'code-only' || github.event.action == 'trigger-backup'
 
       - name: Setup PostgreSQL Client
-        if: github.event.inputs.type == 'full' || github.event.inputs.type == 'db-only' || github.event.action == 'trigger-backup'
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt-get install -y postgresql-client-common postgresql-client
 
       - name: Run Backup Script
         env:
