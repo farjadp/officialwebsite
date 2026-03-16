@@ -2,8 +2,8 @@
 
 // ============================================================================
 // Hardware Source: post-form.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Functional module
+// Version: 1.1.0 — 2026-03-15
+// Why: Functional module + social auto-publish toggle
 // Env / Identity: Client Component
 // ============================================================================
 

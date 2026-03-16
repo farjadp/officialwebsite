@@ -2,7 +2,7 @@
 
 // ============================================================================
 // Hardware Source: posts.ts
-// Version: 1.2.0 — 2026-03-05
+// Version: 1.3.0 — 2026-03-15
 // Why: Functional module + auto-publish via Content Waterfall
 // Env / Identity: Server Action / Module
 // ============================================================================
@@ -192,7 +192,7 @@ export async function updatePost(data: UpdatePostInput) {
         revalidatePath('/admin/posts')
         revalidatePath(`/blog/${post.slug}`)
 
-        // ─── Auto-publish on first PUBLISH ───────────────────────────────
+        // ─── Auto-publish on first PUBLISH ────────────────────
         if (isNewPublish && post.content) {
             waitUntil(
                 runWaterfallPipeline(
