@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const session = await auth()
     if (!session?.user || session.user.role !== 'admin') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json({ error: 'NextAuth Unauthorized: Session invalid or not admin' }, { status: 401 })
     }
 
     try {
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
         const pat = process.env.GITHUB_PAT
         if (!pat) {
-            return NextResponse.json({ error: 'GITHUB_PAT environment variable not configured' }, { status: 500 })
+            return NextResponse.json({ error: 'GITHUB_PAT environment variable not configured in Vercel' }, { status: 500 })
         }
 
         // Trigger GitHub Action via repository_dispatch
@@ -65,8 +65,9 @@ export async function POST(req: NextRequest) {
             method: 'POST',
             headers: {
                 'Accept': 'application/vnd.github.v3+json',
-                'Authorization': `token ${pat}`,
+                'Authorization': `Bearer ${pat.trim()}`,
                 'Content-Type': 'application/json',
+                'User-Agent': 'Vercel-Application'
             },
             body: JSON.stringify({
                 event_type: 'trigger-backup',
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
             const errBody = await response.text()
             console.error('GitHub API error:', response.status, errBody)
             return NextResponse.json({ 
-                error: `GitHub Action trigger failed: ${response.status}` 
+                error: `GitHub rejected PAT (Status ${response.status}): ${errBody}` 
             }, { status: 500 })
         }
 

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { HardDrive, Database, Archive, Trash2, RefreshCw, CheckCircle2, XCircle, Loader2, Clock, DownloadCloud, Play } from 'lucide-react'
+import { triggerBackupAction } from './actions'
 
 type BackupLog = {
     id: string
@@ -76,25 +77,15 @@ export default function BackupsPage() {
     const triggerBackup = async (type: 'full' | 'db-only' | 'code-only') => {
         setTriggering(true)
         try {
-            const res = await fetch('/api/admin/backups', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type }),
-            })
-            const data = await res.json()
+            const result = await triggerBackupAction(type)
 
-            if (!res.ok) {
-                toast.error(data?.error || `Backup failed (${res.status})`)
+            if (!result.success) {
+                toast.error(result.error || `Backup failed to trigger`)
                 return
             }
 
-            if (data?.success) {
-                toast.success(`${data.message} — Action started in background`)
-                // Polling briefly to show running state if possible, though GH Actions take time
-                setTimeout(fetchLogs, 5000)
-            } else {
-                toast.error(data?.error || 'Backup failed')
-            }
+            toast.success(result.message || `Action started in background`)
+            setTimeout(fetchLogs, 5000)
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Failed to trigger backup'
             toast.error(msg)
