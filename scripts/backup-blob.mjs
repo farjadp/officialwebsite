@@ -39,7 +39,7 @@ async function main() {
             console.log(`Executing pg_dump to ${dbFilePath}...`)
             
             // Neon connection requires specifying no-password prompt since we pass it in the URI
-            await execAsync(`pg_dump "${dbUrl}" --no-password -F p -f "${dbFilePath}"`)
+            await execAsync(`/usr/lib/postgresql/17/bin/pg_dump "${dbUrl}" --no-password -F p -f "${dbFilePath}"`)
             console.log('SQL dump successful.')
             
             // Upload to Vercel Blob
