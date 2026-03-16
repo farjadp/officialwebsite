@@ -91,10 +91,9 @@ function getImageStyleSuffix(topic: string): string {
         t.includes("process") ||
         t.includes("architecture")
     ) {
-        return `Editorial photography with architectural composition, structured geometry, clean lines, visual depth, premium minimalism, cinematic shadows, modern systems aesthetic, highly realistic, subtle atmosphere, sophisticated color grading, shot on a professional full-frame camera. Prefer environments, objects, spatial structure, and symbolic scenes. Avoid illustrations, futuristic UI overlays, handshake scenes, and generic corporate teamwork visuals. No text, no letters, no watermarks in the image itself.`;
+        return `Editorial photography with architectural composition, structured geometry, clean lines, visual depth, premium minimalism, cinematic shadows, modern systems aesthetic, highly realistic, subtle atmosphere, sophisticated color grading, shot on a professional full-frame camera. Prefer environments, objects, spatial structure, and symbolic scenes. Avoid illustrations, futuristic UI overlays, handshake scenes, and generic corporate teamwork visuals. No text, no letters, no watermarks in the image itself. DO NOT include any Islamic, Arabic, or religious cultural elements, clothing, or architecture.`;
     }
 
-    // Founder psychology / deep thinking / hard truths
     if (
         t.includes("burnout") ||
         t.includes("failure") ||
@@ -103,11 +102,11 @@ function getImageStyleSuffix(topic: string): string {
         t.includes("identity") ||
         t.includes("truth")
     ) {
-        return `Moody editorial photography, cinematic low-key lighting, intelligent minimalist composition, subtle emotional tension, realistic environments, premium magazine aesthetic, nuanced shadows, restrained tone, highly detailed and realistic, natural textures, shot on a professional full-frame camera. Avoid commercial stock-photo style, glossy advertising visuals, exaggerated emotions, and cartoonish AI aesthetics. No text, no letters, no watermarks in the image itself.`;
+        return `Moody editorial photography, cinematic low-key lighting, intelligent minimalist composition, subtle emotional tension, realistic environments, premium magazine aesthetic, nuanced shadows, restrained tone, highly detailed and realistic, natural textures, shot on a professional full-frame camera. Avoid commercial stock-photo style, glossy advertising visuals, exaggerated emotions, and cartoonish AI aesthetics. No text, no letters, no watermarks in the image itself. DO NOT include any Islamic, Arabic, or religious cultural elements, clothing, or architecture.`;
     }
 
     // Default: business / startup / mentorship
-    return `Editorial photography, realistic human scenes, cinematic natural lighting, shallow depth of field, subtle contrast, premium magazine aesthetic, modern business editorial, emotionally grounded, highly detailed, realistic textures, restrained composition, shot on a professional full-frame camera. Avoid stock-photo clichés, exaggerated smiles, fake office staging, handshake scenes, rocket metaphors, and generic startup visuals. No text, no letters, no watermarks in the image itself.`;
+    return `Editorial photography, realistic human scenes, cinematic natural lighting, shallow depth of field, subtle contrast, premium magazine aesthetic, modern business editorial, emotionally grounded, highly detailed, realistic textures, restrained composition, shot on a professional full-frame camera. Avoid stock-photo clichés, exaggerated smiles, fake office staging, handshake scenes, rocket metaphors, and generic startup visuals. No text, no letters, no watermarks in the image itself. DO NOT include any Islamic, Arabic, or religious cultural elements, clothing, or architecture.`;
 }
 
 // ─── Helper: generate one DALL-E image, watermark it, return local URL ────────
