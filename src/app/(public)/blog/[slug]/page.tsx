@@ -336,7 +336,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             prose-pre:bg-[#111827] prose-pre:rounded-xl prose-pre:shadow-md
                             prose-img:rounded-2xl prose-img:shadow-md prose-img:w-full
                             prose-hr:border-stone-200
-                            prose-li:text-stone-700"
+                            prose-li:text-stone-700
+                            prose-table:w-full prose-table:border-collapse prose-table:my-8
+                            prose-th:bg-stone-50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:border prose-th:border-stone-200 prose-th:font-semibold prose-th:text-stone-900
+                            prose-td:px-4 prose-td:py-3 prose-td:border prose-td:border-stone-200 prose-td:text-stone-700
+                            [&_mark]:bg-amber-100 [&_mark]:text-amber-900 [&_mark]:px-1 [&_mark]:rounded-sm"
                         >
                             {processedHtml.split(SHORTCODE_REGEX).map((part, index) => {
                                 if (!part) return null

@@ -264,7 +264,7 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "title": "...",
   "slug": "...",
   "excerpt": "...",
-  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote> tags. Include intro, body sections, Key Takeaways, FAQ if AEO, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
+  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote>, <mark>, <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. Include intro, body sections, Key Takeaways, FAQ if AEO, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
   "seoTitle": "...",
   "seoDescription": "...",
   "seoKeywords": "...",
@@ -281,6 +281,9 @@ Rules:
 - seoTitle: 50-60 chars including primary keyword
 - seoDescription: 150-160 chars with primary keyword and hook
 - seoKeywords: comma-separated, 5-8 keywords
+- **TABLES**: Include at least one well-structured HTML <table> whenever comparing concepts, listing pros/cons, or presenting structured data.
+- **QUOTES**: Include at least one highly relevant, profound quote from a famous founder, philosopher, or influential figure using <blockquote>.
+- **FORMATTING**: Use <strong> aggressively to bold key concepts. Use <mark> to highlight the 2-3 most critical sentences or takeaways in the entire article to make the text highly scannable.
 
 IMAGE PROMPT RULES:
 - Write image prompts as instructions for a top editorial photographer, not an illustrator
