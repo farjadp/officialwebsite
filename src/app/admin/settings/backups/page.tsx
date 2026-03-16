@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { HardDrive, Database, Archive, Trash2, RefreshCw, CheckCircle2, XCircle, Loader2, Clock, DownloadCloud } from 'lucide-react'
+import { HardDrive, Database, Archive, Trash2, RefreshCw, CheckCircle2, XCircle, Loader2, Clock, DownloadCloud, Play } from 'lucide-react'
 
 type BackupLog = {
     id: string
@@ -20,6 +20,7 @@ type BackupLog = {
     codeSizeBytes: string | null
     durationMs: number | null
     error: string | null
+    _blobUrl?: string
 }
 
 function formatBytes(bytes: string | null): string {
@@ -55,6 +56,7 @@ export default function BackupsPage() {
     const [logs, setLogs] = useState<BackupLog[]>([])
     const [loading, setLoading] = useState(true)
 
+    const [triggering, setTriggering] = useState(false)
 
     const fetchLogs = async () => {
         setLoading(true)
@@ -71,16 +73,48 @@ export default function BackupsPage() {
 
     useEffect(() => { fetchLogs() }, [])
 
-
-
-    const deleteLog = async (id: string) => {
-        if (!confirm('Delete this log entry? (Does not delete the backup file)')) return
+    const triggerBackup = async (type: 'full' | 'db-only' | 'code-only') => {
+        setTriggering(true)
         try {
-            await fetch(`/api/admin/backups?id=${id}`, { method: 'DELETE' })
-            setLogs(prev => prev.filter(l => l.id !== id))
-            toast.success('Log entry deleted')
+            const res = await fetch('/api/admin/backups', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type }),
+            })
+            const data = await res.json()
+
+            if (!res.ok) {
+                toast.error(data?.error || `Backup failed (${res.status})`)
+                return
+            }
+
+            if (data?.success) {
+                toast.success(`${data.message} — Action started in background`)
+                // Polling briefly to show running state if possible, though GH Actions take time
+                setTimeout(fetchLogs, 5000)
+            } else {
+                toast.error(data?.error || 'Backup failed')
+            }
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to trigger backup'
+            toast.error(msg)
+        } finally {
+            setTriggering(false)
+        }
+    }
+
+    const deleteLog = async (log: BackupLog) => {
+        if (!confirm('Permanently delete this backup from Vercel Blob cloud storage? (This cannot be undone)')) return
+        try {
+            const params = new URLSearchParams({ manifestUrl: log._blobUrl || '' })
+            if (log.dbFile) params.append('dbUrl', log.dbFile)
+            if (log.codeFile) params.append('codeUrl', log.codeFile)
+            
+            await fetch(`/api/admin/backups?${params.toString()}`, { method: 'DELETE' })
+            setLogs(prev => prev.filter(l => l.id !== log.id))
+            toast.success('Backup files deleted from cloud storage')
         } catch {
-            toast.error('Failed to delete entry')
+            toast.error('Failed to delete files')
         }
     }
 
@@ -131,26 +165,44 @@ export default function BackupsPage() {
                 </Card>
             </div>
 
-            {/* Backup Actions */}
+            {/* Trigger buttons */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Backup Actions</CardTitle>
+                    <CardTitle className="text-base">Manual Backup Trigger</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
                     <div className="flex flex-wrap gap-3">
                         <Button
-                            asChild
+                            onClick={() => triggerBackup('full')}
+                            disabled={triggering}
                             className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
                         >
-                            <a href="/api/admin/backups/download" download>
-                                <DownloadCloud className="w-5 h-5" />
-                                Download Full Backup (DB + Code)
-                            </a>
+                            {triggering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                            Full Backup (DB + Code)
+                        </Button>
+                        <Button
+                            onClick={() => triggerBackup('db-only')}
+                            disabled={triggering}
+                            variant="outline"
+                            className="gap-2"
+                        >
+                            <Database className="w-4 h-4 text-blue-600" />
+                            DB Only
+                        </Button>
+                        <Button
+                            onClick={() => triggerBackup('code-only')}
+                            disabled={triggering}
+                            variant="outline"
+                            className="gap-2"
+                        >
+                            <Archive className="w-4 h-4 text-orange-600" />
+                            Code Only
                         </Button>
                     </div>
 
                     <div className="w-full mt-1 p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-xs text-indigo-800">
-                        ☁️ <strong>Vercel Cloud Backup:</strong> Your JSON database structure and crucial configurations will be safely zipped and streamed directly to your browser.
+                        ☁️ <strong>Hardware-Grade Backups:</strong> Files are generated securely on a Linux Ubuntu server via <strong>GitHub Actions</strong> and stored directly in your persistent <strong>Vercel Blob</strong> cloud storage.
+                        The automatic backup runs every <strong>24 hours</strong> at midnight UTC.
                     </div>
                 </CardContent>
             </Card>
@@ -237,7 +289,7 @@ export default function BackupsPage() {
                                                     variant="ghost"
                                                     size="icon"
                                                     className="h-7 w-7 text-stone-400 hover:text-red-500"
-                                                    onClick={() => deleteLog(log.id)}
+                                                    onClick={() => deleteLog(log)}
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
                                                 </Button>

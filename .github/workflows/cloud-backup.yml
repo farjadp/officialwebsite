@@ -1,0 +1,45 @@
+name: Cloud Backup to Vercel Blob
+
+on:
+  schedule:
+    # Run at midnight UTC daily
+    - cron: '0 0 * * *'
+  repository_dispatch:
+    # Trigger from Admin Panel
+    types: [trigger-backup]
+
+jobs:
+  run-backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install PostgreSQL Client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Determine Backup Type
+        id: backup-type
+        run: |
+          TYPE="full"
+          if [ "${{ github.event.client_payload.type }}" != "" ]; then
+            TYPE="${{ github.event.client_payload.type }}"
+          fi
+          echo "type=$TYPE" >> $GITHUB_ENV
+
+      - name: Create Backup Directory
+        run: mkdir -p ./backup-tmp
+
+      - name: Execute Backup Script
+        env:
+          PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: node scripts/backup-blob.mjs

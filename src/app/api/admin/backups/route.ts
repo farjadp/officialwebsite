@@ -1,81 +1,125 @@
-// src/app/api/admin/backups/route.ts
-// GET: list all backups | POST: trigger a new backup | DELETE: remove log entry
-
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { execFile } from 'child_process'
-import { resolve } from 'path'
+import { auth } from '@/auth'
+import { list, del } from '@vercel/blob'
+import crypto from 'crypto'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+    const session = await auth()
+    if (!session?.user || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     try {
-        const logs = await prisma.backupLog.findMany({
-            orderBy: { date: 'desc' },
-            take: 60,
+        // Fetch manifests from Vercel Blob
+        const { blobs } = await list({
+            prefix: 'backups/manifests/',
+            limit: 60,
         })
 
-        const serialized = logs.map((l) => ({
-            ...l,
-            dbSizeBytes: l.dbSizeBytes?.toString() ?? null,
-            codeSizeBytes: l.codeSizeBytes?.toString() ?? null,
-        }))
+        // Download and parse manifests
+        const logs = []
+        for (const blob of blobs) {
+            try {
+                const res = await fetch(blob.downloadUrl)
+                if (res.ok) {
+                    const manifest = await res.json()
+                    // Attach the raw blob url for deletion reference later
+                    manifest._blobUrl = blob.url
+                    logs.push(manifest)
+                }
+            } catch (err) {
+                console.error(`Failed to parse manifest ${blob.url}:`, err)
+            }
+        }
 
-        return NextResponse.json({ success: true, data: serialized })
+        // Sort by date descending
+        logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+        return NextResponse.json({ success: true, data: logs })
     } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Unknown error'
-        return NextResponse.json({ error: msg }, { status: 500 })
+        console.error('Failed to fetch backup logs from blob:', error)
+        return NextResponse.json({ error: 'Failed to retrieve backups' }, { status: 500 })
     }
 }
 
 export async function POST(req: NextRequest) {
+    const session = await auth()
+    if (!session?.user || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     try {
-        const body = await req.json().catch(() => ({}))
-        const type = (body.type as string) || 'full'
-
-        // Fire a GitHub Repository Dispatch event rather than running a background script
-        const GITHUB_TOKEN = process.env.GITHUB_PAT
-        const REPO_OWNER = 'farjadp'
-        const REPO_NAME = 'officialwebsite'
-
-        if (!GITHUB_TOKEN) {
-            return NextResponse.json({ error: 'GitHub PAT is not configured in Vercel.' }, { status: 500 })
+        const { type } = await req.json()
+        const validTypes = ['full', 'db-only', 'code-only']
+        if (!validTypes.includes(type)) {
+            return NextResponse.json({ error: 'Invalid backup type' }, { status: 400 })
         }
 
-        const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
+        const pat = process.env.GITHUB_PAT
+        if (!pat) {
+            return NextResponse.json({ error: 'GITHUB_PAT environment variable not configured' }, { status: 500 })
+        }
+
+        // Trigger GitHub Action via repository_dispatch
+        const response = await fetch('https://api.github.com/repos/farjadp/officialwebsite/dispatches', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
                 'Accept': 'application/vnd.github.v3+json',
+                'Authorization': `token ${pat}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 event_type: 'trigger-backup',
-                client_payload: { type },
-            }),
-        });
+                client_payload: { type }
+            })
+        })
 
         if (!response.ok) {
             const errBody = await response.text()
-            console.error('[Backup API] GitHub Action trigger failed:', response.status, errBody)
-            throw new Error(`GitHub Action trigger failed: ${response.status}`)
+            console.error('GitHub API error:', response.status, errBody)
+            return NextResponse.json({ 
+                error: `GitHub Action trigger failed: ${response.status}` 
+            }, { status: 500 })
         }
 
-        return NextResponse.json({ success: true, message: `Backup sent to GitHub Actions (${type})` })
+        return NextResponse.json({
+            success: true,
+            message: 'GitHub Cloud Backup Action triggered successfully'
+        })
+
     } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Unknown error'
-        return NextResponse.json({ error: msg }, { status: 500 })
+        console.error('Failed to trigger backup Action:', error)
+        return NextResponse.json({ error: 'Failed to start backup process' }, { status: 500 })
     }
 }
 
 export async function DELETE(req: NextRequest) {
+    const session = await auth()
+    if (!session?.user || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     try {
         const { searchParams } = new URL(req.url)
-        const id = searchParams.get('id')
-        if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+        const manifestUrl = searchParams.get('manifestUrl')
+        const dbUrl = searchParams.get('dbUrl')
+        const codeUrl = searchParams.get('codeUrl')
 
-        await prisma.backupLog.delete({ where: { id } })
-        return NextResponse.json({ success: true })
+        if (!manifestUrl) {
+            return NextResponse.json({ error: 'Missing manifestUrl' }, { status: 400 })
+        }
+
+        // Collect all file URLs to physically delete from storage
+        const urlsToDelete = [manifestUrl]
+        if (dbUrl) urlsToDelete.push(dbUrl)
+        if (codeUrl) urlsToDelete.push(codeUrl)
+
+        // Delete from Vercel Blob storage
+        await del(urlsToDelete)
+
+        return NextResponse.json({ success: true, message: 'Backup files permanently deleted.' })
     } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Unknown error'
-        return NextResponse.json({ error: msg }, { status: 500 })
+        console.error('Delete backup failed:', error)
+        return NextResponse.json({ error: 'Server error' }, { status: 500 })
     }
 }
