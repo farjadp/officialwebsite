@@ -37,10 +37,17 @@ function calculateReadingTime(html: string): number {
 
 // ─── Parse headings + inject IDs for TOC ─────────────────────────────────────
 function processContent(html: string): { processedHtml: string; headings: Heading[] } {
+    // 1. Remove <h1> tags entirely (they shouldn't be in the body, the title is in the header)
+    let cleanHtml = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>\s*/gi, '')
+
+    // 2. Remove leading images (possibly wrapped in <p> tags) that appear at the very beginning
+    cleanHtml = cleanHtml.replace(/^(?:\s*<p>\s*<img[^>]+>\s*<\/p>\s*)+/i, '')
+    cleanHtml = cleanHtml.replace(/^(?:\s*<img[^>]+>\s*)+/i, '')
+    
     const headings: Heading[] = []
     const usedIds = new Set<string>()
 
-    const processedHtml = html.replace(
+    const processedHtml = cleanHtml.replace(
         /<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi,
         (match, tag, attrs, content) => {
             if (/\bid=/i.test(attrs)) return match
