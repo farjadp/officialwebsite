@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { list, del } from '@vercel/blob'
+import { writeSystemLog } from '@/lib/system-log'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
@@ -23,12 +24,19 @@ export async function GET(req: NextRequest) {
         const logs = []
         for (const blob of blobs) {
             try {
-                const res = await fetch(blob.downloadUrl)
+                // Fetch private blob securely using token
+                const res = await fetch(blob.url, {
+                    headers: {
+                        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+                    }
+                })
                 if (res.ok) {
                     const manifest = await res.json()
                     // Attach the raw blob url for deletion reference later
                     manifest._blobUrl = blob.url
                     logs.push(manifest)
+                } else {
+                    console.error(`Status ${res.status} fetching manifest: ${blob.url}`)
                 }
             } catch (err) {
                 console.error(`Failed to parse manifest ${blob.url}:`, err)
@@ -41,6 +49,14 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: true, data: logs })
     } catch (error) {
         console.error('Failed to fetch backup logs from blob:', error)
+        await writeSystemLog({
+            level: 'error',
+            message: 'Failed to fetch backup logs',
+            source: 'api',
+            data: { error: error instanceof Error ? error.message : 'Unknown error' },
+            req,
+            status: 500,
+        })
         return NextResponse.json({ error: 'Failed to retrieve backups' }, { status: 500 })
     }
 }
@@ -81,11 +97,27 @@ export async function POST(req: NextRequest) {
         if (!response.ok) {
             const errBody = await response.text()
             console.error('GitHub API error:', response.status, errBody)
+            await writeSystemLog({
+                level: 'error',
+                message: 'GitHub Action trigger failed',
+                source: 'api',
+                data: { status: response.status, body: errBody, type },
+                req,
+                status: response.status,
+            })
             return NextResponse.json({ 
                 error: `GitHub rejected PAT (Status ${response.status}): ${errBody}` 
             }, { status: 500 })
         }
 
+        await writeSystemLog({
+            level: 'info',
+            message: 'Backup triggered via GitHub Actions',
+            source: 'api',
+            data: { type },
+            req,
+            status: 200,
+        })
         return NextResponse.json({
             success: true,
             message: 'GitHub Cloud Backup Action triggered successfully'
@@ -93,6 +125,14 @@ export async function POST(req: NextRequest) {
 
     } catch (error) {
         console.error('Failed to trigger backup Action:', error)
+        await writeSystemLog({
+            level: 'error',
+            message: 'Failed to trigger backup Action',
+            source: 'api',
+            data: { error: error instanceof Error ? error.message : 'Unknown error' },
+            req,
+            status: 500,
+        })
         return NextResponse.json({ error: 'Failed to start backup process' }, { status: 500 })
     }
 }
@@ -121,9 +161,25 @@ export async function DELETE(req: NextRequest) {
         // Delete from Vercel Blob storage
         await del(urlsToDelete)
 
+        await writeSystemLog({
+            level: 'info',
+            message: 'Backup files deleted',
+            source: 'api',
+            data: { manifestUrl, dbUrl, codeUrl },
+            req,
+            status: 200,
+        })
         return NextResponse.json({ success: true, message: 'Backup files permanently deleted.' })
     } catch (error) {
         console.error('Delete backup failed:', error)
+        await writeSystemLog({
+            level: 'error',
+            message: 'Delete backup failed',
+            source: 'api',
+            data: { error: error instanceof Error ? error.message : 'Unknown error' },
+            req,
+            status: 500,
+        })
         return NextResponse.json({ error: 'Server error' }, { status: 500 })
     }
 }

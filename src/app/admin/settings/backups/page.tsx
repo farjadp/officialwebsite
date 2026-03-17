@@ -244,7 +244,7 @@ export default function BackupsPage() {
                                                 {log.dbFile ? (
                                                     <a
                                                         className="text-violet-600 hover:underline"
-                                                        href={log.dbFile}
+                                                        href={`/api/admin/backups/download?url=${encodeURIComponent(log.dbFile)}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                     >
@@ -257,7 +257,7 @@ export default function BackupsPage() {
                                                 {log.codeFile ? (
                                                     <a
                                                         className="text-violet-600 hover:underline"
-                                                        href={log.codeFile}
+                                                        href={`/api/admin/backups/download?url=${encodeURIComponent(log.codeFile)}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                     >
