@@ -39,6 +39,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UploadCloud, Image as ImageIcon, X } from 'lucide-react'
 import { TagInput } from '@/components/admin/tag-input'
 import { AIContentGenerator } from '@/components/admin/ai-content-generator'
+import { logUiEvent } from '@/lib/ui-log'
 
 type SocialPlatforms = { telegram: boolean; twitter: boolean; linkedin: boolean }
 
@@ -162,6 +163,7 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
                 const result = await updatePost({ id: post.id, ...data })
                 if (result.success) {
                     toast.success("Post updated successfully")
+                    logUiEvent('Post updated', { postId: post.id, title: data.title, status: data.status })
                     router.push("/admin/posts")
                 } else {
                     toast.error(result.error || "Something went wrong")
@@ -171,6 +173,7 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
                 if (result.success && result.data?.id) {
                     const postId = result.data.id
                     toast.success("Post created successfully")
+                    logUiEvent('Post created', { postId, title: data.title, status: data.status })
 
                     // Trigger social auto-publish in background if configured
                     if (socialPublishConfig) {
@@ -192,12 +195,15 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
                                 .then(data => {
                                     if (data.success) {
                                         toast.success(`Published to ${platformNames} ✓`, { id: 'social-publish' })
+                                        logUiEvent('Social publish success', { postId, platforms: socialPublishConfig })
                                     } else {
                                         toast.error(`Social publish failed: ${data.error}`, { id: 'social-publish' })
+                                        logUiEvent('Social publish failed', { postId, error: data.error, platforms: socialPublishConfig })
                                     }
                                 })
                                 .catch(() => {
                                     toast.error('Social publish request failed', { id: 'social-publish' })
+                                    logUiEvent('Social publish request failed', { postId, platforms: socialPublishConfig })
                                 })
                         }
                     }

@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { list, del } from '@vercel/blob'
 import { writeSystemLog } from '@/lib/system-log'
+import { withApiLogging } from '@/lib/api-logger'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
     const session = await auth()
     if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -61,7 +62,7 @@ export async function GET(req: NextRequest) {
     }
 }
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     const session = await auth()
     if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {
         return NextResponse.json({ error: 'NextAuth Unauthorized: Session invalid or not admin' }, { status: 401 })
@@ -137,7 +138,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function DELETE(req: NextRequest) {
+async function deleteHandler(req: NextRequest) {
     const session = await auth()
     if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -183,3 +184,7 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: 'Server error' }, { status: 500 })
     }
 }
+
+export const GET = withApiLogging('GET', getHandler)
+export const POST = withApiLogging('POST', postHandler)
+export const DELETE = withApiLogging('DELETE', deleteHandler)

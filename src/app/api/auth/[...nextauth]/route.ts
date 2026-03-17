@@ -6,5 +6,7 @@
 // ============================================================================
 
 import { handlers } from "@/auth"
+import { withApiLogging } from "@/lib/api-logger"
 
-export const { GET, POST } = handlers
+export const GET = withApiLogging("GET", handlers.GET as any)
+export const POST = withApiLogging("POST", handlers.POST as any)

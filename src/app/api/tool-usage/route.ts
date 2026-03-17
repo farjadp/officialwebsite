@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
 // Resolve real client IP from headers (Cloud Run / proxy aware)
 function getClientIP(req: NextRequest): string {
@@ -28,7 +29,7 @@ async function lookupCountry(ip: string): Promise<string | null> {
     }
 }
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     try {
         const body = await req.json();
         const { toolId, score } = body;
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function GET() {
+async function getHandler() {
     try {
         const usage = await prisma.toolUsage.findMany({
             orderBy: { createdAt: "desc" },
@@ -68,3 +69,6 @@ export async function GET() {
         return NextResponse.json({ error: "Failed to fetch usage" }, { status: 500 });
     }
 }
+
+export const POST = withApiLogging("POST", postHandler as any);
+export const GET = withApiLogging("GET", getHandler as any);

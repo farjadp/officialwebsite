@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { createCategory, deleteCategory } from '@/app/actions/categories'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { logUiEvent } from '@/lib/ui-log'
 import { Trash, RefreshCw } from 'lucide-react'
 import { IconPicker } from '@/components/admin/icon-picker'
 import * as LucideIcons from "lucide-react"
@@ -120,6 +121,7 @@ export function CategoryManager({ categories: initialCategories }: CategoryManag
             })
             if (res.success) {
                 toast.success('Category created')
+                logUiEvent('Category created', { id: res.data?.id, name, slug })
                 setName('')
                 setSlug('')
                 setDescription('')
@@ -142,6 +144,7 @@ export function CategoryManager({ categories: initialCategories }: CategoryManag
             const res = await deleteCategory(id)
             if (res.success) {
                 toast.success('Category deleted')
+                logUiEvent('Category deleted', { id })
                 router.refresh()
             } else {
                 toast.error('Failed to delete')
@@ -158,6 +161,7 @@ export function CategoryManager({ categories: initialCategories }: CategoryManag
             const data = await res.json()
             if (data.success) {
                 toast.success('Categories seeded successfully')
+                logUiEvent('Categories seeded', { count: data.count })
                 router.refresh()
             } else {
                 toast.error(`Failed to seed: ${data.error}`)

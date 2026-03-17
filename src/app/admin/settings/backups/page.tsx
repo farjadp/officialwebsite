@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { HardDrive, Database, Archive, Trash2, RefreshCw, CheckCircle2, XCircle, Loader2, Clock, DownloadCloud, Play } from 'lucide-react'
 import { triggerBackupAction } from './actions'
+import { logUiEvent } from '@/lib/ui-log'
 
 type BackupLog = {
     id: string
@@ -85,6 +86,7 @@ export default function BackupsPage() {
             }
 
             toast.success(result.message || `Action started in background`)
+            logUiEvent('Backup triggered', { type })
             setTimeout(fetchLogs, 5000)
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Failed to trigger backup'
@@ -104,6 +106,7 @@ export default function BackupsPage() {
             await fetch(`/api/admin/backups?${params.toString()}`, { method: 'DELETE' })
             setLogs(prev => prev.filter(l => l.id !== log.id))
             toast.success('Backup files deleted from cloud storage')
+            logUiEvent('Backup files deleted', { id: log.id, manifestUrl: log._blobUrl, dbUrl: log.dbFile, codeUrl: log.codeFile })
         } catch {
             toast.error('Failed to delete files')
         }

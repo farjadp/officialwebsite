@@ -2,8 +2,9 @@
 // Returns published posts for admin UI dropdowns (slug + title)
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
     const status = req.nextUrl.searchParams.get("status") || "PUBLISHED";
 
     try {
@@ -20,3 +21,5 @@ export async function GET(req: NextRequest) {
         return NextResponse.json([], { status: 500 });
     }
 }
+
+export const GET = withApiLogging("GET", getHandler as any);

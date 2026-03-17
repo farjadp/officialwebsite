@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { writeSystemLog } from '@/lib/system-log'
+import { withApiLogging } from '@/lib/api-logger'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
     const session = await auth()
     if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -62,3 +63,5 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to proxy download' }, { status: 500 })
     }
 }
+
+export const GET = withApiLogging('GET', getHandler)

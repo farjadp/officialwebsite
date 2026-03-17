@@ -2,8 +2,9 @@
 // LinkedIn OAuth 2.0 callback — exchanges code for access_token and stores it
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
     const code = req.nextUrl.searchParams.get("code");
     const error = req.nextUrl.searchParams.get("error");
     const siteUrl = "https://farjadp.info";
@@ -101,3 +102,5 @@ export async function GET(req: NextRequest) {
         );
     }
 }
+
+export const GET = withApiLogging("GET", getHandler as any);

@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
@@ -118,7 +119,7 @@ OUTPUT FORMAT — respond with ONLY valid JSON, no other text:
 }
 `;
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
   try {
     const body = await req.json();
     const { slug, text } = body;
@@ -175,3 +176,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export const POST = withApiLogging("POST", postHandler as any);

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     try {
         const body = await req.json();
         const { email, name, toolId = "unknown", score, answers } = body;
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function GET() {
+async function getHandler() {
     try {
         const leads = await prisma.lead.findMany({
             orderBy: { createdAt: "desc" },
@@ -47,3 +48,6 @@ export async function GET() {
         return NextResponse.json({ error: "Failed to fetch leads" }, { status: 500 });
     }
 }
+
+export const POST = withApiLogging("POST", postHandler as any);
+export const GET = withApiLogging("GET", getHandler as any);

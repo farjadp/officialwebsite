@@ -9,8 +9,9 @@ import {
     publishToTwitter,
     publishToLinkedIn,
 } from "@/lib/social-publisher";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function POST(
+async function postHandler(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
@@ -117,3 +118,5 @@ export async function POST(
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }
+
+export const POST = withApiLogging("POST", postHandler as any);

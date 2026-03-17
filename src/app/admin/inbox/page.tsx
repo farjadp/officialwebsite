@@ -5,6 +5,7 @@ import { Mail, Check, Trash2, MailOpen, MailQuestion } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { logUiEvent } from '@/lib/ui-log'
 
 interface Message {
     id: string
@@ -64,6 +65,7 @@ export default function InboxAdminPage() {
             const data = await res.json()
             if (data.success) {
                 toast.success("Message deleted")
+                logUiEvent('Message deleted', { id })
                 setMessages(messages.filter(m => m.id !== id))
             } else {
                 toast.error(data.error)

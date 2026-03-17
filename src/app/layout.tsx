@@ -46,6 +46,7 @@ export const metadata: Metadata = {
 
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import SystemLogClient from "@/components/system-log-client"
 
 export default function RootLayout({
   children,
@@ -56,6 +57,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         {children}
+        <SystemLogClient />
         <AnalyticsProvider />
         <SpeedInsights />
         <Toaster />

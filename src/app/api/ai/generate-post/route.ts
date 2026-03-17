@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { downloadAndWatermark } from "@/lib/image-watermark";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
@@ -211,7 +212,7 @@ function injectBodyImages(html: string, imageUrls: string[]): string {
     return result.join("");
 }
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     try {
         const body = await req.json();
         const {
@@ -325,6 +326,8 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "bodyImage1Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the main concept of the first half of this article",
   "bodyImage2Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the second half of this article"
 }
+
+export const POST = withApiLogging("POST", postHandler as any);
 
 Rules:
 - title: honest, direct, genuinely compelling

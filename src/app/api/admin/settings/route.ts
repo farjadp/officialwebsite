@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { withApiLogging } from '@/lib/api-logger'
 
 // GET /api/admin/settings
 // Fetch all generic app settings as a key-value pair object
-export async function GET() {
+async function getHandler() {
     try {
         const settingsRaw = await prisma.appSetting.findMany()
         
@@ -22,7 +23,7 @@ export async function GET() {
 
 // POST /api/admin/settings
 // Bulk update generic app settings
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     try {
         const body = await req.json()
         const updates: Record<string, string> = body.settings
@@ -50,3 +51,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 })
     }
 }
+
+export const GET = withApiLogging('GET', getHandler as any)
+export const POST = withApiLogging('POST', postHandler as any)

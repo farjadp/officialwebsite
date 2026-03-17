@@ -9,6 +9,27 @@ All notable changes to the Official Website project will be documented in this f
 - **Background Actions**: Wrapped Vercel Server Actions in `@vercel/functions` `waitUntil()` to prevent premature termination of the OpenAI-powered `runWaterfallPipeline`.
 - **Hashtag Formatting**: Updated OpenAI prompts for LinkedIn and X (Twitter) to strictly place hashtags at the absolute end of the generated post, preventing overrides by the Call-to-Action.
 
+## [2026-03-16 17:40] - System Logging + Backup Overhaul
+
+### Added
+- **System Logs (DB)**: Introduced `SystemLog` model to persist server/client logs, with indexes on level and timestamp.
+- **Admin Logs UI**: New Settings tab + page to browse, filter, and delete log entries.
+- **API Logging Wrapper**: `withApiLogging` wrapper logs all API requests/errors with timing and context.
+- **Client Error Capture**: Global error boundary + `window.onerror` / `unhandledrejection` reporting to `/api/logs`.
+- **UI Event Logger**: `logUiEvent` helper and logging for key admin actions (posts, tags, categories, testimonials, inbox, portfolio, backups).
+- **Backup Blob Script**: New `scripts/backup-blob.mjs` for DB dump + code archive to Vercel Blob.
+- **Backup Manifests**: Blob manifest storage for backup history and deletion tracking.
+
+### Changed
+- **Backup Workflow**: GitHub Actions now runs the Blob backup script and uses `BLOB_READ_WRITE_TOKEN`.
+- **Backup Admin UI**: Added download links for DB/code files; updated Cloud Backups copy to Vercel Blob.
+- **Backup API**: Logs backup actions to SystemLog and supports Blob download proxy with logging.
+- **NextAuth Routes**: Auth route handlers wrapped with API logging.
+- **Migrations**: Fixed broken `20260315_add_backup_log` migration SQL and added `20260316_add_system_log`.
+
+### Fixed
+- **Backup Trigger Feedback**: Improved error surfacing and logging around backup actions.
+
 
 ## [2026-03-07 16:13] - Platform Overhaul & Strategic Realignment
 

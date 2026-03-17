@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
@@ -52,7 +53,7 @@ Your goal is to write a script for a 3-minute audio voice note (Telegram/Private
 - Keep it under 400 words.
 `;
 
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
     try {
         const type = req.nextUrl.searchParams.get("type");
         const whereClause = type ? { type } : {};
@@ -78,7 +79,7 @@ export async function GET(req: NextRequest) {
     }
 }
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     try {
         const { promptType, inputTopic } = await req.json();
 
@@ -151,3 +152,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Generation failed" }, { status: 500 });
     }
 }
+
+export const GET = withApiLogging("GET", getHandler as any);
+export const POST = withApiLogging("POST", postHandler as any);

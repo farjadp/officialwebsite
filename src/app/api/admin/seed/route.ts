@@ -7,8 +7,9 @@
 
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { withApiLogging } from "@/lib/api-logger"
 
-export async function GET() {
+async function getHandler() {
     const categories = [
         {
             name: 'Technology',
@@ -76,3 +77,5 @@ export async function GET() {
         return NextResponse.json({ success: false, error: String(error) }, { status: 500 })
     }
 }
+
+export const GET = withApiLogging("GET", getHandler as any)

@@ -18,6 +18,7 @@ import { createTag, deleteTag } from '@/app/actions/tags'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Trash } from 'lucide-react'
+import { logUiEvent } from '@/lib/ui-log'
 
 interface TagManagerProps {
     tags: (Tag & { _count: { posts: number } })[]
@@ -44,6 +45,7 @@ export function TagManager({ tags }: TagManagerProps) {
             const res = await createTag({ name, slug })
             if (res.success) {
                 toast.success('Tag created')
+                logUiEvent('Tag created', { id: res.data?.id, name, slug })
                 setName('')
                 setSlug('')
                 router.refresh()
@@ -63,6 +65,7 @@ export function TagManager({ tags }: TagManagerProps) {
             const res = await deleteTag(id)
             if (res.success) {
                 toast.success('Tag deleted')
+                logUiEvent('Tag deleted', { id })
                 router.refresh()
             } else {
                 toast.error('Failed to delete')

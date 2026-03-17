@@ -8,8 +8,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { put } from '@vercel/blob'
+import { withApiLogging } from '@/lib/api-logger'
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
     try {
         const formData = await request.formData()
         const file = formData.get('file') as File
@@ -55,3 +56,5 @@ export async function POST(request: Request) {
         )
     }
 }
+
+export const POST = withApiLogging('POST', postHandler as any)

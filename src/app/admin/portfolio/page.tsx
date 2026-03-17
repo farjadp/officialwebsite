@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, FolderGit2, Globe, Github } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { logUiEvent } from '@/lib/ui-log'
 
 interface Project {
     id: string
@@ -48,6 +49,7 @@ export default function PortfolioAdminPage() {
             const data = await res.json()
             if (data.success) {
                 toast.success("Project deleted")
+                logUiEvent('Project deleted', { id })
                 setProjects(projects.filter(p => p.id !== id))
             } else {
                 toast.error(data.error)

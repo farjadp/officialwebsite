@@ -5,6 +5,7 @@ import { MessageSquareQuote, Plus, Pencil, Trash2, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { logUiEvent } from '@/lib/ui-log'
 
 interface Testimonial {
     id: string
@@ -49,6 +50,7 @@ export default function TestimonialsAdminPage() {
             const data = await res.json()
             if (data.success) {
                 setTestimonials(testimonials.map(t => t.id === id ? { ...t, featured: !currentFeatured } : t))
+                logUiEvent('Testimonial featured toggled', { id, featured: !currentFeatured })
             } else {
                 toast.error(data.error)
             }
@@ -65,6 +67,7 @@ export default function TestimonialsAdminPage() {
             const data = await res.json()
             if (data.success) {
                 toast.success("Testimonial deleted")
+                logUiEvent('Testimonial deleted', { id })
                 setTestimonials(testimonials.filter(t => t.id !== id))
             } else {
                 toast.error(data.error)

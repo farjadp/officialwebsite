@@ -2,8 +2,9 @@
 // Returns social publish logs for the report panel
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withApiLogging } from "@/lib/api-logger";
 
-export async function GET() {
+async function getHandler() {
     try {
         const logs = await prisma.socialPublishLog.findMany({
             orderBy: { createdAt: "desc" },
@@ -15,3 +16,5 @@ export async function GET() {
         return NextResponse.json([], { status: 500 });
     }
 }
+
+export const GET = withApiLogging("GET", getHandler as any);

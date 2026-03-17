@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { withApiLogging } from "@/lib/api-logger"
 
-export async function GET() {
+async function getHandler() {
     try {
         const projects = await prisma.project.findMany({
             orderBy: { createdAt: 'desc' }
@@ -12,7 +13,7 @@ export async function GET() {
     }
 }
 
-export async function POST(req: NextRequest) {
+async function postHandler(req: NextRequest) {
     try {
         const body = await req.json()
         const project = await prisma.project.create({
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function PATCH(req: NextRequest) {
+async function patchHandler(req: NextRequest) {
     try {
         const body = await req.json()
         const { id, ...data } = body
@@ -53,7 +54,7 @@ export async function PATCH(req: NextRequest) {
     }
 }
 
-export async function DELETE(req: NextRequest) {
+async function deleteHandler(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url)
         const id = searchParams.get('id')
@@ -68,3 +69,8 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: String(error) }, { status: 500 })
     }
 }
+
+export const GET = withApiLogging("GET", getHandler as any)
+export const POST = withApiLogging("POST", postHandler as any)
+export const PATCH = withApiLogging("PATCH", patchHandler as any)
+export const DELETE = withApiLogging("DELETE", deleteHandler as any)
