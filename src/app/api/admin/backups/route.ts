@@ -3,6 +3,9 @@ import { auth } from '@/auth'
 import { list, del } from '@vercel/blob'
 import crypto from 'crypto'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(req: NextRequest) {
     const session = await auth()
     if (!session?.user || !['OWNER', 'EDITOR'].includes(session.user.role)) {

@@ -62,7 +62,7 @@ export default function BackupsPage() {
     const fetchLogs = async () => {
         setLoading(true)
         try {
-            const res = await fetch('/api/admin/backups')
+            const res = await fetch('/api/admin/backups?t=' + Date.now())
             const data = await res.json()
             if (data.success) setLogs(data.data)
         } catch {
