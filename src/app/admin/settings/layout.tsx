@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Settings2, Users, Image as ImageIcon, FolderTree, Tag, Hash, HardDrive } from "lucide-react"
+import { Settings2, Users, Image as ImageIcon, FolderTree, Tag, Hash, HardDrive, NotebookText } from "lucide-react"
 
 const settingsTabs = [
     { title: "General", href: "/admin/settings", icon: Settings2 },
@@ -13,6 +13,7 @@ const settingsTabs = [
     { title: "Tags", href: "/admin/settings/tags", icon: Tag },
     { title: "Topics", href: "/admin/settings/topics", icon: Hash },
     { title: "Backup", href: "/admin/settings/backups", icon: HardDrive },
+    { title: "Logs", href: "/admin/settings/logs", icon: NotebookText },
 ]
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

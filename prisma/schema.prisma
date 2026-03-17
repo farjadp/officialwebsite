@@ -265,6 +265,24 @@ model BackupLog {
   createdAt   DateTime @default(now())
 }
 
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     String   // "info" | "warn" | "error"
+  message   String
+  source    String?  // e.g. "api", "job", "ui"
+  path      String?
+  method    String?
+  status    Int?
+  ip        String?
+  userAgent String?
+  userId    String?
+  data      Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([level])
+}
+
 model Project {
   id            String    @id @default(cuid())
   title         String
