@@ -238,6 +238,12 @@ async function postHandler(req: NextRequest) {
                     length === "short" ? "600-900" :
                         "1000-1500";
 
+        const lengthInstructions =
+            length === "extra-long" ? "CRITICAL LENGTH REQUIREMENT: You MUST write an extremely comprehensive, deep, and exhaustive article. You must produce at least 25-30 substantial paragraphs. Absolutely DO NOT summarize. Expand heavily on every single point, provide rich examples, and dive deep into nuances. Ensure the output is exceptionally long." :
+            length === "long" ? "CRITICAL LENGTH REQUIREMENT: Write a highly detailed, long-form article. Produce at least 15-20 paragraphs. Expand heavily on your claims with detailed examples." :
+            length === "short" ? "CRITICAL LENGTH REQUIREMENT: Be extremely brief, punchy, and concise. No fluff. Get straight to the point." :
+            "CRITICAL LENGTH REQUIREMENT: Write a standard, moderately detailed article spanning about 8-12 paragraphs.";
+
         const contentGoalInstructions: Record<string, string> = {
             authority: "Goal: Establish Farjad as the definitive authority. Lead with experience. Be bold.",
             "lead-gen": "Goal: Generate booking inquiries. Plant seeds of 'I need this person's help'. Strong booking CTA.",
@@ -304,6 +310,7 @@ WRITING STYLE: ${tone}
 TARGET AUDIENCE: ${targetAudience}
 LANGUAGE: ${language}
 ARTICLE LENGTH: ${wordCount} words
+${lengthInstructions}
 
 ${CATEGORY_TAXONOMY}
 
@@ -326,8 +333,6 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "bodyImage1Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the main concept of the first half of this article",
   "bodyImage2Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the second half of this article"
 }
-
-export const POST = withApiLogging("POST", postHandler as any);
 
 Rules:
 - title: honest, direct, genuinely compelling
@@ -427,3 +432,5 @@ Your cover images (1792x1024) should follow a pattern: wide landscape orientatio
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }
+
+export const POST = withApiLogging("POST", postHandler as any);

@@ -86,6 +86,7 @@ const AUDIENCES = [
     { value: 'Investors and VCs', label: 'Investors & VCs' },
     { value: 'Engineering teams and CTOs', label: 'Engineering Teams / CTOs' },
     { value: 'Immigrant founders navigating Canadian startup ecosystem', label: 'Immigrant Founders (Canada)' },
+    { value: 'Iranians interested in harsh realities of tech, business, and socio-politics', label: 'Iranians (Tech/Business/Politics)' },
 ]
 
 const LENGTHS = [
