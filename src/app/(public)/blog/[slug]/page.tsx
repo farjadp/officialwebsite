@@ -307,7 +307,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
             {/* ── CONTENT (two-column on lg+) ──────────────────────────────────── */}
             <div className="max-w-[1180px] mx-auto px-6 pt-10 pb-24">
-                <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-12 lg:items-start">
+                <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-12">
 
                     {/* ── LEFT: sticky sidebar ─────────────────────────────────── */}
                     <aside className="hidden lg:block">
