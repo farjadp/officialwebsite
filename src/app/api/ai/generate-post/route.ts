@@ -3,6 +3,7 @@
 // Generates cover image + 1-2 inline body images, all watermarked with farjadp.info
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { fal } from "@fal-ai/client";
 import { downloadAndWatermark } from "@/lib/image-watermark";
 import { prisma } from "@/lib/prisma";
 import { withApiLogging } from "@/lib/api-logger";
@@ -155,7 +156,7 @@ function getImageStyleSuffix(topic: string): string {
     return `Editorial photography, realistic human scenes, cinematic natural lighting, shallow depth of field, subtle contrast, premium magazine aesthetic, modern business editorial, emotionally grounded, highly detailed, realistic textures, restrained composition, shot on a professional full-frame camera. Avoid stock-photo clichés, exaggerated smiles, fake office staging, handshake scenes, rocket metaphors, and generic startup visuals. No text, no letters, no watermarks in the image itself. All human subjects must be bareheaded without any head coverings, wearing modern secular Western business attire in an international context.`;
 }
 
-// ─── Helper: generate one DALL-E image, watermark it, return local URL ────────
+// ─── Helper: generate one FLUX image via Fal.ai, watermark it, return local URL ────────
 async function generateAndWatermarkImage(
     prompt: string,
     filename: string,
@@ -163,14 +164,18 @@ async function generateAndWatermarkImage(
     size: "1792x1024" | "1024x1024" = "1792x1024"
 ): Promise<string | null> {
     try {
-        const resp = await openai.images.generate({
-            model: "dall-e-3",
-            prompt: `${prompt}. ${getImageStyleSuffix(topic)}`,
-            n: 1,
-            size,
-            quality: "standard",
+        const result = await fal.subscribe("fal-ai/flux/schnell", {
+            input: {
+                prompt: `${prompt}. ${getImageStyleSuffix(topic)}`,
+                image_size: size === "1792x1024" ? "landscape_16_9" : "square_hd",
+                num_inference_steps: 4,
+            },
         });
-        const url = resp.data?.[0]?.url;
+        
+        // Use type assertion since data structure from fal API can vary slightly in TS types
+        const data = result.data as { images?: { url: string }[] };
+        const url = data?.images?.[0]?.url;
+        
         if (!url) return null;
         return await downloadAndWatermark(url, filename);
     } catch (err) {
@@ -328,9 +333,9 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "seoDescription": "...",
   "seoKeywords": "...",
   "schemaType": "Article | HowTo | FAQPage",
-  "coverImagePrompt": "DALL-E 3 prompt for a professional editorial cover image (1792x1024 landscape)",
-  "bodyImage1Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the main concept of the first half of this article",
-  "bodyImage2Prompt": "DALL-E 3 prompt for a supplementary body image that illustrates the second half of this article"
+  "coverImagePrompt": "Detailed visual prompt for a professional editorial cover image (1792x1024 landscape)",
+  "bodyImage1Prompt": "Detailed visual prompt for a supplementary body image that illustrates the main concept of the first half of this article",
+  "bodyImage2Prompt": "Detailed visual prompt for a supplementary body image that illustrates the second half of this article"
 }
 
 Rules:
