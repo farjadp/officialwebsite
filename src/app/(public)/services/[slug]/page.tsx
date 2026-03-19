@@ -4,7 +4,6 @@ import { SERVICES } from "../data";
 import { ServiceCta } from "@/components/public/service-cta";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/button"; // Note: badge is usually from @/components/ui/badge, but using button if not found wait, let me use proper import
 
 export default function ServicePage({ params }: { params: { slug: string } }) {
   const service = SERVICES.find((s) => s.id === params.slug);
