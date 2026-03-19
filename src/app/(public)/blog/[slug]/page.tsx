@@ -225,7 +225,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const realReadingTime = calculateReadingTime(post.content || '')
 
     // Process content: inject heading IDs + extract TOC list
-    const { processedHtml, headings } = processContent(post.content || '')
+    let { processedHtml, headings } = processContent(post.content || '')
+
+    // Auto-inject a Related Article if the author hasn't manually placed one
+    if (!processedHtml.includes('[RELATED_ARTICLE') && relatedPosts.length > 0) {
+        // Find all paragraph ends
+        const paragraphEndMatches = Array.from(processedHtml.matchAll(/<\/p>/gi))
+        // If the article has at least 4 paragraphs, inject it in the middle
+        if (paragraphEndMatches.length >= 4) {
+            const middleIndex = Math.floor(paragraphEndMatches.length / 2)
+            const insertPosition = paragraphEndMatches[middleIndex].index + 4 // +4 for length of </p>
+            const autoShortcode = `\n\n<p>[RELATED_ARTICLE slug="${relatedPosts[0].slug}"]</p>\n\n`
+            processedHtml = 
+                processedHtml.slice(0, insertPosition) + 
+                autoShortcode + 
+                processedHtml.slice(insertPosition)
+        }
+    }
 
     const SHORTCODE_REGEX = /(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\]|\[RELATED_ARTICLE slug="[^"]+"\])\s*(?:<\/p>)?/g
 
