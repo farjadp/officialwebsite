@@ -280,7 +280,7 @@ export default function ServicesPageBento() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {SERVICES.map((service) => (
-              <div key={service.id} className="group relative bg-white border border-stone-200 p-6 h-[420px] flex flex-col justify-between hover:border-[#1B4B43] transition-colors duration-300 overflow-hidden">
+              <Link key={service.id} href={`/services/${service.id}`} className="group relative bg-white border border-stone-200 p-6 h-[420px] flex flex-col justify-between hover:border-[#1B4B43] transition-colors duration-300 overflow-hidden text-left block">
 
                 {/* Background Hover Effect */}
                 <div className="absolute inset-0 bg-[#1B4B43] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-0" />
@@ -313,11 +313,11 @@ export default function ServicesPageBento() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/booking" className="block w-full py-3 text-center text-xs font-bold uppercase tracking-widest border border-stone-200 group-hover:border-white text-[#111827] group-hover:text-white mt-4 hover:bg-white hover:text-[#1B4B43] transition-all">
+                  <div className="block w-full py-3 text-center text-xs font-bold uppercase tracking-widest border border-stone-200 group-hover:border-white text-[#111827] group-hover:text-white mt-4 group-hover:bg-white group-hover:text-[#1B4B43] transition-all">
                     Inquire
-                  </Link>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

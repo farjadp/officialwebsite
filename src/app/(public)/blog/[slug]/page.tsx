@@ -29,6 +29,7 @@ import { VaultAssetWidget } from "@/components/public/vault-asset-widget"
 import { RelatedArticleWidget } from "@/components/public/related-article-widget"
 import { ShareButtons } from "@/components/blog/share-buttons"
 import { ArticleSidebar, type Heading } from "@/components/public/article-sidebar"
+import { ToolPromoWidget } from "@/components/public/tool-promo-widget"
 // ─── Real reading time from content ──────────────────────────────────────────
 function calculateReadingTime(html: string): number {
     const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
@@ -394,6 +395,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             })}
                         </div>
 
+                        <div className="mt-16 mb-8">
+                            <ToolPromoWidget />
+                        </div>
+
                         <Separator className="my-10" />
 
                         {/* Article Tags */}
@@ -433,24 +438,35 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                         <Link
                                             key={related.slug}
                                             href={`/blog/${related.slug}`}
-                                            className="group bg-white border border-stone-200 rounded-xl p-5 hover:border-[#1B4B43] hover:shadow-sm transition-all flex flex-col gap-2"
+                                            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-stone-200 bg-white p-6 transition-all duration-300 hover:border-[#1B4B43] hover:shadow-xl hover:-translate-y-1"
                                         >
-                                            {related.categories[0] && (
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#1B4B43]">
-                                                    {related.categories[0].name}
-                                                </span>
-                                            )}
-                                            <h3 className="font-serif font-bold text-sm text-[#111827] group-hover:text-[#1B4B43] leading-snug transition-colors flex-1">
-                                                {related.title}
-                                            </h3>
+                                            <div className="absolute top-0 left-0 h-1 w-0 bg-[#D97706] transition-all duration-300 group-hover:w-full" />
+                                            
+                                            <div className="flex flex-col gap-4">
+                                                <div className="flex items-start justify-between">
+                                                    {related.categories[0] && (
+                                                        <span className="inline-flex rounded-sm bg-[#1B4B43]/5 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-[#1B4B43] ring-1 ring-inset ring-[#1B4B43]/10">
+                                                            {related.categories[0].name}
+                                                        </span>
+                                                    )}
+                                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-stone-50 text-stone-400 transition-all duration-300 group-hover:bg-[#1B4B43] group-hover:text-white">
+                                                        <ArrowRight className="h-3.5 w-3.5 -rotate-45" />
+                                                    </div>
+                                                </div>
+
+                                                <h3 className="font-serif text-lg font-bold leading-snug text-[#111827] transition-colors group-hover:text-[#1B4B43]">
+                                                    {related.title}
+                                                </h3>
+                                            </div>
+
                                             {related.readingTime && (
-                                                <span className="text-[10px] text-stone-400 flex items-center gap-1 mt-auto">
-                                                    <Clock className="w-3 h-3" /> {related.readingTime} min read
-                                                </span>
+                                                <div className="mt-6 flex items-center justify-between border-t border-stone-100 pt-4">
+                                                    <span className="flex items-center gap-1.5 text-xs font-medium text-stone-500 transition-colors group-hover:text-stone-700">
+                                                        <Clock className="w-3.5 h-3.5" />
+                                                        {related.readingTime} min read
+                                                    </span>
+                                                </div>
                                             )}
-                                            <span className="text-[10px] text-[#1B4B43] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                Read now <ArrowRight className="w-3 h-3" />
-                                            </span>
                                         </Link>
                                     ))}
                                 </div>
