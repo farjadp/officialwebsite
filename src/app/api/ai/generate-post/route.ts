@@ -138,7 +138,7 @@ function getImageStyleSuffix(topic: string): string {
         t.includes("process") ||
         t.includes("architecture")
     ) {
-        return `Editorial photography with architectural composition, structured geometry, clean lines, visual depth, premium minimalism, cinematic shadows, modern systems aesthetic, highly realistic, subtle atmosphere, sophisticated color grading, shot on a professional full-frame camera. Prefer environments, objects, spatial structure, and symbolic scenes. Avoid illustrations, futuristic UI overlays, handshake scenes, and generic corporate teamwork visuals. No text, no letters, no watermarks in the image itself. DO NOT include any Islamic, Arabic, or religious cultural elements, clothing, or architecture.`;
+        return `Editorial photography with architectural composition, structured geometry, clean lines, visual depth, premium minimalism, cinematic shadows, modern systems aesthetic, highly realistic, subtle atmosphere, sophisticated color grading, shot on a professional full-frame camera. Prefer environments, objects, spatial structure, and symbolic scenes. Avoid illustrations, futuristic UI overlays, handshake scenes, and generic corporate teamwork visuals. No text, no letters, no watermarks in the image itself. All human subjects must be bareheaded without any head coverings, wearing modern secular Western business attire in an international context.`;
     }
 
     if (
@@ -149,11 +149,10 @@ function getImageStyleSuffix(topic: string): string {
         t.includes("identity") ||
         t.includes("truth")
     ) {
-        return `Moody editorial photography, cinematic low-key lighting, intelligent minimalist composition, subtle emotional tension, realistic environments, premium magazine aesthetic, nuanced shadows, restrained tone, highly detailed and realistic, natural textures, shot on a professional full-frame camera. Avoid commercial stock-photo style, glossy advertising visuals, exaggerated emotions, and cartoonish AI aesthetics. No text, no letters, no watermarks in the image itself. DO NOT include any Islamic, Arabic, or religious cultural elements, clothing, or architecture.`;
+        return `Moody editorial photography, cinematic low-key lighting, intelligent minimalist composition, subtle emotional tension, realistic environments, premium magazine aesthetic, nuanced shadows, restrained tone, highly detailed and realistic, natural textures, shot on a professional full-frame camera. Avoid commercial stock-photo style, glossy advertising visuals, exaggerated emotions, and cartoonish AI aesthetics. No text, no letters, no watermarks in the image itself. All human subjects must be bareheaded without any head coverings, wearing modern secular Western business attire in an international context.`;
     }
 
-    // Default: business / startup / mentorship
-    return `Editorial photography, realistic human scenes, cinematic natural lighting, shallow depth of field, subtle contrast, premium magazine aesthetic, modern business editorial, emotionally grounded, highly detailed, realistic textures, restrained composition, shot on a professional full-frame camera. Avoid stock-photo clichés, exaggerated smiles, fake office staging, handshake scenes, rocket metaphors, and generic startup visuals. No text, no letters, no watermarks in the image itself. DO NOT include any Islamic, Arabic, or religious cultural elements, clothing, or architecture.`;
+    return `Editorial photography, realistic human scenes, cinematic natural lighting, shallow depth of field, subtle contrast, premium magazine aesthetic, modern business editorial, emotionally grounded, highly detailed, realistic textures, restrained composition, shot on a professional full-frame camera. Avoid stock-photo clichés, exaggerated smiles, fake office staging, handshake scenes, rocket metaphors, and generic startup visuals. No text, no letters, no watermarks in the image itself. All human subjects must be bareheaded without any head coverings, wearing modern secular Western business attire in an international context.`;
 }
 
 // ─── Helper: generate one DALL-E image, watermark it, return local URL ────────
@@ -357,7 +356,7 @@ IMAGE PROMPT RULES:
 - Avoid floating interfaces, holograms, excessive screen graphics, or anything that looks like stock-tech fantasy.
 - No text, letters, signage focus, or readable words inside the image.
 - Keep wardrobe and styling globally professional, contemporary, and culturally neutral, with no overly ceremonial or region-specific visual signals unless the article explicitly requires them.
-- CRITICAL CULTURAL RESTRICTION: ABSOLUTELY NO Islamic, Arabic, Middle Eastern, or religious cultural elements or clothing (like hijabs or headscarves). DO NOT mention "UAE", "Middle East", "Islam", or related terms in your image prompts. Keep the subjects culturally neutral, international, or Western business attire.
+- CRITICAL CULTURAL INSTRUCTION: Keep all subjects culturally neutral, modern, international, and wearing standard Western business attire. All human subjects MUST be bareheaded (absolutely no head coverings, hats, or traditional garments). The setting should strictly be a modern, secular international corporate or design environment.
 
 PALETTE:
 Primary colors: Deep graphite (#1F1F1F), Soft white (#F5F5F5)
