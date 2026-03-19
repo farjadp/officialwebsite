@@ -311,7 +311,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                     {/* ── LEFT: sticky sidebar ─────────────────────────────────── */}
                     <aside className="hidden lg:block">
-                        <div className="sticky top-24">
+                        <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-6">
                             <ArticleSidebar
                                 headings={headings}
                                 excerpt={post.excerpt}
