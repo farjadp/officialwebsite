@@ -12,7 +12,11 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useState, useCallback } from 'react'
+import { Table } from '@tiptap/extension-table'
+import { TableRow } from '@tiptap/extension-table-row'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import { useState, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Toggle } from '@/components/ui/toggle'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -33,7 +37,14 @@ import {
     Image as ImageIcon,
     FileText,
     Loader2,
+    Table as TableIcon,
+    Trash,
+    Columns,
+    Rows,
+    Plus,
+    Minus
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface VaultAsset {
     id: string
@@ -63,6 +74,27 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
             }),
             Placeholder.configure({
                 placeholder: 'Write something amazing...',
+            }),
+            Table.configure({
+                resizable: true,
+                HTMLAttributes: {
+                    class: 'w-full border-collapse border border-stone-300 my-4 table-auto',
+                },
+            }),
+            TableRow.configure({
+                HTMLAttributes: {
+                    class: 'border-b border-stone-200',
+                },
+            }),
+            TableHeader.configure({
+                HTMLAttributes: {
+                    class: 'border border-stone-300 bg-stone-100 px-4 py-2 font-semibold text-left',
+                },
+            }),
+            TableCell.configure({
+                HTMLAttributes: {
+                    class: 'border border-stone-300 px-4 py-2',
+                },
             }),
         ],
         content: value,
@@ -112,16 +144,45 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
     }, [editor])
 
-    const addImage = useCallback(() => {
+    const addImageURL = useCallback(() => {
         if (!editor) return
-        const url = window.prompt('Image URL')
+        const url = window.prompt('Image URL (or just upload from the icon next to it)')
         if (url) {
             editor.chain().focus().setImage({ src: url }).run()
         }
     }, [editor])
 
-    // Custom file upload handler could be added here
-    // For now simple URL prompt is fallback
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [isUploadingImage, setIsUploadingImage] = useState(false)
+
+    const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file || !editor) return
+        
+        setIsUploadingImage(true)
+        const toastId = toast.loading('Uploading image...')
+        const formData = new FormData()
+        formData.append('file', file)
+        
+        try {
+            const res = await fetch('/api/media/upload', {
+                method: 'POST',
+                body: formData
+            })
+            if (!res.ok) throw new Error('Upload failed')
+            
+            const data = await res.json()
+            editor.chain().focus().setImage({ src: data.url }).run()
+            toast.success('Image uploaded successfully', { id: toastId })
+        } catch (error) {
+            toast.error('Failed to upload image', { id: toastId })
+        } finally {
+            setIsUploadingImage(false)
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+            }
+        }
+    }
 
     if (!editor) {
         return null
@@ -210,12 +271,47 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
 
                     <div className="w-px h-6 bg-border mx-1 my-auto" />
 
-                    <Button variant="ghost" size="sm" onClick={setLink} className={editor.isActive('link') ? 'bg-muted' : ''}>
+                    <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImage} title="Upload Image">
+                        {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+                    </Button>
+                    <input type="file" className="hidden" accept="image/*" ref={fileInputRef} onChange={uploadImage} />
+
+                    <Button variant="ghost" size="sm" onClick={setLink} className={editor.isActive('link') ? 'bg-muted' : ''} title="Set Link">
                         <LinkIcon className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={addImage}>
-                        <ImageIcon className="h-4 w-4" />
-                    </Button>
+                    
+                    <div className="w-px h-6 bg-border mx-1 my-auto" />
+
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" size="sm" className={editor.isActive('table') ? 'bg-muted' : ''} title="Table">
+                                <TableIcon className="h-4 w-4" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-1 flex items-center gap-1" align="start">
+                            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="Insert Table">
+                                <TableIcon className="h-4 w-4 mr-2" /> Insert
+                            </Button>
+                            <div className="w-px h-6 bg-border mx-1 my-auto" />
+                            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().addColumnAfter().run()} disabled={!editor.can().addColumnAfter()} title="Add Column">
+                                <Columns className="h-4 w-4" /> <Plus className="h-3 w-3 ml-1" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().deleteColumn().run()} disabled={!editor.can().deleteColumn()} title="Delete Column">
+                                <Columns className="h-4 w-4 text-red-500" /> <Minus className="h-3 w-3 ml-1 text-red-500" />
+                            </Button>
+                            <div className="w-px h-6 bg-border mx-1 my-auto" />
+                            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().addRowAfter().run()} disabled={!editor.can().addRowAfter()} title="Add Row">
+                                <Rows className="h-4 w-4" /> <Plus className="h-3 w-3 ml-1" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().deleteRow().run()} disabled={!editor.can().deleteRow()} title="Delete Row">
+                                <Rows className="h-4 w-4 text-red-500" /> <Minus className="h-3 w-3 ml-1 text-red-500" />
+                            </Button>
+                            <div className="w-px h-6 bg-border mx-1 my-auto" />
+                            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().deleteTable().run()} disabled={!editor.can().deleteTable()} title="Delete Table">
+                                <Trash className="h-4 w-4 text-red-500" />
+                            </Button>
+                        </PopoverContent>
+                    </Popover>
 
                     <div className="w-px h-6 bg-border mx-1 my-auto" />
 
