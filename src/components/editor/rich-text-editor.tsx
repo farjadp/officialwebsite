@@ -42,7 +42,8 @@ import {
     Columns,
     Rows,
     Plus,
-    Minus
+    Minus,
+    BookOpen
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -63,6 +64,10 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
     const [vaultOpen, setVaultOpen] = useState(false)
     const [vaultAssets, setVaultAssets] = useState<VaultAsset[]>([])
     const [loadingVaults, setLoadingVaults] = useState(false)
+
+    const [relatedOpen, setRelatedOpen] = useState(false)
+    const [publishedPosts, setPublishedPosts] = useState<{slug: string, title: string}[]>([])
+    const [loadingPosts, setLoadingPosts] = useState(false)
 
     const editor = useEditor({
         immediatelyRender: false,
@@ -124,6 +129,23 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
         if (!editor) return
         editor.chain().focus().insertContent(`[VAULT_ASSET id="${id}"]`).run()
         setVaultOpen(false)
+    }, [editor])
+
+    const fetchPublishedPosts = useCallback(async () => {
+        if (publishedPosts.length > 0) return
+        setLoadingPosts(true)
+        try {
+            const res = await fetch('/api/admin/posts?status=PUBLISHED')
+            const data = await res.json()
+            if (Array.isArray(data)) setPublishedPosts(data)
+        } catch {}
+        setLoadingPosts(false)
+    }, [publishedPosts.length])
+
+    const insertRelatedArticle = useCallback((slug: string) => {
+        if (!editor) return
+        editor.chain().focus().insertContent(`[RELATED_ARTICLE slug="${slug}"]`).run()
+        setRelatedOpen(false)
     }, [editor])
 
     const setLink = useCallback(() => {
@@ -314,6 +336,43 @@ export function RichTextEditor({ value = '', onChange, editable = true }: RichTe
                     </Popover>
 
                     <div className="w-px h-6 bg-border mx-1 my-auto" />
+
+                    <Popover open={relatedOpen} onOpenChange={(open) => { setRelatedOpen(open); if (open) fetchPublishedPosts() }}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                title="Insert Related Article"
+                                className="gap-1.5 text-blue-700 hover:bg-blue-50"
+                            >
+                                <BookOpen className="h-4 w-4" />
+                                <span className="text-xs font-semibold hidden sm:inline">Related Article</span>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-2" align="start">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 px-2 pb-2">Insert Related Article</p>
+                            {loadingPosts ? (
+                                <div className="flex justify-center py-6">
+                                    <Loader2 className="h-5 w-5 animate-spin text-blue-700" />
+                                </div>
+                            ) : publishedPosts.length === 0 ? (
+                                <p className="text-sm text-center text-muted-foreground py-4">No published posts found.</p>
+                            ) : (
+                                <div className="space-y-1 max-h-60 overflow-y-auto">
+                                    {publishedPosts.map(post => (
+                                        <button
+                                            key={post.slug}
+                                            className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-colors"
+                                            onClick={() => insertRelatedArticle(post.slug)}
+                                        >
+                                            <p className="text-sm font-medium text-stone-800 leading-snug">{post.title}</p>
+                                            <p className="text-[10px] text-stone-400 font-mono mt-0.5">[RELATED_ARTICLE slug=&quot;{post.slug}&quot;]</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </PopoverContent>
+                    </Popover>
 
                     <Popover open={vaultOpen} onOpenChange={(open) => { setVaultOpen(open); if (open) fetchVaultAssets() }}>
                         <PopoverTrigger asChild>

@@ -26,6 +26,7 @@ import { prisma } from "@/lib/prisma"
 import { Metadata } from "next"
 import { ScorecardWidget } from "@/components/public/scorecard-widget"
 import { VaultAssetWidget } from "@/components/public/vault-asset-widget"
+import { RelatedArticleWidget } from "@/components/public/related-article-widget"
 import { ShareButtons } from "@/components/blog/share-buttons"
 import { ArticleSidebar, type Heading } from "@/components/public/article-sidebar"
 // ─── Real reading time from content ──────────────────────────────────────────
@@ -226,7 +227,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     // Process content: inject heading IDs + extract TOC list
     const { processedHtml, headings } = processContent(post.content || '')
 
-    const SHORTCODE_REGEX = /(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\])\s*(?:<\/p>)?/g
+    const SHORTCODE_REGEX = /(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\]|\[RELATED_ARTICLE slug="[^"]+"\])\s*(?:<\/p>)?/g
 
     return (
         <article className="min-h-screen bg-[#FDFCF8] pb-24">
@@ -358,6 +359,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                     return (
                                         <div key={index} className="my-12 not-prose">
                                             <VaultAssetWidget id={vaultMatch[1]} />
+                                        </div>
+                                    )
+                                }
+
+                                const relatedMatch = part.match(/\[RELATED_ARTICLE slug="([^"]+)"\]/)
+                                if (relatedMatch) {
+                                    return (
+                                        <div key={index} className="my-10 not-prose">
+                                            <RelatedArticleWidget slug={relatedMatch[1]} />
                                         </div>
                                     )
                                 }
