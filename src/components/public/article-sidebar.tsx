@@ -171,28 +171,7 @@ export function ArticleSidebar({
                 )}
             </div>
 
-            {/* ── Tags ─────────────────────────────────────── */}
-            {tags.length > 0 && (
-                <div className="bg-white border border-stone-200 rounded-xl p-4 space-y-2.5">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Tags</p>
-                    <div className="flex flex-wrap gap-1.5">
-                        {tags.map((t) => (
-                            <span
-                                key={t.id}
-                                className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-500 px-2 py-1 rounded-full font-medium transition-colors"
-                            >
-                                #{t.name}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
 
-            {/* ── Share ─────────────────────────────────────── */}
-            <div className="bg-white border border-stone-200 rounded-xl p-4 space-y-2.5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Share</p>
-                <ShareButtons title={postTitle} slug={postSlug} />
-            </div>
 
             {/* ── Back to top ───────────────────────────────── */}
             {readingProgress > 15 && (

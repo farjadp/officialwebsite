@@ -311,7 +311,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                     {/* ── LEFT: sticky sidebar ─────────────────────────────────── */}
                     <aside className="hidden lg:block">
-                        <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-6">
+                        <div className="sticky top-24">
                             <ArticleSidebar
                                 headings={headings}
                                 excerpt={post.excerpt}
@@ -395,6 +395,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         </div>
 
                         <Separator className="my-10" />
+
+                        {/* Article Tags */}
+                        {post.tags.length > 0 && (
+                            <div className="mb-10">
+                                <p className="font-semibold text-[#111827] text-sm mb-3">Topics in this article:</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {post.tags.map((t) => (
+                                        <span
+                                            key={t.id}
+                                            className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-full font-medium transition-colors cursor-pointer"
+                                        >
+                                            #{t.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Share */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
