@@ -134,7 +134,8 @@ export async function createPost(data: CreatePostInput) {
                     post.slug,
                     post.title,
                     post.content,
-                    post.excerpt
+                    post.excerpt,
+                    post.coverImage
                 ).catch((err) => console.error('[Auto-Publish] Background error:', err))
             )
         }
@@ -200,7 +201,8 @@ export async function updatePost(data: UpdatePostInput) {
                     post.slug,
                     post.title,
                     post.content,
-                    post.excerpt
+                    post.excerpt,
+                    post.coverImage
                 ).catch((err) => console.error('[Auto-Publish] Background error:', err))
             )
         }

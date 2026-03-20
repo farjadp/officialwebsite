@@ -35,6 +35,7 @@ export function RepurposeUrlModal({ onGenerated }: RepurposeUrlModalProps) {
     const [open, setOpen] = useState(false)
     const [isGenerating, setIsGenerating] = useState(false)
     const [url, setUrl] = useState('')
+    const [generateImage, setGenerateImage] = useState(true)
     const [socialPlatforms, setSocialPlatforms] = useState({
         telegram: true,
         twitter: true,
@@ -51,7 +52,7 @@ export function RepurposeUrlModal({ onGenerated }: RepurposeUrlModalProps) {
             const res = await fetch('/api/admin/repurpose-url', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify({ url, generateImage }),
             })
             const json = await res.json()
             if (!res.ok || !json.success) throw new Error(json.error || 'Failed to repurpose')
@@ -60,7 +61,7 @@ export function RepurposeUrlModal({ onGenerated }: RepurposeUrlModalProps) {
             const anySelected = socialPlatforms.telegram || socialPlatforms.twitter || socialPlatforms.linkedin
             onGenerated({
                 ...json.data,
-                coverImageUrl: null,
+                coverImageUrl: json.data.coverImageUrl || null,
                 socialPlatforms: anySelected ? socialPlatforms : undefined
             })
             
@@ -107,6 +108,19 @@ export function RepurposeUrlModal({ onGenerated }: RepurposeUrlModalProps) {
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                         />
+                    </div>
+
+                    <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                        <input
+                            type="checkbox"
+                            id="repurposeGenerateImage"
+                            checked={generateImage}
+                            onChange={(e) => setGenerateImage(e.target.checked)}
+                            className="h-4 w-4 rounded border-gray-300"
+                        />
+                        <label htmlFor="repurposeGenerateImage" className="text-sm font-medium cursor-pointer text-emerald-900">
+                            Generate Cover Image with AI (Fal.ai Flux)
+                        </label>
                     </div>
 
                     <div className="space-y-2.5 p-4 bg-slate-50 border border-slate-200 rounded-xl">

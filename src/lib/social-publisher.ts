@@ -45,9 +45,9 @@ RULES:
 
 A. LINKEDIN (English):
 - Hook → Problem → Shift → Solution → Conclusion. Under 1500 chars.
-- USE EMOJIS: 3-5 (✅, 📌, 💡, ⚡, 🎯, 🧠, 📊). Place at start of key lines.
+- USE EMOJIS: 3-5 strategically to maintain attention. Make it scannable.
 - The SECOND TO LAST line must be: "I dive deeper into this in the full essay. Link in the comments."
-- The VERY LAST line must be 3-5 HASHTAGS starting with # separated by spaces.
+- CRITICAL: The VERY LAST line MUST be exactly 3 to 5 HASHTAGS starting with #, separated by spaces (e.g. #Startups #Strategy #AI). DO NOT skip this!
 
 B. TELEGRAM (Persian / فارسی عامیانه):
 - Write ENTIRELY in casual, colloquial Persian. Like a mentor texting a student.
@@ -245,9 +245,65 @@ export async function publishToTwitter(
 }
 
 // ─── LinkedIn Publisher (OAuth 2.0 Bearer Token) ─────────────────────────────
+
+async function uploadImageToLinkedIn(accessToken: string, authorUrn: string, imageUrl: string): Promise<string | null> {
+    try {
+        const imgRes = await fetch(imageUrl);
+        if (!imgRes.ok) throw new Error("Failed to download image from " + imageUrl);
+        const imgBuffer = await imgRes.arrayBuffer();
+
+        const registerRes = await fetch('https://api.linkedin.com/v2/assets?action=registerUpload', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'X-Restli-Protocol-Version': '2.0.0'
+            },
+            body: JSON.stringify({
+                registerUploadRequest: {
+                    recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+                    owner: authorUrn,
+                    serviceRelationships: [{
+                        relationshipType: "OWNER",
+                        identifier: "urn:li:userGeneratedContent"
+                    }]
+                }
+            })
+        });
+
+        if (!registerRes.ok) {
+            const errorBody = await registerRes.text();
+            throw new Error(`Failed to register upload: ${registerRes.status} - ${errorBody}`);
+        }
+        const registerData = await registerRes.json();
+        const uploadUrl = registerData.value.uploadMechanism["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"].uploadUrl;
+        const assetUrn = registerData.value.asset;
+
+        const uploadRes = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/octet-stream'
+            },
+            body: Buffer.from(imgBuffer)
+        });
+
+        if (!uploadRes.ok) {
+            const errorBody = await uploadRes.text();
+            throw new Error(`Failed to upload binary: ${uploadRes.status} - ${errorBody}`);
+        }
+
+        return assetUrn;
+    } catch (err) {
+        console.error("[LinkedIn Image Upload Error]", err);
+        return null;
+    }
+}
+
 export async function publishToLinkedIn(
     text: string,
-    postUrl: string
+    postUrl: string,
+    coverImageUrl?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
     try {
         // Get stored token and person URN from DB
@@ -263,19 +319,36 @@ export async function publishToLinkedIn(
         const accessToken = tokenRow.value;
         const authorUrn = urnRow.value;
 
-        // Build text-only post (no article card — link goes in first comment)
+        // Build base post
+        let specificContent: any = {
+            "com.linkedin.ugc.ShareContent": {
+                shareCommentary: { text },
+                shareMediaCategory: "NONE",
+            },
+        };
+
+        if (coverImageUrl) {
+            const assetUrn = await uploadImageToLinkedIn(accessToken, authorUrn, coverImageUrl);
+            if (assetUrn) {
+                specificContent["com.linkedin.ugc.ShareContent"].shareMediaCategory = "IMAGE";
+                specificContent["com.linkedin.ugc.ShareContent"].media = [
+                    {
+                        status: "READY",
+                        description: { text: "Cover Image" },
+                        media: assetUrn,
+                        title: { text: "Cover Image" }
+                    }
+                ];
+            } else {
+                console.warn("[LinkedIn] Failed to upload cover image, proceeding without it.");
+            }
+        }
+
         const postBody = {
             author: authorUrn,
             lifecycleState: "PUBLISHED",
-            specificContent: {
-                "com.linkedin.ugc.ShareContent": {
-                    shareCommentary: { text },
-                    shareMediaCategory: "NONE",
-                },
-            },
-            visibility: {
-                "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
-            },
+            specificContent,
+            visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
         };
 
         const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
@@ -344,9 +417,11 @@ export async function runWaterfallPipeline(
     postSlug: string,
     postTitle: string,
     postContent: string,
-    postExcerpt?: string | null
+    postExcerpt?: string | null,
+    postCoverImage?: string | null
 ): Promise<void> {
-    const siteUrl = process.env.NEXTAUTH_URL?.trim() || "https://farjadp.info";
+    // Always use the production URL for social media formatting, never localhost
+    const siteUrl = "https://farjadp.info";
     const postUrl = `${siteUrl}/blog/${postSlug}`;
 
     console.log(`[Auto-Publish] Starting pipeline for: "${postTitle}" (${postSlug})`);
@@ -410,10 +485,15 @@ export async function runWaterfallPipeline(
         logData.retargetingStorySolution = result.sniper_retargeting?.story_creative?.text_overlay_2;
 
         // Step 2: Publish to Telegram + Twitter + LinkedIn in parallel
+        let absoluteCoverImageUrl = postCoverImage;
+        if (absoluteCoverImageUrl && absoluteCoverImageUrl.startsWith('/')) {
+            absoluteCoverImageUrl = `${siteUrl}${absoluteCoverImageUrl}`;
+        }
+
         const [tgResult, twResult, liResult] = await Promise.allSettled([
             publishToTelegram(result.telegram?.text || "", postUrl),
             publishToTwitter(result.twitter?.thread || [], postUrl),
-            publishToLinkedIn(result.linkedin?.text || "", postUrl),
+            publishToLinkedIn(result.linkedin?.text || "", postUrl, absoluteCoverImageUrl),
         ]);
 
         // Telegram result
