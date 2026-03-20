@@ -39,6 +39,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UploadCloud, Image as ImageIcon, X } from 'lucide-react'
 import { TagInput } from '@/components/admin/tag-input'
 import { AIContentGenerator } from '@/components/admin/ai-content-generator'
+import { RepurposeUrlModal } from '@/components/admin/repurpose-url-modal'
 import { logUiEvent } from '@/lib/ui-log'
 
 type SocialPlatforms = { telegram: boolean; twitter: boolean; linkedin: boolean }
@@ -256,12 +257,15 @@ export function PostForm({ post, categories, tags }: PostFormProps) {
                     {/* Main Content - Left Column (2 cols) */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* AI Generator button bar */}
-                        <div className="flex items-center justify-between p-4 bg-violet-50 border border-violet-200 rounded-xl">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-violet-50 border border-violet-200 rounded-xl">
                             <div>
-                                <p className="font-semibold text-violet-900 text-sm">✨ AI Content Generator</p>
-                                <p className="text-xs text-violet-600">Generate a complete article with cover image using GPT-4o + DALL-E 3</p>
+                                <p className="font-semibold text-violet-900 text-sm">✨ AI Content Systems</p>
+                                <p className="text-xs text-violet-600">Generate from a topic or repurpose an external URL (Twitter, Medium, etc)</p>
                             </div>
-                            <AIContentGenerator onGenerated={handleAIGenerated} />
+                            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                                <RepurposeUrlModal onGenerated={handleAIGenerated} />
+                                <AIContentGenerator onGenerated={handleAIGenerated} />
+                            </div>
                         </div>
                         <FormField
                             control={form.control}

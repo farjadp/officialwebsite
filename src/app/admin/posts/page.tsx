@@ -29,8 +29,16 @@ import { format } from "date-fns"
 
 export const dynamic = 'force-dynamic'
 
-export default async function PostsPage() {
-    const { posts } = await getPosts()
+export default async function PostsPage({
+    searchParams,
+}: {
+    searchParams: { [key: string]: string | string[] | undefined }
+}) {
+    const params = await Promise.resolve(searchParams)
+    const page = typeof params.page === 'string' ? parseInt(params.page) : 1
+    const limit = 15
+
+    const { posts, totalPages } = await getPosts({ page, limit })
 
     return (
         <div className="space-y-6">
@@ -122,6 +130,39 @@ export default async function PostsPage() {
                         </TableBody>
                     </Table>
                 </CardContent>
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between px-6 pb-6 pt-2">
+                        <div className="text-sm text-muted-foreground font-medium">
+                            Page {page} of {totalPages}
+                        </div>
+                        <div className="flex space-x-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={page <= 1}
+                                asChild={page > 1}
+                            >
+                                {page > 1 ? (
+                                    <Link href={`/admin/posts?page=${page - 1}`}>Previous</Link>
+                                ) : (
+                                    <span>Previous</span>
+                                )}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={page >= totalPages}
+                                asChild={page < totalPages}
+                            >
+                                {page < totalPages ? (
+                                    <Link href={`/admin/posts?page=${page + 1}`}>Next</Link>
+                                ) : (
+                                    <span>Next</span>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </Card>
         </div>
     )
