@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
-import { AssessmentScores } from "@/lib/npi/types";
+// Type definitions are inlined as the module structure changed.
 import { Filter, Download, Mail } from "lucide-react";
 
 export const metadata = {
@@ -60,7 +60,7 @@ export default async function NPILeadsPage({
               ) : (
                 leads.map((lead) => {
                   const data = lead.answers as any;
-                  const scores = data?.scores as AssessmentScores | undefined;
+                  const scores = data?.scores as { weakest?: string; narrative?: number; presence?: number; impact?: number } | undefined;
                   const meta = data?.meta as any;
 
                   return (

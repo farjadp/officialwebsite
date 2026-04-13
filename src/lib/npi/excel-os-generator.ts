@@ -691,7 +691,7 @@ export async function generateNPIOperatingSystem(
   });
 
   // ── Set active sheet to Weekly Tracker ──
-  WB.views = [{ activeTab: 1 }];
+  // Default tab is the first (Narrative)
 
   // ── Generate & download ──
   const buffer = await WB.xlsx.writeBuffer();

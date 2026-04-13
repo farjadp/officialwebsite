@@ -32,7 +32,7 @@ const leadSchema = z.object({
   name: z.string().min(2, 'Name is required'),
   email: z.string().email('Invalid email address'),
   role: z.string().optional(),
-  agreed: z.boolean().default(true),
+  agreed: z.boolean(),
 });
 type LeadFormValues = z.infer<typeof leadSchema>;
 
