@@ -13,7 +13,7 @@ import { Menu, X, ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-export function Header() {
+export function Header({ locale = "en" }: { locale?: string }) {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
@@ -66,6 +66,17 @@ export function Header() {
                     <Link href="/blog" className="hover:text-[#1B4B43] transition-colors">Essays</Link>
                     <Link href="/tools" className="hover:text-[#1B4B43] transition-colors">Tools</Link>
                     <Link href="/about" className="hover:text-[#1B4B43] transition-colors">About</Link>
+                    
+                    {locale === "en" ? (
+                        <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="hover:opacity-80 transition-opacity" title="Persian">
+                            <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" />
+                        </a>
+                    ) : (
+                        <a href={process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://farjadp.info"} className="hover:opacity-80 transition-opacity" title="English" dir="ltr">
+                            <img src="/images/canada-flag.svg" alt="English" className="w-6 h-6 rounded-sm shadow-sm" />
+                        </a>
+                    )}
+
                     <Link href="/contact" className="ml-4 px-4 py-2 rounded-full border border-stone-300 hover:border-[#1B4B43] hover:text-[#1B4B43] transition-all text-xs uppercase tracking-wider font-bold bg-[#1B4B43] text-white hover:bg-[#133832] hover:text-white">
                         Let's Talk
                     </Link>
@@ -108,6 +119,17 @@ export function Header() {
                             <Link href="/about" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 About
                             </Link>
+
+                            {locale === "en" ? (
+                                <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="flex items-center gap-3 text-xl font-serif text-[#1B4B43] font-bold hover:opacity-80 transition-opacity">
+                                    <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" /> فارسی
+                                </a>
+                            ) : (
+                                <a href={process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://farjadp.info"} className="flex items-center gap-3 text-xl font-sans text-[#1B4B43] font-bold hover:opacity-80 transition-opacity" dir="ltr">
+                                    <img src="/images/canada-flag.svg" alt="English" className="w-6 h-6 rounded-sm shadow-sm" /> English
+                                </a>
+                            )}
+
                             <Link href="/contact" onClick={() => setIsOpen(false)} className="mt-4 px-4 py-3 text-center rounded-full border border-[#1B4B43] bg-[#1B4B43] text-white hover:bg-[#133832] transition-all text-sm uppercase tracking-wider font-bold">
                                 Let's Talk
                             </Link>

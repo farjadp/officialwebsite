@@ -20,7 +20,7 @@ import {
     Clock
 } from "lucide-react"
 
-export function Footer() {
+export function Footer({ locale = "en" }: { locale?: string }) {
     return (
         <footer className="bg-[#111827] text-stone-300 font-sans border-t border-[#1B4B43] relative overflow-hidden">
 
@@ -149,6 +149,15 @@ export function Footer() {
                         <div className="flex items-center gap-2">
                             <Clock className="w-3 h-3 text-[#1B4B43]" />
                             <span>{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Toronto' })} EST</span>
+                        </div>
+
+                        <div className="flex items-center gap-4 border-l border-white/10 pl-6 ml-2" dir="ltr">
+                            <a href={process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://farjadp.info"} className={`flex items-center gap-2 text-xs font-bold font-sans ${locale === 'en' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
+                                <img src="/images/canada-flag.svg" alt="English" className={`w-5 h-5 rounded-sm ${locale === 'en' ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'}`} /> EN
+                            </a>
+                            <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className={`flex items-center gap-2 text-xs font-bold font-serif ${locale === 'fa' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
+                                <img src="/images/lion-sun.svg" alt="Persian" className={`w-5 h-5 rounded-sm ${locale === 'fa' ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'}`} /> فا
+                            </a>
                         </div>
                     </div>
 

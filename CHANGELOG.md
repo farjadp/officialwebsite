@@ -2,6 +2,13 @@
 
 All notable changes to the Official Website project will be documented in this file.
 
+## [2026-04-13 16:48] - NPI Assessment Tool Integration
+
+### Added
+- **NPI Assessment Tool**: Implemented a multi-step (6-page) interactive brand assessment wizard available at `/tools/npi-assessment`.
+- **Dynamic Excel Generation**: Built a comprehensive 5-sheet `NPI Operating System` Excel output (`exceljs`) containing fully populated formulas, color palettes, and metrics formatting directly mapped to user inputs.
+- **Lead Capture & Notification**: Added `submitNPIPlanLead` server action that automatically emails the generated Excel file to the user and sends a Telegram notification containing the lead's submission details directly to the admin.
+
 ## [2026-03-13 16:25] - Social Publishing Bug Fixes
 
 ### Fixed

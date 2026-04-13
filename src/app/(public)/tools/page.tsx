@@ -17,6 +17,15 @@ export const metadata = {
 export default function ToolsPage() {
     const tools = [
         {
+            name: "NPI Brand Assessment",
+            type: "Diagnostic Tool",
+            desc: "Evaluate the 3 core pillars of your personal brand: Narrative, Presence, and Impact. Discover your leverage points instantly.",
+            action: "Take Assessment",
+            icon: Target, // Utilizing the imported Target icon
+            href: "/tools/npi-assessment",
+            available: true,
+        },
+        {
             name: "Sales Funnel Health Score",
             type: "Diagnostic Tool",
             desc: "Locate exactly where your funnel is leaking revenue. Covers lead generation, qualification, closing, and tracking.",

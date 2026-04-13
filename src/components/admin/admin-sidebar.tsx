@@ -66,6 +66,7 @@ const sidebarGroups = [
         title: "Growth & AI",
         items: [
             { title: "Leads", href: "/admin/leads", icon: Inbox },
+            { title: "NPI Leads", href: "/admin/npi-leads", icon: Activity },
             { title: "Newsletter", href: "/admin/newsletter", icon: Inbox, placeholder: true },
             { title: "AI Studio", href: "/admin/ai-tools", icon: Sparkles },
         ]

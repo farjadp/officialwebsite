@@ -47,14 +47,19 @@ export const metadata: Metadata = {
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import SystemLogClient from "@/components/system-log-client"
+import { headers } from "next/headers"
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const locale = headersList.get("x-locale") || "en";
+  const dir = locale === "fa" ? "rtl" : "ltr";
+
   return (
-    <html lang="en">
+    <html lang={locale} dir={dir}>
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         {children}
         <SystemLogClient />

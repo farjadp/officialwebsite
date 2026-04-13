@@ -45,10 +45,31 @@ export default auth((req) => {
         return NextResponse.redirect(new URL("/profile", req.url));
     }
 
-    return NextResponse.next();
+    // 4. Subdomain Routing (Internationalization)
+    const hostname = req.headers.get("host") || "";
+    const isPersian = hostname.startsWith("fa.");
+    
+    // Inject x-locale header for the layout to determine language / direction
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-locale", isPersian ? "fa" : "en");
+
+    // Rewrite to the /fa directory if it's the Persian subdomain
+    if (isPersian && !url.pathname.startsWith("/fa")) {
+        return NextResponse.rewrite(new URL(`/fa${url.pathname}`, req.url), {
+            request: {
+                headers: requestHeaders,
+            }
+        });
+    }
+
+    return NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        }
+    });
 });
 
 // Optionally configure matching purely at the edge
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }

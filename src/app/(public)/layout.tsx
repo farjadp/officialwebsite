@@ -15,11 +15,11 @@ export default function PublicLayout({
 }) {
     return (
         <div className="flex flex-col min-h-screen">
-            <Header />
+            <Header locale="en" />
             <main className="flex-1 w-full">
                 {children}
             </main>
-            <Footer />
+            <Footer locale="en" />
         </div>
     )
 }
