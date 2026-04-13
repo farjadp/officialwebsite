@@ -68,7 +68,13 @@ export async function submitNPIPlanLead(payload: {
     
     // 2. Telegram the lead details to the admin
     const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
-    const telegramChatId = process.env.TELEGRAM_CHANNEL_ID?.trim() || process.env.TELEGRAM_CHAT_ID?.trim();
+    let telegramChatId = process.env.TELEGRAM_CHAT_ID?.trim();
+    
+    // Check DB if not in ENV
+    if (!telegramChatId) {
+       const tgSetting = await prisma.appSetting.findUnique({ where: { key: 'TELEGRAM_CHAT_ID' } });
+       telegramChatId = tgSetting?.value?.trim();
+    }
     
     if (botToken && telegramChatId) {
       try {
