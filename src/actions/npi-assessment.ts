@@ -68,7 +68,7 @@ export async function submitNPIPlanLead(payload: {
     
     // 2. Telegram the lead details to the admin
     const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
-    let telegramChatId = process.env.TELEGRAM_CHAT_ID?.trim();
+    let telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID?.trim() || process.env.TELEGRAM_CHAT_ID?.trim();
     
     // Check DB if not in ENV
     if (!telegramChatId) {
