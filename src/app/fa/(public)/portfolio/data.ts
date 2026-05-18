@@ -31,6 +31,12 @@ export type PortfolioItem = {
     visibility?: "Public" | "Private";
     tags?: string[];
     yearRange?: string;
+    
+    // Case Study Specifics
+    diagnosis?: string;
+    proposedStrategy?: string[];
+    executionSteps?: { title: string; description: string }[];
+    lessons?: string[];
 };
 
 export const FOUNDER_JOURNEY = [
@@ -229,6 +235,43 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
         visibility: "Public",
         contribution: "Architected and programmed enterprise-grade web solutions and portals, laying the digital foundation for major corporate entities.",
         tags: ["Enterprise Software", "Web Portals", "Software Engineering"],
+    },
+    {
+        id: "herestate",
+        title: "HereState",
+        category: "Companies & Ventures",
+        role: "مشاور استراتژیک",
+        summary: "یک case study مشاوره‌ای درباره کمک به یک تیم پراپ‌تک برای بازتعریف ورود به بازار، شفاف‌سازی positioning و هم‌راستا کردن ambition محصول با یک مسیر GTM معتبر.",
+        visibility: "Public",
+        yearRange: "2026",
+        problem: "یک تیم فنیِ قوی در پراپ‌تک کانادا در حال ساخت یک پلتفرم بلندپروازانه‌ی املاک مبتنی بر AI بود، اما گلوگاه اصلی آن‌ها خودِ محصول نبود؛ ابهام در منطق go-to-market بود.",
+        diagnosis: "محصول خیلی زود شبیه یک بازی B2C دیده می‌شد، در حالی‌که مسیر قوی‌تر، ورود trust-led از جنس B2B یا B2B2C بود؛ همراه با روایت pitch دقیق‌تر، اولویت‌بندی بهتر و منطق distribution روشن‌تر.",
+        outcome: "شفافیت استراتژیک در مورد market entry ایجاد شد، جهت GTM بازتعریف شد و pitch، پیام و استراتژی دیجیتال با واقعیت کسب‌وکار هم‌راستا شدند.",
+        proposedStrategy: [
+            "تغییر از broad B2C thinking به یک ورودی B2B / B2B2C.",
+            "ساختن بر پایه‌ی کانال‌های trust-based به‌جای فعالیت محتوایی عمومی.",
+            "بازنویسی روایت market-entry تا pitch، message و distribution از یک thesis واحد پشتیبانی کنند."
+        ],
+        executionSteps: [
+            {
+                title: "شفاف‌سازی wedge اولیه",
+                description: "تعریف اولین کانال معتبر، محدود کردن positioning و توقف اشتباه گرفتن visibility با strategy."
+            },
+            {
+                title: "بازسازی روایت",
+                description: "بازچینش deck و داستان استراتژیک بر محور trust، منطق کانال و توالی تجاری."
+            },
+            {
+                title: "فعال‌سازی outreach مبتنی بر trust",
+                description: "استفاده از روایت جدید برای outreach B2B، گفت‌وگو با partnerها و جهت‌گیری دیجیتال منضبط‌تر."
+            }
+        ],
+        lessons: [
+            "محصول قوی به‌تنهایی کافی نیست اگر منطق ورود به بازار ضعیف باشد.",
+            "business plan جای clarity در GTM را نمی‌گیرد.",
+            "بازارهای trust-heavy به کانال‌های trust-heavy نیاز دارند."
+        ],
+        tags: ["PropTech", "GTM Strategy", "Strategic Diagnosis", "Pitch Narrative", "B2B"],
     },
     // --- CATEGORY: GITHUB PROJECTS ---
     {

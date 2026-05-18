@@ -318,3 +318,29 @@ model Testimonial {
   featured  Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model RouteMetric {
+  path      String   @id
+  views     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model MentoredStartup {
+  id            String   @id @default(cuid())
+  name          String
+  industry      String
+  satisfaction  String
+  status        String
+  isActive      Boolean  @default(true)
+  startDate     String
+  endDate       String
+  website       String?
+  linkedin      String?
+  logo          String?
+  description   String
+  founderName   String
+  founderPhoto  String?
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

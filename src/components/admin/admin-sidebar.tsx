@@ -33,6 +33,7 @@ import {
     MessageSquareQuote,
     FolderGit2,
     Mail,
+    Rocket,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -59,6 +60,7 @@ const sidebarGroups = [
         items: [
             { title: "Inbox", href: "/admin/inbox", icon: Mail },
             { title: "Projects", href: "/admin/portfolio", icon: FolderGit2 },
+            { title: "Startups", href: "/admin/startups", icon: Rocket },
             { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
         ]
     },

@@ -8,6 +8,7 @@
 // ============================================================================
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, Github, ExternalLink, Activity, Target, Layers, Briefcase, Zap, BookOpen, Lock, Globe, Star, GitFork, Terminal } from "lucide-react";
 import {
@@ -217,11 +218,16 @@ export default function PortfolioPageV3() {
                                                         )}
                                                         {item.link && (
                                                             <a href={item.link} target="_blank" rel="noopener noreferrer"
-                                                                className="w-10 h-10 rounded-full bg-[#0F3F35] text-white flex items-center justify-center hover:bg-[#092822] transition-colors tooltip group/link relative">
-                                                                <ArrowUpRight className="w-4 h-4" />
-                                                                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0F3F35] text-xs px-2 py-1 rounded opacity-0 group-hover/link:opacity-100 transition-opacity">Visit</span>
+                                                                className="w-10 h-10 rounded-full bg-stone-900 border border-stone-700 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-800 transition-colors tooltip group/link relative">
+                                                                <Globe className="w-4 h-4" />
+                                                                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-stone-800 text-xs px-2 py-1 rounded opacity-0 group-hover/link:opacity-100 transition-opacity z-10">مشاهده</span>
                                                             </a>
                                                         )}
+                                                        <Link href={`/fa/portfolio/${item.id}`}
+                                                            className="w-10 h-10 rounded-full bg-[#0F3F35] text-white flex items-center justify-center hover:bg-[#092822] transition-colors tooltip group/link relative">
+                                                            <ArrowUpRight className="w-4 h-4" />
+                                                            <span className="absolute bottom-full mb-2 right-0 bg-[#0F3F35] text-xs px-2 py-1 rounded opacity-0 group-hover/link:opacity-100 transition-opacity whitespace-nowrap z-10">بررسی موردی</span>
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </div>

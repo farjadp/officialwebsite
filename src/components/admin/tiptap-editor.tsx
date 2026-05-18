@@ -16,6 +16,7 @@ import { Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2 } from "luci
 
 export function TiptapEditor({ content, onChange }: { content: string, onChange?: (html: string) => void }) {
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit,
             Typography,

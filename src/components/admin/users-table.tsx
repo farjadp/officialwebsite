@@ -49,6 +49,7 @@ export function UsersTable({ users: initialUsers, isOwner }: { users: UserRow[];
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [addOpen, setAddOpen] = useState(false)
     const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "USER" })
+    const [formError, setFormError] = useState<string | null>(null)
 
     const filtered = users.filter(u => {
         const matchSearch = !search ||
@@ -103,6 +104,7 @@ export function UsersTable({ users: initialUsers, isOwner }: { users: UserRow[];
 
     async function handleAddUser() {
         setIsSubmitting(true)
+        setFormError(null)
         try {
             const res = await fetch("/api/admin/users", {
                 method: "POST",
@@ -113,7 +115,13 @@ export function UsersTable({ users: initialUsers, isOwner }: { users: UserRow[];
                 router.refresh()
                 setAddOpen(false)
                 setNewUser({ name: "", email: "", password: "", role: "USER" })
+                setFormError(null)
+            } else {
+                const data = await res.json().catch(() => ({}))
+                setFormError(data.error || `Error ${res.status}: Failed to create user`)
             }
+        } catch {
+            setFormError("Network error. Please try again.")
         } finally {
             setIsSubmitting(false)
         }
@@ -305,12 +313,17 @@ export function UsersTable({ users: initialUsers, isOwner }: { users: UserRow[];
             </Dialog>
 
             {/* Add User Dialog */}
-            <Dialog open={addOpen} onOpenChange={setAddOpen}>
+            <Dialog open={addOpen} onOpenChange={(open) => { setAddOpen(open); if (!open) setFormError(null) }}>
                 <DialogContent className="bg-slate-900 border-white/10 text-white">
                     <DialogHeader>
                         <DialogTitle>Add New User</DialogTitle>
                         <DialogDescription className="text-slate-400">Create a new user account. The email won't need verification.</DialogDescription>
                     </DialogHeader>
+                    {formError && (
+                        <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+                            {formError}
+                        </div>
+                    )}
                     <div className="space-y-4">
                         {[
                             { label: "Full Name", key: "name", type: "text", placeholder: "John Doe" },

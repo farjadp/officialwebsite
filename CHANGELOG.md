@@ -2,6 +2,27 @@
 
 All notable changes to the Official Website project will be documented in this file.
 
+## [2026-05-18] - Portfolio Detail Pages, DB-Driven Startups & Admin Enhancements
+
+### Added
+- **Portfolio Detail Pages (`/portfolio/[slug]`)**: Implemented individual detail pages for each portfolio item, available in both English and Farsi (`/fa/portfolio/[slug]`). Each page renders full project metadata, tech stack, links, and role context.
+- **Admin Startup Management (`/admin/startups`)**: Built a full CRUD admin UI for managing mentored startups, including a `StartupForm` component and `[id]` / `new` sub-routes for editing and creating entries.
+- **API Routes for Startups (`/api/admin/startups`)**: Added RESTful API endpoints (`GET`, `POST`, `PATCH`, `DELETE`) for the `MentoredStartup` model to power the admin UI.
+- **API Routes for Users (`/api/admin/users`)**: Added `POST`, `PATCH`, `DELETE` endpoints for admin user management, enabling full CRUD operations from the Users table.
+- **Startup Seed Script (`scripts/seed-startups.ts`)**: Added a one-time data migration script to seed the `MentoredStartup` table from the previous static data array.
+- **Portfolio Components (`src/components/portfolio/`)**: Extracted reusable portfolio card and detail components to support the new slug-based routing.
+
+### Changed
+- **Startups Page (EN + FA)**: Refactored `/startups` and `/fa/startups` pages to fetch data dynamically from the PostgreSQL database via Prisma (`MentoredStartup.findMany`), replacing the previous static hardcoded array.
+- **Portfolio Data (`data.ts`)**: Extended `PORTFOLIO_ITEMS` in both EN and FA locales with new entries and richer metadata fields.
+- **Portfolio Pages**: Updated portfolio listing pages to support slug-based navigation linking each card to its detail page.
+- **Admin Sidebar**: Added "Startups" link to the admin navigation sidebar.
+- **Admin Users Table**: Enhanced with inline editing and delete functionality backed by the new user management API.
+- **Tiptap Editor**: Minor stability fix applied to the rich-text editor component.
+
+### Schema
+- **Prisma**: Added `MentoredStartup` model with fields: `name`, `industry`, `description`, `status`, `isActive`, `satisfaction`, `startDate`, `endDate`, `founderName`, `founderPhoto`, `website`, `linkedin`, `logo`, `order`.
+
 ## [2026-04-13 16:48] - NPI Assessment Tool Integration
 
 ### Added

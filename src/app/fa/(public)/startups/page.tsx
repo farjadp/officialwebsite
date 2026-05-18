@@ -9,71 +9,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ExternalLink, Linkedin, Globe, Star, Users, ArrowRight, TrendingUp, Calendar, CheckCircle2, CircleDashed } from "lucide-react"
+import { prisma } from "@/lib/prisma"
 
-// --- DATA: EXTRACTED FROM SCREENSHOTS ---
-// The user has mentored numerous startups. Below are the names extracted from the provided list,
-// alongside rich placeholder data to demonstrate the layout.
-const MENTORED_STARTUPS = [
-    "Imedica", "HubWeld", "SingularMind", "DocLast", "24 Care",
-    "Heal Genix", "FlyChemix", "NorthRoad", "iRIS", "Distant",
-    "Fekrooneh", "ZipKip", "ArtoKids", "Ganjeh", "Alfando",
-    "Mirana", "Nazh", "REJ", "Prowl", "StruSmart",
-    "HoloDesign", "Smart diet", "VoiceMed", "CRM 24", "Balou"
-].map((name, index) => {
-    // Generate deterministic but varied placeholder data based on index
-    const industries = ["HealthTech", "SaaS", "FinTech", "EdTech", "AI/ML", "E-Commerce", "Logistics", "IoT"];
-    const industry = industries[index % industries.length];
+// --- DATA: NOW FETCHED DYNAMICALLY FROM DATABASE ---
+export default async function MentoredStartupsPage() {
+    const MENTORED_STARTUPS = await prisma.mentoredStartup.findMany({
+        orderBy: { order: 'asc' }
+    });
 
-    const levels = ["98%", "99%", "100%", "95%", "97%"];
-    const satisfaction = levels[index % levels.length];
-
-    // Alternating founder photos for variety
-    const founderImages = [
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop"
-    ];
-
-    const companyLogos = [
-        "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=150&h=150&fit=crop",
-        "https://images.unsplash.com/photo-1523730205978-59fd1b2965e3?w=150&h=150&fit=crop"
-    ];
-
-    // Status logic
-    const statuses = ["Active Advisory", "Completed", "Successfully Exited"];
-    const status = statuses[index % statuses.length];
-    const isActive = status === "Active Advisory";
-
-    // Date logic (Randomized placeholders)
-    const startYear = 2018 + (index % 5);
-    const startMonth = ["Jan", "Mar", "Jun", "Sep", "Nov"][index % 5];
-    const startDate = `${startMonth} ${startYear}`;
-    const endDate = isActive ? "Present" : `Dec ${startYear + 2}`;
-
-    return {
-        name,
-        industry,
-        satisfaction,
-        status,
-        isActive,
-        startDate,
-        endDate,
-        website: `https://${name.toLowerCase().replace(/\s+/g, '')}.example.com`,
-        linkedin: `https://linkedin.com/company/${name.toLowerCase().replace(/\s+/g, '')}`,
-        logo: companyLogos[index % companyLogos.length],
-        description: `A disruptive ${industry} startup focused on scalable solutions and rapid market entry. Guided from initial seed to strong product-market fit.`,
-        founder: {
-            name: `Founder of ${name}`,
-            photo: founderImages[index % founderImages.length]
-        }
-    }
-});
-
-export default function MentoredStartupsPage() {
     return (
         // ROOT: Warm Paper Background
         <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans relative selection:bg-[#1B4B43] selection:text-white pb-24 overflow-x-hidden">
@@ -141,9 +84,9 @@ export default function MentoredStartupsPage() {
                             {/* Card Header (Logo & Basic Info) */}
                             <div className="p-6 border-b border-stone-100 flex items-start gap-4 bg-stone-50/50">
                                 <div className="w-16 h-16 rounded-sm border border-stone-200 overflow-hidden shrink-0 bg-white">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={startup.logo} alt={`${startup.name} Logo`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                                </div>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        {startup.logo && <img src={startup.logo} alt={`${startup.name} Logo`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />}
+                                    </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start mb-1">
                                         <h3 className="font-serif text-xl font-bold text-[#111827] truncate pr-2 group-hover:text-[#1B4B43] transition-colors">{startup.name}</h3>
@@ -185,21 +128,21 @@ export default function MentoredStartupsPage() {
                                     <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-sm border border-stone-100">
                                         <div className="w-10 h-10 rounded-full border border-stone-200 overflow-hidden bg-white shrink-0">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={startup.founder.photo} alt={startup.founder.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                                            {startup.founderPhoto && <img src={startup.founderPhoto} alt={startup.founderName} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />}
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-0.5">Founder</p>
-                                            <p className="text-xs font-medium text-[#111827] truncate">{startup.founder.name}</p>
+                                            <p className="text-xs font-medium text-[#111827] truncate">{startup.founderName}</p>
                                         </div>
                                     </div>
 
                                     {/* Links Row */}
                                     <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
-                                        <Link href={startup.website} target="_blank" className="flex-1 flex items-center justify-center gap-2 p-2 text-xs font-semibold text-stone-600 hover:text-[#1B4B43] hover:bg-[#1B4B43]/5 rounded-sm transition-colors border border-transparent hover:border-[#1B4B43]/20">
+                                        <Link href={startup.website || "#"} target="_blank" className="flex-1 flex items-center justify-center gap-2 p-2 text-xs font-semibold text-stone-600 hover:text-[#1B4B43] hover:bg-[#1B4B43]/5 rounded-sm transition-colors border border-transparent hover:border-[#1B4B43]/20">
                                             <Globe className="w-4 h-4" /> Website
                                         </Link>
                                         <div className="w-px h-6 bg-stone-200"></div>
-                                        <Link href={startup.linkedin} target="_blank" className="flex-1 flex items-center justify-center gap-2 p-2 text-xs font-semibold text-stone-600 hover:text-[#0077B5] hover:bg-[#0077B5]/5 rounded-sm transition-colors border border-transparent hover:border-[#0077B5]/20">
+                                        <Link href={startup.linkedin || "#"} target="_blank" className="flex-1 flex items-center justify-center gap-2 p-2 text-xs font-semibold text-stone-600 hover:text-[#0077B5] hover:bg-[#0077B5]/5 rounded-sm transition-colors border border-transparent hover:border-[#0077B5]/20">
                                             <Linkedin className="w-4 h-4" /> LinkedIn
                                         </Link>
                                     </div>

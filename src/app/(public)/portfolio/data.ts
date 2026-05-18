@@ -31,6 +31,12 @@ export type PortfolioItem = {
     visibility?: "Public" | "Private";
     tags?: string[];
     yearRange?: string;
+    
+    // Case Study Specifics
+    diagnosis?: string;
+    proposedStrategy?: string[];
+    executionSteps?: { title: string; description: string }[];
+    lessons?: string[];
 };
 
 export const FOUNDER_JOURNEY = [
@@ -229,6 +235,43 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
         visibility: "Public",
         contribution: "Architected and programmed enterprise-grade web solutions and portals, laying the digital foundation for major corporate entities.",
         tags: ["Enterprise Software", "Web Portals", "Software Engineering"],
+    },
+    {
+        id: "herestate",
+        title: "HereState",
+        category: "Companies & Ventures",
+        role: "Strategic Advisor",
+        summary: "A premium advisory case on helping a PropTech team reframe market entry, sharpen positioning, and align product ambition with a credible GTM path.",
+        visibility: "Public",
+        yearRange: "2026",
+        problem: "A technically strong Canadian PropTech team was building an ambitious AI-powered real estate platform, but their real bottleneck was not product capability. It was unclear go-to-market logic.",
+        diagnosis: "The product was being framed too much like an early B2C play. In practice, the stronger route was a trust-led B2B or B2B2C entry model supported by sharper pitch narrative, stronger prioritization, and clearer distribution logic.",
+        outcome: "Created strategic clarity around market entry, reframed the GTM direction, and aligned pitch, messaging, and digital strategy with business reality rather than activity for its own sake.",
+        proposedStrategy: [
+            "Shift from broad B2C thinking toward a B2B / B2B2C entry wedge.",
+            "Build around trust-based channels instead of generic content activity.",
+            "Rewrite the market-entry narrative so pitch, message, and distribution support the same strategic thesis."
+        ],
+        executionSteps: [
+            {
+                title: "Clarify the initial wedge",
+                description: "Define the first credible target channel, narrow the positioning, and stop treating visibility as strategy."
+            },
+            {
+                title: "Rebuild the narrative",
+                description: "Restructure the deck and strategic story around trust, channel logic, and commercial sequencing."
+            },
+            {
+                title: "Activate trust-led outreach",
+                description: "Use the updated narrative to support B2B outreach, partner conversations, and a more disciplined digital direction."
+            }
+        ],
+        lessons: [
+            "A strong product is not enough when market-entry logic is weak.",
+            "Business plans do not replace GTM clarity.",
+            "Trust-heavy markets demand trust-heavy channels."
+        ],
+        tags: ["PropTech", "GTM Strategy", "Strategic Diagnosis", "Pitch Narrative", "B2B"],
     },
     // --- CATEGORY: GITHUB PROJECTS ---
     {
