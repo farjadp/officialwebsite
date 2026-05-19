@@ -35,6 +35,34 @@ export default function StartupForm({ initialData, isEdit }: StartupFormProps) {
         order: initialData?.order || 0,
     })
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setUploadingField(fieldName)
+
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            
+            const res = await fetch('/api/media/upload', { 
+                method: 'POST', 
+                body: formData 
+            })
+            
+            if (!res.ok) throw new Error('Upload failed')
+            
+            const data = await res.json()
+            setFormData(prev => ({ ...prev, [fieldName]: data.url }))
+            toast.success('Image uploaded successfully')
+        } catch (error) {
+            toast.error('Failed to upload image')
+        } finally {
+            setUploadingField(null)
+            if (e.target) e.target.value = ''
+        }
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target as HTMLInputElement
         if (type === 'checkbox') {
