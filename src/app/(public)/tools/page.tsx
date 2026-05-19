@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { Button } from "@/components/ui/button"
-import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse } from "lucide-react"
+import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Flame } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
@@ -68,6 +68,15 @@ export default function ToolsPage() {
             action: "Take Assessment",
             icon: Rocket,
             href: "/tools/startup-readiness",
+            available: true,
+        },
+        {
+            name: "Impossible Trinity Simulator",
+            type: "Interactive Tool",
+            desc: "Simulate the pressure on your team when you push the limits of profit, speed, and safety in a contract.",
+            action: "Start Simulation",
+            icon: Flame,
+            href: "/tools/impossible-trinity-simulator",
             available: true,
         },
         {
