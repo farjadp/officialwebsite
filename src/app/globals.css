@@ -122,3 +122,50 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ─── Resume Print Styles ───────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  html, body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Hide everything except the resume content */
+  header,
+  footer,
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Sticky bar & bottom CTA hidden in print */
+  [class*="sticky"],
+  [class*="z-40"] {
+    display: none !important;
+  }
+
+  /* Remove rounded corners, shadows, padding adjustments for print */
+  #resume-content {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Force color backgrounds to print */
+  [style*="background-color"],
+  [class*="bg-"] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Page break control */
+  .group {
+    break-inside: avoid;
+  }
+}

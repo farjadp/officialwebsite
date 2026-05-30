@@ -66,6 +66,7 @@ export function Header({ locale = "en" }: { locale?: string }) {
                     <Link href="/blog" className="hover:text-[#1B4B43] transition-colors">Essays</Link>
                     <Link href="/tools" className="hover:text-[#1B4B43] transition-colors">Tools</Link>
                     <Link href="/about" className="hover:text-[#1B4B43] transition-colors">About</Link>
+                    <Link href="/resume" className="hover:text-[#1B4B43] transition-colors">Resume</Link>
                     
                     {locale === "en" ? (
                         <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="hover:opacity-80 transition-opacity" title="Persian">
@@ -118,6 +119,9 @@ export function Header({ locale = "en" }: { locale?: string }) {
                             </Link>
                             <Link href="/about" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 About
+                            </Link>
+                            <Link href="/resume" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                Resume
                             </Link>
 
                             {locale === "en" ? (

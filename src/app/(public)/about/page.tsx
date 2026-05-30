@@ -205,7 +205,7 @@ export default function AboutPageInteractive() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             {/* Domain 1 */}
-            <Link href="/services/founder-mentorship" className="group block p-8 rounded-2xl border border-stone-200 bg-white hover:border-[#0F3F35] hover:shadow-lg transition-all">
+            <Link href="/services/founder-advisory" className="group block p-8 rounded-2xl border border-stone-200 bg-white hover:border-[#0F3F35] hover:shadow-lg transition-all">
               <div className="w-12 h-12 rounded-lg bg-[#0F3F35]/5 flex items-center justify-center text-[#0F3F35] mb-6 group-hover:bg-[#0F3F35] group-hover:text-white transition-colors">
                 <Briefcase className="w-6 h-6" />
               </div>
@@ -219,7 +219,7 @@ export default function AboutPageInteractive() {
             </Link>
 
             {/* Domain 2 */}
-            <Link href="/services/immigrant-founders" className="group block p-8 rounded-2xl border border-stone-200 bg-white hover:border-[#0F3F35] hover:shadow-lg transition-all">
+            <Link href="/services/startup-visa" className="group block p-8 rounded-2xl border border-stone-200 bg-white hover:border-[#0F3F35] hover:shadow-lg transition-all">
               <div className="w-12 h-12 rounded-lg bg-[#0F3F35]/5 flex items-center justify-center text-[#0F3F35] mb-6 group-hover:bg-[#0F3F35] group-hover:text-white transition-colors">
                 <Globe2 className="w-6 h-6" />
               </div>
@@ -233,7 +233,7 @@ export default function AboutPageInteractive() {
             </Link>
 
             {/* Domain 3 */}
-            <Link href="/services/business-automation" className="group block p-8 rounded-2xl border border-stone-200 bg-white hover:border-[#0F3F35] hover:shadow-lg transition-all">
+            <Link href="/services/digital-systems" className="group block p-8 rounded-2xl border border-stone-200 bg-white hover:border-[#0F3F35] hover:shadow-lg transition-all">
               <div className="w-12 h-12 rounded-lg bg-[#0F3F35]/5 flex items-center justify-center text-[#0F3F35] mb-6 group-hover:bg-[#0F3F35] group-hover:text-white transition-colors">
                 <Cpu className="w-6 h-6" />
               </div>

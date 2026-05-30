@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const routes = [
         '',
         '/about',
+        '/resume',
         '/topics',
         '/series',
         '/tools',
