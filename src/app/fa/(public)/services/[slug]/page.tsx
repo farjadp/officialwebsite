@@ -5,8 +5,9 @@ import { ServiceCta } from "@/components/public/service-cta";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
-export default function ServicePage({ params }: { params: { slug: string } }) {
-  const service = SERVICES.find((s) => s.id === params.slug);
+export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const service = SERVICES.find((s) => s.id === resolvedParams.slug);
 
   if (!service) {
     notFound();
