@@ -30,6 +30,7 @@ import { RelatedArticleWidget } from "@/components/public/related-article-widget
 import { ShareButtons } from "@/components/blog/share-buttons"
 import { ArticleSidebar, type Heading } from "@/components/public/article-sidebar"
 import { ToolPromoWidget } from "@/components/public/tool-promo-widget"
+import { ArticleCtaCard } from "@/components/blog/article-cta-card"
 // ─── Real reading time from content ──────────────────────────────────────────
 function calculateReadingTime(html: string): number {
     const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
@@ -161,6 +162,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     return {
         title: post.seoTitle || post.title,
         description: post.seoDescription || post.excerpt,
+        alternates: {
+            canonical: `https://farjadp.info/blog/${slug}`,
+            languages: {
+                "en": `https://farjadp.info/blog/${slug}`,
+                "fa": `https://fa.farjadp.info/blog/${slug}`,
+            }
+        },
         openGraph: {
             title: post.seoTitle || post.title,
             description: post.seoDescription || post.excerpt || undefined,
@@ -244,10 +252,41 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         }
     }
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "description": post.excerpt || post.seoDescription || "",
+        "image": post.coverImage ? [post.coverImage] : [],
+        "datePublished": post.createdAt.toISOString(),
+        "dateModified": post.updatedAt.toISOString(),
+        "author": {
+            "@type": "Person",
+            "name": "Farjad Pour Mohammad",
+            "url": "https://farjadp.info/about"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Farjad .P",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://farjadp.info/favicon.ico"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://farjadp.info/blog/${post.slug}`
+        }
+    }
+
     const SHORTCODE_REGEX = /(?:<p>)?\s*(\[SCORECARD\]|\[VAULT_ASSET id="[^"]+"\]|\[RELATED_ARTICLE slug="[^"]+"\])\s*(?:<\/p>)?/g
 
     return (
         <article className="min-h-screen bg-[#FDFCF8] pb-24">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
 
             {/* ── HERO ────────────────────────────────────────────────────────── */}
             <header className="bg-white border-b border-stone-100 pt-8 pb-16">
@@ -394,6 +433,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                 return <div key={index} dangerouslySetInnerHTML={{ __html: part }} />
                             })}
                         </div>
+
+                        <ArticleCtaCard locale="en" />
 
                         <div className="mt-16 mb-8">
                             <ToolPromoWidget />

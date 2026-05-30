@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/admin/',
         },
-        sitemap: 'https://farjad.io/sitemap.xml',
+        sitemap: 'https://farjadp.info/sitemap.xml',
     }
 }

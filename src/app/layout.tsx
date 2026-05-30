@@ -29,6 +29,13 @@ export const metadata: Metadata = {
     default: "Farjad .P — Startup Advisor & Systems Architect",
   },
   description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+  alternates: {
+    canonical: "https://farjadp.info",
+    languages: {
+      "fa": "https://fa.farjadp.info",
+      "en": "https://farjadp.info",
+    },
+  },
   openGraph: {
     type: "website",
     locale: "en_US",

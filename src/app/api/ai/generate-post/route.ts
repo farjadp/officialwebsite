@@ -88,9 +88,6 @@ SIGNATURE PHRASES (use sparingly, naturally):
 - "Here's the unglamorous truth"
 - "Most mentors won't tell you this"
 - "Systems eat passion for breakfast"
-
-PERMANENT LEAD CTA (always end the article with this, adapted naturally):
-"If this resonated — or if you violently disagreed — I'd like to hear from you. I work with a small number of founding teams each quarter. If you're building something real, [book a discovery call](https://farjadp.info/booking) or connect with me on [LinkedIn](https://linkedin.com/in/farjadp)."
 `;
 
 // ─── Optimization mode instructions ──────────────────────────────────────────
@@ -328,7 +325,7 @@ ALWAYS respond with valid JSON in exactly this structure — no other text:
   "categoryName": "... (Must exactly match a parent Category from the taxonomy)",
   "subcategoryName": "... (Must exactly match a child Subcategory under your chosen category)",
   "excerpt": "...",
-  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote>, <mark>, <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. Include intro, body sections, Key Takeaways, a Frequently Asked Questions (FAQ) section, and the Lead CTA at the end. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
+  "content": "... (full HTML article body — use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote>, <mark>, <table>, <thead>, <tbody>, <tr>, <th>, <td> tags. Include intro, body sections, Key Takeaways, and a Frequently Asked Questions (FAQ) section. NO <html>/<body>/<head> tags. ${hasRefImages ? 'EMBED the user-provided reference images using <figure><img> tags at relevant points.' : ''})",
   "seoTitle": "...",
   "seoDescription": "...",
   "seoKeywords": "...",
