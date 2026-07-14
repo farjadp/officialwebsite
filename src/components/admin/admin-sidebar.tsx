@@ -34,6 +34,7 @@ import {
     FolderGit2,
     Mail,
     Rocket,
+    ScanSearch,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -44,6 +45,7 @@ const sidebarGroups = [
             { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
             { title: "Publish Report", href: "/admin/publish-report", icon: BarChart3 },
             { title: "Tools Analytics", href: "/admin/tools-analytics", icon: Activity },
+            { title: "Website Audits", href: "/admin/website-audits", icon: ScanSearch },
             { title: "Waterfall", href: "/admin/waterfall", icon: Share2 },
         ]
     },
