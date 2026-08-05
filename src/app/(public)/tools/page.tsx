@@ -5,8 +5,7 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
-import { Button } from "@/components/ui/button"
-import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Flame, Globe2 } from "lucide-react"
+import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Flame, Globe2, FlaskConical } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
@@ -23,6 +22,15 @@ export default function ToolsPage() {
             action: "Audit Website",
             icon: Globe2,
             href: "/tools/ai-website-readiness",
+            available: true,
+        },
+        {
+            name: "Business Model Stress Test",
+            type: "AI Diagnostic",
+            desc: "Put your business model against the futures that could break it. Get a heat map of which components stop being feasible, and what to redesign first.",
+            action: "Stress Test My Model",
+            icon: FlaskConical,
+            href: "/tools/business-model-stress-test",
             available: true,
         },
         {
