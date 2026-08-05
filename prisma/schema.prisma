@@ -242,6 +242,27 @@ model ToolUsage {
   createdAt DateTime @default(now())
 }
 
+model WebsiteAuditLog {
+  id               String   @id @default(cuid())
+  requestedUrl     String
+  finalUrl         String?
+  hostname         String
+  status           String   // "SUCCESS" | "FAILED"
+  overallScore     Int?
+  grade            String?
+  accessScore      Int?
+  metadataScore    Int?
+  agentScore       Int?
+  citabilityScore  Int?
+  durationMs       Int
+  error            String?
+  createdAt        DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([hostname])
+  @@index([status])
+}
+
 model AIGeneratedAsset {
   id        String   @id @default(cuid())
   type      String   // "vault" or "audio"
