@@ -455,11 +455,11 @@ export default function ServicesPageBento() {
           </div>
         </section>
 
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       </div>
     </div>
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-    />
   );
 }

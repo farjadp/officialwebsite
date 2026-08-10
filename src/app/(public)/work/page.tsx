@@ -26,7 +26,6 @@ export const metadata: Metadata = {
   description: "A transparent look at Farjad's active ventures, past projects, and ongoing experiments. Honest about what worked and what didn't.",
 };
 
-export default function WorkPage() {
 const ACTIVE_VENTURES = [
   {
     id: 1,
