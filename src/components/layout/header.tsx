@@ -17,21 +17,21 @@ export function Header({ locale = "en" }: { locale?: string }) {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
-        <header className="relative z-50 pt-8 pb-8 px-6 md:px-12 border-b border-[#E7E5E4]/60 bg-[#FDFCF8] text-[#1C1917]">
-            <div className="max-w-6xl mx-auto flex justify-between items-center">
+        <header className="relative z-50 border-b border-white/15 bg-[#0a0a0a] px-5 py-6 text-[#f2f0e9] md:px-10 lg:px-14">
+            <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                 {/* Logo / Name */}
                 <Link href="/" className="flex flex-col">
-                    <span className="font-serif font-bold text-2xl tracking-tight leading-none text-[#1B4B43]">Farjad.</span>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 mt-1">Idea Library</span>
+                    <span className="text-xl font-black uppercase tracking-[-0.04em] leading-none text-white">Farjad®</span>
+                    <span className="mt-1 text-[9px] uppercase tracking-[0.24em] text-white/45">Build / Advise / Engineer</span>
                 </Link>
 
                 {/* Minimal Nav */}
-                <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
-                    <Link href="/services" className="hover:text-[#1B4B43] transition-colors">Services</Link>
+                <nav className="hidden md:flex items-center gap-7 text-[11px] font-bold uppercase tracking-[0.12em] text-white/55">
+                    <Link href="/services" className="hover:text-[#b9ff66] transition-colors">Services</Link>
 
                     {/* Proof of Work Dropdown */}
                     <div className="relative group">
-                        <button className="flex items-center gap-1 hover:text-[#1B4B43] transition-colors outline-none pb-6 -mb-6">
+                        <button className="flex items-center gap-1 hover:text-[#b9ff66] transition-colors outline-none pb-6 -mb-6">
                             Proof of Work <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
                         </button>
                         <div className="absolute top-full left-0 pt-0 hidden group-hover:block w-64 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
@@ -63,10 +63,10 @@ export function Header({ locale = "en" }: { locale?: string }) {
                         </div>
                     </div>
 
-                    <Link href="/blog" className="hover:text-[#1B4B43] transition-colors">Essays</Link>
-                    <Link href="/tools" className="hover:text-[#1B4B43] transition-colors">Tools</Link>
-                    <Link href="/about" className="hover:text-[#1B4B43] transition-colors">About</Link>
-                    <Link href="/resume" className="hover:text-[#1B4B43] transition-colors">Resume</Link>
+                    <Link href="/blog" className="hover:text-[#b9ff66] transition-colors">Essays</Link>
+                    <Link href="/tools" className="hover:text-[#b9ff66] transition-colors">Tools</Link>
+                    <Link href="/about" className="hover:text-[#b9ff66] transition-colors">About</Link>
+                    <Link href="/resume" className="hover:text-[#b9ff66] transition-colors">Resume</Link>
                     
                     {locale === "en" ? (
                         <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="hover:opacity-80 transition-opacity" title="Persian">
@@ -78,14 +78,14 @@ export function Header({ locale = "en" }: { locale?: string }) {
                         </a>
                     )}
 
-                    <Link href="/contact" className="ml-4 px-4 py-2 rounded-full border border-stone-300 hover:border-[#1B4B43] hover:text-[#1B4B43] transition-all text-xs uppercase tracking-wider font-bold bg-[#1B4B43] text-white hover:bg-[#133832] hover:text-white">
-                        Let's Talk
+                    <Link href="/contact" className="ml-2 border border-[#b9ff66] bg-[#b9ff66] px-5 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-black transition-colors hover:bg-transparent hover:text-[#b9ff66]">
+                        Start a project ↗
                     </Link>
                 </nav>
 
                 {/* Mobile Menu */}
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                    <SheetTrigger className="md:hidden text-stone-600 hover:text-[#1B4B43] transition-colors">
+                    <SheetTrigger className="md:hidden text-white hover:text-[#b9ff66] transition-colors">
                         <Menu className="h-6 w-6" />
                         <span className="sr-only">Toggle menu</span>
                     </SheetTrigger>

@@ -6,6 +6,7 @@
 // ============================================================================
 
 import React from 'react';
+import type { Metadata } from "next";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,17 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+
+export const metadata: Metadata = {
+  title: "Book a Strategy Call | 30-Minute Consultation",
+  description: "Book a 30-minute strategy call with Farjad. Diagnose your core problem and decide on next steps. Session fee goes directly to charity.",
+  openGraph: {
+    title: "Book a Strategy Call | Farjad .P",
+    description: "Diagnose your core problem in 30 minutes. Session fee goes to charity.",
+    images: ["/images/og-default.png"],
+  },
+};
+
 
 const FAQS = [
     {

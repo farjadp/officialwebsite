@@ -20,6 +20,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/series',
         '/tools',
         '/newsletter',
+        '/services',
+        '/services/founder-advisory',
+        '/services/startup-visa',
+        '/services/digital-systems',
+        '/portfolio',
+        '/work',
+        '/booking',
+        '/blog',
     ]
 
     // English routes (canonical)
@@ -30,10 +38,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route === '' ? 1 : 0.8,
     }))
 
-    // Persian subdomain routes (fa.farjadp.info)
-    const persianBaseUrl = 'https://fa.farjadp.info'
-    const persianRoutes = staticPaths.map((route) => ({
-        url: `${persianBaseUrl}${route}`,
+    // Persian routes (under /fa subfolder)
+    const persianPaths = [
+        '',
+        '/about',
+        '/services',
+        '/blog',
+        '/lab'
+    ]
+    const persianRoutes = persianPaths.map((route) => ({
+        url: `${baseUrl}/fa${route}`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: route === '' ? 0.9 : 0.7,
@@ -55,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 priority: 0.9,
             },
             {
-                url: `${persianBaseUrl}/blog/${post.slug}`,
+                url: `${baseUrl}/fa/blog/${post.slug}`,
                 lastModified: post.updatedAt,
                 changeFrequency: 'weekly' as const,
                 priority: 0.8,

@@ -1,7 +1,18 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Compass, ShieldAlert, Landmark, FileX, Presentation, Users, BriefcaseBusiness, Route, CheckCircle2, Target, UsersRound, XCircle, SearchIcon, Crosshair } from "lucide-react";
 import { ServiceCta } from "@/components/public/service-cta";
+
+export const metadata: Metadata = {
+  title: "Startup Visa Advisory | Canada Business Immigration",
+  description: "Strategic advisory for entrepreneurs pursuing Canada's Startup Visa. Build a real, qualifying business — not just a visa application.",
+  openGraph: {
+    title: "Startup Visa Advisory | Farjad .P",
+    description: "Strategic advisory for entrepreneurs pursuing Canada's Startup Visa. Build a real, qualifying business.",
+    images: ["/images/og-default.png"],
+  },
+};
 
 export default function StartupVisaPage() {
   return (

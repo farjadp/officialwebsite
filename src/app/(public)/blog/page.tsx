@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 };
 import { PostStatus } from "@prisma/client"
 import Link from "next/link"
+import Image from "next/image"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Clock, Eye } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -50,7 +52,7 @@ export default async function BlogPage() {
                             <article className="grid md:grid-cols-2 gap-8 items-center bg-card rounded-3xl overflow-hidden border shadow-sm hover:shadow-md transition-all duration-300">
                                 {featuredPost.coverImage ? (
                                     <div className="aspect-[4/3] md:aspect-auto md:h-full relative overflow-hidden bg-muted">
-                                        <img className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={featuredPost.coverImage} alt={featuredPost.title} />
+                                        <Image className="object-cover group-hover:scale-105 transition-transform duration-500" fill src={featuredPost.coverImage} alt={featuredPost.title} sizes="(max-width: 768px) 100vw, 50vw" />
                                     </div>
                                 ) : (
                                     <div className="aspect-[4/3] md:aspect-auto md:h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
@@ -106,7 +108,7 @@ export default async function BlogPage() {
                                     <article className="flex flex-col h-full bg-card rounded-2xl overflow-hidden border shadow-sm hover:shadow-md transition-all duration-300">
                                         {post.coverImage && (
                                             <div className="aspect-[16/9] relative overflow-hidden bg-muted">
-                                                <img className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={post.coverImage} alt={post.title} />
+                                                <Image className="object-cover group-hover:scale-105 transition-transform duration-500" fill src={post.coverImage} alt={post.title} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                             </div>
                                         )}
                                         <div className="flex flex-col flex-grow p-6">

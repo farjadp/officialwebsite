@@ -146,6 +146,19 @@ const FAQS = [
   { q: "Do you work with non-tech businesses?", a: "Yes, specifically for digital transformation and systemizing operations." },
 ];
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": FAQS.map((faq) => ({
+    "@type": "Question",
+    "name": faq.q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.a
+    }
+  }))
+};
+
 export default function ServicesPageBento() {
   return (
     <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans selection:bg-[#1B4B43] selection:text-white overflow-x-hidden">
@@ -444,5 +457,9 @@ export default function ServicesPageBento() {
 
       </div>
     </div>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+    />
   );
 }

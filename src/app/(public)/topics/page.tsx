@@ -5,9 +5,15 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import type { Metadata } from "next";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Hash } from "lucide-react"
 import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "Topics | Ideas & Themes I Write About",
+  description: "Explore the core topics and themes behind Farjad's writing: startups, strategy, systems, immigration, and founder mindset.",
+};
 
 export const runtime = "edge"
 
