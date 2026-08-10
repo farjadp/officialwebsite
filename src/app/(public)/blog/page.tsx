@@ -7,6 +7,7 @@
 
 import type { Metadata } from "next";
 import { getPosts } from "@/app/actions/posts"
+import { getCategories } from "@/app/actions/categories"
 
 export const metadata: Metadata = {
     title: "Insights & Thoughts",
@@ -18,15 +19,22 @@ import Image from "next/image"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Clock, Eye } from "lucide-react"
+import { Clock, Eye, ChevronLeft, ChevronRight } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
-export default async function BlogPage() {
-    const { posts } = await getPosts({ status: PostStatus.PUBLISHED })
+export default async function BlogPage(props: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
+    const searchParams = await props.searchParams;
+    const page = parseInt(searchParams.page || '1');
+    const categoryId = searchParams.category;
 
-    const featuredPost = posts.length > 0 ? posts[0] : null;
-    const regularPosts = posts.length > 1 ? posts.slice(1) : [];
+    const { posts, totalPages } = await getPosts({ status: PostStatus.PUBLISHED, page, limit: 12, categoryId })
+    const categories = await getCategories()
+
+    // Only show featured on first page without filters
+    const isFirstPage = page === 1 && !categoryId;
+    const featuredPost = (isFirstPage && posts.length > 0) ? posts[0] : null;
+    const regularPosts = (isFirstPage && posts.length > 1) ? posts.slice(1) : (isFirstPage ? [] : posts);
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -42,7 +50,23 @@ export default async function BlogPage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 space-y-20">
+            <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-20">
+
+                {/* Category Filters */}
+                <div className="flex flex-wrap justify-center gap-3 mb-10">
+                    <Link href="/blog">
+                        <Badge variant={!categoryId ? "default" : "outline"} className="cursor-pointer text-sm px-4 py-1.5 hover:bg-primary/90">
+                            All Articles
+                        </Badge>
+                    </Link>
+                    {categories.map(c => (
+                        <Link key={c.id} href={`?category=${c.id}`}>
+                            <Badge variant={categoryId === c.id ? "default" : "outline"} className="cursor-pointer text-sm px-4 py-1.5 hover:bg-primary/90 transition-all">
+                                {c.name}
+                            </Badge>
+                        </Link>
+                    ))}
+                </div>
 
                 {/* Featured Post */}
                 {featuredPost && (
@@ -143,6 +167,27 @@ export default async function BlogPage() {
                                 </Link>
                             ))}
                         </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-4 mt-16">
+                                {page > 1 && (
+                                    <Link href={`?page=${page - 1}${categoryId ? `&category=${categoryId}` : ''}`}>
+                                        <Button variant="outline" className="gap-2">
+                                            <ChevronLeft className="w-4 h-4" /> Previous
+                                        </Button>
+                                    </Link>
+                                )}
+                                <span className="text-muted-foreground text-sm">Page {page} of {totalPages}</span>
+                                {page < totalPages && (
+                                    <Link href={`?page=${page + 1}${categoryId ? `&category=${categoryId}` : ''}`}>
+                                        <Button variant="outline" className="gap-2">
+                                            Next <ChevronRight className="w-4 h-4" />
+                                        </Button>
+                                    </Link>
+                                )}
+                            </div>
+                        )}
                     </section>
                 )}
 
