@@ -257,12 +257,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "BlogPosting",
         "headline": post.title,
         "description": post.excerpt || post.seoDescription || "",
-        "image": post.coverImage ? [post.coverImage] : [],
+        "image": post.coverImage ? [post.coverImage] : ["https://farjadp.info/images/og-default.png"],
         "datePublished": post.createdAt.toISOString(),
         "dateModified": post.updatedAt.toISOString(),
+        "url": `https://farjadp.info/blog/${post.slug}`,
+        "inLanguage": "en",
         "author": {
             "@type": "Person",
-            "name": "Farjad Pour Mohammad",
+            "name": "Farjad Pourmohammad",
             "url": "https://farjadp.info/about"
         },
         "publisher": {
@@ -270,7 +272,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             "name": "Farjad .P",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://farjadp.info/favicon.ico"
+                "url": "https://farjadp.info/images/og-default.png"
             }
         },
         "mainEntityOfPage": {

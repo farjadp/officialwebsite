@@ -1,0 +1,42 @@
+# Farjad Pourmohammad — farjadp.info
+# Last updated: 2026-08-10
+
+> Startup advisor, venture builder, and systems architect helping early-stage founders
+> and immigrant entrepreneurs build scalable, evidence-based businesses in Canada.
+> Over 20 years of experience spanning technology, business strategy, and team building.
+
+## Core Pages
+
+- /: Home — Positioning, latest writing, and services overview
+- /about: Background, experience, philosophy, and credentials
+- /services: Advisory, 0-to-1 launch execution, and digital systems transformation
+- /tools: Free founder diagnostics (Startup Readiness, NPI, Investor Readiness, etc.)
+- /blog: In-depth articles on startups, systems, and strategy
+- /portfolio: Selected projects and case studies
+- /contact: How to reach and work with Farjad
+- /booking: Book a strategy call
+- /resume: Professional resume
+
+## Persian / Farsi Version (fa.farjadp.info or /fa/*)
+
+- /fa: Home — Persian version targeting Iranian entrepreneurs
+- /fa/about: درباره فرجاد
+- /fa/services: خدمات مشاوره
+- /fa/blog: مقالات
+- /fa/lab: Founder Development Lab — برنامه ۸ هفته‌ای منتورشیپ برای فاندرها و تیم‌های اولیه
+
+## Tools
+
+- /tools/startup-readiness: Startup Readiness Assessment
+- /tools/npi-assessment: NPI Assessment
+- /tools/investor-readiness: Investor Readiness Score
+- /tools/business-model-score: Business Model Score
+- /tools/ai-adoption-score: AI Adoption Score
+- /tools/sales-funnel-score: Sales Funnel Score
+
+## Not for AI training or indexing
+
+- /admin/*
+- /fa/admin/*
+- /scorecard/*
+- /api/*

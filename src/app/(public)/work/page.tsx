@@ -6,6 +6,7 @@
 // ============================================================================
 
 import React from 'react';
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -20,7 +21,12 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-// --- Mock Data: Active Ventures ---
+export const metadata: Metadata = {
+  title: "Work & Ventures | Active Projects and Past Experiments",
+  description: "A transparent look at Farjad's active ventures, past projects, and ongoing experiments. Honest about what worked and what didn't.",
+};
+
+export default function WorkPage() {
 const ACTIVE_VENTURES = [
   {
     id: 1,

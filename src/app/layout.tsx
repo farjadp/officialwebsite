@@ -6,7 +6,8 @@
 // ============================================================================
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
@@ -20,7 +21,7 @@ import { cn } from "@/lib/utils"
 // BUT root layout applies to EVERYTHING.
 // So I will make the Root Layout generic (Providers mainly) and create a (public)/layout.tsx for Header/Footer.
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+// Fonts are imported directly from the geist package
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://farjadp.info"), // Update to actual production domain
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://farjadp.info",
     languages: {
-      "fa": "https://fa.farjadp.info",
+      "fa": "https://farjadp.info/fa",
       "en": "https://farjadp.info",
     },
   },
@@ -43,11 +44,20 @@ export const metadata: Metadata = {
     siteName: "Farjad .P",
     title: "Farjad .P — Startup Advisor & Systems Architect",
     description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+    images: [
+      {
+        url: "/images/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "Farjad .P — Startup Advisor & Systems Architect",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Farjad .P — Startup Advisor & Systems Architect",
     description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+    images: ["/images/og-default.png"],
   },
 };
 
@@ -65,9 +75,49 @@ export default async function RootLayout({
   const locale = headersList.get("x-locale") || "en";
   const dir = locale === "fa" ? "rtl" : "ltr";
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Farjad .P",
+    "url": "https://farjadp.info",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://farjadp.info/blog?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Farjad Pourmohammad",
+    "jobTitle": "Startup Advisor & Systems Architect",
+    "description": "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
+    "url": "https://farjadp.info",
+    "image": "https://farjadp.info/images/og-default.png",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Toronto",
+      "addressCountry": "CA"
+    },
+    "knowsLanguage": ["en", "fa"],
+    "sameAs": [
+      "https://farjadp.info",
+      "https://farjadp.info/about"
+    ]
+  };
+
   return (
     <html lang={locale} dir={dir}>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable, GeistMono.variable)}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
         {children}
         <SystemLogClient />
         <AnalyticsProvider />

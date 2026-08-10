@@ -1,7 +1,18 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Target, ShieldAlert, SplitSquareHorizontal, EyeOff, BrainCircuit, Columns, Filter, CheckCircle2, XCircle, LineChart, Network, ListOrdered, MoveRight, ActivitySquare } from "lucide-react";
 import { ServiceCta } from "@/components/public/service-cta";
+
+export const metadata: Metadata = {
+  title: "Founder Advisory | Strategic Mentorship for Early-Stage Founders",
+  description: "1:1 strategic advisory for early-stage founders. Accountability, decision clarity, and structured thinking to help you build with less chaos.",
+  openGraph: {
+    title: "Founder Advisory | Farjad .P",
+    description: "1:1 strategic advisory for early-stage founders. Accountability, decision clarity, and structured thinking.",
+    images: ["/images/og-default.png"],
+  },
+};
 
 export default function FounderAdvisoryPage() {
   return (

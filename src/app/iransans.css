@@ -1,0 +1,105 @@
+/* ─── IRANSansX Font Face Declarations ─────────────────────────────────── */
+
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 100;
+	src: url('/fonts/iransans/woff2/IRANSansX-Thin.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Thin.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 200;
+	src: url('/fonts/iransans/woff2/IRANSansX-UltraLight.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-UltraLight.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 300;
+	src: url('/fonts/iransans/woff2/IRANSansX-Light.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Light.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 400;
+	src: url('/fonts/iransans/woff2/IRANSansX-Regular.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Regular.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 500;
+	src: url('/fonts/iransans/woff2/IRANSansX-Medium.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Medium.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 600;
+	src: url('/fonts/iransans/woff2/IRANSansX-DemiBold.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-DemiBold.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/iransans/woff2/IRANSansX-Bold.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Bold.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 800;
+	src: url('/fonts/iransans/woff2/IRANSansX-ExtraBold.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-ExtraBold.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 900;
+	src: url('/fonts/iransans/woff2/IRANSansX-Black.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Black.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 950;
+	src: url('/fonts/iransans/woff2/IRANSansX-ExtraBlack.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-ExtraBlack.woff') format('woff');
+	font-display: swap;
+}
+@font-face {
+	font-family: iransans;
+	font-style: normal;
+	font-weight: 1000;
+	src: url('/fonts/iransans/woff2/IRANSansX-Heavy.woff2') format('woff2'),
+		 url('/fonts/iransans/woff/IRANSansX-Heavy.woff') format('woff');
+	font-display: swap;
+}
+
+/* ─── Apply IranSans to RTL body text ──────────────────────────────────── */
+
+/* IranSans on body / paragraph text (not headings — dana handles those) */
+[dir="rtl"] p,
+[dir="rtl"] li,
+[dir="rtl"] span,
+[dir="rtl"] label,
+[dir="rtl"] a,
+[dir="rtl"] td,
+[dir="rtl"] th,
+[dir="rtl"] blockquote,
+[dir="rtl"] .font-iransans {
+	font-family: iransans, Tahoma, Arial, sans-serif;
+}

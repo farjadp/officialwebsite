@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 @import "./dana.css";
+@import "./iransans.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -120,6 +121,48 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes home-reveal {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes home-marquee {
+  to { transform: translateX(-50%); }
+}
+
+.home-v2 {
+  /* Colors removed in favor of semantic Tailwind theme colors */
+}
+
+.home-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black 25%, transparent 100%);
+}
+
+.home-reveal {
+  animation: home-reveal 800ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.home-reveal-delay {
+  animation-delay: 140ms;
+}
+
+.home-marquee {
+  animation: home-marquee 24s linear infinite;
+}
+
+/* Cosmos animation removed */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-reveal,
+  .home-marquee {
+    animation: none;
   }
 }
 
