@@ -7,6 +7,7 @@
 import Link from "next/link"
 import { User, ShieldCheck } from "lucide-react"
 import { LogoutButton } from "./logout-button"
+import { AIBugReporter } from "@/components/profile/ai-bug-reporter"
 
 interface UserPortalNavProps {
     locale: "en" | "fa"
@@ -150,6 +151,8 @@ export function UserPortalNav({ locale, activeItem, isPrivileged }: UserPortalNa
             <LogoutButton className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all text-left">
                 {t.logout}
             </LogoutButton>
+
+            <AIBugReporter />
         </div>
     )
 }

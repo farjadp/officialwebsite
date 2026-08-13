@@ -36,6 +36,7 @@ model User {
   passwordResetTokens      PasswordResetToken[]
   emailVerificationTokens  EmailVerificationToken[]
   startupIntakes           StartupIntake[]
+  bugReports               BugReport[]
 }
 
 model PasswordResetToken {
@@ -397,4 +398,18 @@ model MentoredStartup {
   order         Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model BugReport {
+  id              String   @id @default(cuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  currentUrl      String?
+  aiGuess         String?
+  userDescription String?
+  status          String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([createdAt])
 }
