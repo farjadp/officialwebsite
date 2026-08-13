@@ -522,18 +522,18 @@ export function IntakeWizard({
             {/* Header + progress */}
             <div className="mb-8">
                 <div className="mb-2 flex items-center justify-between">
-                    <h1 className="text-lg font-black text-[#1C1917]">پرسشنامه ورود استارتاپ</h1>
+                    <h1 className="text-lg font-black text-white">پرسشنامه ورود استارتاپ</h1>
                     {draft.label && (
-                        <span className="rounded-full bg-[#D97706]/10 px-3 py-1 text-xs font-bold text-[#D97706]">
+                        <span className="rounded-full bg-[#D97706]/20 px-3 py-1 text-xs font-bold text-[#D97706]">
                             {draft.label}
                         </span>
                     )}
                 </div>
-                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-500">
+                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-stone-400">
                     <span>مرحله {faDigits(step + 1)} از {faDigits(TOTAL_STEPS)}</span>
                     <span>{faDigits(progressPct)}٪</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-stone-200">
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
                     <div
                         className="h-full rounded-full bg-iran-lajvard transition-all duration-500"
                         style={{ width: `${progressPct}%` }}
@@ -812,19 +812,10 @@ function StepSection({ section, country, answers, onAnswer }: {
                         </label>
                         {hint && <p className="mb-3 text-[13px] font-medium leading-relaxed text-[#D97706]/80">راهنما: {hint}</p>}
                         <div className="relative">
-                            <textarea
-                                id={`q-${q.id}`}
-                                dir="auto"
-                                rows={4}
+                            <SimpleEditor
                                 value={val}
-                                onChange={(e) => onAnswer(q.id, e.target.value)}
+                                onChange={(newVal) => onAnswer(q.id, newVal)}
                                 placeholder="پاسخ خود را بنویسید..."
-                                className="w-full resize-none overflow-hidden rounded-2xl border border-stone-200 bg-stone-50/50 px-5 py-4 text-[15px] leading-loose text-[#1C1917] placeholder:text-stone-300 shadow-sm transition-all duration-300 hover:border-stone-300 hover:bg-white focus:border-iran-lajvard focus:bg-white focus:outline-none focus:ring-4 focus:ring-iran-lajvard/15 min-h-[140px]"
-                                onInput={(e) => {
-                                    const t = e.target as HTMLTextAreaElement;
-                                    t.style.height = "auto";
-                                    t.style.height = t.scrollHeight + "px";
-                                }}
                             />
                             {isFilled && (
                                 <div className="pointer-events-none absolute left-4 top-4 text-iran-lajvard opacity-50 transition-all duration-300 group-focus-within:opacity-100 group-focus-within:scale-110">
