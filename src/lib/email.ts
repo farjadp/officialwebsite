@@ -1,12 +1,23 @@
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = process.env.EMAIL_FROM || "Farjad Pezeshk <onboarding@resend.dev>"
 const BASE_URL = process.env.NEXTAUTH_URL || "https://farjadp.info"
 
+let resendInstance: Resend | null = null
+
+function getResend() {
+    if (!resendInstance) {
+        if (!process.env.RESEND_API_KEY) {
+            throw new Error("Missing RESEND_API_KEY environment variable")
+        }
+        resendInstance = new Resend(process.env.RESEND_API_KEY)
+    }
+    return resendInstance
+}
+
 export async function sendPasswordResetEmail(email: string, token: string) {
     const resetUrl = `${BASE_URL}/reset-password?token=${token}`
-    await resend.emails.send({
+    await getResend().emails.send({
         from: FROM,
         to: email,
         subject: "Reset Your Password — farjadp.info",
@@ -31,7 +42,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
 export async function sendEmailVerificationEmail(email: string, token: string) {
     const verifyUrl = `${BASE_URL}/verify-email?token=${token}`
-    await resend.emails.send({
+    await getResend().emails.send({
         from: FROM,
         to: email,
         subject: "Verify Your Email — farjadp.info",
@@ -54,7 +65,7 @@ export async function sendEmailVerificationEmail(email: string, token: string) {
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
-    await resend.emails.send({
+    await getResend().emails.send({
         from: FROM,
         to: email,
         subject: "Welcome to farjadp.info!",

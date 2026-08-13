@@ -14,7 +14,9 @@ export const authConfig = {
         async jwt({ token, user, trigger, session }) {
             // When user first signs in, `user` object is available
             if (user) {
+                token.id = user.id;
                 token.role = user.role;
+                token.image = user.image;
             }
             if (trigger === "update" && session) {
                 token = { ...token, ...session }
@@ -24,8 +26,9 @@ export const authConfig = {
         async session({ session, token }) {
             // Send properties to the client
             if (session.user) {
-                // @ts-ignore
-                session.user.role = token.role;
+                session.user.id = token.id as string;
+                session.user.role = token.role as string;
+                session.user.image = token.image as string | null | undefined;
             }
             return session;
         }

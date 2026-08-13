@@ -67,7 +67,41 @@ export function Header({ locale = "en" }: { locale?: string }) {
                     <Link href="/tools" className="hover:text-[#b9ff66] transition-colors">Tools</Link>
                     <Link href="/about" className="hover:text-[#b9ff66] transition-colors">About</Link>
                     <Link href="/resume" className="hover:text-[#b9ff66] transition-colors">Resume</Link>
-                    
+
+                    {/* User Portal Dropdown */}
+                    <div className="relative group">
+                        <button className="flex items-center gap-1 hover:text-[#b9ff66] transition-colors outline-none pb-6 -mb-6">
+                            {locale === "fa" ? "پرتال" : "Portal"} <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                        </button>
+                        <div className="absolute top-full left-0 pt-0 hidden group-hover:block w-56 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
+                            <div className="bg-white border border-[#E7E5E4] rounded-sm shadow-xl p-2 flex flex-col gap-1">
+                                <Link
+                                    href="/login"
+                                    className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
+                                >
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{locale === "fa" ? "ورود" : "Login"}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{locale === "fa" ? "دسترسی به حساب کاربری" : "Access your account"}</div>
+                                </Link>
+                                <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
+                                <Link
+                                    href="/register"
+                                    className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
+                                >
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{locale === "fa" ? "ثبت‌نام" : "Register"}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{locale === "fa" ? "ایجاد حساب کاربری جدید" : "Create a new account"}</div>
+                                </Link>
+                                <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
+                                <Link
+                                    href="/profile"
+                                    className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
+                                >
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{locale === "fa" ? "پروفایل" : "Profile"}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{locale === "fa" ? "مدیریت حساب و آواتار" : "Manage account & avatar"}</div>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
                     {locale === "en" ? (
                         <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="hover:opacity-80 transition-opacity" title="Persian">
                             <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" />
@@ -123,6 +157,22 @@ export function Header({ locale = "en" }: { locale?: string }) {
                             <Link href="/resume" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 Resume
                             </Link>
+
+                            {/* Mobile User Portal Group */}
+                            <div className="flex flex-col gap-4">
+                                <span className="text-xl font-serif text-[#111827]">{locale === "fa" ? "پرتال کاربر" : "User Portal"}</span>
+                                <div className="flex flex-col gap-4 pl-4 border-l-2 border-[#1B4B43]/20 ml-2">
+                                    <Link href="/login" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {locale === "fa" ? "ورود" : "Login"}
+                                    </Link>
+                                    <Link href="/register" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {locale === "fa" ? "ثبت‌نام" : "Register"}
+                                    </Link>
+                                    <Link href="/profile" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {locale === "fa" ? "پروفایل" : "Profile"}
+                                    </Link>
+                                </div>
+                            </div>
 
                             {locale === "en" ? (
                                 <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="flex items-center gap-3 text-xl font-serif text-[#1B4B43] font-bold hover:opacity-80 transition-opacity">

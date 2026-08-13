@@ -35,6 +35,7 @@ import {
     Mail,
     Rocket,
     ScanSearch,
+    ClipboardList,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -63,6 +64,7 @@ const sidebarGroups = [
             { title: "Inbox", href: "/admin/inbox", icon: Mail },
             { title: "Projects", href: "/admin/portfolio", icon: FolderGit2 },
             { title: "Startups", href: "/admin/startups", icon: Rocket },
+            { title: "Startup Intake", href: "/admin/intake", icon: ClipboardList },
             { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
         ]
     },

@@ -35,6 +35,7 @@ model User {
 
   passwordResetTokens      PasswordResetToken[]
   emailVerificationTokens  EmailVerificationToken[]
+  startupIntakes           StartupIntake[]
 }
 
 model PasswordResetToken {
@@ -344,6 +345,38 @@ model RouteMetric {
   path      String   @id
   views     Int      @default(0)
   updatedAt DateTime @updatedAt
+}
+
+model IntakeInvite {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  label       String?
+  isActive    Boolean  @default(true)
+  maxUses     Int      @default(1)
+  usedCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  submissions StartupIntake[]
+}
+
+model StartupIntake {
+  id          String        @id @default(cuid())
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  inviteId    String?
+  invite      IntakeInvite? @relation(fields: [inviteId], references: [id], onDelete: SetNull)
+  startupName String
+  website     String?
+  country     String
+  founders    Json
+  answers     Json
+  files       Json
+  status      String        @default("DRAFT") // "DRAFT" | "SUBMITTED" | "REVIEWED"
+  reviewNote  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([createdAt])
 }
 
 model MentoredStartup {

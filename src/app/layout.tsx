@@ -8,9 +8,23 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
+
+const danaFont = localFont({
+  src: [
+    { path: '../../public/fonts/dana/woff2/Dana-Regular.woff2', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/dana/woff2/Dana-Medium.woff2', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/dana/woff2/Dana-DemiBold.woff2', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/dana/woff2/Dana-Bold.woff2', weight: '700', style: 'normal' },
+    { path: '../../public/fonts/dana/woff2/Dana-ExtraBold.woff2', weight: '800', style: 'normal' },
+    { path: '../../public/fonts/dana/woff2/Dana-Black.woff2', weight: '900', style: 'normal' },
+  ],
+  variable: '--font-dana',
+  display: 'swap',
+});
 // Admin Layout is handled by /admin/layout.tsx, so we conditional render or just use Group Routes if prefered
 // But since this is root layout, we check path or structure folders carefully.
 // Actually, Next.js App Router allows multiple Root Layouts if we use Route Groups.
@@ -109,7 +123,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={dir}>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable, GeistMono.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable, GeistMono.variable, danaFont.variable)}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}

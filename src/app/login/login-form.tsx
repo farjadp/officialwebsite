@@ -37,7 +37,7 @@ export function LoginForm() {
             if (res?.error) {
                 setError("Incorrect email or password. Please try again.")
             } else {
-                router.push("/admin")
+                router.push("/profile")
                 router.refresh()
             }
         } catch {
