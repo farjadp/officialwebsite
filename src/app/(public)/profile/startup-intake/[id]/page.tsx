@@ -7,7 +7,8 @@ import type { IntakeCountry } from "@/data/startup-intake/config"
 
 export const dynamic = "force-dynamic"
 
-export default async function StartupIntakeFormPage({ params }: { params: { id: string } }) {
+export default async function StartupIntakeFormPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const session = await auth()
     if (!session?.user?.email) redirect("/login")
 
@@ -17,12 +18,12 @@ export default async function StartupIntakeFormPage({ params }: { params: { id: 
     })
     if (!user) redirect("/login")
 
-    const isNew = params.id === "new"
+    const isNew = id === "new"
     let intake = null
 
     if (!isNew) {
         intake = await prisma.startupIntake.findUnique({
-            where: { id: params.id },
+            where: { id },
         })
         
         // Ensure user owns this intake
