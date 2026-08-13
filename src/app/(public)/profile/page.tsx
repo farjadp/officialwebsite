@@ -5,6 +5,7 @@ import { format } from "date-fns"
 import Link from "next/link"
 import { ShieldCheck, User, Mail, Calendar } from "lucide-react"
 import { ProfileForm } from "@/components/auth/profile-form"
+import { ChangePasswordForm } from "@/components/auth/change-password-form"
 import { UserPortalNav } from "@/components/auth/user-portal-nav"
 
 export const dynamic = "force-dynamic"
@@ -79,23 +80,34 @@ export default async function ProfilePage() {
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                            {/* Edit Profile */}
-                            <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-white/5 to-white/[0.02] p-6">
-                                <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">
-                                    Edit Profile
-                                </h2>
-                                <ProfileForm
-                                    locale="en"
-                                    initialUser={{
-                                        id: user.id,
-                                        name: user.name,
-                                        email: user.email,
-                                        bio: user.bio,
-                                        phone: user.phone,
-                                        image: user.image,
-                                        role: user.role,
-                                    }}
-                                />
+                            {/* Left Column (Forms) */}
+                            <div className="space-y-6">
+                                {/* Edit Profile */}
+                                <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-white/5 to-white/[0.02] p-6">
+                                    <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">
+                                        Edit Profile
+                                    </h2>
+                                    <ProfileForm
+                                        locale="en"
+                                        initialUser={{
+                                            id: user.id,
+                                            name: user.name,
+                                            email: user.email,
+                                            bio: user.bio,
+                                            phone: user.phone,
+                                            image: user.image,
+                                            role: user.role,
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Change Password */}
+                                <div className="rounded-2xl border border-white/8 bg-gradient-to-br from-white/5 to-white/[0.02] p-6">
+                                    <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">
+                                        Change Password
+                                    </h2>
+                                    <ChangePasswordForm locale="en" userEmail={user.email} />
+                                </div>
                             </div>
 
                             {/* Account Summary */}

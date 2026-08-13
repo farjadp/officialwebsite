@@ -56,3 +56,46 @@ export async function registerUser(data: RegisterFormValues) {
         return { success: false, error: "An unexpected error occurred during registration." }
     }
 }
+
+const changePasswordSchema = z.object({
+    oldPassword: z.string().min(1, "Old password is required."),
+    newPassword: z.string().min(8, "New password must be at least 8 characters."),
+})
+
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>
+
+export async function changePassword(data: ChangePasswordFormValues, userEmail: string) {
+    try {
+        const validated = changePasswordSchema.safeParse(data)
+        if (!validated.success) {
+            return { success: false, error: validated.error.issues[0]?.message || "Invalid input." }
+        }
+
+        const { oldPassword, newPassword } = validated.data
+
+        const user = await prisma.user.findUnique({ where: { email: userEmail } })
+        if (!user) {
+            return { success: false, error: "User not found." }
+        }
+
+        if (!user.password) {
+            return { success: false, error: "You signed in with an external provider and do not have a password." }
+        }
+
+        const isValid = await bcrypt.compare(oldPassword, user.password)
+        if (!isValid) {
+            return { success: false, error: "Incorrect old password." }
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12)
+        await prisma.user.update({
+            where: { email: userEmail },
+            data: { password: hashedPassword },
+        })
+
+        return { success: true }
+    } catch (error) {
+        console.error("Change password error:", error)
+        return { success: false, error: "An unexpected error occurred." }
+    }
+}
