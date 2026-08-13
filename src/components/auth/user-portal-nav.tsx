@@ -11,11 +11,11 @@ import { AIBugReporter } from "@/components/profile/ai-bug-reporter"
 
 interface UserPortalNavProps {
     locale: "en" | "fa"
-    activeItem?: "profile" | "startup-intake" | "mentorship" | "edu-files" | "meetings-book" | "meetings-summaries" | "meetings-agendas" | "meetings-tasks"
+    activeItem?: "profile" | "startup-intake" | "mentorship" | "edu-files" | "meetings-book" | "meetings-summaries" | "meetings-agendas" | "meetings-tasks" | "finance-payment" | "finance-invoices" | "finance-history"
     isPrivileged?: boolean
 }
 
-import { Rocket, GraduationCap, BookOpen, CalendarDays, Lock } from "lucide-react"
+import { Rocket, GraduationCap, BookOpen, CalendarDays, Lock, CreditCard } from "lucide-react"
 
 const content = {
     en: {
@@ -29,6 +29,10 @@ const content = {
         meetingsSummaries: "Summaries",
         meetingsAgendas: "Agendas",
         meetingsTasks: "Tasks",
+        finance: "Finance",
+        financePayment: "Payment",
+        financeInvoices: "Invoices List",
+        financeHistory: "History",
         admin: "Admin Panel",
         logout: "Sign Out",
     },
@@ -43,6 +47,10 @@ const content = {
         meetingsSummaries: "خلاصه جلسات",
         meetingsAgendas: "دستور جلسات",
         meetingsTasks: "وظایف",
+        finance: "امور مالی",
+        financePayment: "پرداخت",
+        financeInvoices: "لیست فاکتورها",
+        financeHistory: "تاریخچه",
         admin: "پنل ادمین",
         logout: "خروج از حساب",
     },
@@ -134,6 +142,33 @@ export function UserPortalNav({ locale, activeItem, isPrivileged }: UserPortalNa
                         className={subItemClass(activeItem === "meetings-tasks")}
                     >
                         {t.meetingsTasks}
+                    </Link>
+                </div>
+            </div>
+
+            <div className="pt-3 pb-1">
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-2 px-2 flex items-center gap-2">
+                    <CreditCard className="w-3.5 h-3.5" />
+                    {t.finance}
+                </p>
+                <div className="space-y-1 pl-2 border-l border-white/10 ml-3">
+                    <Link
+                        href={locale === "en" ? "/profile/finance/payment" : "/fa/profile/finance/payment"}
+                        className={subItemClass(activeItem === "finance-payment")}
+                    >
+                        {t.financePayment}
+                    </Link>
+                    <Link
+                        href={locale === "en" ? "/profile/finance/invoices" : "/fa/profile/finance/invoices"}
+                        className={subItemClass(activeItem === "finance-invoices")}
+                    >
+                        {t.financeInvoices}
+                    </Link>
+                    <Link
+                        href={locale === "en" ? "/profile/finance/history" : "/fa/profile/finance/history"}
+                        className={subItemClass(activeItem === "finance-history")}
+                    >
+                        {t.financeHistory}
                     </Link>
                 </div>
             </div>
