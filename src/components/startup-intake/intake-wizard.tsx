@@ -35,6 +35,7 @@ import {
     type IntakeCountry,
     type IntakeFile,
 } from "@/data/startup-intake/config"
+import { SimpleEditor } from "./simple-editor"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
