@@ -371,6 +371,10 @@ export default async function BookClubPage() {
                                     <p className="mt-0.5 text-sm text-[#8D7B6F]">روایت کلاسیک و دست‌اول؛ کسروی خود شاهد وقایع تبریز بود.</p>
                                 </li>
                                 <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                    <strong className="text-[#2B1B12]">تاریخ بیداری ایرانیان</strong> — ناظم‌الاسلام کرمانی
+                                    <p className="mt-0.5 text-sm text-[#8D7B6F]">وقایع‌نگاری روزبه‌روز مشروطه به قلم کسی که خودش در میانه ماجرا بود؛ از مهم‌ترین اسناد دست‌اول این دوره.</p>
+                                </li>
+                                <li className="border-r-2 border-[#B08D57]/50 pr-4">
                                     <strong className="text-[#2B1B12]">مشروطه ایرانی</strong> — ماشاءالله آجودانی
                                     <p className="mt-0.5 text-sm text-[#8D7B6F]">چرا مفهوم «مشروطه» در ترجمه به فرهنگ ما دگرگون شد؟</p>
                                 </li>
