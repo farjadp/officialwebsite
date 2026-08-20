@@ -442,6 +442,26 @@ export default async function BookClubPage() {
                             </ul>
                         </div>
                     </div>
+
+                    {/* خواندنی‌های جانبی */}
+                    <div className="mt-8 rounded-2xl border border-dashed border-[#B08D57]/50 bg-[#F7F0E3] p-8">
+                        <h3 className="mb-2 flex items-center gap-2 font-serif text-2xl font-bold text-[#2B1B12]">
+                            🧭 خواندنی‌های جانبی
+                        </h3>
+                        <p className="mb-5 text-sm text-[#8D7B6F]">
+                            مستقیم درباره مشروطه نیستند، اما زمینه تاریخی گفت‌وگوهای ما را کامل می‌کنند.
+                        </p>
+                        <ul className="grid gap-4 md:grid-cols-2">
+                            <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                <strong className="text-[#2B1B12]">Iran Under the Safavids</strong> — Roger Savory
+                                <p className="mt-0.5 text-sm text-[#8D7B6F]">ایران عصر صفوی؛ ریشه‌های دولت متمرکز و پیوند دین و سلطنت که مشروطه با میراثش دست‌وپنجه نرم کرد (انگلیسی).</p>
+                            </li>
+                            <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                <strong className="text-[#2B1B12]">تاریخ ایران مدرن</strong> — یرواند آبراهامیان
+                                <p className="mt-0.5 text-sm text-[#8D7B6F]">نگاه فشرده به دو قرن اخیر؛ جای مشروطه را در قاب بزرگ‌تر تاریخ معاصر نشان می‌دهد.</p>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </section>
 
