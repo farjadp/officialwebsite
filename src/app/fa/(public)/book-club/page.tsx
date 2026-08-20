@@ -135,6 +135,124 @@ export default async function BookClubPage() {
                 </section>
             )}
 
+            {/* ---------- داستان مشروطه ---------- */}
+            <section className="px-6 py-20">
+                <div className="mx-auto max-w-4xl">
+                    <div className="mb-6 text-center">
+                        <h2 className="font-serif text-4xl font-bold text-[#2B1B12]">داستان مشروطه، به کوتاهی</h2>
+                        <Ornament />
+                    </div>
+                    <p className="mx-auto mb-14 max-w-2xl text-center text-lg font-light leading-relaxed text-[#5C4A3D]">
+                        مشروطه فقط یک «واقعه» نبود؛ نخستین بار بود که ایرانیان از پادشاه نه نان،
+                        که <strong className="font-bold text-[#7B2D26]">قانون</strong> خواستند.
+                        این خط زمانی، نقشه راه گفت‌وگوهای ماست.
+                    </p>
+
+                    <div className="relative space-y-12 before:absolute before:right-[19px] before:top-2 before:h-[calc(100%-2rem)] before:w-0.5 before:bg-[#B08D57]/40 md:before:right-[27px]">
+                        {[
+                            {
+                                emoji: "🌿",
+                                date: "۱۲۷۰ خورشیدی — ۱۸۹۱ میلادی",
+                                title: "جنبش تنباکو",
+                                text: "ناصرالدین‌شاه امتیاز انحصار توتون و تنباکو را به یک کمپانی انگلیسی می‌فروشد. فتوای تحریم تنباکو از سوی میرزای شیرازی، شاه را به عقب‌نشینی وا می‌دارد — نخستین بار که «اراده عمومی» در ایران پیروز می‌شود و تمرینی برای مشروطه.",
+                            },
+                            {
+                                emoji: "⚖️",
+                                date: "آذر ۱۲۸۴ — دسامبر ۱۹۰۵",
+                                title: "به چوب بستن بازرگانان و آغاز اعتراض‌ها",
+                                text: "حاکم تهران بازرگانان قند را به بهانه گرانی به فلک می‌بندد. بازار می‌بندد، علما و مردم در حرم شاه عبدالعظیم بست می‌نشینند (مهاجرت صغری) و خواسته‌ای تازه سر بر می‌آورد: «عدالت‌خانه».",
+                            },
+                            {
+                                emoji: "🕊️",
+                                date: "تابستان ۱۲۸۵ — ۱۹۰۶",
+                                title: "مهاجرت کبری و تحصن بزرگ",
+                                text: "علما به قم مهاجرت می‌کنند و هزاران تن از مردم تهران در باغ سفارت انگلیس بست می‌نشینند. این‌بار خواسته صریح است: مجلس شورای ملی.",
+                            },
+                            {
+                                emoji: "📜",
+                                date: "۱۳ مرداد ۱۲۸۵ — ۵ اوت ۱۹۰۶",
+                                title: "امضای فرمان مشروطیت",
+                                text: "مظفرالدین‌شاه قاجار، بیمار و در واپسین ماه‌های عمر، فرمان مشروطیت را امضا می‌کند. ایران نخستین کشور آسیایی‌ست که با جنبشی مردمی صاحب قانون اساسی و پارلمان می‌شود.",
+                                image: "/book-club/farman-mashrutiyat.jpg",
+                                caption: "دست‌خط فرمان مشروطیت، مرداد ۱۲۸۵",
+                            },
+                            {
+                                emoji: "🏛️",
+                                date: "۱۴ مهر ۱۲۸۵ — اکتبر ۱۹۰۶",
+                                title: "گشایش نخستین مجلس شورای ملی",
+                                text: "مجلس اول در عمارت بهارستان گشوده می‌شود؛ بازرگانان و روحانیون و اصناف کنار هم. قانون اساسی تدوین و چند روز پیش از مرگ شاه امضا می‌شود. مطبوعات آزاد جان می‌گیرند — از جمله «صور اسرافیل» با قلم تند و طنز درخشان علی‌اکبر دهخدا.",
+                                image: "/book-club/majles-aval.jpg",
+                                caption: "نمایندگان نخستین مجلس شورای ملی",
+                            },
+                            {
+                                emoji: "🔥",
+                                date: "۲ تیر ۱۲۸۷ — ۲۳ ژوئن ۱۹۰۸",
+                                title: "به توپ بستن مجلس",
+                                text: "محمدعلی‌شاه، دشمن مشروطه، به فرماندهی کلنل لیاخوف روسی مجلس را به توپ می‌بندد. میرزا جهانگیرخان صور اسرافیل و شماری از آزادی‌خواهان در باغشاه کشته می‌شوند. «استبداد صغیر» آغاز می‌شود.",
+                                image: "/book-club/bombardment-majles.jpg",
+                                caption: "عمارت بهارستان پس از گلوله‌باران بریگاد قزاق، ۱۲۸۷",
+                            },
+                            {
+                                emoji: "⚔️",
+                                date: "۱۲۸۷–۱۲۸۸ — ۱۹۰۸–۱۹۰۹",
+                                title: "ایستادگی تبریز",
+                                text: "در حالی که تهران خاموش شده، تبریز یازده ماه در محاصره می‌ایستد. ستارخان (سردار ملی) و باقرخان (سالار ملی) از محله‌های امیرخیز و خیابان، پرچم مشروطه را برافراشته نگه می‌دارند.",
+                                image: "/book-club/sattar-bagher.jpg",
+                                caption: "ستارخان و باقرخان در میان مجاهدان تبریز",
+                            },
+                            {
+                                emoji: "🦁",
+                                date: "۲۵ تیر ۱۲۸۸ — ۱۶ ژوئیه ۱۹۰۹",
+                                title: "فتح تهران و بازگشت مشروطه",
+                                text: "مجاهدان گیلان و سواران بختیاری تهران را می‌گشایند. محمدعلی‌شاه به سفارت روسیه پناه می‌برد و از سلطنت خلع می‌شود. مجلس دوم گشوده می‌شود — و پرسشی که هنوز با ماست آغاز می‌شود: با قانون چه باید کرد؟",
+                            },
+                        ].map((event) => (
+                            <div key={event.title} className="relative flex gap-6 pr-0 md:gap-8">
+                                <div className="z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[#B08D57]/60 bg-[#FDFAF3] text-lg md:h-14 md:w-14 md:text-2xl">
+                                    {event.emoji}
+                                </div>
+                                <div className="flex-1 pb-2">
+                                    <p className="text-sm font-bold text-[#B08D57]">{event.date}</p>
+                                    <h3 className="mt-1 font-serif text-2xl font-bold text-[#2B1B12]">{event.title}</h3>
+                                    <p className="mt-2 leading-relaxed text-[#5C4A3D]">{event.text}</p>
+                                    {event.image && (
+                                        <figure className="mt-5 overflow-hidden rounded-2xl border-4 border-[#FDFAF3] shadow-lg shadow-[#3E2723]/15 ring-1 ring-[#B08D57]/40">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={event.image}
+                                                alt={event.caption}
+                                                loading="lazy"
+                                                className="max-h-96 w-full bg-[#EDE3CE] object-cover object-top sepia-[0.25]"
+                                            />
+                                            <figcaption className="bg-[#FDFAF3] px-4 py-2.5 text-xs text-[#8D7B6F]">
+                                                {event.caption} — آرشیو ویکی‌مدیا (مالکیت عمومی)
+                                            </figcaption>
+                                        </figure>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ---------- روزنامه صور اسرافیل — نوار تزئینی ---------- */}
+            <section className="border-y border-[#B08D57]/20 bg-[#EDE3CE]/60 px-6 py-12">
+                <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 text-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src="/book-club/soure-esrafil.jpg"
+                        alt="سرلوحه روزنامه صور اسرافیل"
+                        loading="lazy"
+                        className="w-full max-w-xl mix-blend-multiply opacity-90"
+                    />
+                    <p className="max-w-xl text-sm leading-relaxed text-[#8D7B6F]">
+                        سرلوحه «صور اسرافیل» 🗞️ — پرخواننده‌ترین روزنامه عصر مشروطه؛ جایی که «چرند و پرند» دهخدا
+                        نثر فارسی را برای همیشه عوض کرد.
+                    </p>
+                </div>
+            </section>
+
             {/* ---------- کتاب‌ها ---------- */}
             {books.length > 0 && (
                 <section className="px-6 py-20">
@@ -231,6 +349,97 @@ export default async function BookClubPage() {
                     </div>
                 </section>
             )}
+
+            {/* ---------- منابع و لینک‌های مفید ---------- */}
+            <section className="px-6 py-20">
+                <div className="mx-auto max-w-5xl">
+                    <div className="mb-12 text-center">
+                        <h2 className="font-serif text-4xl font-bold text-[#2B1B12]">منابع و لینک‌های مفید</h2>
+                        <p className="mt-3 text-[#5C4A3D]">برای آنکه پیش از هر جلسه، عمیق‌تر بیاییم 📚</p>
+                        <Ornament />
+                    </div>
+
+                    <div className="grid gap-8 md:grid-cols-2">
+                        {/* کتاب‌های مرجع */}
+                        <div className="rounded-2xl border border-[#B08D57]/30 bg-[#FDFAF3] p-8">
+                            <h3 className="mb-5 flex items-center gap-2 font-serif text-2xl font-bold text-[#2B1B12]">
+                                📖 کتاب‌های مرجع
+                            </h3>
+                            <ul className="space-y-4 text-[#5C4A3D]">
+                                <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                    <strong className="text-[#2B1B12]">تاریخ مشروطه ایران</strong> — احمد کسروی
+                                    <p className="mt-0.5 text-sm text-[#8D7B6F]">روایت کلاسیک و دست‌اول؛ کسروی خود شاهد وقایع تبریز بود.</p>
+                                </li>
+                                <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                    <strong className="text-[#2B1B12]">مشروطه ایرانی</strong> — ماشاءالله آجودانی
+                                    <p className="mt-0.5 text-sm text-[#8D7B6F]">چرا مفهوم «مشروطه» در ترجمه به فرهنگ ما دگرگون شد؟</p>
+                                </li>
+                                <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                    <strong className="text-[#2B1B12]">ایدئولوژی نهضت مشروطیت ایران</strong> — فریدون آدمیت
+                                    <p className="mt-0.5 text-sm text-[#8D7B6F]">ریشه‌های فکری مشروطه و اندیشه ترقی.</p>
+                                </li>
+                                <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                    <strong className="text-[#2B1B12]">تبریز مه‌آلود</strong> — محمدسعید اردوبادی
+                                    <p className="mt-0.5 text-sm text-[#8D7B6F]">رمانی درباره ایستادگی تبریز؛ برای آن‌که تاریخ را قصه‌وار بخواند.</p>
+                                </li>
+                                <li className="border-r-2 border-[#B08D57]/50 pr-4">
+                                    <strong className="text-[#2B1B12]">The Iranian Constitutional Revolution</strong> — Janet Afary
+                                    <p className="mt-0.5 text-sm text-[#8D7B6F]">نگاه پژوهشی به نقش شوراها، زنان و دموکراسی مردمی (انگلیسی).</p>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* لینک‌های آنلاین */}
+                        <div className="rounded-2xl border border-[#B08D57]/30 bg-[#FDFAF3] p-8">
+                            <h3 className="mb-5 flex items-center gap-2 font-serif text-2xl font-bold text-[#2B1B12]">
+                                🔗 آنلاین بخوانید
+                            </h3>
+                            <ul className="space-y-4">
+                                {[
+                                    {
+                                        title: "جنبش مشروطه ایران — ویکی‌پدیای فارسی",
+                                        href: "https://fa.wikipedia.org/wiki/%D8%AC%D9%86%D8%A8%D8%B4_%D9%85%D8%B4%D8%B1%D9%88%D8%B7%D9%87_%D8%A7%DB%8C%D8%B1%D8%A7%D9%86",
+                                        note: "نقطه شروع خوب با ارجاع‌های فراوان.",
+                                    },
+                                    {
+                                        title: "Constitutional Revolution — Encyclopædia Iranica",
+                                        href: "https://www.iranicaonline.org/articles/constitutional-revolution-index/",
+                                        note: "مجموعه مقالات پژوهشی معتبر (انگلیسی).",
+                                    },
+                                    {
+                                        title: "The Persian Revolution of 1905–1909 — Edward Browne",
+                                        href: "https://archive.org/details/persianrevolutio00browuoft",
+                                        note: "گزارش دست‌اول ادوارد براون؛ متن کامل و رایگان در Internet Archive.",
+                                    },
+                                    {
+                                        title: "اسناد و عکس‌های مشروطه — Wikimedia Commons",
+                                        href: "https://commons.wikimedia.org/wiki/Category:Persian_Constitutional_Revolution",
+                                        note: "آرشیو عکس‌ها و اسناد اصل دوره مشروطه.",
+                                    },
+                                    {
+                                        title: "روزنامه صور اسرافیل — نسخه‌های اصل",
+                                        href: "https://fa.wikipedia.org/wiki/%D8%B5%D9%88%D8%B1_%D8%A7%D8%B3%D8%B1%D8%A7%D9%81%DB%8C%D9%84",
+                                        note: "درباره روزنامه و «چرند و پرند» دهخدا.",
+                                    },
+                                ].map((link) => (
+                                    <li key={link.href} className="border-r-2 border-[#1B4B43]/40 pr-4">
+                                        <a
+                                            href={link.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 font-bold text-[#1B4B43] hover:text-[#7B2D26]"
+                                        >
+                                            {link.title}
+                                            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                                        </a>
+                                        <p className="mt-0.5 text-sm text-[#8D7B6F]">{link.note}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* ---------- پانوشت ---------- */}
             <section className="border-t-4 border-double border-[#B08D57]/40 px-6 py-14 text-center">
