@@ -63,6 +63,9 @@ export function Header({ locale = "en" }: { locale?: string }) {
                         </div>
                     </div>
 
+                    {locale === "fa" && (
+                        <Link href="/book-club" className="hover:text-[#b9ff66] transition-colors">دورهمی کتاب</Link>
+                    )}
                     <Link href="/blog" className="hover:text-[#b9ff66] transition-colors">Essays</Link>
                     <Link href="/tools" className="hover:text-[#b9ff66] transition-colors">Tools</Link>
                     <Link href="/about" className="hover:text-[#b9ff66] transition-colors">About</Link>
@@ -145,6 +148,11 @@ export function Header({ locale = "en" }: { locale?: string }) {
                                 </div>
                             </div>
 
+                            {locale === "fa" && (
+                                <Link href="/book-club" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                    دورهمی کتاب
+                                </Link>
+                            )}
                             <Link href="/blog" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 Essays
                             </Link>

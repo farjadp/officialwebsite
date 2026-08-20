@@ -33,10 +33,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  passwordResetTokens      PasswordResetToken[]
-  emailVerificationTokens  EmailVerificationToken[]
-  startupIntakes           StartupIntake[]
-  bugReports               BugReport[]
+  passwordResetTokens     PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  startupIntakes          StartupIntake[]
+  bugReports              BugReport[]
 }
 
 model PasswordResetToken {
@@ -66,143 +66,143 @@ model EmailVerificationToken {
 }
 
 model Post {
-  id            String       @id @default(cuid())
-  title         String
-  slug          String       @unique
-  content       String?      // MDX content
-  excerpt       String?
-  coverImage    String?
-  status        PostStatus   @default(DRAFT)
-  publishedAt   DateTime?
-  readingTime   Int?         // in minutes
-  views         Int          @default(0)
-  
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  content     String? // MDX content
+  excerpt     String?
+  coverImage  String?
+  status      PostStatus @default(DRAFT)
+  publishedAt DateTime?
+  readingTime Int? // in minutes
+  views       Int        @default(0)
+
   // SEO Fields
   seoTitle       String?
   seoDescription String?
   seoKeywords    String? // Comma separated
 
-  seriesId      String?
-  series        Series?      @relation(fields: [seriesId], references: [id])
-  seriesOrder   Int?         // Order within the series
+  seriesId    String?
+  series      Series? @relation(fields: [seriesId], references: [id])
+  seriesOrder Int? // Order within the series
 
   // Relations
-  categories     Category[]
-  tags           Tag[]
-  topics        Topic[] // Maintaining legacy support for now, but assume migration to Tags
-  
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  categories Category[]
+  tags       Tag[]
+  topics     Topic[] // Maintaining legacy support for now, but assume migration to Tags
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
-  slug        String   @unique
+  slug        String     @unique
   description String?
-  icon        String?  // Icon name from Lucide
+  icon        String? // Icon name from Lucide
   parentId    String?
-  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
-  
-  posts       Post[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  posts Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tag {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  
-  posts       Post[]
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  posts Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Series {
-  id            String    @id @default(cuid())
-  name          String
-  slug          String    @unique
-  description   String?
-  coverImage    String?
-  targetAudience String? 
-  
-  posts         Post[]
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             String  @id @default(cuid())
+  name           String
+  slug           String  @unique
+  description    String?
+  coverImage     String?
+  targetAudience String?
+
+  posts Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Topic {
-  id            String    @id @default(cuid())
-  name          String
-  slug          String    @unique
-  description   String?
-  
-  posts         Post[]
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+
+  posts Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Page {
-  id            String    @id @default(cuid())
-  title         String
-  slug          String    @unique
-  content       String?
-  showInMenu    Boolean   @default(false)
-  menuOrder     Int?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id         String  @id @default(cuid())
+  title      String
+  slug       String  @unique
+  content    String?
+  showInMenu Boolean @default(false)
+  menuOrder  Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Subscriber {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  tags          String[]  // e.g. ["Founder", "SME"]
-  source        String?
-  
-  joinedAt      DateTime  @default(now())
+  id     String   @id @default(cuid())
+  email  String   @unique
+  tags   String[] // e.g. ["Founder", "SME"]
+  source String?
+
+  joinedAt DateTime @default(now())
 }
 
 model Media {
-  id            String    @id @default(cuid())
-  filename      String
-  url           String
-  type          String
-  size          Int
-  
-  createdAt     DateTime  @default(now())
+  id       String @id @default(cuid())
+  filename String
+  url      String
+  type     String
+  size     Int
+
+  createdAt DateTime @default(now())
 }
 
 model SocialPublishLog {
-  id            String    @id @default(cuid())
-  postId        String
-  postSlug      String
-  postTitle     String
-  
+  id        String @id @default(cuid())
+  postId    String
+  postSlug  String
+  postTitle String
+
   // Waterfall analysis
-  coreTruth     String?
-  sentiment     String?
-  
+  coreTruth String?
+  sentiment String?
+
   // Platform results
-  telegramStatus  String    @default("PENDING") // PENDING, SUCCESS, FAILED, SKIPPED
-  telegramError   String?
-  telegramText    String?
-  
-  twitterStatus   String    @default("PENDING")
-  twitterError    String?
-  twitterText     String?
-  
-  linkedinStatus  String    @default("PENDING")
-  linkedinError   String?
-  linkedinText    String?
-  linkedinHook    String?
-  
+  telegramStatus String  @default("PENDING") // PENDING, SUCCESS, FAILED, SKIPPED
+  telegramError  String?
+  telegramText   String?
+
+  twitterStatus String  @default("PENDING")
+  twitterError  String?
+  twitterText   String?
+
+  linkedinStatus String  @default("PENDING")
+  linkedinError  String?
+  linkedinText   String?
+  linkedinHook   String?
+
   // Sniper Retargeting
   retargetingSegment       String?
   retargetingPainPoint     String?
@@ -211,16 +211,15 @@ model SocialPublishLog {
   retargetingVisual        String?
   retargetingStoryHook     String?
   retargetingStorySolution String?
-  
-  createdAt     DateTime  @default(now())
+
+  createdAt DateTime @default(now())
 }
 
 model AppSetting {
-  key       String    @id
+  key       String   @id
   value     String
-  updatedAt DateTime  @updatedAt
+  updatedAt DateTime @updatedAt
 }
-
 
 model Lead {
   id        String   @id @default(cuid())
@@ -245,20 +244,20 @@ model ToolUsage {
 }
 
 model WebsiteAuditLog {
-  id               String   @id @default(cuid())
-  requestedUrl     String
-  finalUrl         String?
-  hostname         String
-  status           String   // "SUCCESS" | "FAILED"
-  overallScore     Int?
-  grade            String?
-  accessScore      Int?
-  metadataScore    Int?
-  agentScore       Int?
-  citabilityScore  Int?
-  durationMs       Int
-  error            String?
-  createdAt        DateTime @default(now())
+  id              String   @id @default(cuid())
+  requestedUrl    String
+  finalUrl        String?
+  hostname        String
+  status          String // "SUCCESS" | "FAILED"
+  overallScore    Int?
+  grade           String?
+  accessScore     Int?
+  metadataScore   Int?
+  agentScore      Int?
+  citabilityScore Int?
+  durationMs      Int
+  error           String?
+  createdAt       DateTime @default(now())
 
   @@index([createdAt])
   @@index([hostname])
@@ -267,32 +266,32 @@ model WebsiteAuditLog {
 
 model AIGeneratedAsset {
   id        String   @id @default(cuid())
-  type      String   // "vault" or "audio"
+  type      String // "vault" or "audio"
   topic     String
-  content   String   // Markdown or Text content
+  content   String // Markdown or Text content
   createdAt DateTime @default(now())
 }
 
 model BackupLog {
-  id          String   @id @default(cuid())
-  date        DateTime @default(now())
-  status      String   // "success" | "failed" | "running"
-  type        String   // "full" | "db-only" | "code-only"
-  dbFile      String?  // local path to DB dump file
-  codeFile    String?  // local path to code zip file
-  dbSizeBytes BigInt?
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  status        String // "success" | "failed" | "running"
+  type          String // "full" | "db-only" | "code-only"
+  dbFile        String? // local path to DB dump file
+  codeFile      String? // local path to code zip file
+  dbSizeBytes   BigInt?
   codeSizeBytes BigInt?
-  durationMs  Int?
-  error       String?
-  notes       String?
-  createdAt   DateTime @default(now())
+  durationMs    Int?
+  error         String?
+  notes         String?
+  createdAt     DateTime @default(now())
 }
 
 model SystemLog {
   id        String   @id @default(cuid())
-  level     String   // "info" | "warn" | "error"
+  level     String // "info" | "warn" | "error"
   message   String
-  source    String?  // e.g. "api", "job", "ui"
+  source    String? // e.g. "api", "job", "ui"
   path      String?
   method    String?
   status    Int?
@@ -307,18 +306,18 @@ model SystemLog {
 }
 
 model Project {
-  id            String    @id @default(cuid())
-  title         String
-  slug          String    @unique
-  description   String?
-  content       String?   // Markdown content
-  coverImage    String?
-  featured      Boolean   @default(false)
-  technologies  String[]  // e.g. ["Next.js", "Tailwind"]
-  websiteUrl    String?
-  githubUrl     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  description  String?
+  content      String? // Markdown content
+  coverImage   String?
+  featured     Boolean  @default(false)
+  technologies String[] // e.g. ["Next.js", "Tailwind"]
+  websiteUrl   String?
+  githubUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Message {
@@ -349,13 +348,13 @@ model RouteMetric {
 }
 
 model IntakeInvite {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  label       String?
-  isActive    Boolean  @default(true)
-  maxUses     Int      @default(1)
-  usedCount   Int      @default(0)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  code      String   @unique
+  label     String?
+  isActive  Boolean  @default(true)
+  maxUses   Int      @default(1)
+  usedCount Int      @default(0)
+  createdAt DateTime @default(now())
 
   submissions StartupIntake[]
 }
@@ -381,23 +380,23 @@ model StartupIntake {
 }
 
 model MentoredStartup {
-  id            String   @id @default(cuid())
-  name          String
-  industry      String
-  satisfaction  String
-  status        String
-  isActive      Boolean  @default(true)
-  startDate     String
-  endDate       String
-  website       String?
-  linkedin      String?
-  logo          String?
-  description   String
-  founderName   String
-  founderPhoto  String?
-  order         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  industry     String
+  satisfaction String
+  status       String
+  isActive     Boolean  @default(true)
+  startDate    String
+  endDate      String
+  website      String?
+  linkedin     String?
+  logo         String?
+  description  String
+  founderName  String
+  founderPhoto String?
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model BugReport {
@@ -412,4 +411,38 @@ model BugReport {
   updatedAt       DateTime @updatedAt
 
   @@index([createdAt])
+}
+
+// ---------- Book Club (دورهمی کتاب‌خوانی مشروطه) ----------
+
+model BookClubSession {
+  id            String   @id @default(cuid())
+  title         String
+  sessionDate   DateTime
+  googleEventId String?
+  meetLink      String?
+  summary       String? // HTML خلاصه جلسه
+  status        String   @default("UPCOMING") // UPCOMING, DONE, CANCELED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([sessionDate])
+}
+
+model BookClubBook {
+  id          String   @id @default(cuid())
+  title       String
+  author      String?
+  description String?
+  link        String?
+  coverUrl    String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model BookClubMember {
+  id       String   @id @default(cuid())
+  email    String   @unique
+  name     String?
+  joinedAt DateTime @default(now())
 }

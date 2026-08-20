@@ -65,6 +65,7 @@ const sidebarGroups = [
             { title: "Projects", href: "/admin/portfolio", icon: FolderGit2 },
             { title: "Startups", href: "/admin/startups", icon: Rocket },
             { title: "Startup Intake", href: "/admin/intake", icon: ClipboardList },
+            { title: "Book Club", href: "/admin/book-club", icon: BookOpen },
             { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
         ]
     },
