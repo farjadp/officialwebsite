@@ -27,12 +27,33 @@ function formatFaDate(date: Date): string {
     }).format(date)
 }
 
-function formatFaTime(date: Date): string {
+function formatFaTime(date: Date, timeZone: string): string {
     return new Intl.DateTimeFormat("fa-IR", {
         hour: "2-digit",
         minute: "2-digit",
-        timeZone: "America/Toronto",
+        timeZone,
     }).format(date)
+}
+
+// شهرها/مناطقی که اعضای دورهمی معمولاً از آن‌جا وصل می‌شوند
+const SESSION_TIMEZONES = [
+    { emoji: "🇮🇷", label: "ایران", zone: "Asia/Tehran" },
+    { emoji: "🇨🇦", label: "کانادا (تورنتو)", zone: "America/Toronto" },
+    { emoji: "🇺🇸", label: "غرب آمریکا", zone: "America/Los_Angeles" },
+    { emoji: "🇪🇺", label: "اروپا (مرکزی)", zone: "Europe/Berlin" },
+]
+
+function TimezoneRow({ date, className = "" }: { date: Date; className?: string }) {
+    return (
+        <div className={`mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm ${className}`}>
+            {SESSION_TIMEZONES.map((tz) => (
+                <span key={tz.zone} className="flex items-center gap-1.5">
+                    <span aria-hidden>{tz.emoji}</span>
+                    {tz.label}: <strong className="font-bold">{formatFaTime(date, tz.zone)}</strong>
+                </span>
+            ))}
+        </div>
+    )
 }
 
 // جداکننده تزئینی الهام‌گرفته از حاشیه نسخه‌های چاپ سنگی دوره قاجار
@@ -125,8 +146,9 @@ export default async function BookClubPage() {
                         </div>
                         <h2 className="font-serif text-3xl font-bold md:text-4xl">{nextSession.title}</h2>
                         <p className="text-xl text-[#F7F0E3]/80">
-                            {formatFaDate(nextSession.sessionDate)} — ساعت {formatFaTime(nextSession.sessionDate)} (به وقت تورنتو)
+                            {formatFaDate(nextSession.sessionDate)}
                         </p>
+                        <TimezoneRow date={nextSession.sessionDate} className="text-[#F7F0E3]/90" />
                         <p className="flex items-center gap-2 text-[#F7F0E3]/60">
                             <Video className="h-5 w-5" />
                             لینک Google Meet با دعوت‌نامه کلندر برایت ارسال می‌شود.
