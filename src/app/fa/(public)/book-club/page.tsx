@@ -132,6 +132,9 @@ export default async function BookClubPage() {
                             ایمیلت را بگذار تا دعوت جلسه بعدی مستقیم به تقویمت بیاید.
                         </p>
                         <BookClubJoinForm />
+                        <p className="mt-5 border-t border-[#B08D57]/20 pt-4 text-sm leading-relaxed text-[#8D7B6F]">
+                            🎙️ تمامی جلسات کتاب‌خوانی ضبط می‌شوند و خلاصه هر جلسه در گروه تلگرامی «مشروطه‌خوانی» قرار می‌گیرد.
+                        </p>
                     </div>
                 </div>
             </section>
@@ -152,6 +155,9 @@ export default async function BookClubPage() {
                         <p className="flex items-center gap-2 text-[#F7F0E3]/60">
                             <Video className="h-5 w-5" />
                             لینک Google Meet با دعوت‌نامه کلندر برایت ارسال می‌شود.
+                        </p>
+                        <p className="text-sm text-[#F7F0E3]/60">
+                            🎙️ همه جلسات ضبط می‌شوند و خلاصه هر جلسه در گروه تلگرامی «مشروطه‌خوانی» منتشر می‌شود.
                         </p>
                     </div>
                 </section>
@@ -335,7 +341,7 @@ export default async function BookClubPage() {
                     </div>
 
                     <p className="mt-8 text-center text-sm text-[#8D7B6F]">
-                        برگرفته از یادداشت‌های جلسات دوره «زوال و زایش آگاهی ملی» و خوانش «تاریخ بیداری ایرانیان»
+                        برگرفته از یادداشت‌های جلسات دوره «زوال و زایش آگاهی ملی» در کارگاه‌های دکتر داروین صبوری
                     </p>
                 </div>
             </section>
