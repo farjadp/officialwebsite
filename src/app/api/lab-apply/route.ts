@@ -26,8 +26,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const token = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+    let chatId = process.env.TELEGRAM_ADMIN_CHAT_ID?.trim() || process.env.TELEGRAM_CHAT_ID?.trim();
+
+    // Fall back to the admin-configurable setting if no env var is set
+    if (!chatId) {
+      const tgSetting = await prisma.appSetting.findUnique({ where: { key: "TELEGRAM_CHAT_ID" } });
+      chatId = tgSetting?.value?.trim();
+    }
+
     let telegramOk = false;
 
     if (token && chatId) {
@@ -86,7 +93,7 @@ export async function POST(req: NextRequest) {
         console.error("Telegram send failed:", err);
       }
     } else {
-      console.error("[lab-apply] Telegram not configured — application saved to DB only");
+      console.error("[lab-apply] Telegram not configured (missing bot token or chat id) — application saved to DB only");
     }
 
     if (telegramOk !== application.telegramOk) {
