@@ -7,6 +7,7 @@
 // Env / Identity: Client Component
 // ============================================================================
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown } from "lucide-react"
@@ -20,9 +21,19 @@ export function Header({ locale = "en" }: { locale?: string }) {
         <header className="relative z-50 border-b border-white/15 bg-[#0a0a0a] px-5 py-6 text-[#f2f0e9] md:px-10 lg:px-14">
             <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                 {/* Logo / Name */}
-                <Link href="/" className="flex flex-col">
-                    <span className="text-xl font-black uppercase tracking-[-0.04em] leading-none text-white">Farjad®</span>
-                    <span className="mt-1 text-[9px] uppercase tracking-[0.24em] text-white/45">Build / Advise / Engineer</span>
+                <Link href="/" className="flex items-center gap-3">
+                    <Image
+                        src="/images/logo-mark-light.png"
+                        alt=""
+                        width={571}
+                        height={556}
+                        priority
+                        className="h-10 w-auto shrink-0 md:h-11"
+                    />
+                    <span className="flex flex-col">
+                        <span className="text-xl font-black uppercase tracking-[-0.04em] leading-none text-white">Farjad®</span>
+                        <span className="mt-1 text-[9px] uppercase tracking-[0.24em] text-white/45">Build / Advise / Engineer</span>
+                    </span>
                 </Link>
 
                 {/* Minimal Nav */}

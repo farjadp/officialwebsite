@@ -43,3 +43,6 @@ next-env.d.ts
 /src/generated/prisma
 .env*.local
 scratch/
+
+# local high-res source photos (not deployed)
+assets-source/

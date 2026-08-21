@@ -6,6 +6,7 @@
 //      Prioritizes the Newsletter (The Inner Circle).
 // ============================================================================
 
+import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,7 +35,14 @@ export function Footer({ locale = "en" }: { locale?: string }) {
 
                     {/* Brand Manifesto */}
                     <div className="space-y-6">
-                        <Link href="/" className="inline-block">
+                        <Link href="/" className="inline-flex items-center gap-4">
+                            <Image
+                                src="/images/logo-mark-light.png"
+                                alt=""
+                                width={571}
+                                height={556}
+                                className="h-14 w-auto shrink-0"
+                            />
                             <span className="font-serif font-black text-3xl tracking-tighter text-white">
                                 FARJAD<span className="text-[#D97706]">.</span>
                             </span>

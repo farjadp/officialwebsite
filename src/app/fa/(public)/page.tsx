@@ -196,7 +196,7 @@ export default function PersianHomePage() {
               <div className="relative group">
                 <div className="absolute inset-0 bg-[#1B4B43] rounded-[3rem] rotate-6 group-hover:rotate-3 transition-transform duration-500"></div>
                 <div className="relative w-64 h-80 rounded-[3rem] overflow-hidden border-2 border-white shadow-2xl bg-stone-100">
-                   <img src="/images/farjad.png" alt="Farjad" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" />
+                   <img src="/images/farjad-portrait.jpg" alt="فرجاد پورمحمد" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
               </div>
               

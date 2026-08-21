@@ -116,7 +116,7 @@ export default async function HomePage() {
             </div>
             <div className="relative aspect-[4/5] w-full max-w-[420px] overflow-hidden bg-zinc-900 grayscale transition duration-700 hover:grayscale-0">
               <img
-                src="/images/farjad.png"
+                src="/images/farjad-portrait.jpg"
                 alt="Farjad Pourmohammad"
                 className="h-full w-full object-cover object-top opacity-80 mix-blend-luminosity"
               />

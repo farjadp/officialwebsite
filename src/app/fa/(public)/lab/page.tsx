@@ -1,496 +1,495 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Check,
-  X,
-  Lightbulb,
-  User,
-  Users,
-  MapPin,
-  Globe,
-  Mail,
-  Target,
-  Brain,
-  ShieldCheck,
-  Zap,
-  Search,
-  Flame,
-  ArrowLeft,
-  Sparkles,
-  BookOpen,
-  TrendingUp,
-  Eye,
-} from "lucide-react";
+import { ArrowDown, Linkedin, Send, Youtube } from "lucide-react";
 import { ApplicationForm } from "./application-form";
 
 export const metadata: Metadata = {
-  title: "Founder Development Lab | Farjad .P",
-  description: "یک برنامه ۸ هفته‌ای منتورشیپ برای Founderها و تیم‌های بسیار اولیه",
+  title: "Founder Development Lab | فرجاد پورمحمد",
+  description:
+    "۸ هفته کار واقعی روی استارتاپ شما — ۵ تیم، رایگان. از ایده تا شواهد، با منتورشیپ مستقیم فرجاد پورمحمد.",
+  openGraph: {
+    title: "Founder Development Lab — از ایده تا شواهد",
+    description:
+      "۸ هفته، ۵ تیم، رایگان. هر هفته روی مسئله‌ی واقعی استارتاپ شما کار می‌کنیم.",
+    images: [{ url: "/images/og-logo.png", width: 1200, height: 630, alt: "Founder Development Lab" }],
+  },
 };
+
+const WEEKS = [
+  { n: "۱", title: "The Founder & The Thesis", desc: "تفکیک آنچه می‌دانیم، آنچه باور داریم و آنچه هنوز نمی‌دانیم.", out: "Venture Thesis v0.1" },
+  { n: "۲", title: "Problem Deconstruction", desc: "شکستن مسئله به Trigger، Frequency، Severity و Cost.", out: "Problem Map + ۵ فرض بحرانی" },
+  { n: "۳", title: "Customer Discovery", desc: "گفت‌وگوی درست با مشتری واقعی، به‌جای سؤال‌های تأییدی.", out: "Customer Hypothesis + Evidence Log" },
+  { n: "۴", title: "Market Reality", desc: "دیدن بازار همان‌طور که هست — رقبا، جایگزین‌ها، و Doing Nothing.", out: "Market Map + Thesis v0.2" },
+  { n: "۵", title: "Solution & Value", desc: "کوچک‌ترین راه‌حلی که ارزش اصلی را قابل آزمایش کند.", out: "Solution Hypothesis + آنچه نمی‌سازیم" },
+  { n: "۶", title: "Business Model & Kill Risks", desc: "چه کسی پول می‌دهد، چرا، چقدر — و سه ریسکی که می‌تواند همه‌چیز را بکشد.", out: "Kill-Risk Map" },
+  { n: "۷", title: "The Critical Experiment", desc: "ارزان‌ترین آزمایش معتبر برای پرریسک‌ترین فرض.", out: "Experiment + Evidence" },
+  { n: "۸", title: "Founder Decision Board", desc: "چه باور داشتیم، چه یاد گرفتیم، چه اشتباه بود — و تصمیم ۹۰ روز بعد.", out: "Decision + برنامه ۹۰ روزه" },
+];
+
+const TRACK_RECORD = [
+  "بیش از بیست سال در صنعت آی‌تی ایران",
+  "بیش از هفت سال کنار استارتاپ‌های ایران",
+  "سه سال در اکوسیستم استارتاپی کانادا",
+  "منتورشیپ بیش از ۵۰ تیم استارتاپی",
+  "ریزفاند بیش از ۱۰ میلیون دلار برای تیم‌های استارتاپی",
+];
+
+const SOCIALS = [
+  { label: "کانال تلگرام — سفر قهرمانی یک منتور", href: "https://t.me/Heros_Journey", Icon: Send },
+  { label: "یوتیوب — Farjad Talks", href: "https://youtube.com/@FarjadTalks", Icon: Youtube },
+  { label: "لینکدین", href: "https://www.linkedin.com/in/farjadpourmohammad/", Icon: Linkedin },
+];
+
+/** عکس‌های واقعی — فایل‌ها در public/images/lab/ */
+const PHOTOS = [
+  { src: "/images/lab/council.jpg", alt: "ارائه‌ی نتایج برنامه در صحن شورای منطقه‌ای یورک", caption: "شورای منطقه‌ای یورک — ارائه‌ی نتایج تیم‌ها", span: "col-span-2 md:col-span-2 md:row-span-2" },
+  { src: "/images/lab/online-session.jpg", alt: "جلسه‌ی آنلاین منتورشیپ با فاندرهای ایرانی", caption: "جلسه‌ی آنلاین با فاندرهای ایرانی" },
+  { src: "/images/lab/cohort.jpg", alt: "تیم‌های دوره در ساختمان منطقه‌ی یورک", caption: "روز آخر یک Cohort" },
+  { src: "/images/lab/panel.jpg", alt: "پنل پایانی برنامه‌ی Digital Transformation", caption: "پنل پایانی — تورنتو" },
+  { src: "/images/lab/accelerator.jpg", alt: "جشن پایان دوره با تیم شتاب‌دهنده", caption: "آخر دوره، با تیم شتاب‌دهنده" },
+];
+
+const LENS_QUESTIONS = [
+  "این آدم چطور فکر می‌کند؟",
+  "چطور تصمیم می‌گیرد؟",
+  "وقتی hypothesis خودش غلط از آب درمی‌آید، چه می‌کند؟",
+  "وقتی market جواب نمی‌دهد، چه می‌کند؟",
+  "وقتی با co-founder اختلاف دارد، چه می‌کند؟",
+  "آیا execute می‌کند؟",
+  "آیا excuse می‌آورد؟",
+  "آیا data را manipulate می‌کند؟",
+  "آیا مشتری را می‌فهمد؟",
+  "آیا فقط عاشق product خودش است — و چشم‌هایش بسته؟",
+];
 
 export default function FounderLabPage() {
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "Founder Development Lab",
-    "description": "یک برنامه ۸ هفته‌ای منتورشیپ برای Founderها و تیم‌های بسیار اولیه (از ایده تا شواهد).",
-    "provider": {
+    name: "Founder Development Lab",
+    description:
+      "برنامه ۸ هفته‌ای منتورشیپ برای فاندرها و تیم‌های بسیار اولیه — از ایده تا شواهد.",
+    provider: {
       "@type": "Person",
-      "name": "Farjad Pourmohammad",
-      "url": "https://farjadp.info"
+      name: "Farjad Pourmohammad",
+      url: "https://farjadp.info",
     },
-    "hasCourseInstance": {
+    hasCourseInstance: {
       "@type": "CourseInstance",
-      "courseMode": "Blended",
-      "location": "Toronto / Online"
-    }
+      courseMode: "Blended",
+      location: "Toronto / Online",
+    },
   };
 
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-[#FDFCF8] text-[#1C1917] selection:bg-[#1B4B43] selection:text-white"
+      className="lab-page min-h-screen bg-[#FDFCF8] text-[#1C1917] selection:bg-[#1B4B43] selection:text-white"
     >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
       />
-      {/* ─── HERO ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-28 pb-20 px-6">
-        {/* subtle dot grid */}
-        <div className="absolute inset-0 bg-[radial-gradient(#d4d4d4_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_40%,#000_60%,transparent_100%)] opacity-40 pointer-events-none" />
+      <style>{`
+        @keyframes lab-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        .lab-rise { animation: lab-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @media (prefers-reduced-motion: reduce) { .lab-rise { animation: none; } }
+        .lab-page a, .lab-page button, .lab-page input, .lab-page textarea { outline: none; }
+        .lab-page a:focus-visible, .lab-page button:focus-visible { box-shadow: 0 0 0 2px #FDFCF8, 0 0 0 4px #1B4B43; border-radius: 4px; }
+        .lab-page input, .lab-page textarea { caret-color: #1B4B43; }
+      `}</style>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          {/* Text */}
-          <div className="space-y-8 text-right">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1B4B43]/10 border border-[#1B4B43]/20 text-[#1B4B43] text-sm font-medium">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1B4B43] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1B4B43]"></span>
-              </span>
-              ظرفیت محدود — ۵ تیم در این Cohort
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="text-5xl md:text-6xl font-black text-[#111827] leading-[1.15] tracking-tight">
-                Founder<br />
-                <span className="text-[#1B4B43]">Development</span><br />
-                Lab
-              </h1>
-              <p className="text-2xl font-bold text-stone-500">از ایده تا شواهد</p>
-            </div>
-
-            <p className="text-lg text-stone-600 leading-loose max-w-lg">
-              یک برنامه ۸ هفته‌ای منتورشیپ برای Founderها و تیم‌های بسیار اولیه.
-              نه سخنرانی، نه مدرک — فقط تصمیم‌های واقعی‌تر.
+      {/* ─── نامه ─────────────────────────────────────────────── */}
+      <section className="px-6 pt-20 md:pt-28 pb-16">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr_260px] gap-12 lg:gap-20 items-start lab-rise">
+          <div className="space-y-8">
+            <p className="text-sm font-semibold text-[#1B4B43] tracking-wide">
+              Founder Development Lab · از ایده تا شواهد
             </p>
 
-            <div className="flex flex-row-reverse gap-4 flex-wrap">
-              <a href="#apply" className="group px-8 py-4 bg-[#111827] text-white font-bold rounded-full text-base hover:bg-[#1B4B43] transition-all duration-300 hover:scale-105 flex items-center gap-3">
-                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                درخواست ورود به برنامه
-              </a>
-              <a href="#program" className="px-8 py-4 bg-white text-[#111827] font-bold rounded-full text-base border border-stone-200 hover:border-[#1B4B43]/40 transition-all duration-300 hover:bg-stone-50">
-                بیشتر بخوانید ↓
-              </a>
+            <h1 className="text-[2.4rem] md:text-6xl font-black leading-[1.2] md:leading-[1.18] text-[#111827] text-balance">
+              استارتاپ، چهار صفحه بیزینس‌پلن و یک پیچ‌دک نیست.
+            </h1>
+
+            <div className="space-y-5 text-lg leading-[2.1] text-stone-700 max-w-2xl">
+              <p>
+                بعد از این‌همه سال سر و کله زدن با فاندرها — و تجربه‌ی خودم توی
+                استارتاپ — به یک چیز رسیده‌ام: راه انداختن استارتاپ را نمی‌شود از
+                لابه‌لای کتاب‌ها و فریمورک‌ها درآورد. لین کانواس پر کردن، استارتاپ
+                داشتن نیست.
+              </p>
+              <p>
+                برای همین یک دوره‌ی کوچک گذاشته‌ام: <strong className="font-bold text-[#111827]">۸ هفته، ۵ تیم، رایگان.</strong>{" "}
+                هر هفته می‌نشینیم روی مسئله‌ی واقعیِ استارتاپ شما کار می‌کنیم — نه
+                سخنرانی، نه مدرک. آخرش یا با شواهد ادامه می‌دهید، یا با شواهد
+                می‌فهمید که نباید ادامه دهید. هر دو پیشرفت است.
+              </p>
             </div>
 
-            {/* Stats Row */}
-            <div className="flex gap-8 pt-4 border-t border-stone-200">
-              {[
-                { n: "۸", l: "هفته" },
-                { n: "۵", l: "تیم" },
-                { n: "+۲۰", l: "سال تجربه" },
-              ].map((s) => (
-                <div key={s.l} className="text-right">
-                  <div className="text-2xl font-black text-[#1B4B43]">{s.n}</div>
-                  <div className="text-sm text-stone-500">{s.l}</div>
-                </div>
-              ))}
+            <div className="flex items-center gap-5 pt-2">
+              <a
+                href="#apply"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-[#1B4B43] text-white font-bold rounded-full text-base transition-colors duration-300 hover:bg-[#123730]"
+              >
+                <Send className="w-4 h-4" />
+                فرم درخواست
+              </a>
+              <a
+                href="#terms"
+                className="inline-flex items-center gap-2 font-bold text-[#111827] border-b-2 border-[#D97706] pb-0.5 hover:text-[#1B4B43] transition-colors"
+              >
+                شرایط دوره
+                <ArrowDown className="w-4 h-4" />
+              </a>
             </div>
           </div>
 
-          {/* Hero Image */}
-          <div className="flex items-center justify-center">
-            <div className="relative w-full max-w-sm aspect-square rounded-3xl overflow-hidden shadow-2xl border border-stone-200/60 bg-[#FDFCF8]">
+          {/* عکس + کارنامه */}
+          <figure className="max-w-xs md:max-w-none">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-stone-200">
               <Image
-                src="/images/founder-lab-hero.png"
-                alt="مسیر ایده تا شواهد"
+                src="/images/farjad-portrait.jpg"
+                alt="فرجاد پورمحمد"
                 fill
-                className="object-contain p-8"
+                sizes="(max-width: 768px) 20rem, 260px"
+                className="object-cover"
                 priority
               />
-              {/* floating badge */}
-              <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm border border-stone-200 px-4 py-2 rounded-2xl shadow-lg">
-                <p className="text-xs text-stone-500">نتیجه</p>
-                <p className="text-sm font-bold text-[#1B4B43]">ابهام → وضوح</p>
-              </div>
             </div>
+            <figcaption className="mt-4">
+              <span className="block font-bold text-[#111827] text-base mb-3">فرجاد پورمحمد</span>
+              <ul className="space-y-2 text-sm leading-relaxed text-stone-600">
+                {TRACK_RECORD.map((t) => (
+                  <li key={t} className="border-r-2 border-[#D97706] pr-3">{t}</li>
+                ))}
+              </ul>
+              <ul className="mt-5 space-y-2.5 text-sm">
+                {SOCIALS.map(({ label, href, Icon }) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-stone-500 hover:text-[#1B4B43] transition-colors"
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* ─── منتورینگ چی نیست ─────────────────────────────────── */}
+      <section className="px-6 py-20 border-t border-stone-200/70">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[260px_1fr] gap-10 lg:gap-20">
+          <h2 className="text-3xl font-black text-[#111827] leading-snug md:sticky md:top-28 self-start">
+            منتورینگ،
+            <br />
+            <span className="text-stone-400">answering questions</span>
+            <br />
+            نیست.
+          </h2>
+
+          <div className="space-y-8 max-w-2xl">
+            <p className="text-lg leading-[2.1] text-stone-700">
+              اینکه یک نفر به همه‌ی سؤال‌های شما جواب بدهد، دلیل نمی‌شود نتیجه‌ی
+              درستی بگیرید. جواب دادن به سؤال، کارِ مشاور و کارشناس است. کار من در
+              این ۸ هفته چیز دیگری است:
+            </p>
+
+            <ul className="space-y-0 text-lg font-medium text-[#111827]">
+              {[
+                ["تشخیص مسئله‌ی اشتباه", "قبل از اینکه شش ماه رویش وقت بگذارید"],
+                ["پرسیدن سؤال درست", "همان‌که خودتان از خودتان نمی‌پرسید"],
+                ["دیدن pattern", "چیزی که بار اول است می‌بینید، من بار صدم است"],
+                ["طراحی آزمایش", "ارزان‌ترین راهِ فهمیدنِ حقیقت"],
+                ["ایجاد accountability", "هفته‌ی بعد می‌پرسم انجامش دادید یا نه"],
+                ["فشار روی execution", "ایده ارزان است؛ اجرا همه‌چیز است"],
+              ].map(([t, d]) => (
+                <li
+                  key={t}
+                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-4 border-b border-stone-200/70"
+                >
+                  <span className="font-bold">{t}</span>
+                  <span className="text-sm font-normal text-stone-500">{d}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* ─── CALLOUT ──────────────────────────────────────────── */}
-      <section className="px-6 mb-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 md:p-8 flex items-start gap-5">
-            <div className="bg-amber-100 p-3 rounded-2xl shrink-0">
-              <Lightbulb className="w-7 h-7 text-amber-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-amber-900 mb-1">فرصت محدود</h3>
-              <p className="text-amber-800 leading-relaxed">
-                تنها ۵ تیم پذیرفته می‌شوند. پس از پایان دوره، امکان ادامه منتورشیپ بلندمدت با ۲ یا ۳ تیم منتخب وجود دارد.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── WHAT IS THIS ─────────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-start">
-          <div className="md:col-span-2 space-y-3">
-            <div className="inline-flex items-center gap-2 text-[#1B4B43] text-sm font-bold uppercase tracking-widest">
-              <Sparkles className="w-4 h-4" /> درباره برنامه
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-[#111827] leading-tight">
-              این برنامه<br />دقیقاً چیست؟
+      {/* ─── از کانال تلگرام ──────────────────────────────────── */}
+      <section className="px-6 py-20 bg-[#f6f3ec] border-y border-stone-200/70">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[260px_1fr] gap-10 lg:gap-20 items-start">
+          <div className="md:sticky md:top-28 space-y-4">
+            <h2 className="text-3xl font-black text-[#111827] leading-snug">
+              این حرف‌ها
+              <br />
+              تازه نیست.
             </h2>
-          </div>
-          <div className="md:col-span-3 space-y-6 text-base leading-loose text-stone-600">
-            <p>
-              اگر در مرحله ایده یا Pre-MVP هستید، مشکل اصلی شما کمبود اطلاعات نیست. مشکل، حجم زیادی از فرضیه‌ها، تصمیم‌های ناتمام و ابهام درباره مشتری، بازار، محصول و مدل کسب‌وکار است.
+            <p className="text-stone-600 leading-relaxed">
+              قبل از اینکه این صفحه وجود داشته باشد، همه‌اش را توی کانالم نوشته
+              بودم.
             </p>
-            <div className="bg-[#1B4B43]/8 border-r-4 border-[#1B4B43] pr-6 py-4 rounded-l-xl">
-              <p className="font-bold text-[#1B4B43] text-lg mb-2">این دوره برای ساختن Pitch Deck نیست.</p>
-              <p className="text-stone-600 leading-relaxed">
-                قرار است در ۸ هفته، مهم‌ترین فرض‌های کسب‌وکار را روشن کنیم، ابهام را کاهش دهیم و مشخص کنیم که قدم بعدی استارتاپ واقعاً چیست.
+            <a
+              href="https://t.me/Heros_Journey"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-[#1B4B43] font-bold hover:text-[#123730] transition-colors"
+            >
+              <Send className="w-4 h-4" />
+              سفر قهرمانی یک منتور
+            </a>
+          </div>
+
+          <div className="space-y-5 max-w-2xl w-full">
+            {/* پیام ۱: نظرسنجی */}
+            <article className="bg-white rounded-2xl rounded-tr-md border border-stone-200 shadow-[0_2px_12px_-4px_rgba(28,25,23,0.08)] p-6">
+              <header className="flex items-baseline justify-between gap-4 mb-3">
+                <span dir="ltr" className="font-bold text-[#1B4B43]">Farjad A Startup Geek :)</span>
+                <time className="text-xs text-stone-400 shrink-0">۹ آگوست</time>
+              </header>
+              <p className="leading-[2] text-[#1C1917] mb-5">
+                دوره‌ی خصوصی منتورشیپ بذارم؟ ماکسیمم ۵ تیم. دوره‌ی ۸ هفته‌ای. هر
+                هفته ۹۰ دقیقه. هر دو هفته یک جلسه‌ی اضافه‌ی خصوصی منتورشیپ ۱:۱
+                برای هر تیم…
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── FIT CARDS ────────────────────────────────────────── */}
-      <section className="px-6 pb-20">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-
-          <div className="bg-white border border-stone-200 rounded-3xl p-8 md:p-10 shadow-sm hover:shadow-md transition-shadow group">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="bg-emerald-100 p-3 rounded-2xl">
-                <Check className="w-6 h-6 text-emerald-700" />
-              </div>
-              <h2 className="text-2xl font-bold text-[#111827]">مناسب چه کسانی است؟</h2>
-            </div>
-            <ul className="space-y-5">
-              {[
-                "در مرحله Idea، Validation یا Pre-MVP قرار دارید.",
-                "ایده‌ای مشخص دارید، اما مسیر نهایی روشن نیست.",
-                "آماده‌اید فرض‌های خود را زیر سؤال ببرید.",
-                "بین جلسات واقعاً کار می‌کنید.",
-                "می‌خواهید بدانید قدم واقعی بعدی چیست.",
-              ].map((t, i) => (
-                <li key={i} className="flex gap-4 items-start text-stone-700">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
-                    <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <div className="flex justify-between mb-1.5 font-medium text-[#111827]">
+                    <span>آره حتماً. ما شرکت می‌کنیم</span>
+                    <span className="font-bold">٪۷۱</span>
                   </div>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="bg-white border border-stone-200 rounded-3xl p-8 md:p-10 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="bg-red-100 p-3 rounded-2xl">
-                <X className="w-6 h-6 text-red-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-[#111827]">مناسب چه کسانی نیست؟</h2>
-            </div>
-            <ul className="space-y-5">
-              {[
-                "کسی که فقط دنبال مدرک یا جلسات انگیزشی است.",
-                "تیمی که انتظار دارد Mentor برایش مشتری فراهم کند.",
-                "فاندری که فقط دنبال تأیید ایده‌اش است.",
-              ].map((t, i) => (
-                <li key={i} className="flex gap-4 items-start text-stone-500">
-                  <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                    <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <div className="h-full w-[71%] bg-[#1B4B43] rounded-full" />
                   </div>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 8-WEEK JOURNEY ───────────────────────────────────── */}
-      <section id="program" className="px-6 py-20 bg-stone-50/60 border-y border-stone-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 text-[#1B4B43] text-sm font-bold uppercase tracking-widest mb-4">
-              <TrendingUp className="w-4 h-4" /> مسیر برنامه
-            </div>
-            <h2 className="text-4xl md:text-5xl font-black text-[#111827] mb-4">مسیر ۸ هفته‌ای</h2>
-            <p className="text-lg text-stone-500 max-w-2xl mx-auto leading-relaxed">
-              هر هفته حداقل یک عدم‌قطعیت مهم کمتر می‌شود — حتی اگر پیشرفت به معنی کشف یک اشتباه باشد.
-            </p>
-          </div>
-
-          <div className="bg-white border border-stone-200 rounded-3xl p-4 md:p-8 shadow-sm">
-            <Accordion type="single" collapsible className="w-full space-y-3">
-              {[
-                { w: 1, title: "The Founder & The Thesis", out: "Venture Thesis v0.1 + Founder Baseline", desc: "تفکیک آنچه می‌دانیم، آنچه باور داریم و آنچه هنوز نمی‌دانیم. ساخت نسخه اولیه Venture Thesis و مشخص‌کردن مهم‌ترین ابهام‌ها.", icon: <Target className="w-5 h-5" /> },
-                { w: 2, title: "Problem Deconstruction", out: "Problem Map + Top 5 Critical Assumptions", desc: "شکستن مسئله به Trigger، Frequency، Severity و Cost. پیدا کردن فرض‌های خطرناکی که اگر غلط باشند، کل ایده را زیر سؤال می‌برند.", icon: <Search className="w-5 h-5" /> },
-                { w: 3, title: "Customer Discovery", out: "Customer Hypothesis + Evidence Log", desc: "شناخت مشتری واقعی و یادگیری گفت‌وگوی درست با مشتری؛ فهم رفتار، تجربه و مسئله واقعی به‌جای پرسیدن سؤال‌های تأییدی.", icon: <Users className="w-5 h-5" /> },
-                { w: 4, title: "Market Reality & Positioning", out: "Market Map + Venture Thesis v0.2", desc: "دیدن بازار همان‌طور که هست: رقبا، جایگزین‌ها، Doing Nothing، موانع ورود و دلیل واقعی انتخاب شدن.", icon: <Eye className="w-5 h-5" /> },
-              ].map((week) => (
-                <AccordionItem key={week.w} value={`week-${week.w}`} className="border border-stone-100 bg-stone-50/50 hover:bg-white transition-colors rounded-2xl overflow-hidden">
-                  <AccordionTrigger className="hover:no-underline px-5 py-4 data-[state=open]:text-[#1B4B43]">
-                    <div className="flex items-center gap-4 text-right w-full">
-                      <div className="bg-[#1B4B43]/10 text-[#1B4B43] p-2 rounded-xl shrink-0">{week.icon}</div>
-                      <span className="font-mono text-stone-400 text-xs shrink-0">W0{week.w}</span>
-                      <span className="font-bold text-lg">{week.title}</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-5 pb-5 pt-1 text-base leading-relaxed text-stone-600">
-                    <p className="mb-4">{week.desc}</p>
-                    <div className="bg-[#1B4B43]/8 px-4 py-3 rounded-xl flex flex-col md:flex-row gap-2 md:items-center border border-[#1B4B43]/10">
-                      <span className="text-[#1B4B43] font-bold text-xs uppercase tracking-widest shrink-0">Output</span>
-                      <span className="font-medium text-[#1B4B43]">{week.out}</span>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-
-              {/* mid separator */}
-              <div className="relative py-4 flex items-center justify-center">
-                <div className="absolute h-px w-full bg-gradient-to-r from-transparent via-stone-200 to-transparent"></div>
-                <span className="relative bg-amber-50 border border-amber-200 text-amber-700 px-5 py-1.5 rounded-full text-sm font-semibold shadow-sm">
-                  نیمه دوم: راه‌حل، مدل درآمدی و تصمیم نهایی
-                </span>
-              </div>
-
-              {[
-                { w: 5, title: "Solution & Value Proposition", out: "Solution Hypothesis + What We Will NOT Build", desc: "طراحی کوچک‌ترین راه‌حلی که ارزش اصلی را قابل آزمایش کند. تصمیم مهم: چه چیزی را فعلاً نسازیم.", icon: <Zap className="w-5 h-5" /> },
-                { w: 6, title: "Business Model & Kill Risks", out: "Business Model Hypothesis + Kill-Risk Map", desc: "بررسی اینکه چه کسی پول می‌دهد، چرا، چقدر. سپس شناسایی سه ریسک که می‌توانند کسب‌وکار را بکشند.", icon: <Flame className="w-5 h-5" /> },
-                { w: 7, title: "The Critical Experiment", out: "Critical Experiment + Evidence", desc: "انتخاب پرریسک‌ترین فرض و طراحی ارزان‌ترین آزمایش معتبر برای نزدیک‌شدن به حقیقت.", icon: <Brain className="w-5 h-5" /> },
-                { w: 8, title: "Founder Decision Board", out: "Decision + 90-Day Execution Plan", desc: "مرور چیزی که باور داشتیم، چیزی که یاد گرفتیم، چیزی که اشتباه بود و تصمیم ۹۰ روز بعد. Demo Day نداریم؛ Decision Day داریم.", icon: <ShieldCheck className="w-5 h-5" /> },
-              ].map((week) => (
-                <AccordionItem key={week.w} value={`week-${week.w}`} className="border border-stone-100 bg-stone-50/50 hover:bg-white transition-colors rounded-2xl overflow-hidden">
-                  <AccordionTrigger className="hover:no-underline px-5 py-4 data-[state=open]:text-[#1B4B43]">
-                    <div className="flex items-center gap-4 text-right w-full">
-                      <div className="bg-[#1B4B43]/10 text-[#1B4B43] p-2 rounded-xl shrink-0">{week.icon}</div>
-                      <span className="font-mono text-stone-400 text-xs shrink-0">W0{week.w}</span>
-                      <span className="font-bold text-lg">{week.title}</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-5 pb-5 pt-1 text-base leading-relaxed text-stone-600">
-                    <p className="mb-4">{week.desc}</p>
-                    <div className="bg-[#1B4B43]/8 px-4 py-3 rounded-xl flex flex-col md:flex-row gap-2 md:items-center border border-[#1B4B43]/10">
-                      <span className="text-[#1B4B43] font-bold text-xs uppercase tracking-widest shrink-0">Output</span>
-                      <span className="font-medium text-[#1B4B43]">{week.out}</span>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── FOUNDER FOCUS 2×2 ────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="md:grid md:grid-cols-5 gap-12 mb-16 items-end">
-            <div className="md:col-span-3 space-y-4">
-              <div className="inline-flex items-center gap-2 text-[#1B4B43] text-sm font-bold uppercase tracking-widest">
-                <Eye className="w-4 h-4" /> فراتر از ایده
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black text-[#111827] leading-tight">
-                Founder هم زیر نور قرار می‌گیرد
-              </h2>
-            </div>
-            <p className="md:col-span-2 text-stone-500 leading-relaxed md:text-right">
-              اگر قرار باشد یک سال کنار تیمی بمانم، کیفیت Founder از جذابیت اولیه ایده مهم‌تر است.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-6">
-            {[
-              { icon: <Search className="w-7 h-7 text-[#1B4B43]" />, title: "Truth", bg: "bg-emerald-50", border: "border-emerald-100", desc: "وقتی شواهد برخلاف باور Founder است، آیا آن را می‌پذیرد یا برای حفظ ایده توجیه می‌سازد؟" },
-              { icon: <Zap className="w-7 h-7 text-amber-600" />, title: "Agency", bg: "bg-amber-50", border: "border-amber-100", desc: "بین جلسات واقعاً اقدام می‌کند یا منتظر شرایط کامل، مشتری آماده یا دستور بعدی می‌ماند؟" },
-              { icon: <Brain className="w-7 h-7 text-blue-600" />, title: "Learning", bg: "bg-blue-50", border: "border-blue-100", desc: "آیا اطلاعات جدید واقعاً باعث تغییر نظر و تصمیم می‌شود یا فقط به فایل‌ها اضافه می‌شود؟" },
-              { icon: <ShieldCheck className="w-7 h-7 text-purple-600" />, title: "Self-Awareness", bg: "bg-purple-50", border: "border-purple-100", desc: "آیا Founder می‌تواند ضعف رفتاری خودش را ببیند یا مشکل همیشه بیرون از خودش است؟" },
-            ].map((c) => (
-              <div key={c.title} className={`${c.bg} border ${c.border} p-8 rounded-3xl hover:shadow-md transition-shadow group`}>
-                <div className="bg-white/70 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  {c.icon}
                 </div>
-                <h3 className="text-2xl font-bold text-[#111827] mb-3">{c.title}</h3>
-                <p className="text-stone-600 leading-relaxed">{c.desc}</p>
+                <div>
+                  <div className="flex justify-between mb-1.5 text-stone-500">
+                    <span>جذابیتی نداره!</span>
+                    <span>٪۲۹</span>
+                  </div>
+                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <div className="h-full w-[29%] bg-stone-300 rounded-full" />
+                  </div>
+                </div>
+                <p className="text-xs text-stone-400 pt-1">۲۱ رأی · نظرسنجی کانال</p>
               </div>
+            </article>
+
+            {/* پیام ۲ */}
+            <article className="bg-white rounded-2xl rounded-tr-md border border-stone-200 shadow-[0_2px_12px_-4px_rgba(28,25,23,0.08)] p-6">
+              <header className="flex items-baseline justify-between gap-4 mb-3">
+                <span dir="ltr" className="font-bold text-[#1B4B43]">Farjad A Startup Geek :)</span>
+                <time className="text-xs text-stone-400 shrink-0">۹ آگوست</time>
+              </header>
+              <p className="leading-[2] text-[#1C1917]">
+                پاسخ به سؤال اساساً وظیفه‌ی مشاور و کارشناس است! اینکه یک نفر به
+                همه‌ی سؤالات شما جواب بدهد، دلیل بر این نمی‌شود که نتیجه‌ی درستی
+                برایتان کسب بشود. در مواجهه با آدم‌ها این دو تا را از هم جدا کنید:
+                Credibility و Competency.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── شرایط ────────────────────────────────────────────── */}
+      <section id="terms" className="px-6 py-20 scroll-mt-24">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[260px_1fr] gap-10 lg:gap-20">
+          <div className="md:sticky md:top-28 self-start space-y-4">
+            <h2 className="text-3xl font-black text-[#111827] leading-snug">
+              شرایط،
+              <br />
+              رک و راست.
+            </h2>
+            <p className="text-stone-600 leading-relaxed">
+              همان‌چیزی که توی کانال نوشتم؛ نه کمتر، نه بیشتر.
+            </p>
+          </div>
+
+          <dl className="max-w-2xl w-full">
+            {[
+              ["ظرفیت", "۵ تیم. بیشتر نمی‌گیرم، چون وقت واقعی می‌گذارم."],
+              ["طول دوره", "۸ هفته."],
+              ["جلسه‌ی گروهی", "هر هفته ۹۰ دقیقه — ۲۰ دقیقه Concept، ۵۰ دقیقه Hot Seat، ۲۰ دقیقه تصمیم و قدم بعد."],
+              ["جلسه‌ی خصوصی", "هر دو هفته یک‌بار، ۱:۱ با هر تیم — هفته‌های ۲، ۴، ۶ و ۸."],
+              ["هزینه", "رایگان. در این ۸ هفته هیچ پولی و هیچ سهامی رد و بدل نمی‌شود."],
+              ["بعد از هفته‌ی هشتم", "اگر رشد ببینم، با ۳ تیم وارد همکاری ۱۲ ماهه می‌شویم — آنجا ۲.۵٪ سهام قرارداد می‌شود."],
+              ["Demo Day", "نداریم. Decision Day داریم — روزی که تصمیم می‌گیرید، نه روزی که اجرا می‌روید."],
+            ].map(([t, d]) => (
+              <div
+                key={t}
+                className="grid grid-cols-[7.5rem_1fr] md:grid-cols-[10rem_1fr] gap-4 py-5 border-b border-stone-200/70 items-baseline"
+              >
+                <dt className="font-black text-[#1B4B43]">{t}</dt>
+                <dd className="leading-[1.9] text-stone-700">{d}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ─── مسیر ۸ هفته ─────────────────────────────────────── */}
+      <section className="px-6 py-20 bg-[#f6f3ec] border-y border-stone-200/70">
+        <div className="max-w-5xl mx-auto">
+          <div className="max-w-2xl mb-12 space-y-4">
+            <h2 className="text-3xl font-black text-[#111827]">هفته به هفته چه می‌کنیم؟</h2>
+            <p className="text-stone-600 leading-[1.9]">
+              هر هفته حداقل یک عدم‌قطعیت مهم کم می‌شود — حتی اگر پیشرفت به معنی
+              کشف یک اشتباه باشد. هر تیم هفته‌ای یک Founder Journal هم می‌نویسد:
+              چه باور داشتم، چه شواهدی به چالشش کشید، چه تصمیمی عوض شد، از چه
+              کاری فرار کردم.
+            </p>
+          </div>
+
+          <ol className="max-w-3xl">
+            {WEEKS.map((w) => (
+              <li
+                key={w.n}
+                className="grid grid-cols-[2.5rem_1fr] gap-5 py-5 border-b border-stone-300/50 items-baseline"
+              >
+                <span className="text-2xl font-black text-stone-300 tabular-nums text-center">{w.n}</span>
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <h3 className="font-bold text-lg text-[#111827]" dir="ltr">{w.title}</h3>
+                  <p className="text-stone-600 basis-full leading-relaxed">{w.desc}</p>
+                  <p className="text-sm font-semibold text-[#1B4B43]">خروجی: {w.out}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <p className="max-w-3xl mt-8 text-stone-600 leading-[1.9]">
+            بعضی هفته‌ها عمداً یک اقدام واقعی وسط است: صحبت با آدم واقعی، حذف
+            feature محبوب‌تان، یا آزمایشی که ممکن است نشان بدهد فرض اصلی غلط بوده.
+            هدف فشار مصنوعی نیست — دیدن رفتار شما در موقعیت واقعی است.
+          </p>
+        </div>
+      </section>
+
+      {/* ─── به چی نگاه می‌کنم ─────────────────────────────────── */}
+      <section className="px-6 py-24 bg-[#111827] text-white">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[260px_1fr] gap-10 lg:gap-20">
+          <div className="md:sticky md:top-28 self-start space-y-4">
+            <h2 className="text-3xl font-black leading-snug">
+              فقط به ایده
+              <br />
+              نگاه نمی‌کنم.
+            </h2>
+            <p className="text-stone-300/90 leading-[1.9]">
+              اگر قرار باشد یک سال کنار تیمی بمانم، کیفیت فاندر از جذابیت ایده
+              مهم‌تر است. توی این ۸ هفته دنبال جواب این سؤال‌ها هستم:
+            </p>
+          </div>
+
+          <div className="max-w-2xl">
+            <ul className="text-xl md:text-2xl font-bold leading-relaxed space-y-0">
+              {LENS_QUESTIONS.map((q, i) => (
+                <li key={i} className="py-4 border-b border-white/10 last:border-0">
+                  {q}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-8 text-stone-300/80 leading-[1.9]">
+              این‌ها را همان موقع توی کانال هم نوشتم — حتی اگر هیچ‌وقت با من
+              همکاری نکنید، برای شروعِ خودتان سرنخ خوبی است.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── برای کی هست ──────────────────────────────────────── */}
+      <section className="px-6 py-20">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-20">
+          <div className="space-y-5">
+            <h2 className="text-2xl font-black text-[#111827]">بیایید، اگر…</h2>
+            <ul className="space-y-3.5 text-lg leading-[1.9] text-stone-700">
+              <li>در مرحله‌ی Idea، Validation یا Pre-MVP هستید.</li>
+              <li>ایده‌ی مشخصی دارید ولی مسیر روشن نیست.</li>
+              <li>آماده‌اید فرض‌هایتان را زیر سؤال ببرید — واقعاً.</li>
+              <li>بین جلسات کار می‌کنید، نه فقط توی جلسات.</li>
+            </ul>
+          </div>
+          <div className="space-y-5">
+            <h2 className="text-2xl font-black text-stone-400">نیایید، اگر…</h2>
+            <ul className="space-y-3.5 text-lg leading-[1.9] text-stone-500">
+              <li>دنبال مدرک یا جلسه‌ی انگیزشی هستید.</li>
+              <li>انتظار دارید منتور برایتان مشتری بیاورد.</li>
+              <li>فقط می‌خواهید کسی ایده‌تان را تأیید کند.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── عکس‌ها ───────────────────────────────────────────── */}
+      <section className="px-6 py-20 bg-[#f6f3ec] border-y border-stone-200/70">
+        <div className="max-w-5xl mx-auto">
+          <div className="max-w-2xl mb-10 space-y-4">
+            <h2 className="text-3xl font-black text-[#111827]">این کار را واقعاً انجام می‌دهم.</h2>
+            <p className="text-stone-600 leading-[1.9]">
+              نه یک دوره‌ی آنلاین که یک‌بار ضبط شده باشد. این چند سال، همین کار
+              را کنار تیم‌ها کرده‌ام — در جلسه‌ی هفتگی، در اتاق شورای منطقه‌ای
+              یورک، و پشت میکروفون.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[9rem] md:auto-rows-[11rem] gap-3">
+            {PHOTOS.map((p) => (
+              <figure
+                key={p.src}
+                className={`relative rounded-2xl overflow-hidden bg-stone-300 group ${p.span ?? ""}`}
+              >
+                <Image
+                  src={p.src}
+                  alt={p.alt}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <figcaption className="absolute inset-x-0 bottom-0 p-3 text-xs md:text-sm text-white font-medium bg-gradient-to-t from-black/75 via-black/40 to-transparent pt-10">
+                  {p.caption}
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── JOURNAL + PRESSURE ───────────────────────────────── */}
-      <section className="px-6 pb-20">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-          <div className="bg-white border border-stone-200 rounded-3xl p-8 md:p-10 shadow-sm">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="bg-[#1B4B43]/10 p-3 rounded-2xl">
-                <BookOpen className="w-6 h-6 text-[#1B4B43]" />
-              </div>
-              <h2 className="text-2xl font-bold text-[#111827]">Founder Journal هفتگی</h2>
-            </div>
-            <div className="space-y-5">
-              {[
-                "این هفته چه چیزی را باور داشتم؟",
-                "چه شواهدی آن را به چالش کشید؟",
-                "چه تصمیمی را عوض کردم؟",
-                "از انجام چه کاری فرار کردم؟",
-              ].map((q, i) => (
-                <div key={i} className="flex gap-5 items-center p-4 bg-stone-50 rounded-2xl">
-                  <span className="font-black text-2xl text-stone-300 shrink-0">0{i + 1}</span>
-                  <p className="font-medium text-[#111827]">{q}</p>
-                </div>
-              ))}
-            </div>
+      {/* ─── فرم ──────────────────────────────────────────────── */}
+      <section id="apply" className="px-6 pb-28 scroll-mt-24">
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-10 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-black text-[#111827]">فرم درخواست</h2>
+            <p className="text-lg text-stone-600 leading-[1.9] max-w-xl">
+              پنج دقیقه وقت می‌گیرد و جواب صادقانه مهم‌تر از جواب کامل است. طی ۴۸
+              ساعت جواب می‌دهم و یک گفت‌وگوی ۳۰ دقیقه‌ای می‌گذاریم — این فرم،
+              اپلیکیشن نهایی نیست.
+            </p>
           </div>
 
-          <div className="bg-stone-900 text-white rounded-3xl p-8 md:p-10 relative overflow-hidden">
-            <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#1B4B43]/30 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="bg-red-500/20 p-3 rounded-2xl">
-                  <Flame className="w-6 h-6 text-red-400" />
-                </div>
-                <h2 className="text-2xl font-bold">Pressure Moments</h2>
-              </div>
-              <p className="text-stone-300 leading-relaxed mb-8 text-base">
-                بعضی هفته‌ها عمداً یک تصمیم یا اقدام واقعی وجود دارد: صحبت با آدم واقعی، حذف Feature محبوب، یا اجرای آزمایشی که ممکن است نشان دهد فرض اصلی غلط بوده است.
-              </p>
-              <div className="bg-red-500/10 border border-red-500/20 text-red-300 font-bold p-4 rounded-2xl text-base">
-                هدف فشار مصنوعی نیست — دیدن رفتار Founder در موقعیت واقعی است.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── FORMAT ───────────────────────────────────────────── */}
-      <section className="px-6 py-20 bg-stone-50/60 border-y border-stone-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-black text-[#111827]">فرمت اجرا</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white border border-stone-200 p-8 rounded-3xl shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-blue-100 p-3 rounded-2xl"><Users className="w-6 h-6 text-blue-600" /></div>
-                <h3 className="text-xl font-bold text-[#111827]">جلسات گروهی — هفتگی ۹۰ دقیقه</h3>
-              </div>
-              <div className="space-y-4">
-                {[["۲۰ دقیقه", "Concept"], ["۵۰ دقیقه", "Hot Seat"], ["۲۰ دقیقه", "Decision & Next Move"]].map(([t, l]) => (
-                  <div key={l} className="flex items-center gap-4 p-3 bg-stone-50 rounded-xl">
-                    <span className="font-bold text-[#1B4B43] shrink-0">{t}</span>
-                    <span className="text-stone-600">{l}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white border border-stone-200 p-8 rounded-3xl shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-purple-100 p-3 rounded-2xl"><User className="w-6 h-6 text-purple-600" /></div>
-                <h3 className="text-xl font-bold text-[#111827]">جلسات خصوصی ۱:۱</h3>
-              </div>
-              <p className="text-stone-600 leading-relaxed">
-                در هفته‌های ۲، ۴، ۶ و ۸، هر تیم تا ۶۰ دقیقه جلسه 1:1 برای بررسی عمیق‌تر مسئله و تصمیم‌های همان مرحله دارد.
-              </p>
-              <div className="mt-6 grid grid-cols-4 gap-3">
-                {["۲", "۴", "۶", "۸"].map((w) => (
-                  <div key={w} className="bg-purple-50 border border-purple-100 rounded-xl p-3 text-center">
-                    <span className="font-bold text-purple-700">W0{w}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── OUTPUTS 3-COL ────────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-black text-[#111827] mb-4">در پایان ۸ هفته چه خواهید داشت؟</h2>
-            <p className="text-stone-500 max-w-xl mx-auto">سه خروجی مشخص، قابل استفاده و متعلق به شما</p>
-          </div>
-          <div className="grid lg:grid-cols-3 gap-6">
-            {[
-              { n: "۰۱", title: "Venture Thesis", icon: <Target className="w-8 h-8 text-[#1B4B43]" />, bg: "bg-emerald-50 border-emerald-100", desc: "سند زنده از Problem، Customer، Market، Solution، Business Model، Risks و Evidence." },
-              { n: "۰۲", title: "Evidence Book", icon: <BookOpen className="w-8 h-8 text-blue-600" />, bg: "bg-blue-50 border-blue-100", desc: "مجموع تحقیق، مصاحبه، آزمایش، فرض‌های ردشده و نشانه‌هایی که تصمیم‌های شما را تغییر داده‌اند." },
-              { n: "۰۳", title: "برنامه ۹۰ روزه", icon: <TrendingUp className="w-8 h-8 text-amber-600" />, bg: "bg-amber-50 border-amber-100", desc: "سه اولویت مشخص برای ۹۰ روز بعد، معیارها، آزمایش‌های بعدی و ریتم اجرای هفتگی." },
-            ].map((o) => (
-              <div key={o.n} className={`${o.bg} border rounded-3xl p-8 md:p-10 flex flex-col h-full hover:shadow-md transition-shadow`}>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="bg-white/80 w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm">{o.icon}</div>
-                  <span className="font-mono font-black text-3xl text-black/10">{o.n}</span>
-                </div>
-                <h3 className="text-xl font-bold text-[#111827] mb-3">{o.title}</h3>
-                <p className="text-stone-600 leading-relaxed mt-auto">{o.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── APPLICATION FORM ──────────────────────────────────── */}
-      <section id="apply" className="px-6 pb-24">
-        <div className="max-w-6xl mx-auto">
-          
-          {/* Top CTA Banner */}
-          <div className="relative bg-[#111827] text-white rounded-[40px] p-10 md:p-14 mb-8 overflow-hidden">
-            <div className="absolute top-0 left-0 w-80 h-80 bg-[#1B4B43]/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="space-y-3 text-right">
-                <h2 className="text-3xl md:text-4xl font-black leading-tight">
-                  آماده‌اید ایده‌تان را<br />
-                  <span className="text-[#4ade80]">واقعاً زیر سؤال ببرید؟</span>
-                </h2>
-                <p className="text-stone-300 leading-relaxed max-w-md">
-                  فرم زیر را پر کنید. ۵ دقیقه وقت می‌برد و جواب صادقانه مهم‌تر از جواب کامل است.
-                </p>
-              </div>
-              <div className="bg-white/10 border border-white/10 rounded-2xl p-5 text-right shrink-0 space-y-3 text-sm text-stone-300">
-                <p className="flex items-center gap-3"><MapPin className="w-4 h-4 text-[#4ade80] shrink-0" /> Toronto, Canada</p>
-                <p className="flex items-center gap-3"><Globe className="w-4 h-4 text-[#4ade80] shrink-0" /> www.farjadp.info</p>
-                <p className="flex items-center gap-3"><Mail className="w-4 h-4 text-[#4ade80] shrink-0" /> its@farjadp.info</p>
-                <div className="bg-[#4ade80]/10 text-[#4ade80] font-mono text-xs px-3 py-1 rounded-full inline-block border border-[#4ade80]/20">COHORT &apos;26</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Form Card */}
-          <div className="bg-white border border-stone-200 rounded-3xl p-8 md:p-12 shadow-sm">
-            <div className="mb-8 pb-6 border-b border-stone-100">
-              <h3 className="text-2xl font-black text-[#111827] mb-1">فرم درخواست ورود</h3>
-              <p className="text-stone-500 text-sm">همه فیلدها اجباری هستند — صادقانه پاسخ دهید، کامل بودن مهم نیست.</p>
-            </div>
+          <div className="bg-white border border-stone-200 rounded-3xl p-6 md:p-10 shadow-[0_2px_16px_-6px_rgba(28,25,23,0.1)]">
             <ApplicationForm />
+          </div>
+
+          <div className="mt-14 flex flex-col items-center gap-4">
+            <Image
+              src="/images/logo-lockup.png"
+              alt="فرجاد پورمحمد — AI Strategist"
+              width={997}
+              height={821}
+              className="w-60 max-w-full"
+            />
+            <p className="text-sm text-stone-400 text-center">
+              Cohort ’26 · Toronto / Online ·{" "}
+              <a href="mailto:its@farjadp.info" className="underline hover:text-[#1B4B43] transition-colors" dir="ltr">
+                its@farjadp.info
+              </a>
+            </p>
           </div>
         </div>
       </section>

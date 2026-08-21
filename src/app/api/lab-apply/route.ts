@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, stage, problem, why } = body;
+    const { name, email, phone, telegram, social, stage, problem, why, deckUrl, deckName } = body;
 
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -18,23 +18,39 @@ export async function POST(req: NextRequest) {
       "pre-mvp": "⚙️ Pre-MVP",
     };
 
-    const message = `
-🚀 *درخواست جدید — Founder Development Lab*
-━━━━━━━━━━━━━━━━━━━━━━
+    const lines = [
+      "🚀 *درخواست جدید — Founder Development Lab*",
+      "━━━━━━━━━━━━━━━━━━━━━━",
+      "",
+      `👤 *نام:* ${name}`,
+      `📧 *ایمیل:* ${email}`,
+      `📱 *تلفن:* ${phone}`,
+      `💬 *تلگرام:* ${telegram}`,
+    ];
 
-👤 *نام:* ${name}
-📧 *ایمیل:* ${email}
-📍 *مرحله:* ${stageLabel[stage] ?? stage}
+    if (social) lines.push(`🔗 *سوشیال:* ${social}`);
 
-📝 *مسئله / ایده:*
-${problem}
+    lines.push(
+      `📍 *مرحله:* ${stageLabel[stage] ?? stage}`,
+      "",
+      "📝 *مسئله / ایده:*",
+      problem,
+      "",
+      "💬 *چرا این برنامه؟*",
+      why
+    );
 
-💬 *چرا این برنامه؟*
-${why}
+    if (deckUrl) {
+      lines.push("", `📎 *پیچ‌دک:* [${deckName || "دانلود فایل"}](${deckUrl})`);
+    }
 
-━━━━━━━━━━━━━━━━━━━━━━
-🕐 ${new Date().toLocaleString("fa-IR", { timeZone: "America/Toronto" })}
-    `.trim();
+    lines.push(
+      "",
+      "━━━━━━━━━━━━━━━━━━━━━━",
+      `🕐 ${new Date().toLocaleString("fa-IR", { timeZone: "America/Toronto" })}`
+    );
+
+    const message = lines.join("\n");
 
     const res = await fetch(
       `https://api.telegram.org/bot${token}/sendMessage`,
@@ -45,6 +61,7 @@ ${why}
           chat_id: chatId,
           text: message,
           parse_mode: "Markdown",
+          disable_web_page_preview: true,
         }),
       }
     );
