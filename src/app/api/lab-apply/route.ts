@@ -1,75 +1,99 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { name, email, phone, telegram, social, stage, problem, why, deckUrl, deckName } = body;
 
+    if (!name || !email || !phone || !telegram || !stage || !problem || !why) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Save first — this is the durable record, Telegram is just a notification.
+    const application = await prisma.labApplication.create({
+      data: {
+        name,
+        email,
+        phone,
+        telegram,
+        social: social || null,
+        stage,
+        problem,
+        why,
+        deckUrl: deckUrl || null,
+        deckName: deckName || null,
+      },
+    });
+
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
+    let telegramOk = false;
 
-    if (!token || !chatId) {
-      return NextResponse.json({ error: "Telegram not configured" }, { status: 500 });
-    }
+    if (token && chatId) {
+      const stageLabel: Record<string, string> = {
+        idea: "💡 Idea",
+        validation: "🔍 Validation",
+        "pre-mvp": "⚙️ Pre-MVP",
+      };
 
-    const stageLabel: Record<string, string> = {
-      idea: "💡 Idea",
-      validation: "🔍 Validation",
-      "pre-mvp": "⚙️ Pre-MVP",
-    };
+      const lines = [
+        "🚀 *درخواست جدید — Founder Development Lab*",
+        "━━━━━━━━━━━━━━━━━━━━━━",
+        "",
+        `👤 *نام:* ${name}`,
+        `📧 *ایمیل:* ${email}`,
+        `📱 *تلفن:* ${phone}`,
+        `💬 *تلگرام:* ${telegram}`,
+      ];
 
-    const lines = [
-      "🚀 *درخواست جدید — Founder Development Lab*",
-      "━━━━━━━━━━━━━━━━━━━━━━",
-      "",
-      `👤 *نام:* ${name}`,
-      `📧 *ایمیل:* ${email}`,
-      `📱 *تلفن:* ${phone}`,
-      `💬 *تلگرام:* ${telegram}`,
-    ];
+      if (social) lines.push(`🔗 *سوشیال:* ${social}`);
 
-    if (social) lines.push(`🔗 *سوشیال:* ${social}`);
+      lines.push(
+        `📍 *مرحله:* ${stageLabel[stage] ?? stage}`,
+        "",
+        "📝 *مسئله / ایده:*",
+        problem,
+        "",
+        "💬 *چرا این برنامه؟*",
+        why
+      );
 
-    lines.push(
-      `📍 *مرحله:* ${stageLabel[stage] ?? stage}`,
-      "",
-      "📝 *مسئله / ایده:*",
-      problem,
-      "",
-      "💬 *چرا این برنامه؟*",
-      why
-    );
-
-    if (deckUrl) {
-      lines.push("", `📎 *پیچ‌دک:* [${deckName || "دانلود فایل"}](${deckUrl})`);
-    }
-
-    lines.push(
-      "",
-      "━━━━━━━━━━━━━━━━━━━━━━",
-      `🕐 ${new Date().toLocaleString("fa-IR", { timeZone: "America/Toronto" })}`
-    );
-
-    const message = lines.join("\n");
-
-    const res = await fetch(
-      `https://api.telegram.org/bot${token}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: "Markdown",
-          disable_web_page_preview: true,
-        }),
+      if (deckUrl) {
+        lines.push("", `📎 *پیچ‌دک:* [${deckName || "دانلود فایل"}](${deckUrl})`);
       }
-    );
 
-    if (!res.ok) {
-      const err = await res.json();
-      console.error("Telegram API error:", err);
-      return NextResponse.json({ error: "Failed to send to Telegram" }, { status: 500 });
+      lines.push(
+        "",
+        "━━━━━━━━━━━━━━━━━━━━━━",
+        `🕐 ${new Date().toLocaleString("fa-IR", { timeZone: "America/Toronto" })}`
+      );
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: lines.join("\n"),
+            parse_mode: "Markdown",
+            disable_web_page_preview: true,
+          }),
+        });
+        telegramOk = res.ok;
+        if (!res.ok) console.error("Telegram API error:", await res.json());
+      } catch (err) {
+        console.error("Telegram send failed:", err);
+      }
+    } else {
+      console.error("[lab-apply] Telegram not configured — application saved to DB only");
+    }
+
+    if (telegramOk !== application.telegramOk) {
+      await prisma.labApplication.update({
+        where: { id: application.id },
+        data: { telegramOk },
+      });
     }
 
     return NextResponse.json({ ok: true });

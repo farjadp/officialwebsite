@@ -446,3 +446,22 @@ model BookClubMember {
   name     String?
   joinedAt DateTime @default(now())
 }
+
+model LabApplication {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  telegram    String
+  social      String?
+  stage       String
+  problem     String
+  why         String
+  deckUrl     String?
+  deckName    String?
+  status      String   @default("NEW") // "NEW" | "CONTACTED" | "ARCHIVED"
+  telegramOk  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
