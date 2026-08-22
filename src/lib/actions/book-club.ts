@@ -117,6 +117,7 @@ const SessionSchema = z.object({
     sessionDate: z.string().min(1),
     googleEventId: z.string().optional(),
     meetLink: z.string().optional(),
+    readingAssignment: z.string().optional(),
     status: z.enum(["UPCOMING", "DONE", "CANCELED"]).default("UPCOMING"),
 })
 
@@ -131,6 +132,7 @@ export async function createBookClubSession(
         sessionDate: formData.get("sessionDate"),
         googleEventId: formData.get("googleEventId") || undefined,
         meetLink: formData.get("meetLink") || undefined,
+        readingAssignment: formData.get("readingAssignment") || undefined,
         status: formData.get("status") || "UPCOMING",
     })
     if (!parsed.success) return { status: "error", message: "Title and date are required." }
@@ -141,6 +143,7 @@ export async function createBookClubSession(
             sessionDate: new Date(parsed.data.sessionDate),
             googleEventId: parsed.data.googleEventId || null,
             meetLink: parsed.data.meetLink || null,
+            readingAssignment: parsed.data.readingAssignment || null,
             status: parsed.data.status,
         },
     })
@@ -164,6 +167,7 @@ export async function updateBookClubSession(
         sessionDate: formData.get("sessionDate"),
         googleEventId: formData.get("googleEventId") || undefined,
         meetLink: formData.get("meetLink") || undefined,
+        readingAssignment: formData.get("readingAssignment") || undefined,
         status: formData.get("status") || "UPCOMING",
     })
     if (!parsed.success) return { status: "error", message: "Title and date are required." }
@@ -175,6 +179,7 @@ export async function updateBookClubSession(
             sessionDate: new Date(parsed.data.sessionDate),
             googleEventId: parsed.data.googleEventId || null,
             meetLink: parsed.data.meetLink || null,
+            readingAssignment: parsed.data.readingAssignment || null,
             status: parsed.data.status,
             summary: (formData.get("summary") as string) || undefined,
         },

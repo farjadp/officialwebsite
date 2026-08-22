@@ -37,6 +37,7 @@ type SessionItem = {
     sessionDate: string
     googleEventId: string | null
     meetLink: string | null
+    readingAssignment: string | null
     summary: string | null
     status: string
 }
@@ -112,6 +113,12 @@ function SessionForm({
                     <option value="DONE">Done</option>
                     <option value="CANCELED">Canceled</option>
                 </select>
+                <input
+                    name="readingAssignment"
+                    defaultValue={session?.readingAssignment ?? ""}
+                    placeholder="چه بخشی باید خوانده شود (مثلاً: کسروی تا صفحه ۳۶)"
+                    className={`${inputCls} md:col-span-2`}
+                />
             </div>
             {session && (
                 <div>

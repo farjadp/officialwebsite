@@ -156,6 +156,19 @@ export default async function BookClubPage() {
                             <Video className="h-5 w-5" />
                             لینک Google Meet با دعوت‌نامه کلندر برایت ارسال می‌شود.
                         </p>
+                        {nextSession.readingAssignment && (
+                            <div className="mt-2 w-full max-w-2xl rounded-2xl border border-[#F7F0E3]/20 bg-[#F7F0E3]/10 p-6 text-right">
+                                <p className="mb-2 flex items-center gap-2 text-sm font-bold text-[#B08D57]">
+                                    📖 برای این جلسه بخوانید
+                                </p>
+                                <p className="text-lg font-medium leading-relaxed">
+                                    {nextSession.readingAssignment}
+                                </p>
+                                <p className="mt-3 text-sm leading-relaxed text-[#F7F0E3]/70">
+                                    این صفحه‌ها را با همان <strong className="font-bold text-[#F7F0E3]">نگاه محافظه‌کارانه</strong>‌ای بررسی می‌کنیم که در کارگاه‌های دکتر داروین صبوری آموختیم: تاریخ به‌مثابهٔ تداوم، نه گسست.
+                                </p>
+                            </div>
+                        )}
                         <p className="text-sm text-[#F7F0E3]/60">
                             🎙️ همه جلسات ضبط می‌شوند و خلاصه هر جلسه در گروه تلگرامی «مشروطه‌خوانی» منتشر می‌شود.
                         </p>
@@ -442,6 +455,120 @@ export default async function BookClubPage() {
                     </div>
                 </section>
             )}
+
+            {/* ---------- پرسش‌هایی که دنبال می‌کنیم ---------- */}
+            <section className="border-y border-[#B08D57]/20 bg-[#EDE3CE]/50 px-6 py-20">
+                <div className="mx-auto max-w-4xl">
+                    <div className="mb-6 text-center">
+                        <h2 className="font-serif text-4xl font-bold text-[#2B1B12]">پرسش‌هایی که دنبال می‌کنیم</h2>
+                        <p className="mt-3 text-[#5C4A3D]">
+                            خواندن با پرسش پیش می‌رود، نه با جمع‌آوری اطلاعات 🔎
+                        </p>
+                        <Ornament />
+                    </div>
+
+                    <div className="space-y-5">
+                        {[
+                            {
+                                n: "۱",
+                                q: "آیا مشروطه واکنشی ناگهانی بود، یا پروژه‌ای چهل‌ساله؟",
+                                a: "مستشارالدوله در «یک کلمه» (۱۲۴۹ ش) نوشت که آن یک کلمه، «قانون» است — و حتی پیشنهاد کرد حفظ قانون به «مجلسی مخصوص و مستقل» سپرده شود. یعنی طرح مجلس، چهل سال پیش از مجلس، روی کاغذ بود.",
+                            },
+                            {
+                                n: "۲",
+                                q: "چرا سه روایت متضاد به یک نتیجهٔ مشترک می‌رسند؟",
+                                a: "کسروی از موضع ضددینی، آدمیت از موضع سکولار ملی، و مقدمهٔ ۱۳۷۱ بر «بیداری ایرانیان» از موضعی کاملاً مخالف — هر سه از ناسازگاری ساختاری مشروطه و شریعت می‌گویند. در حالی که نائینی و آخوند خراسانی از درون همان سنت، این را انکار می‌کنند.",
+                            },
+                            {
+                                n: "۳",
+                                q: "خلع محمدعلی‌شاه زور بود یا حق؟",
+                                a: "اصل ۳۵ متمم قانون اساسی: «سلطنت ودیعه‌ای است که از جانب ملت به شخص تفویض می‌شود» — و ملت می‌تواند پس بگیرد. مشروطه‌خواهان در ۱۲۸۸ به متنی استناد کردند که خودشان دو سال پیش‌تر نوشته بودند.",
+                            },
+                            {
+                                n: "۴",
+                                q: "پرسش درست چیست؟ «چرا مشروطه شکست خورد» نیست.",
+                                a: "در آذر ۱۲۸۶ شاه با حدود ۷٬۰۰۰ نیرو به مجلس حمله کرد و در برابر ۱٬۵۰۰ مدافع باخت. شش ماه بعد، با نیروی کمتر، برد و مجلس را به توپ بست. پس بپرسیم: در آن شش ماه چه چیزی عوض شد؟",
+                            },
+                        ].map((item) => (
+                            <div
+                                key={item.n}
+                                className="flex gap-5 rounded-2xl border border-[#B08D57]/30 bg-[#FDFAF3] p-6"
+                            >
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#7B2D26] font-serif text-lg font-bold text-[#FDFAF3]">
+                                    {item.n}
+                                </span>
+                                <div>
+                                    <h3 className="font-serif text-xl font-bold text-[#2B1B12]">{item.q}</h3>
+                                    <p className="mt-2 leading-relaxed text-[#5C4A3D]">{item.a}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ---------- راهنمای خواندن کسروی ---------- */}
+            <section className="px-6 py-20">
+                <div className="mx-auto max-w-4xl">
+                    <div className="mb-6 text-center">
+                        <h2 className="font-serif text-4xl font-bold text-[#2B1B12]">راهنمای خواندن کسروی</h2>
+                        <p className="mt-3 text-[#5C4A3D]">چند نکته پیش از آنکه صفحه‌ها را باز کنید 🧭</p>
+                        <Ornament />
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="rounded-2xl border border-[#B08D57]/30 bg-[#FDFAF3] p-7">
+                            <h3 className="mb-4 font-serif text-xl font-bold text-[#2B1B12]">
+                                📕 واژه‌های ساختگی کسروی
+                            </h3>
+                            <p className="mb-4 text-sm leading-relaxed text-[#5C4A3D]">
+                                کسروی واژه‌های فارسیِ خودساخته به کار می‌برد. اگر در متن گیر کردید، احتمالاً یکی از این‌هاست:
+                            </p>
+                            <ul className="space-y-2 text-[#5C4A3D]">
+                                {[
+                                    ["آخشیج", "ضد"],
+                                    ["سکالیدن", "شور کردن، مشورت"],
+                                    ["هناییدن", "تأثیر کردن"],
+                                    ["پیکره", "عکس"],
+                                    ["دستینه", "امضا"],
+                                ].map(([word, meaning]) => (
+                                    <li key={word} className="flex items-baseline gap-3 border-b border-[#B08D57]/15 pb-2 last:border-0">
+                                        <strong className="font-bold text-[#7B2D26]">{word}</strong>
+                                        <span className="text-sm text-[#8D7B6F]">←</span>
+                                        <span>{meaning}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="rounded-2xl border border-dashed border-[#7B2D26]/40 bg-[#7B2D26]/5 p-7">
+                            <h3 className="mb-4 font-serif text-xl font-bold text-[#2B1B12]">
+                                ⚠️ هشدارهای روشی
+                            </h3>
+                            <ul className="space-y-4 text-[#5C4A3D]">
+                                <li>
+                                    <strong className="text-[#2B1B12]">فایل‌های صوتی را نقل‌قول نکنید.</strong>
+                                    <p className="mt-1 text-sm leading-relaxed">
+                                        متن‌های پیاده‌شده از کتاب صوتی کسروی پر از خطاست («سپسالار» به‌جای سپهسالار). برای فهم روایت خوب‌اند، برای نقل‌قول هرگز.
+                                    </p>
+                                </li>
+                                <li>
+                                    <strong className="text-[#2B1B12]">روایت کسروی ناتمام است.</strong>
+                                    <p className="mt-1 text-sm leading-relaxed">
+                                        کتاب در فروردین ۱۲۸۸ قطع می‌شود؛ فتح تهران، خلع شاه و مجلس دوم در آن نیست. ادامه‌اش «تاریخ هجده‌سالهٔ آذربایجان» است.
+                                    </p>
+                                </li>
+                                <li>
+                                    <strong className="text-[#2B1B12]">هر سه راوی، مشروطه‌خواه‌اند.</strong>
+                                    <p className="mt-1 text-sm leading-relaxed">
+                                        کسروی، ناظم‌الاسلام و آدمیت هر سه از یک سو می‌نویسند. تا رساله‌های شیخ فضل‌الله نوری را مستقیم نخوانیم، تصویرمان یک‌طرفه می‌ماند.
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* ---------- منابع و لینک‌های مفید ---------- */}
             <section className="px-6 py-20">

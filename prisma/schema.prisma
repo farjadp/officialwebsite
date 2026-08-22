@@ -416,15 +416,16 @@ model BugReport {
 // ---------- Book Club (دورهمی کتاب‌خوانی مشروطه) ----------
 
 model BookClubSession {
-  id            String   @id @default(cuid())
-  title         String
-  sessionDate   DateTime
-  googleEventId String?
-  meetLink      String?
-  summary       String? // HTML خلاصه جلسه
-  status        String   @default("UPCOMING") // UPCOMING, DONE, CANCELED
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String   @id @default(cuid())
+  title             String
+  sessionDate       DateTime
+  googleEventId     String?
+  meetLink          String?
+  readingAssignment String? // چه بخشی برای این جلسه باید خوانده شود
+  summary           String? // HTML خلاصه جلسه
+  status            String   @default("UPCOMING") // UPCOMING, DONE, CANCELED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([sessionDate])
 }
@@ -448,20 +449,20 @@ model BookClubMember {
 }
 
 model LabApplication {
-  id          String   @id @default(cuid())
-  name        String
-  email       String
-  phone       String
-  telegram    String
-  social      String?
-  stage       String
-  problem     String
-  why         String
-  deckUrl     String?
-  deckName    String?
-  status      String   @default("NEW") // "NEW" | "CONTACTED" | "ARCHIVED"
-  telegramOk  Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String
+  telegram   String
+  social     String?
+  stage      String
+  problem    String
+  why        String
+  deckUrl    String?
+  deckName   String?
+  status     String   @default("NEW") // "NEW" | "CONTACTED" | "ARCHIVED"
+  telegramOk Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
   @@index([createdAt])
 }
