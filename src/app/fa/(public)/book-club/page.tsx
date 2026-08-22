@@ -507,22 +507,56 @@ export default async function BookClubPage() {
                 </div>
             </section>
 
-            {/* ---------- راهنمای خواندن کسروی ---------- */}
+            {/* ---------- آشنایی با کسروی و کتابش ---------- */}
             <section className="px-6 py-20">
-                <div className="mx-auto max-w-4xl">
+                <div className="mx-auto max-w-5xl">
                     <div className="mb-6 text-center">
-                        <h2 className="font-serif text-4xl font-bold text-[#2B1B12]">راهنمای خواندن کسروی</h2>
-                        <p className="mt-3 text-[#5C4A3D]">چند نکته پیش از آنکه صفحه‌ها را باز کنید 🧭</p>
+                        <h2 className="font-serif text-4xl font-bold text-[#2B1B12]">راوی ما کیست؟</h2>
+                        <p className="mt-3 text-[#5C4A3D]">
+                            پیش از آنکه کتاب را باز کنید، با نویسنده‌اش آشنا شوید 🖋️
+                        </p>
                         <Ornament />
                     </div>
 
+                    {/* معرفی کسروی */}
+                    <div className="mb-8 grid items-center gap-8 rounded-3xl border border-[#B08D57]/30 bg-[#FDFAF3] p-8 md:grid-cols-[220px_1fr]">
+                        <figure className="mx-auto w-full max-w-[220px]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src="/book-club/kasravi.jpg"
+                                alt="احمد کسروی، تاریخ‌نگار"
+                                loading="lazy"
+                                className="w-full rounded-2xl border-4 border-[#F7F0E3] object-cover shadow-lg shadow-[#3E2723]/15 ring-1 ring-[#B08D57]/40 sepia-[0.2]"
+                            />
+                            <figcaption className="mt-3 text-center text-xs text-[#8D7B6F]">
+                                احمد کسروی (۱۲۶۹–۱۳۲۴) — آرشیو ویکی‌مدیا
+                            </figcaption>
+                        </figure>
+
+                        <div className="space-y-4 text-[#5C4A3D]">
+                            <h3 className="font-serif text-2xl font-bold text-[#2B1B12]">احمد کسروی</h3>
+                            <p className="leading-relaxed">
+                                تاریخ‌نگار، زبان‌شناس و حقوقدان اهل تبریز. هنگام مشروطه نوجوانی بود که ایستادگی
+                                یازده‌ماههٔ شهرش را با چشم خود دید — و همین، «تاریخ مشروطهٔ ایران» را از یک کتاب
+                                تاریخ معمولی جدا می‌کند.
+                            </p>
+                            <p className="leading-relaxed">
+                                او برای نوشتن کتاب به روزنامه‌های همان سال‌ها، اسناد انجمن‌ها و گفت‌وگو با
+                                شاهدان زنده تکیه کرد. نثرش تند و داوری‌هایش صریح است؛ کسروی پنهان نمی‌کند که
+                                کجا ایستاده.
+                            </p>
+                        </div>
+                    </div>
+
                     <div className="grid gap-6 md:grid-cols-2">
+                        {/* واژه‌نامه */}
                         <div className="rounded-2xl border border-[#B08D57]/30 bg-[#FDFAF3] p-7">
-                            <h3 className="mb-4 font-serif text-xl font-bold text-[#2B1B12]">
-                                📕 واژه‌های ساختگی کسروی
+                            <h3 className="mb-3 font-serif text-xl font-bold text-[#2B1B12]">
+                                📕 واژه‌های کسروی
                             </h3>
                             <p className="mb-4 text-sm leading-relaxed text-[#5C4A3D]">
-                                کسروی واژه‌های فارسیِ خودساخته به کار می‌برد. اگر در متن گیر کردید، احتمالاً یکی از این‌هاست:
+                                کسروی به پالایش زبان فارسی باور داشت و واژه‌های خودساخته به کار می‌برد.
+                                اگر جایی در متن گیر کردید، احتمالاً یکی از این‌هاست:
                             </p>
                             <ul className="space-y-2 text-[#5C4A3D]">
                                 {[
@@ -532,7 +566,10 @@ export default async function BookClubPage() {
                                     ["پیکره", "عکس"],
                                     ["دستینه", "امضا"],
                                 ].map(([word, meaning]) => (
-                                    <li key={word} className="flex items-baseline gap-3 border-b border-[#B08D57]/15 pb-2 last:border-0">
+                                    <li
+                                        key={word}
+                                        className="flex items-baseline gap-3 border-b border-[#B08D57]/15 pb-2 last:border-0"
+                                    >
                                         <strong className="font-bold text-[#7B2D26]">{word}</strong>
                                         <span className="text-sm text-[#8D7B6F]">←</span>
                                         <span>{meaning}</span>
@@ -541,30 +578,60 @@ export default async function BookClubPage() {
                             </ul>
                         </div>
 
-                        <div className="rounded-2xl border border-dashed border-[#7B2D26]/40 bg-[#7B2D26]/5 p-7">
-                            <h3 className="mb-4 font-serif text-xl font-bold text-[#2B1B12]">
-                                ⚠️ هشدارهای روشی
+                        {/* درباره کتاب */}
+                        <div className="rounded-2xl border border-[#B08D57]/30 bg-[#FDFAF3] p-7">
+                            <h3 className="mb-3 font-serif text-xl font-bold text-[#2B1B12]">
+                                📗 دربارهٔ این کتاب
                             </h3>
                             <ul className="space-y-4 text-[#5C4A3D]">
                                 <li>
-                                    <strong className="text-[#2B1B12]">فایل‌های صوتی را نقل‌قول نکنید.</strong>
+                                    <strong className="text-[#2B1B12]">کجا آغاز و کجا تمام می‌شود؟</strong>
                                     <p className="mt-1 text-sm leading-relaxed">
-                                        متن‌های پیاده‌شده از کتاب صوتی کسروی پر از خطاست («سپسالار» به‌جای سپهسالار). برای فهم روایت خوب‌اند، برای نقل‌قول هرگز.
+                                        از زمینه‌های پیش از مشروطه تا سال ۱۲۸۸. فتح تهران و آنچه پس از آن آمد
+                                        در کتاب دیگر او، «تاریخ هجده‌سالهٔ آذربایجان»، دنبال می‌شود.
                                     </p>
                                 </li>
                                 <li>
-                                    <strong className="text-[#2B1B12]">روایت کسروی ناتمام است.</strong>
+                                    <strong className="text-[#2B1B12]">از کدام زاویه نوشته شده؟</strong>
                                     <p className="mt-1 text-sm leading-relaxed">
-                                        کتاب در فروردین ۱۲۸۸ قطع می‌شود؛ فتح تهران، خلع شاه و مجلس دوم در آن نیست. ادامه‌اش «تاریخ هجده‌سالهٔ آذربایجان» است.
+                                        کسروی مشروطه‌خواه است و پنهانش نمی‌کند. این نه عیب کتاب است و نه فضیلتش —
+                                        فقط باید بدانیم داریم ماجرا را از کدام پنجره می‌بینیم.
                                     </p>
                                 </li>
                                 <li>
-                                    <strong className="text-[#2B1B12]">هر سه راوی، مشروطه‌خواه‌اند.</strong>
+                                    <strong className="text-[#2B1B12]">چطور بخوانیم؟</strong>
                                     <p className="mt-1 text-sm leading-relaxed">
-                                        کسروی، ناظم‌الاسلام و آدمیت هر سه از یک سو می‌نویسند. تا رساله‌های شیخ فضل‌الله نوری را مستقیم نخوانیم، تصویرمان یک‌طرفه می‌ماند.
+                                        آرام و با تقویم کنار دست. تاریخ‌ها در متن گاه قمری‌اند و گاه خورشیدی؛
+                                        همین یک نکته جلوی بیشترِ سردرگمی‌ها را می‌گیرد.
                                     </p>
                                 </li>
                             </ul>
+                        </div>
+                    </div>
+
+                    {/* دو روی سکه */}
+                    <div className="mt-8 overflow-hidden rounded-3xl border border-[#B08D57]/30 bg-[#FDFAF3]">
+                        <figure>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src="/book-club/nouri-behbahani.jpg"
+                                alt="شیخ فضل‌الله نوری و سید عبدالله بهبهانی"
+                                loading="lazy"
+                                className="max-h-[420px] w-full bg-[#EDE3CE] object-cover object-top sepia-[0.25]"
+                            />
+                            <figcaption className="px-6 py-3 text-center text-xs text-[#8D7B6F]">
+                                شیخ فضل‌الله نوری و سید عبدالله بهبهانی، ۱۲۸۵ — آرشیو ویکی‌مدیا (مالکیت عمومی)
+                            </figcaption>
+                        </figure>
+                        <div className="border-t border-[#B08D57]/20 p-7 text-center">
+                            <h3 className="mb-2 font-serif text-xl font-bold text-[#2B1B12]">
+                                دو روحانی، دو راه
+                            </h3>
+                            <p className="mx-auto max-w-2xl leading-relaxed text-[#5C4A3D]">
+                                هر دو از علمای بزرگ پایتخت بودند و هر دو در آغاز، همراه جنبش. اما یکی
+                                («مشروطهٔ مشروعه») در برابر متمم قانون اساسی ایستاد و دیگری تا پایان کنار
+                                مشروطه ماند. فهمِ این دوراهی — نه محکوم کردن یک طرف — کار ماست.
+                            </p>
                         </div>
                     </div>
                 </div>
