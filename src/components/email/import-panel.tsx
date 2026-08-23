@@ -11,12 +11,14 @@ import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 import { Upload, ClipboardPaste, Database, Loader2, Check, AlertTriangle, Download } from "lucide-react"
 import {
-    importFile,
+    importContactBatch,
+    finishImport,
     importPastedContacts,
     importSiteContacts,
     listMailchimpAudiences,
     importMailchimpAudience,
 } from "@/lib/actions/email"
+import { normalizeRows, parseCsvContacts, rowsToContacts, type ParsedRow } from "@/lib/email/csv"
 import type { ImportSummary } from "@/lib/email/import"
 import { cn } from "@/lib/utils"
 
@@ -102,6 +104,99 @@ export function ImportPanel({
     const [audiences, setAudiences] = useState<{ id: string; name: string; memberCount: number }[]>([])
     const [mcTarget, setMcTarget] = useState("")
 
+    const [fileListId, setFileListId] = useState("")
+    const [fileDoubleOptIn, setFileDoubleOptIn] = useState(false)
+    const [progress, setProgress] = useState<{ label: string; done: number; total: number } | null>(null)
+    const [busy, setBusy] = useState(false)
+
+    /** Rows per request. Small enough to stay well inside the body limit and to
+     *  keep any single request far below the function timeout. */
+    const BATCH = 500
+
+    const runFileImport = async (file: File) => {
+        setBusy(true)
+        setError(null)
+        setSummary(null)
+        setProgress({ label: "Reading file…", done: 0, total: 0 })
+
+        try {
+            let rows: ParsedRow[]
+            if (file.name.toLowerCase().endsWith(".xlsx")) {
+                // Loaded on demand — the workbook parser is far too large to ship
+                // to every visitor who opens the admin
+                const ExcelJS = (await import("exceljs")).default
+                const workbook = new ExcelJS.Workbook()
+                await workbook.xlsx.load(await file.arrayBuffer())
+                const sheet = workbook.worksheets[0]
+                if (!sheet) throw new Error("The workbook has no sheets")
+                const grid: string[][] = []
+                sheet.eachRow((row) => {
+                    const cells: string[] = []
+                    row.eachCell({ includeEmpty: true }, (cell) => {
+                        const value = cell.value
+                        if (value == null) cells.push("")
+                        else if (typeof value === "object" && "text" in value) cells.push(String(value.text))
+                        else if (typeof value === "object" && "result" in value) cells.push(String(value.result ?? ""))
+                        else cells.push(String(value))
+                    })
+                    grid.push(cells)
+                })
+                rows = rowsToContacts(grid)
+            } else {
+                rows = parseCsvContacts(await file.text())
+            }
+
+            if (!rows.length) {
+                throw new Error("No rows found. The file needs a header row containing an 'email' column.")
+            }
+
+            // Validate and de-duplicate before sending anything over the wire
+            const { valid, invalid, duplicates, invalidSamples } = normalizeRows(rows)
+            if (!valid.length) {
+                throw new Error(`Every row was rejected. ${invalid} invalid addresses, ${duplicates} duplicates.`)
+            }
+
+            const totals: ImportSummary = {
+                total: rows.length,
+                created: 0,
+                updated: 0,
+                invalid,
+                suppressed: 0,
+                invalidSamples,
+            }
+
+            setProgress({ label: "Importing…", done: 0, total: valid.length })
+
+            for (let i = 0; i < valid.length; i += BATCH) {
+                const batch = valid.slice(i, i + BATCH)
+                const result = await importContactBatch(batch, {
+                    listId: fileListId || undefined,
+                    source: "csv",
+                    doubleOptIn: fileDoubleOptIn,
+                })
+                if (!result.success || !result.data) {
+                    throw new Error(
+                        `${result.error ?? "Import failed"} (stopped after ${totals.created + totals.updated} contacts)`
+                    )
+                }
+                totals.created += result.data.created
+                totals.updated += result.data.updated
+                totals.suppressed += result.data.suppressed
+                setProgress({ label: "Importing…", done: Math.min(i + BATCH, valid.length), total: valid.length })
+            }
+
+            await finishImport()
+            setSummary(totals)
+            setProgress(null)
+            router.refresh()
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Import failed")
+            setProgress(null)
+        } finally {
+            setBusy(false)
+        }
+    }
+
     const handle = (fn: () => Promise<{ success: boolean; error?: string; data?: ImportSummary }>) =>
         startTransition(async () => {
             setError(null)
@@ -152,7 +247,7 @@ export function ImportPanel({
                 </div>
             )}
             {summary && <Summary summary={summary} />}
-            {pending && (
+            {(pending || busy) && (
                 <div className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 p-3 text-sm text-violet-800">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Importing — large lists can take a minute.
@@ -162,27 +257,64 @@ export function ImportPanel({
             <div className="grid gap-4 lg:grid-cols-2">
                 <Card
                     title="CSV or Excel file"
-                    description="Needs a header row with an 'email' column. first_name, last_name, company and locale are recognised; any other column becomes a custom merge field."
+                    description="Needs a header row with an 'email' column. first_name, last_name, company and locale are recognised; any other column becomes a custom merge field. Large files are parsed here in the browser and uploaded in batches, so size is not a limit."
                     icon={Upload}
                 >
-                    <form action={(formData) => handle(() => importFile(formData))} className="space-y-3">
+                    <div className="space-y-3">
                         <input
                             type="file"
-                            name="file"
                             accept=".csv,.tsv,.txt,.xlsx"
-                            required
+                            onChange={(event) => {
+                                const file = event.target.files?.[0]
+                                if (file) void runFileImport(file)
+                                event.target.value = ""
+                            }}
+                            disabled={busy}
                             className="w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-violet-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-violet-700"
                         />
-                        <ListSelect name="listId" />
-                        <DoubleOptIn />
-                        <button
-                            type="submit"
-                            disabled={pending}
-                            className="rounded-md bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+                        <select
+                            value={fileListId}
+                            onChange={(e) => setFileListId(e.target.value)}
+                            className={inputClass}
                         >
-                            Import file
-                        </button>
-                    </form>
+                            <option value="">No list (contacts only)</option>
+                            {lists.map((list) => (
+                                <option key={list.id} value={list.id}>
+                                    Add to: {list.name}
+                                </option>
+                            ))}
+                        </select>
+                        <label className="flex items-start gap-2 text-xs text-slate-600">
+                            <input
+                                type="checkbox"
+                                checked={fileDoubleOptIn}
+                                onChange={(e) => setFileDoubleOptIn(e.target.checked)}
+                                className="mt-0.5 h-4 w-4 accent-violet-600"
+                            />
+                            <span>
+                                Require double opt-in — contacts land as <strong>PENDING</strong> and must confirm
+                                before they can be mailed. Slower, and the single biggest protection against spam
+                                foldering.
+                            </span>
+                        </label>
+
+                        {progress && (
+                            <div className="space-y-1.5 rounded-lg border border-violet-200 bg-violet-50 p-3">
+                                <div className="flex items-center justify-between text-xs font-medium text-violet-900">
+                                    <span>{progress.label}</span>
+                                    <span className="tabular-nums">
+                                        {progress.done.toLocaleString()} / {progress.total.toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="h-1.5 overflow-hidden rounded-full bg-violet-200">
+                                    <div
+                                        className="h-full rounded-full bg-violet-600 transition-all duration-200"
+                                        style={{ width: `${progress.total ? (progress.done / progress.total) * 100 : 0}%` }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </Card>
 
                 <Card

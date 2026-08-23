@@ -1,22 +1,22 @@
 // ============================================================================
 // Hardware Source: import.ts
-// Version: 1.0.0 — 2026-08-23
-// Why: Bring contacts in from CSV/Excel, Mailchimp, and existing site tables
+// Version: 2.0.0 — 2026-08-23
+// Why: Batched contact ingestion from files, Mailchimp and the site's own tables
 // Env / Identity: Server module
 // ============================================================================
 
 import { prisma } from "@/lib/prisma"
 import ExcelJS from "exceljs"
 import type { Prisma } from "@prisma/client"
+import {
+    normalizeRows,
+    parseCsvContacts,
+    rowsToContacts,
+    type ParsedRow,
+} from "./csv"
 
-export interface ParsedRow {
-    email: string
-    firstName?: string
-    lastName?: string
-    company?: string
-    locale?: string
-    attributes: Record<string, string>
-}
+export { parseCsv, parseCsvContacts, isValidEmail, normalizeRows } from "./csv"
+export type { ParsedRow } from "./csv"
 
 export interface ImportSummary {
     total: number
@@ -25,112 +25,6 @@ export interface ImportSummary {
     invalid: number
     suppressed: number
     invalidSamples: string[]
-}
-
-// Deliberately permissive: RFC-correct validation rejects real deliverable
-// addresses. Hard bounces are the true filter, and they feed the suppression list.
-const EMAIL_RE = /^[^\s@,;]+@[^\s@,;]+\.[a-z]{2,}$/i
-
-export function isValidEmail(value: string): boolean {
-    return EMAIL_RE.test(value.trim())
-}
-
-const HEADER_ALIASES: Record<string, keyof ParsedRow> = {
-    email: "email",
-    "email address": "email",
-    "e-mail": "email",
-    mail: "email",
-    firstname: "firstName",
-    "first name": "firstName",
-    fname: "firstName",
-    name: "firstName",
-    lastname: "lastName",
-    "last name": "lastName",
-    lname: "lastName",
-    surname: "lastName",
-    company: "company",
-    organization: "company",
-    org: "company",
-    locale: "locale",
-    language: "locale",
-    lang: "locale",
-}
-
-function normalizeHeader(header: string): keyof ParsedRow | string {
-    const key = header.trim().toLowerCase()
-    return HEADER_ALIASES[key] ?? header.trim()
-}
-
-/** RFC 4180 parser — handles quoted fields containing commas and newlines. */
-export function parseCsv(content: string): string[][] {
-    const rows: string[][] = []
-    let row: string[] = []
-    let field = ""
-    let inQuotes = false
-
-    for (let i = 0; i < content.length; i++) {
-        const char = content[i]
-
-        if (inQuotes) {
-            if (char === '"') {
-                if (content[i + 1] === '"') {
-                    field += '"'
-                    i++
-                } else {
-                    inQuotes = false
-                }
-            } else {
-                field += char
-            }
-            continue
-        }
-
-        if (char === '"') {
-            inQuotes = true
-        } else if (char === "," || char === ";" || char === "\t") {
-            row.push(field)
-            field = ""
-        } else if (char === "\n") {
-            row.push(field)
-            rows.push(row)
-            row = []
-            field = ""
-        } else if (char !== "\r") {
-            field += char
-        }
-    }
-
-    if (field.length || row.length) {
-        row.push(field)
-        rows.push(row)
-    }
-
-    return rows.filter((r) => r.some((c) => c.trim().length))
-}
-
-function rowsToContacts(rows: string[][]): ParsedRow[] {
-    if (rows.length < 2) return []
-    const headers = rows[0].map(normalizeHeader)
-    const emailIndex = headers.indexOf("email")
-    if (emailIndex === -1) return []
-
-    return rows.slice(1).map((cells) => {
-        const parsed: ParsedRow = { email: (cells[emailIndex] ?? "").trim(), attributes: {} }
-        headers.forEach((header, i) => {
-            const value = (cells[i] ?? "").trim()
-            if (!value || i === emailIndex) return
-            if (header === "firstName" || header === "lastName" || header === "company" || header === "locale") {
-                parsed[header] = value
-            } else if (typeof header === "string") {
-                parsed.attributes[header] = value
-            }
-        })
-        return parsed
-    })
-}
-
-export function parseCsvContacts(content: string): ParsedRow[] {
-    return rowsToContacts(parseCsv(content))
 }
 
 export async function parseExcelContacts(buffer: ArrayBuffer): Promise<ParsedRow[]> {
@@ -155,94 +49,160 @@ export async function parseExcelContacts(buffer: ArrayBuffer): Promise<ParsedRow
     return rowsToContacts(rows)
 }
 
+/** Postgres caps a statement at 65535 parameters; this stays well clear of it. */
+const CHUNK = 500
+
+function chunked<T>(items: T[], size = CHUNK): T[][] {
+    const out: T[][] = []
+    for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size))
+    return out
+}
+
+/** True when the incoming row would actually add something we do not already hold. */
+function enriches(
+    row: ParsedRow,
+    existing: {
+        firstName: string | null
+        lastName: string | null
+        company: string | null
+        attributes: Prisma.JsonValue
+    }
+): boolean {
+    if (row.firstName && !existing.firstName) return true
+    if (row.lastName && !existing.lastName) return true
+    if (row.company && !existing.company) return true
+
+    const current = (existing.attributes as Record<string, string>) ?? {}
+    for (const [key, value] of Object.entries(row.attributes)) {
+        if (current[key] !== value) return true
+    }
+    return false
+}
+
 /**
- * Upsert imported rows. Existing contacts are enriched, never downgraded — an
- * import must not resurrect someone who unsubscribed.
+ * Upserts a batch of contacts.
+ *
+ * The previous version issued two queries per row, which meant roughly 30,000
+ * round trips for a 15,000-row list — about half an hour, against a function
+ * timeout measured in minutes. This reads and writes in chunks instead, so the
+ * same list costs a few dozen queries.
+ *
+ * Existing contacts are enriched, never downgraded: an import must not resurrect
+ * someone who unsubscribed, so `status` is never written here.
  */
 export async function importContacts(
     rows: ParsedRow[],
     options: { listId?: string; source: string; doubleOptIn?: boolean }
 ): Promise<ImportSummary> {
+    const { valid, invalid, invalidSamples } = normalizeRows(rows)
+
     const summary: ImportSummary = {
-        total: rows.length, created: 0, updated: 0, invalid: 0, suppressed: 0, invalidSamples: [],
+        total: rows.length,
+        created: 0,
+        updated: 0,
+        invalid,
+        suppressed: 0,
+        invalidSamples,
     }
-
-    const seen = new Set<string>()
-    const valid: ParsedRow[] = []
-
-    for (const row of rows) {
-        const email = row.email?.trim().toLowerCase()
-        if (!email || !isValidEmail(email)) {
-            summary.invalid += 1
-            if (summary.invalidSamples.length < 10 && row.email) summary.invalidSamples.push(row.email)
-            continue
-        }
-        if (seen.has(email)) continue
-        seen.add(email)
-        valid.push({ ...row, email })
-    }
-
     if (!valid.length) return summary
 
-    const suppressed = await prisma.suppression.findMany({
-        where: { email: { in: valid.map((r) => r.email) } },
-        select: { email: true },
-    })
-    const blocked = new Set(suppressed.map((s) => s.email))
+    const emails = valid.map((r) => r.email)
 
-    for (const row of valid) {
-        if (blocked.has(row.email)) {
-            summary.suppressed += 1
-            continue
-        }
-
-        const existing = await prisma.contact.findUnique({
-            where: { email: row.email },
-            select: { id: true, attributes: true },
+    // Suppressed addresses never come back, no matter what a file claims
+    const suppressed = new Set<string>()
+    for (const batch of chunked(emails)) {
+        const hits = await prisma.suppression.findMany({
+            where: { email: { in: batch } },
+            select: { email: true },
         })
+        for (const hit of hits) suppressed.add(hit.email)
+    }
 
-        if (existing) {
-            await prisma.contact.update({
-                where: { id: existing.id },
-                data: {
-                    firstName: row.firstName || undefined,
-                    lastName: row.lastName || undefined,
-                    company: row.company || undefined,
-                    locale: row.locale || undefined,
-                    attributes: {
-                        ...((existing.attributes as Record<string, string>) ?? {}),
-                        ...row.attributes,
-                    } as Prisma.InputJsonValue,
-                },
+    const sendable = valid.filter((row) => {
+        if (suppressed.has(row.email)) {
+            summary.suppressed += 1
+            return false
+        }
+        return true
+    })
+    if (!sendable.length) return summary
+
+    // One read per chunk tells us which addresses already exist
+    const existing = new Map<
+        string,
+        { id: string; firstName: string | null; lastName: string | null; company: string | null; attributes: Prisma.JsonValue }
+    >()
+    for (const batch of chunked(sendable.map((r) => r.email))) {
+        const found = await prisma.contact.findMany({
+            where: { email: { in: batch } },
+            select: { id: true, email: true, firstName: true, lastName: true, company: true, attributes: true },
+        })
+        for (const contact of found) existing.set(contact.email, contact)
+    }
+
+    const fresh = sendable.filter((row) => !existing.has(row.email))
+    const known = sendable.filter((row) => existing.has(row.email))
+
+    // ── Inserts ────────────────────────────────────────────────────────────
+    for (const batch of chunked(fresh)) {
+        const result = await prisma.contact.createMany({
+            data: batch.map((row) => ({
+                email: row.email,
+                firstName: row.firstName,
+                lastName: row.lastName,
+                company: row.company,
+                locale: row.locale || "en",
+                source: options.source,
+                status: options.doubleOptIn ? ("PENDING" as const) : ("ACTIVE" as const),
+                confirmToken: options.doubleOptIn
+                    ? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`
+                    : undefined,
+                confirmedAt: options.doubleOptIn ? undefined : new Date(),
+                attributes: row.attributes as Prisma.InputJsonValue,
+            })),
+            // A concurrent import of an overlapping list must not abort the batch
+            skipDuplicates: true,
+        })
+        summary.created += result.count
+    }
+
+    // ── Enrichment ─────────────────────────────────────────────────────────
+    // Only rows that genuinely add something are written, so re-importing an
+    // unchanged list costs nothing beyond the reads above.
+    const toUpdate = known.filter((row) => enriches(row, existing.get(row.email)!))
+    for (const row of toUpdate) {
+        const current = existing.get(row.email)!
+        await prisma.contact.update({
+            where: { id: current.id },
+            data: {
+                firstName: row.firstName || undefined,
+                lastName: row.lastName || undefined,
+                company: row.company || undefined,
+                locale: row.locale || undefined,
+                attributes: {
+                    ...((current.attributes as Record<string, string>) ?? {}),
+                    ...row.attributes,
+                } as Prisma.InputJsonValue,
+            },
+        })
+        summary.updated += 1
+    }
+
+    // ── List membership ────────────────────────────────────────────────────
+    if (options.listId) {
+        const ids: string[] = []
+        for (const batch of chunked(sendable.map((r) => r.email))) {
+            const found = await prisma.contact.findMany({
+                where: { email: { in: batch } },
+                select: { id: true },
             })
-            summary.updated += 1
-            if (options.listId) {
-                await prisma.contactListMember.upsert({
-                    where: { contactId_listId: { contactId: existing.id, listId: options.listId } },
-                    create: { contactId: existing.id, listId: options.listId },
-                    update: {},
-                })
-            }
-        } else {
-            const created = await prisma.contact.create({
-                data: {
-                    email: row.email,
-                    firstName: row.firstName,
-                    lastName: row.lastName,
-                    company: row.company,
-                    locale: row.locale || "en",
-                    source: options.source,
-                    status: options.doubleOptIn ? "PENDING" : "ACTIVE",
-                    confirmToken: options.doubleOptIn
-                        ? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`
-                        : undefined,
-                    confirmedAt: options.doubleOptIn ? undefined : new Date(),
-                    attributes: row.attributes,
-                    memberships: options.listId ? { create: { listId: options.listId } } : undefined,
-                },
+            ids.push(...found.map((c) => c.id))
+        }
+        for (const batch of chunked(ids)) {
+            await prisma.contactListMember.createMany({
+                data: batch.map((contactId) => ({ contactId, listId: options.listId! })),
+                skipDuplicates: true,
             })
-            void created
-            summary.created += 1
         }
     }
 

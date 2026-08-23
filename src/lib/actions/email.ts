@@ -29,11 +29,11 @@ import {
     suppress,
     marketingBaseUrl,
 } from "@/lib/email/provider"
+import type { ParsedRow } from "@/lib/email/csv"
 import {
     importContacts,
     importFromSiteTables,
     parseCsvContacts,
-    parseExcelContacts,
     fetchMailchimpLists,
     fetchMailchimpMembers,
     fetchMailchimpSuppressions,
@@ -186,31 +186,41 @@ export async function addContactsToList(
 
 // ── Import ─────────────────────────────────────────────────────────────────
 
-export async function importFile(formData: FormData): Promise<ActionResult<ImportSummary>> {
+/**
+ * Imports one batch of already-parsed rows.
+ *
+ * Large files are parsed in the browser and sent in chunks rather than uploaded
+ * whole: a 15,000-row file exceeds the server action body limit outright, and
+ * even under it, a single request cannot finish the work inside a function
+ * timeout. Chunking also means a failure costs one batch instead of everything.
+ */
+export async function importContactBatch(
+    rows: ParsedRow[],
+    options: { listId?: string; source: string; doubleOptIn?: boolean }
+): Promise<ActionResult<ImportSummary>> {
     const denied = await requireAdmin()
     if (denied) return fail(denied)
 
-    const file = formData.get("file") as File | null
-    if (!file || !file.size) return fail("Choose a file to import")
-
-    const listId = String(formData.get("listId") ?? "") || undefined
-    const doubleOptIn = formData.get("doubleOptIn") === "on"
+    if (!Array.isArray(rows) || !rows.length) return fail("Empty batch")
+    if (rows.length > 2000) return fail("Batch too large — send at most 2000 rows at a time")
 
     try {
-        const rows = file.name.toLowerCase().endsWith(".xlsx")
-            ? await parseExcelContacts(await file.arrayBuffer())
-            : parseCsvContacts(await file.text())
-
-        if (!rows.length) {
-            return fail("No rows found. The file needs a header row containing an 'email' column.")
-        }
-
-        const summary = await importContacts(rows, { listId, source: "csv", doubleOptIn })
-        revalidatePath(`${ROOT}/contacts`)
+        const summary = await importContacts(rows, {
+            listId: options.listId || undefined,
+            source: options.source || "csv",
+            doubleOptIn: options.doubleOptIn,
+        })
         return { success: true, data: summary }
     } catch (error) {
         return fail(error instanceof Error ? error.message : "Import failed")
     }
+}
+
+/** Called once after the last batch so the contact views refresh. */
+export async function finishImport(): Promise<ActionResult> {
+    revalidatePath(`${ROOT}/contacts`)
+    revalidatePath(`${ROOT}/lists`)
+    return { success: true }
 }
 
 export async function importPastedContacts(formData: FormData): Promise<ActionResult<ImportSummary>> {
