@@ -121,3 +121,55 @@ export const RECORD_NOTES: Record<string, string> = {
     SPF: "Declares which servers may send as this domain. Never publish a second SPF TXT record on the same host — two records is a permerror, which fails worse than having none.",
     DMARC: "Tells receivers what to do when SPF or DKIM fails, and sends you the reports.",
 }
+
+export interface PublicUrlCheck {
+    baseUrl: string
+    ok: boolean
+    redirectsTo?: string
+    error?: string
+}
+
+/**
+ * The tracking base URL must be the canonical host. If it redirects, the RFC 8058
+ * one-click unsubscribe breaks: mail clients POST to the List-Unsubscribe URL and
+ * do not follow redirects, so the reader's unsubscribe silently fails and their
+ * next move is the spam button. Webhook senders behave the same way.
+ *
+ * This failure is invisible from the outside — everything looks fine in a browser,
+ * because browsers do follow redirects — so it gets checked explicitly.
+ */
+export async function checkPublicUrl(): Promise<PublicUrlCheck> {
+    const baseUrl = marketingPublicUrl()
+
+    try {
+        const response = await fetch(`${baseUrl}/e/u/canonical-host-check`, {
+            method: "POST",
+            redirect: "manual",
+            cache: "no-store",
+        })
+
+        if (response.status >= 300 && response.status < 400) {
+            return {
+                baseUrl,
+                ok: false,
+                redirectsTo: response.headers.get("location") ?? "an unknown host",
+            }
+        }
+
+        return { baseUrl, ok: true }
+    } catch (error) {
+        return {
+            baseUrl,
+            ok: false,
+            error: error instanceof Error ? error.message : "Could not reach the URL",
+        }
+    }
+}
+
+function marketingPublicUrl(): string {
+    return (
+        process.env.EMAIL_PUBLIC_URL ||
+        process.env.NEXTAUTH_URL ||
+        "https://www.farjadp.info"
+    ).replace(/\/$/, "")
+}

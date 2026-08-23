@@ -7,7 +7,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { DnsChecklist } from "@/components/email/dns-checklist"
-import { fetchDomainStatus, dmarcRecord, RECORD_NOTES } from "@/lib/email/domain-status"
+import { fetchDomainStatus, dmarcRecord, RECORD_NOTES, checkPublicUrl } from "@/lib/email/domain-status"
 import { SunsetControls } from "@/components/email/sunset-controls"
 import { cn } from "@/lib/utils"
 
@@ -18,12 +18,13 @@ export default async function DeliverabilityPage() {
         process.env.EMAIL_MARKETING_FROM || process.env.EMAIL_FROM || "hello@mail.farjadp.info"
     const domain = fromAddress.split("@")[1]?.replace(/>$/, "") ?? "mail.farjadp.info"
 
-    const [stats, suppressions, byReason, statusCounts, domainStatus] = await Promise.all([
+    const [stats, suppressions, byReason, statusCounts, domainStatus, publicUrl] = await Promise.all([
         prisma.sendingStat.findMany({ orderBy: { day: "desc" }, take: 21 }),
         prisma.suppression.findMany({ orderBy: { createdAt: "desc" }, take: 30 }),
         prisma.suppression.groupBy({ by: ["reason"], _count: true }),
         prisma.contact.groupBy({ by: ["status"], _count: true }),
         fetchDomainStatus(domain),
+        checkPublicUrl(),
     ])
 
     const maxSent = Math.max(1, ...stats.map((s) => s.dailyCap))
@@ -36,6 +37,24 @@ export default async function DeliverabilityPage() {
                     Inbox placement is earned by authentication, volume discipline and list hygiene — in that order.
                 </p>
             </div>
+
+            {!publicUrl.ok && (
+                <div className="rounded-xl border border-rose-200 bg-rose-50 p-5">
+                    <h2 className="text-sm font-semibold text-rose-900">
+                        Tracking URL is not the canonical host
+                    </h2>
+                    <p className="mt-1 text-sm leading-relaxed text-rose-800">
+                        <code className="rounded bg-white px-1 py-0.5 font-mono text-xs">{publicUrl.baseUrl}</code>{" "}
+                        {publicUrl.redirectsTo
+                            ? <>redirects to <code className="rounded bg-white px-1 py-0.5 font-mono text-xs">{publicUrl.redirectsTo}</code>.</>
+                            : <>could not be reached: {publicUrl.error}.</>}{" "}
+                        Mail clients do not follow redirects when they POST to the one-click unsubscribe URL, so readers
+                        who unsubscribe stay subscribed — and report spam instead. Set{" "}
+                        <code className="rounded bg-white px-1 py-0.5 font-mono text-xs">EMAIL_PUBLIC_URL</code> to the
+                        host that answers directly.
+                    </p>
+                </div>
+            )}
 
             <DnsChecklist
                 domain={domain}
