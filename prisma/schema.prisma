@@ -823,3 +823,68 @@ model SendingStat {
   // Warm-up ceiling for this day
   dailyCap   Int      @default(50)
 }
+
+// ============================================================================
+// DMARC aggregate reports
+// Why: turn the XML receivers send into an answer to one question —
+// is it safe to raise the policy from p=none to p=quarantine yet?
+// ============================================================================
+
+model DmarcReport {
+  id String @id @default(cuid())
+
+  // Reporter identity — reportId is only unique per organisation
+  reportId String
+  orgName  String
+  orgEmail String?
+
+  domain     String
+  rangeBegin DateTime
+  rangeEnd   DateTime
+
+  // Policy the receiver actually saw when it evaluated our mail
+  policyP   String
+  policySp  String?
+  policyPct Int?
+  adkim     String?
+  aspf      String?
+
+  totalMessages Int @default(0)
+  passCount     Int @default(0)
+  failCount     Int @default(0)
+
+  sourceFile String?
+  createdAt  DateTime @default(now())
+
+  records DmarcRecord[]
+
+  @@unique([orgName, reportId])
+  @@index([rangeBegin])
+}
+
+model DmarcRecord {
+  id       String @id @default(cuid())
+  reportId String
+
+  sourceIp String
+  count    Int    @default(1)
+
+  // What the receiver decided
+  disposition String
+  dkimPolicy  String
+  spfPolicy   String
+
+  headerFrom String?
+
+  // Raw authentication results, which explain WHY the policy evaluated that way
+  dkimDomain   String?
+  dkimSelector String?
+  dkimResult   String?
+  spfDomain    String?
+  spfResult    String?
+
+  report DmarcReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([sourceIp])
+}

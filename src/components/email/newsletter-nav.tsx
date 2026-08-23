@@ -20,6 +20,7 @@ const TABS = [
     { href: "/admin/newsletter/import", label: "Import" },
     { href: "/admin/newsletter/automations", label: "Automations" },
     { href: "/admin/newsletter/deliverability", label: "Deliverability" },
+    { href: "/admin/newsletter/dmarc", label: "DMARC" },
 ]
 
 export function NewsletterNav() {

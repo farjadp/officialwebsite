@@ -32,6 +32,28 @@ DKIM and SPF come from Resend. DMARC is yours to author and is published on the
 **root** domain, where it covers every subdomain. Start at `p=none`, read the
 aggregate reports for two weeks, then move to `p=quarantine`.
 
+Alignment is deliberately left relaxed. Resend sends with a custom MAIL FROM of
+`send.<domain>`, so the SPF-authenticated domain is a subdomain of the From
+domain and never matches it exactly — strict `aspf` would fail that check
+outright and leave DKIM as the only route to a DMARC pass.
+
+### 2b. Reading the reports
+
+`/admin/newsletter/dmarc` parses the aggregate reports. They arrive as email
+attachments at the `rua` address — `.xml.gz` from Google, `.zip` from Microsoft
+and Yahoo — so save the attachments and drop them onto the page. Re-uploading the
+same report is harmless; reports are keyed on organisation plus report id.
+
+The page exists to answer one question: **can the policy be raised safely?** It
+aggregates every source across every reporter and will not say yes until there
+are at least seven days and twenty messages of evidence, a pass rate at or above
+99%, and no failing sources. A failing source is either a service of yours that
+was never set up, or someone spoofing you — the page cannot tell which, and the
+two are fixed very differently.
+
+Ingestion is manual by design: the root domain's MX belongs to Google Workspace,
+so an inbound webhook cannot take delivery there without displacing your mail.
+
 Gmail and Yahoo have enforced SPF + DKIM + DMARC for bulk senders since February
 2024 — mail without them is throttled regardless of how good the content is.
 
@@ -114,3 +136,4 @@ Fallbacks: `{{first_name|there}}`.
 | `src/lib/email/import.ts` | CSV/Excel/Mailchimp/site-table import |
 | `src/lib/email/ai.ts` | All AI assist points |
 | `src/lib/email/domain-status.ts` | Live DNS records and verification state from Resend |
+| `src/lib/email/dmarc.ts` | Aggregate report decompression, parsing and policy readiness |
