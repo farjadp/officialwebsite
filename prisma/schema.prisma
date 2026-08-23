@@ -466,3 +466,360 @@ model LabApplication {
 
   @@index([createdAt])
 }
+
+// ============================================================================
+// Email Marketing Suite
+// Why: self-hosted campaign engine (contacts, templates, sending, analytics)
+// Sending engine: Resend. Mailchimp is import-only.
+// ============================================================================
+
+enum ContactStatus {
+  PENDING // double opt-in requested, not confirmed yet
+  ACTIVE
+  UNSUBSCRIBED
+  BOUNCED
+  COMPLAINED
+  SUNSET // auto-archived for prolonged disengagement
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  PAUSED
+  SENT
+  FAILED
+}
+
+enum RecipientStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+  SKIPPED
+}
+
+enum EmailEventType {
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINED
+  UNSUBSCRIBED
+  REPLIED
+}
+
+enum SuppressionReason {
+  HARD_BOUNCE
+  COMPLAINT
+  UNSUBSCRIBE
+  MANUAL
+  INVALID
+}
+
+model Contact {
+  id        String        @id @default(cuid())
+  email     String        @unique
+  firstName String?
+  lastName  String?
+  company   String?
+  locale    String        @default("en") // "en" | "fa" — drives template direction
+  status    ContactStatus @default(ACTIVE)
+  source    String? // "csv" | "mailchimp" | "lead" | "subscriber" | "form"
+
+  // Custom merge fields available to the editor as {{custom.key}}
+  attributes Json @default("{}")
+
+  // Engagement scoring — drives segmentation, send-time and sunset policy
+  engagementScore Int       @default(50)
+  lastOpenedAt    DateTime?
+  lastClickedAt   DateTime?
+  lastSentAt      DateTime?
+  sendCount       Int       @default(0)
+  openCount       Int       @default(0)
+  clickCount      Int       @default(0)
+
+  // Best hour (0-23) in UTC derived from open history
+  bestSendHour Int?
+
+  confirmedAt  DateTime? // double opt-in confirmation
+  confirmToken String?   @unique
+  unsubToken   String    @unique @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships ContactListMember[]
+  recipients  CampaignRecipient[]
+  events      EmailEvent[]
+  enrollments AutomationEnrollment[]
+
+  @@index([status])
+  @@index([engagementScore])
+  @@index([createdAt])
+}
+
+model ContactList {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  color       String  @default("#7c3aed")
+
+  // Dynamic segment: when set, membership is computed, not stored
+  isDynamic Boolean @default(false)
+  filter    Json? // { status, tags, engagementMin, openedWithinDays, ... }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members   ContactListMember[]
+  campaigns Campaign[]
+
+  @@index([createdAt])
+}
+
+model ContactListMember {
+  id        String   @id @default(cuid())
+  contactId String
+  listId    String
+  addedAt   DateTime @default(now())
+
+  contact Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  list    ContactList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@unique([contactId, listId])
+  @@index([listId])
+}
+
+model Suppression {
+  id        String            @id @default(cuid())
+  email     String            @unique
+  reason    SuppressionReason
+  detail    String?
+  createdAt DateTime          @default(now())
+
+  @@index([reason])
+}
+
+model EmailTemplate {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  category    String  @default("general") // newsletter | announcement | welcome | promo
+  thumbnail   String?
+
+  // Canonical source of truth: ordered block documents
+  blocks Json    @default("[]")
+  // Global design tokens (colors, fonts, width, direction)
+  theme  Json    @default("{}")
+  // Compiled email-safe HTML cache
+  html   String? @db.Text
+
+  isSystem  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campaigns Campaign[]
+
+  @@index([category])
+}
+
+model Campaign {
+  id        String @id @default(cuid())
+  name      String
+  subject   String @default("")
+  preheader String @default("")
+
+  fromName  String  @default("Farjad Pezeshk")
+  fromEmail String  @default("")
+  replyTo   String?
+
+  status CampaignStatus @default(DRAFT)
+
+  templateId String?
+  listId     String?
+
+  // Audience override / refinement on top of the list
+  segmentFilter Json?
+
+  blocks Json    @default("[]")
+  theme  Json    @default("{}")
+  html   String? @db.Text
+  text   String? @db.Text
+
+  // A/B testing
+  abEnabled         Boolean @default(false)
+  abTestPercent     Int     @default(20)
+  abWinnerMetric    String  @default("open") // "open" | "click"
+  abWinnerVariantId String?
+
+  // Delivery controls
+  scheduledAt      DateTime?
+  optimizeSendTime Boolean   @default(false)
+  throttlePerHour  Int       @default(500)
+
+  // Denormalized analytics counters
+  totalRecipients  Int @default(0)
+  sentCount        Int @default(0)
+  deliveredCount   Int @default(0)
+  openCount        Int @default(0)
+  uniqueOpenCount  Int @default(0)
+  clickCount       Int @default(0)
+  uniqueClickCount Int @default(0)
+  bounceCount      Int @default(0)
+  complaintCount   Int @default(0)
+  unsubCount       Int @default(0)
+
+  // AI pre-flight spam audit result
+  spamScore  Int?
+  spamReport Json?
+
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  template   EmailTemplate?      @relation(fields: [templateId], references: [id])
+  list       ContactList?        @relation(fields: [listId], references: [id])
+  variants   CampaignVariant[]
+  recipients CampaignRecipient[]
+  events     EmailEvent[]
+  links      CampaignLink[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CampaignVariant {
+  id         String  @id @default(cuid())
+  campaignId String
+  label      String // "A" | "B"
+  subject    String
+  preheader  String  @default("")
+  blocks     Json?
+  html       String? @db.Text
+
+  sentCount  Int @default(0)
+  openCount  Int @default(0)
+  clickCount Int @default(0)
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, label])
+}
+
+model CampaignRecipient {
+  id           String          @id @default(cuid())
+  campaignId   String
+  contactId    String
+  variantLabel String          @default("A")
+  status       RecipientStatus @default(QUEUED)
+
+  providerId String? // Resend message id — links webhooks back
+  error      String?
+
+  scheduledFor DateTime?
+  sentAt       DateTime?
+  openedAt     DateTime?
+  clickedAt    DateTime?
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contact  Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, contactId])
+  @@index([status, scheduledFor])
+  @@index([providerId])
+}
+
+model CampaignLink {
+  id          String  @id @default(cuid())
+  campaignId  String
+  url         String  @db.Text
+  label       String?
+  clickCount  Int     @default(0)
+  uniqueCount Int     @default(0)
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+}
+
+model EmailEvent {
+  id         String         @id @default(cuid())
+  type       EmailEventType
+  campaignId String?
+  contactId  String?
+  email      String
+  linkUrl    String?        @db.Text
+  userAgent  String?
+  meta       Json?
+  createdAt  DateTime       @default(now())
+
+  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  contact  Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([campaignId, type])
+  @@index([contactId])
+  @@index([createdAt])
+}
+
+model Automation {
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  trigger       String  @default("contact_created") // contact_created | list_joined | no_open_days | tag_added
+  triggerConfig Json    @default("{}")
+  listId        String?
+  isActive      Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  steps       AutomationStep[]
+  enrollments AutomationEnrollment[]
+}
+
+model AutomationStep {
+  id           String  @id @default(cuid())
+  automationId String
+  order        Int
+  delayHours   Int     @default(24)
+  subject      String  @default("")
+  preheader    String  @default("")
+  blocks       Json    @default("[]")
+  html         String? @db.Text
+  // Skip this step if the contact already engaged
+  skipIfOpened Boolean @default(false)
+
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, order])
+}
+
+model AutomationEnrollment {
+  id           String    @id @default(cuid())
+  automationId String
+  contactId    String
+  currentStep  Int       @default(0)
+  nextRunAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  contact    Contact    @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, contactId])
+  @@index([nextRunAt])
+}
+
+model SendingStat {
+  id         String   @id @default(cuid())
+  day        DateTime @unique @db.Date
+  sent       Int      @default(0)
+  delivered  Int      @default(0)
+  bounced    Int      @default(0)
+  complained Int      @default(0)
+  // Warm-up ceiling for this day
+  dailyCap   Int      @default(50)
+}

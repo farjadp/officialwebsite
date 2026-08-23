@@ -75,7 +75,7 @@ const sidebarGroups = [
         items: [
             { title: "Leads", href: "/admin/leads", icon: Inbox },
             { title: "NPI Leads", href: "/admin/npi-leads", icon: Activity },
-            { title: "Newsletter", href: "/admin/newsletter", icon: Inbox, placeholder: true },
+            { title: "Email Marketing", href: "/admin/newsletter", icon: Mail },
             { title: "AI Studio", href: "/admin/ai-tools", icon: Sparkles },
         ]
     },
