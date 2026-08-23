@@ -9,8 +9,9 @@
 
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
-import { Upload, ClipboardPaste, Database, Loader2, Check, AlertTriangle, Download } from "lucide-react"
+import { Upload, ClipboardPaste, Database, Loader2, Check, AlertTriangle, Download, Users, X } from "lucide-react"
 import {
+    previewImportBatch,
     importContactBatch,
     finishImport,
     importPastedContacts,
@@ -19,7 +20,7 @@ import {
     importMailchimpAudience,
 } from "@/lib/actions/email"
 import { normalizeRows, parseCsvContacts, rowsToContacts, type ParsedRow } from "@/lib/email/csv"
-import type { ImportSummary } from "@/lib/email/import"
+import type { ImportSummary, ImportPreview, ConflictStrategy } from "@/lib/email/import"
 import { cn } from "@/lib/utils"
 
 const inputClass =
@@ -32,12 +33,13 @@ function Summary({ summary }: { summary: ImportSummary }) {
                 <Check className="h-4 w-4" />
                 Import finished
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-6">
                 {[
                     { label: "Rows", value: summary.total },
                     { label: "Created", value: summary.created },
                     { label: "Updated", value: summary.updated },
-                    { label: "Invalid", value: summary.invalid },
+                    { label: "Already in list", value: summary.alreadyInList },
+                    { label: "Left alone", value: summary.skipped },
                     { label: "Suppressed", value: summary.suppressed },
                 ].map((stat) => (
                     <div key={stat.label} className="rounded-md bg-white/70 px-2.5 py-2 text-center">
@@ -55,6 +57,17 @@ function Summary({ summary }: { summary: ImportSummary }) {
                 <p className="text-xs text-emerald-800">
                     {summary.suppressed} addresses were skipped because they previously bounced, complained or
                     unsubscribed. Re-importing them would put your domain reputation at risk.
+                </p>
+            )}
+            {summary.alreadyInList > 0 && (
+                <p className="text-xs text-emerald-800">
+                    {summary.alreadyInList.toLocaleString()} were already in this list, so nothing was written for them.
+                    A contact can belong to several lists but never appears twice in one.
+                </p>
+            )}
+            {summary.invalid > 0 && (
+                <p className="text-xs text-emerald-800">
+                    {summary.invalid.toLocaleString()} rows were dropped as invalid or repeated within the file.
                 </p>
             )}
         </div>
@@ -109,84 +122,141 @@ export function ImportPanel({
     const [progress, setProgress] = useState<{ label: string; done: number; total: number } | null>(null)
     const [busy, setBusy] = useState(false)
 
+    // Held between the preview and the confirmed import
+    const [staged, setStaged] = useState<{ rows: ParsedRow[]; fileName: string; listId: string } | null>(null)
+    const [preview, setPreview] = useState<ImportPreview | null>(null)
+    const [strategy, setStrategy] = useState<ConflictStrategy>("enrich")
+
     /** Rows per request. Small enough to stay well inside the body limit and to
      *  keep any single request far below the function timeout. */
     const BATCH = 500
 
-    const runFileImport = async (file: File) => {
+    const targetListName = lists.find((l) => l.id === (staged?.listId ?? fileListId))?.name ?? null
+
+    const readFile = async (file: File): Promise<ParsedRow[]> => {
+        if (file.name.toLowerCase().endsWith(".xlsx")) {
+            // Loaded on demand — the workbook parser is far too large to ship
+            // to every visitor who opens the admin
+            const ExcelJS = (await import("exceljs")).default
+            const workbook = new ExcelJS.Workbook()
+            await workbook.xlsx.load(await file.arrayBuffer())
+            const sheet = workbook.worksheets[0]
+            if (!sheet) throw new Error("The workbook has no sheets")
+            const grid: string[][] = []
+            sheet.eachRow((row) => {
+                const cells: string[] = []
+                row.eachCell({ includeEmpty: true }, (cell) => {
+                    const value = cell.value
+                    if (value == null) cells.push("")
+                    else if (typeof value === "object" && "text" in value) cells.push(String(value.text))
+                    else if (typeof value === "object" && "result" in value) cells.push(String(value.result ?? ""))
+                    else cells.push(String(value))
+                })
+                grid.push(cells)
+            })
+            return rowsToContacts(grid)
+        }
+        return parseCsvContacts(await file.text())
+    }
+
+    /** Phase one: read the file and report what an import would do. Writes nothing. */
+    const runPreview = async (file: File) => {
         setBusy(true)
         setError(null)
         setSummary(null)
+        setPreview(null)
+        setStaged(null)
         setProgress({ label: "Reading file…", done: 0, total: 0 })
 
         try {
-            let rows: ParsedRow[]
-            if (file.name.toLowerCase().endsWith(".xlsx")) {
-                // Loaded on demand — the workbook parser is far too large to ship
-                // to every visitor who opens the admin
-                const ExcelJS = (await import("exceljs")).default
-                const workbook = new ExcelJS.Workbook()
-                await workbook.xlsx.load(await file.arrayBuffer())
-                const sheet = workbook.worksheets[0]
-                if (!sheet) throw new Error("The workbook has no sheets")
-                const grid: string[][] = []
-                sheet.eachRow((row) => {
-                    const cells: string[] = []
-                    row.eachCell({ includeEmpty: true }, (cell) => {
-                        const value = cell.value
-                        if (value == null) cells.push("")
-                        else if (typeof value === "object" && "text" in value) cells.push(String(value.text))
-                        else if (typeof value === "object" && "result" in value) cells.push(String(value.result ?? ""))
-                        else cells.push(String(value))
-                    })
-                    grid.push(cells)
-                })
-                rows = rowsToContacts(grid)
-            } else {
-                rows = parseCsvContacts(await file.text())
-            }
-
+            const rows = await readFile(file)
             if (!rows.length) {
                 throw new Error("No rows found. The file needs a header row containing an 'email' column.")
             }
 
-            // Validate and de-duplicate before sending anything over the wire
-            const { valid, invalid, duplicates, invalidSamples } = normalizeRows(rows)
-            if (!valid.length) {
-                throw new Error(`Every row was rejected. ${invalid} invalid addresses, ${duplicates} duplicates.`)
+            const { valid } = normalizeRows(rows)
+            if (!valid.length) throw new Error("Every row in this file was rejected as invalid.")
+
+            setProgress({ label: "Checking against existing contacts…", done: 0, total: valid.length })
+
+            const totals: ImportPreview = {
+                total: 0, invalid: 0, duplicatesInFile: 0, unique: 0,
+                brandNew: 0, existingElsewhere: 0, alreadyInList: 0, suppressed: 0,
+                existingSamples: [], invalidSamples: [],
             }
 
+            for (let i = 0; i < rows.length; i += BATCH) {
+                const result = await previewImportBatch(rows.slice(i, i + BATCH), { listId: fileListId || undefined })
+                if (!result.success || !result.data) throw new Error(result.error ?? "Preview failed")
+                const d = result.data
+                totals.total += d.total
+                totals.invalid += d.invalid
+                totals.duplicatesInFile += d.duplicatesInFile
+                totals.unique += d.unique
+                totals.brandNew += d.brandNew
+                totals.existingElsewhere += d.existingElsewhere
+                totals.alreadyInList += d.alreadyInList
+                totals.suppressed += d.suppressed
+                if (totals.existingSamples.length < 8) {
+                    totals.existingSamples.push(...d.existingSamples.slice(0, 8 - totals.existingSamples.length))
+                }
+                if (totals.invalidSamples.length < 10) {
+                    totals.invalidSamples.push(...d.invalidSamples.slice(0, 10 - totals.invalidSamples.length))
+                }
+                setProgress({ label: "Checking against existing contacts…", done: Math.min(i + BATCH, rows.length), total: rows.length })
+            }
+
+            setPreview(totals)
+            setStaged({ rows, fileName: file.name, listId: fileListId })
+            setProgress(null)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Could not read the file")
+            setProgress(null)
+        } finally {
+            setBusy(false)
+        }
+    }
+
+    /** Phase two: the user has seen the collisions and chosen what to do. */
+    const runImport = async () => {
+        if (!staged) return
+        setBusy(true)
+        setError(null)
+        setProgress({ label: "Importing…", done: 0, total: staged.rows.length })
+
+        try {
             const totals: ImportSummary = {
-                total: rows.length,
-                created: 0,
-                updated: 0,
-                invalid,
-                suppressed: 0,
-                invalidSamples,
+                total: 0, created: 0, updated: 0, invalid: 0,
+                suppressed: 0, alreadyInList: 0, skipped: 0, invalidSamples: [],
             }
 
-            setProgress({ label: "Importing…", done: 0, total: valid.length })
-
-            for (let i = 0; i < valid.length; i += BATCH) {
-                const batch = valid.slice(i, i + BATCH)
-                const result = await importContactBatch(batch, {
-                    listId: fileListId || undefined,
+            for (let i = 0; i < staged.rows.length; i += BATCH) {
+                const result = await importContactBatch(staged.rows.slice(i, i + BATCH), {
+                    listId: staged.listId || undefined,
                     source: "csv",
                     doubleOptIn: fileDoubleOptIn,
+                    onConflict: strategy,
                 })
                 if (!result.success || !result.data) {
                     throw new Error(
                         `${result.error ?? "Import failed"} (stopped after ${totals.created + totals.updated} contacts)`
                     )
                 }
-                totals.created += result.data.created
-                totals.updated += result.data.updated
-                totals.suppressed += result.data.suppressed
-                setProgress({ label: "Importing…", done: Math.min(i + BATCH, valid.length), total: valid.length })
+                const d = result.data
+                totals.total += d.total
+                totals.created += d.created
+                totals.updated += d.updated
+                totals.invalid += d.invalid
+                totals.suppressed += d.suppressed
+                totals.alreadyInList += d.alreadyInList
+                totals.skipped += d.skipped
+                setProgress({ label: "Importing…", done: Math.min(i + BATCH, staged.rows.length), total: staged.rows.length })
             }
 
             await finishImport()
             setSummary(totals)
+            setPreview(null)
+            setStaged(null)
             setProgress(null)
             router.refresh()
         } catch (err) {
@@ -266,7 +336,7 @@ export function ImportPanel({
                             accept=".csv,.tsv,.txt,.xlsx"
                             onChange={(event) => {
                                 const file = event.target.files?.[0]
-                                if (file) void runFileImport(file)
+                                if (file) void runPreview(file)
                                 event.target.value = ""
                             }}
                             disabled={busy}
@@ -275,7 +345,10 @@ export function ImportPanel({
                         <select
                             value={fileListId}
                             onChange={(e) => setFileListId(e.target.value)}
-                            className={inputClass}
+                            // Locked once a file is staged: changing it mid-run is
+                            // what left the last import only partly categorised
+                            disabled={busy || !!staged}
+                            className={cn(inputClass, (busy || !!staged) && "cursor-not-allowed opacity-60")}
                         >
                             <option value="">No list (contacts only)</option>
                             {lists.map((list) => (
@@ -297,6 +370,148 @@ export function ImportPanel({
                                 foldering.
                             </span>
                         </label>
+
+                        {preview && staged && (
+                            <div className="space-y-4 rounded-lg border border-amber-300 bg-amber-50/70 p-4">
+                                <div>
+                                    <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-900">
+                                        <Users className="h-4 w-4" />
+                                        Nothing has been imported yet
+                                    </h3>
+                                    <p className="mt-0.5 text-xs text-amber-900/80">
+                                        Here is what <strong>{staged.fileName}</strong> would do.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                    {[
+                                        { label: "Brand new", value: preview.brandNew, tone: "text-emerald-700" },
+                                        { label: "Already exist", value: preview.existingElsewhere, tone: "text-amber-700" },
+                                        {
+                                            label: targetListName ? `Already in ${targetListName}` : "Already in list",
+                                            value: preview.alreadyInList,
+                                            tone: "text-slate-600",
+                                        },
+                                        { label: "Suppressed", value: preview.suppressed, tone: "text-rose-700" },
+                                    ].map((stat) => (
+                                        <div key={stat.label} className="rounded-md bg-white/80 px-2.5 py-2 text-center">
+                                            <div className={cn("text-lg font-bold tabular-nums", stat.tone)}>
+                                                {stat.value.toLocaleString()}
+                                            </div>
+                                            <div className="text-[11px] leading-tight text-slate-500">{stat.label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <p className="text-xs leading-relaxed text-amber-900/80">
+                                    {preview.invalid > 0 && <>{preview.invalid.toLocaleString()} invalid addresses and </>}
+                                    {preview.duplicatesInFile.toLocaleString()} repeats inside the file were removed before
+                                    this check. Suppressed addresses are excluded no matter what you choose — they bounced,
+                                    complained or unsubscribed.
+                                </p>
+
+                                {preview.existingSamples.length > 0 && (
+                                    <details className="rounded-md bg-white/80 p-2.5">
+                                        <summary className="cursor-pointer text-xs font-medium text-slate-700">
+                                            Examples of addresses already on file
+                                        </summary>
+                                        <ul className="mt-2 space-y-1">
+                                            {preview.existingSamples.map((sample) => (
+                                                <li key={sample.email} className="text-xs text-slate-600">
+                                                    <span className="font-mono">{sample.email}</span>
+                                                    {sample.lists.length > 0 && (
+                                                        <span className="text-slate-400"> — in {sample.lists.join(", ")}</span>
+                                                    )}
+                                                    {sample.lists.length === 0 && (
+                                                        <span className="text-slate-400"> — in no list</span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </details>
+                                )}
+
+                                {preview.existingElsewhere > 0 ? (
+                                    <fieldset className="space-y-2">
+                                        <legend className="text-xs font-semibold text-amber-900">
+                                            What should happen to the {preview.existingElsewhere.toLocaleString()} that
+                                            already exist?
+                                        </legend>
+                                        {([
+                                            {
+                                                value: "enrich",
+                                                title: "Update their details and add to this list",
+                                                detail: "Fills in blanks and merges new columns. Never overwrites data you already have, and never changes their subscribed status.",
+                                            },
+                                            {
+                                                value: "keep",
+                                                title: "Add to this list, leave their details alone",
+                                                detail: "Membership only. Use this when the new file is less trustworthy than what is already on file.",
+                                            },
+                                            {
+                                                value: "skip",
+                                                title: "Ignore them entirely",
+                                                detail: "Only the brand-new addresses are imported. Existing contacts are not touched and not added to the list.",
+                                            },
+                                        ] as const).map((option) => (
+                                            <label
+                                                key={option.value}
+                                                className={cn(
+                                                    "flex cursor-pointer items-start gap-2.5 rounded-md border bg-white/80 p-2.5 transition-colors",
+                                                    strategy === option.value
+                                                        ? "border-violet-400 ring-1 ring-violet-200"
+                                                        : "border-slate-200 hover:border-slate-300"
+                                                )}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="conflict"
+                                                    value={option.value}
+                                                    checked={strategy === option.value}
+                                                    onChange={() => setStrategy(option.value)}
+                                                    className="mt-0.5 h-4 w-4 accent-violet-600"
+                                                />
+                                                <span>
+                                                    <span className="block text-xs font-medium text-slate-900">
+                                                        {option.title}
+                                                    </span>
+                                                    <span className="block text-[11px] leading-snug text-slate-500">
+                                                        {option.detail}
+                                                    </span>
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </fieldset>
+                                ) : (
+                                    <p className="rounded-md bg-white/80 p-2.5 text-xs text-slate-600">
+                                        No collisions — every address in this file is new.
+                                    </p>
+                                )}
+
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <button
+                                        type="button"
+                                        disabled={busy}
+                                        onClick={() => void runImport()}
+                                        className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+                                    >
+                                        Import {(strategy === "skip" ? preview.brandNew : preview.brandNew + preview.existingElsewhere).toLocaleString()} contacts
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={busy}
+                                        onClick={() => {
+                                            setPreview(null)
+                                            setStaged(null)
+                                        }}
+                                        className="flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600 hover:border-slate-400"
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {progress && (
                             <div className="space-y-1.5 rounded-lg border border-violet-200 bg-violet-50 p-3">

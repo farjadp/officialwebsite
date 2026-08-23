@@ -30,7 +30,9 @@ import {
     marketingBaseUrl,
 } from "@/lib/email/provider"
 import type { ParsedRow } from "@/lib/email/csv"
+import type { ConflictStrategy, ImportPreview } from "@/lib/email/import"
 import {
+    previewImport,
     importContacts,
     importFromSiteTables,
     parseCsvContacts,
@@ -187,6 +189,29 @@ export async function addContactsToList(
 // ── Import ─────────────────────────────────────────────────────────────────
 
 /**
+ * Reports what a batch of rows would do, writing nothing.
+ *
+ * The client runs this over the whole file before importing so an address that
+ * already exists becomes a decision rather than a silent side effect.
+ */
+export async function previewImportBatch(
+    rows: ParsedRow[],
+    options: { listId?: string }
+): Promise<ActionResult<ImportPreview>> {
+    const denied = await requireAdmin()
+    if (denied) return fail(denied)
+
+    if (!Array.isArray(rows) || !rows.length) return fail("Empty batch")
+    if (rows.length > 2000) return fail("Batch too large — send at most 2000 rows at a time")
+
+    try {
+        return { success: true, data: await previewImport(rows, { listId: options.listId || undefined }) }
+    } catch (error) {
+        return fail(error instanceof Error ? error.message : "Preview failed")
+    }
+}
+
+/**
  * Imports one batch of already-parsed rows.
  *
  * Large files are parsed in the browser and sent in chunks rather than uploaded
@@ -196,7 +221,12 @@ export async function addContactsToList(
  */
 export async function importContactBatch(
     rows: ParsedRow[],
-    options: { listId?: string; source: string; doubleOptIn?: boolean }
+    options: {
+        listId?: string
+        source: string
+        doubleOptIn?: boolean
+        onConflict?: ConflictStrategy
+    }
 ): Promise<ActionResult<ImportSummary>> {
     const denied = await requireAdmin()
     if (denied) return fail(denied)
@@ -209,6 +239,7 @@ export async function importContactBatch(
             listId: options.listId || undefined,
             source: options.source || "csv",
             doubleOptIn: options.doubleOptIn,
+            onConflict: options.onConflict,
         })
         return { success: true, data: summary }
     } catch (error) {
