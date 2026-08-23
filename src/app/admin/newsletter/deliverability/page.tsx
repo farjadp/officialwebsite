@@ -7,22 +7,25 @@
 
 import { prisma } from "@/lib/prisma"
 import { DnsChecklist } from "@/components/email/dns-checklist"
+import { fetchDomainStatus, dmarcRecord, RECORD_NOTES } from "@/lib/email/domain-status"
 import { SunsetControls } from "@/components/email/sunset-controls"
 import { cn } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
 export default async function DeliverabilityPage() {
-    const [stats, suppressions, byReason, statusCounts] = await Promise.all([
+    const fromAddress =
+        process.env.EMAIL_MARKETING_FROM || process.env.EMAIL_FROM || "hello@mail.farjadp.info"
+    const domain = fromAddress.split("@")[1]?.replace(/>$/, "") ?? "mail.farjadp.info"
+
+    const [stats, suppressions, byReason, statusCounts, domainStatus] = await Promise.all([
         prisma.sendingStat.findMany({ orderBy: { day: "desc" }, take: 21 }),
         prisma.suppression.findMany({ orderBy: { createdAt: "desc" }, take: 30 }),
         prisma.suppression.groupBy({ by: ["reason"], _count: true }),
         prisma.contact.groupBy({ by: ["status"], _count: true }),
+        fetchDomainStatus(domain),
     ])
 
-    const fromAddress =
-        process.env.EMAIL_MARKETING_FROM || process.env.EMAIL_FROM || "hello@mail.farjadp.info"
-    const domain = fromAddress.split("@")[1]?.replace(/>$/, "") ?? "mail.farjadp.info"
     const maxSent = Math.max(1, ...stats.map((s) => s.dailyCap))
 
     return (
@@ -34,7 +37,13 @@ export default async function DeliverabilityPage() {
                 </p>
             </div>
 
-            <DnsChecklist domain={domain} fromAddress={fromAddress} />
+            <DnsChecklist
+                domain={domain}
+                fromAddress={fromAddress}
+                status={domainStatus}
+                dmarc={dmarcRecord(domain)}
+                notes={RECORD_NOTES}
+            />
 
             <div className="grid gap-4 lg:grid-cols-2">
                 <div className="rounded-xl border border-slate-200 bg-white p-5">

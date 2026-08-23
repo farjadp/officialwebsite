@@ -23,13 +23,17 @@ Mailchimp is import-only.
 
 ### 2. DNS
 
-`/admin/newsletter/deliverability` renders the exact records with copy buttons.
-All four are required — Gmail and Yahoo have enforced SPF + DKIM + DMARC for bulk
-senders since February 2024, and mail without them is throttled regardless of how
-good the content is.
+`/admin/newsletter/deliverability` reads the live records straight from the Resend
+API — what the page shows is exactly what must be published, with per-record
+verification state and a re-check button. Hosts are relative to the DNS zone; do
+not append the domain again.
 
-Start DMARC at `p=none`, read the aggregate reports for two weeks, then move to
-`p=quarantine`.
+DKIM and SPF come from Resend. DMARC is yours to author and is published on the
+**root** domain, where it covers every subdomain. Start at `p=none`, read the
+aggregate reports for two weeks, then move to `p=quarantine`.
+
+Gmail and Yahoo have enforced SPF + DKIM + DMARC for bulk senders since February
+2024 — mail without them is throttled regardless of how good the content is.
 
 ### 3. Resend webhook
 
@@ -109,3 +113,4 @@ Fallbacks: `{{first_name|there}}`.
 | `src/lib/email/tracking.ts` | Event recording, engagement scoring, sunset |
 | `src/lib/email/import.ts` | CSV/Excel/Mailchimp/site-table import |
 | `src/lib/email/ai.ts` | All AI assist points |
+| `src/lib/email/domain-status.ts` | Live DNS records and verification state from Resend |
