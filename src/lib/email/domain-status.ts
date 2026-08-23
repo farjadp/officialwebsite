@@ -104,9 +104,15 @@ export function dmarcRecord(domain: string): DnsRecord & { why: string } {
         record: "DMARC",
         name: `_dmarc.${root}`,
         type: "TXT",
-        value: `v=DMARC1; p=none; rua=mailto:dmarc@${root}; pct=100; adkim=s; aspf=s`,
+        // Alignment is deliberately left relaxed (the default). Resend sends with a
+        // custom MAIL FROM of send.<domain>, so the SPF-authenticated domain is a
+        // subdomain of the From domain — strict aspf would fail it outright and
+        // leave DKIM as the only path to a DMARC pass. Relaxed keeps SPF as a
+        // fallback for when DKIM breaks, which is what forwarders and mailing
+        // lists routinely do.
+        value: `v=DMARC1; p=none; rua=mailto:dmarc@${root}; pct=100`,
         status: "manual",
-        why: "Publish it on the root domain — it covers every subdomain. Start at p=none, read the aggregate reports for two weeks, then switch to p=quarantine once you can see that all legitimate mail passes.",
+        why: "Publish on the root domain — it covers every subdomain. The rua address is the whole point: without it you get reports from nobody and can never justify moving to p=quarantine. Read two weeks of aggregate reports, confirm all legitimate mail passes, then raise the policy.",
     }
 }
 
