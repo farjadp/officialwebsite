@@ -30,31 +30,115 @@ export function isValidEmail(value: string): boolean {
 }
 
 const HEADER_ALIASES: Record<string, keyof ParsedRow> = {
-    email: "email",
-    "email address": "email",
-    "e-mail": "email",
-    mail: "email",
     firstname: "firstName",
     "first name": "firstName",
     first_name: "firstName",
     fname: "firstName",
+    "given name": "firstName",
     name: "firstName",
+    "full name": "firstName",
     lastname: "lastName",
     "last name": "lastName",
     last_name: "lastName",
     lname: "lastName",
     surname: "lastName",
+    "family name": "lastName",
     company: "company",
     organization: "company",
+    organisation: "company",
     org: "company",
+    business: "company",
+    "company name": "company",
     locale: "locale",
     language: "locale",
     lang: "locale",
 }
 
+/**
+ * Recognises an email column by shape rather than by an exact name.
+ *
+ * Exports name this column every way imaginable — "Email Address", "E-Mail",
+ * "Primary Email", "Contact Email". Requiring an exact match meant a perfectly
+ * good file was rejected with a message that gave no clue why.
+ */
+function looksLikeEmailHeader(header: string): boolean {
+    const key = header.trim().toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ")
+    if (!key) return false
+    // Reject columns that merely mention mail, e.g. "email opt-in" or "mail sent"
+    if (/\b(opt|status|count|sent|date|verified|valid|bounce|type|domain)\b/.test(key)) return false
+    return /\b(e ?mail|emails|mail)\b/.test(key)
+}
+
 function normalizeHeader(header: string): keyof ParsedRow | string {
     const key = header.trim().toLowerCase()
     return HEADER_ALIASES[key] ?? header.trim()
+}
+
+export interface HeaderMatch {
+    /** Index of the row holding the headers, or -1 when detected by content */
+    headerIndex: number
+    emailIndex: number
+    headers: string[]
+    /** True when no header named the column and it was found by its values */
+    detectedByContent: boolean
+}
+
+function emailLikeRatio(values: string[]): number {
+    const filled = values.filter((v) => v.trim().length)
+    if (!filled.length) return 0
+    return filled.filter((v) => isValidEmail(v)).length / filled.length
+}
+
+/**
+ * Finds the header row and the email column.
+ *
+ * Files routinely carry a title or blank rows above the real header, so the
+ * first ten rows are searched rather than assuming row zero. Failing that, a
+ * column whose values are overwhelmingly email addresses is used directly —
+ * which is what a headerless export looks like.
+ */
+export function findHeader(grid: string[][]): HeaderMatch | null {
+    const limit = Math.min(grid.length, 10)
+
+    for (let r = 0; r < limit; r++) {
+        const emailIndex = grid[r].findIndex(looksLikeEmailHeader)
+        if (emailIndex === -1) continue
+        // A header row's own cells must not themselves be data
+        if (isValidEmail(grid[r][emailIndex])) continue
+        return { headerIndex: r, emailIndex, headers: grid[r], detectedByContent: false }
+    }
+
+    // No usable header — look for a column that is plainly full of addresses
+    const sample = grid.slice(0, 50)
+    const width = Math.max(...sample.map((row) => row.length), 0)
+    let best = { index: -1, ratio: 0 }
+    for (let c = 0; c < width; c++) {
+        const ratio = emailLikeRatio(sample.map((row) => row[c] ?? ""))
+        if (ratio > best.ratio) best = { index: c, ratio }
+    }
+    if (best.index >= 0 && best.ratio >= 0.8) {
+        return {
+            headerIndex: -1,
+            emailIndex: best.index,
+            headers: [],
+            detectedByContent: true,
+        }
+    }
+
+    return null
+}
+
+/** Explains, in the user's terms, why a file could not be read. */
+export function describeHeaderFailure(grid: string[][]): string {
+    if (!grid.length) return "The file is empty."
+
+    const headers = grid[0].map((h) => h.trim()).filter(Boolean)
+    if (!headers.length) return "The first row of the file is blank."
+
+    const shown = headers.slice(0, 12).map((h) => `"${h}"`).join(", ")
+    const more = headers.length > 12 ? ` and ${headers.length - 12} more` : ""
+
+    return `No email column found. The columns in this file are: ${shown}${more}. Rename the one holding email addresses to "email" and try again.`
 }
 
 /** RFC 4180 parser — handles quoted fields containing commas and newlines. */
@@ -104,23 +188,30 @@ export function parseCsv(content: string): string[][] {
     return rows.filter((r) => r.some((c) => c.trim().length))
 }
 
-export function rowsToContacts(rows: string[][]): ParsedRow[] {
-    if (rows.length < 2) return []
-    const headers = rows[0].map(normalizeHeader)
-    const emailIndex = headers.indexOf("email")
-    if (emailIndex === -1) return []
+export function rowsToContacts(grid: string[][]): ParsedRow[] {
+    const match = findHeader(grid)
+    if (!match) return []
 
-    return rows.slice(1).map((cells) => {
-        const parsed: ParsedRow = { email: (cells[emailIndex] ?? "").trim(), attributes: {} }
+    const dataRows = grid.slice(match.headerIndex + 1)
+    const headers = match.detectedByContent
+        ? []
+        : match.headers.map(normalizeHeader)
+
+    return dataRows.map((cells) => {
+        const parsed: ParsedRow = { email: (cells[match.emailIndex] ?? "").trim(), attributes: {} }
+
         headers.forEach((header, i) => {
             const value = (cells[i] ?? "").trim()
-            if (!value || i === emailIndex) return
+            if (!value || i === match.emailIndex) return
             if (header === "firstName" || header === "lastName" || header === "company" || header === "locale") {
-                parsed[header] = value
+                // Never let a later column clobber an earlier one, e.g. a file
+                // carrying both "name" and "first name"
+                if (!parsed[header]) parsed[header] = value
             } else if (typeof header === "string") {
                 parsed.attributes[header] = value
             }
         })
+
         return parsed
     })
 }

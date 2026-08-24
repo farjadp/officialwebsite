@@ -19,7 +19,13 @@ import {
     listMailchimpAudiences,
     importMailchimpAudience,
 } from "@/lib/actions/email"
-import { normalizeRows, parseCsvContacts, rowsToContacts, type ParsedRow } from "@/lib/email/csv"
+import {
+    normalizeRows,
+    parseCsv,
+    rowsToContacts,
+    describeHeaderFailure,
+    type ParsedRow,
+} from "@/lib/email/csv"
 import type { ImportSummary, ImportPreview, ConflictStrategy } from "@/lib/email/import"
 import { cn } from "@/lib/utils"
 
@@ -134,6 +140,28 @@ export function ImportPanel({
     const targetListName = lists.find((l) => l.id === (staged?.listId ?? fileListId))?.name ?? null
 
     const readFile = async (file: File): Promise<ParsedRow[]> => {
+        const name = file.name.toLowerCase()
+
+        // exceljs reads the modern OOXML format only; .xls is a different,
+        // binary format and fails with an opaque error if we try
+        if (name.endsWith(".xls")) {
+            throw new Error(
+                "This is the old .xls format, which cannot be read here. Open it in Excel or Sheets and save as .xlsx or .csv."
+            )
+        }
+        if (name.endsWith(".numbers") || name.endsWith(".pdf") || name.endsWith(".docx")) {
+            throw new Error(`${file.name} is not a spreadsheet. Export it as .csv or .xlsx first.`)
+        }
+
+        const grid = await readGrid(file)
+        const rows = rowsToContacts(grid)
+        // A file that parsed into a grid but yielded no contacts has a header
+        // problem, and the message should say which columns were actually there
+        if (!rows.length) throw new Error(describeHeaderFailure(grid))
+        return rows
+    }
+
+    const readGrid = async (file: File): Promise<string[][]> => {
         if (file.name.toLowerCase().endsWith(".xlsx")) {
             // Loaded on demand — the workbook parser is far too large to ship
             // to every visitor who opens the admin
@@ -154,9 +182,9 @@ export function ImportPanel({
                 })
                 grid.push(cells)
             })
-            return rowsToContacts(grid)
+            return grid
         }
-        return parseCsvContacts(await file.text())
+        return parseCsv(await file.text())
     }
 
     /** Phase one: read the file and report what an import would do. Writes nothing. */
@@ -170,10 +198,6 @@ export function ImportPanel({
 
         try {
             const rows = await readFile(file)
-            if (!rows.length) {
-                throw new Error("No rows found. The file needs a header row containing an 'email' column.")
-            }
-
             const { valid } = normalizeRows(rows)
             if (!valid.length) throw new Error("Every row in this file was rejected as invalid.")
 
