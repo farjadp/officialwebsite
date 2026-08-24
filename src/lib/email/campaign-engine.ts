@@ -134,7 +134,18 @@ export interface DrainResult {
     skipped: number
     quotaExhausted: boolean
     remainingQueued: number
+    /** Left queued because the reader was mailed too recently by another campaign */
+    deferred: number
 }
+
+/**
+ * Minimum gap between two campaigns reaching the same person.
+ *
+ * Overlapping audiences are normal — a contact can sit in several lists — but
+ * two similar emails from one sender on one day is what makes a reader reach for
+ * the spam button, and a complaint is the most expensive signal there is.
+ */
+const MIN_HOURS_BETWEEN_SENDS = Number(process.env.EMAIL_MIN_HOURS_BETWEEN_SENDS ?? 24)
 
 /**
  * Sends up to `limit` queued recipients. Designed to be called repeatedly by a
@@ -147,7 +158,7 @@ export async function drainQueue(
 ): Promise<DrainResult> {
     const result: DrainResult = {
         processed: 0, sent: 0, failed: 0, skipped: 0,
-        quotaExhausted: false, remainingQueued: 0,
+        quotaExhausted: false, remainingQueued: 0, deferred: 0,
     }
 
     const quota = await remainingDailyQuota()
@@ -160,16 +171,34 @@ export async function drainQueue(
     }
 
     const batchSize = Math.min(limit, quota)
+    const recentCutoff = new Date(Date.now() - MIN_HOURS_BETWEEN_SENDS * 3_600_000)
+
+    const dueWhere = {
+        campaignId,
+        status: "QUEUED" as const,
+        variantLabel: { not: "HOLD" },
+        OR: [{ scheduledFor: null }, { scheduledFor: { lte: new Date() } }],
+    }
+
     const queued = await prisma.campaignRecipient.findMany({
         where: {
-            campaignId,
-            status: "QUEUED",
-            variantLabel: { not: "HOLD" },
-            OR: [{ scheduledFor: null }, { scheduledFor: { lte: new Date() } }],
+            ...dueWhere,
+            // Anyone mailed inside the window stays queued and is picked up on a
+            // later tick rather than being dropped
+            contact: {
+                OR: [{ lastSentAt: null }, { lastSentAt: { lt: recentCutoff } }],
+            },
         },
         include: { contact: true },
         orderBy: { scheduledFor: "asc" },
         take: batchSize,
+    })
+
+    result.deferred = await prisma.campaignRecipient.count({
+        where: {
+            ...dueWhere,
+            contact: { lastSentAt: { gte: recentCutoff } },
+        },
     })
 
     if (!queued.length) {
