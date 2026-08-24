@@ -7,6 +7,8 @@
 
 import { prisma } from "@/lib/prisma"
 import { DnsChecklist } from "@/components/email/dns-checklist"
+import { SendingHistory } from "@/components/email/sending-stats"
+import { getSendingStats } from "@/lib/email/stats"
 import { fetchDomainStatus, dmarcRecord, RECORD_NOTES, checkPublicUrl } from "@/lib/email/domain-status"
 import { SunsetControls } from "@/components/email/sunset-controls"
 import { cn } from "@/lib/utils"
@@ -18,16 +20,15 @@ export default async function DeliverabilityPage() {
         process.env.EMAIL_MARKETING_FROM || process.env.EMAIL_FROM || "hello@mail.farjadp.info"
     const domain = fromAddress.split("@")[1]?.replace(/>$/, "") ?? "mail.farjadp.info"
 
-    const [stats, suppressions, byReason, statusCounts, domainStatus, publicUrl] = await Promise.all([
-        prisma.sendingStat.findMany({ orderBy: { day: "desc" }, take: 21 }),
+    const [suppressions, byReason, statusCounts, domainStatus, publicUrl, sending] = await Promise.all([
         prisma.suppression.findMany({ orderBy: { createdAt: "desc" }, take: 30 }),
         prisma.suppression.groupBy({ by: ["reason"], _count: true }),
         prisma.contact.groupBy({ by: ["status"], _count: true }),
         fetchDomainStatus(domain),
         checkPublicUrl(),
+        getSendingStats(30),
     ])
 
-    const maxSent = Math.max(1, ...stats.map((s) => s.dailyCap))
 
     return (
         <div className="space-y-5">
@@ -64,44 +65,9 @@ export default async function DeliverabilityPage() {
                 notes={RECORD_NOTES}
             />
 
-            <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border border-slate-200 bg-white p-5">
-                    <h2 className="text-sm font-semibold text-slate-900">Warm-up curve (last 21 days)</h2>
-                    <p className="mt-1 text-xs text-slate-500">
-                        The cap grows 1.5× on a healthy day, holds flat on a slow day, and halves after a day with
-                        excess bounces or any complaints.
-                    </p>
-                    {stats.length === 0 ? (
-                        <p className="py-8 text-center text-sm text-slate-400">Nothing sent yet.</p>
-                    ) : (
-                        <div className="mt-4 flex h-32 items-end gap-1">
-                            {[...stats].reverse().map((stat) => (
-                                <div
-                                    key={stat.id}
-                                    className="group relative flex-1"
-                                    title={`${stat.day.toISOString().slice(0, 10)} — ${stat.sent}/${stat.dailyCap} sent, ${stat.bounced} bounced`}
-                                >
-                                    <div
-                                        className="w-full rounded-t bg-slate-100"
-                                        style={{ height: `${(stat.dailyCap / maxSent) * 128}px` }}
-                                    >
-                                        <div
-                                            className={cn(
-                                                "w-full rounded-t",
-                                                stat.complained > 0 ? "bg-rose-500" : stat.bounced / Math.max(1, stat.sent) > 0.03 ? "bg-amber-500" : "bg-violet-500"
-                                            )}
-                                            style={{
-                                                height: `${(stat.sent / Math.max(1, stat.dailyCap)) * ((stat.dailyCap / maxSent) * 128)}px`,
-                                                marginTop: `${((stat.dailyCap - stat.sent) / maxSent) * 128}px`,
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+            <SendingHistory stats={sending} />
 
+            <div className="grid gap-4 lg:grid-cols-2">
                 <div className="rounded-xl border border-slate-200 bg-white p-5">
                     <h2 className="text-sm font-semibold text-slate-900">List composition</h2>
                     <dl className="mt-4 space-y-2">

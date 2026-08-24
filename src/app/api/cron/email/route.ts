@@ -8,7 +8,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { drainQueue } from "@/lib/email/campaign-engine"
-import { remainingDailyQuota } from "@/lib/email/provider"
 import { enrollContacts, runDueSteps } from "@/lib/email/automation-engine"
 import { runSunsetPolicy } from "@/lib/email/tracking"
 
@@ -38,10 +37,9 @@ export async function GET(request: Request) {
 
     // 1. Push queued campaign mail.
     //
-    // The daily cap is a property of the sending domain, not of any one
-    // campaign, so it is shared. Draining oldest-first would let a long campaign
-    // consume the whole day's allowance and starve everything behind it, so the
-    // remaining quota is divided between the campaigns that are actually running.
+    // Each campaign carries its own daily allowance, so one long campaign no
+    // longer starves the others and the operator controls total volume by
+    // choosing how many campaigns run at once.
     const sending = await prisma.campaign.findMany({
         where: { status: "SENDING" },
         select: { id: true },
@@ -49,23 +47,16 @@ export async function GET(request: Request) {
         take: 5,
     })
 
-    if (sending.length) {
-        const quota = await remainingDailyQuota()
-        // A slice each, and never zero — otherwise a campaign makes no progress
-        // at all on a tick where the quota is small
-        const share = Math.max(1, Math.floor(Math.min(quota, 100 * sending.length) / sending.length))
-
-        for (const campaign of sending) {
-            const result = await drainQueue(campaign.id, share)
-            report.campaigns.push({
-                id: campaign.id,
-                sent: result.sent,
-                failed: result.failed,
-                remaining: result.remainingQueued,
-                deferred: result.deferred,
-            })
-            if (result.quotaExhausted) break
-        }
+    for (const campaign of sending) {
+        const result = await drainQueue(campaign.id, 100)
+        report.campaigns.push({
+            id: campaign.id,
+            sent: result.sent,
+            failed: result.failed,
+            remaining: result.remainingQueued,
+            deferred: result.deferred,
+        })
+        // One campaign hitting its own ceiling says nothing about the others
     }
 
     // 2. Release scheduled campaigns whose time has come

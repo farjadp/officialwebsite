@@ -8,7 +8,7 @@
 import { NextResponse } from "next/server"
 import crypto from "crypto"
 import { prisma } from "@/lib/prisma"
-import { suppress, recordFailure } from "@/lib/email/provider"
+import { suppress, recordFailure, recordDelivered } from "@/lib/email/provider"
 import type { EmailEventType } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
@@ -127,7 +127,11 @@ export async function POST(request: Request) {
 
     switch (type) {
         case "DELIVERED": {
+            // Only campaign mail counts here. The daily "sent" figure counts
+            // campaign sends alone, so folding seed tests into "delivered" would
+            // push the ratio above 100%.
             if (recipient) {
+                await recordDelivered()
                 await prisma.campaignRecipient.update({
                     where: { id: recipient.id },
                     data: { status: "DELIVERED" },

@@ -168,9 +168,35 @@ export async function getTodayStat() {
     return prisma.sendingStat.create({ data: { day, dailyCap: cap } })
 }
 
+/** Domain-wide allowance left today. Reporting only — see the note below. */
 export async function remainingDailyQuota(): Promise<number> {
     const stat = await getTodayStat()
     return Math.max(0, stat.dailyCap - stat.sent)
+}
+
+export function startOfUtcDay(date = new Date()): Date {
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+}
+
+/**
+ * How many more messages this campaign may send today.
+ *
+ * The allowance is per campaign by explicit choice: the operator manages how
+ * many campaigns run at once, so total volume is theirs to control. The
+ * domain-wide figures are still recorded, and the ramp still halves the
+ * allowance after a day with complaints or excess bounces — that safety net is
+ * unaffected by how the quota is divided.
+ */
+export async function campaignQuotaRemaining(campaignId: string): Promise<{
+    cap: number
+    used: number
+    remaining: number
+}> {
+    const stat = await getTodayStat()
+    const used = await prisma.campaignRecipient.count({
+        where: { campaignId, sentAt: { gte: startOfUtcDay() } },
+    })
+    return { cap: stat.dailyCap, used, remaining: Math.max(0, stat.dailyCap - used) }
 }
 
 export async function recordSend(delivered = false): Promise<void> {
@@ -179,6 +205,16 @@ export async function recordSend(delivered = false): Promise<void> {
         where: { day },
         create: { day, sent: 1, delivered: delivered ? 1 : 0, dailyCap: WARMUP_START },
         update: { sent: { increment: 1 }, delivered: delivered ? { increment: 1 } : undefined },
+    })
+}
+
+/** Delivery is confirmed by the provider later, on a separate webhook. */
+export async function recordDelivered(): Promise<void> {
+    const day = today()
+    await prisma.sendingStat.upsert({
+        where: { day },
+        create: { day, delivered: 1, dailyCap: WARMUP_START },
+        update: { delivered: { increment: 1 } },
     })
 }
 

@@ -7,7 +7,8 @@
 
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { getTodayStat } from "@/lib/email/provider"
+import { getSendingStats } from "@/lib/email/stats"
+import { TodayUsage } from "@/components/email/sending-stats"
 import { Users, Send, MousePointerClick, AlertTriangle, TrendingUp, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -65,7 +66,7 @@ export default async function NewsletterOverview() {
         mailed,
         campaigns,
         recentCampaigns,
-        todayStat,
+        stats,
         totals,
     ] = await Promise.all([
         prisma.contact.count({ where: { status: "ACTIVE" } }),
@@ -80,7 +81,7 @@ export default async function NewsletterOverview() {
             orderBy: { createdAt: "desc" },
             take: 6,
         }),
-        getTodayStat(),
+        getSendingStats(30),
         prisma.campaign.aggregate({
             // A campaign still sending has already put real mail in real inboxes.
             // Counting only finished ones showed "0 emails sent" beside a live
@@ -138,24 +139,7 @@ export default async function NewsletterOverview() {
             </div>
 
             <div className="grid gap-4 lg:grid-cols-3">
-                <div className="rounded-xl border border-slate-200 bg-white p-5">
-                    <h2 className="text-sm font-semibold text-slate-900">Today&apos;s sending window</h2>
-                    <p className="mt-1 text-xs text-slate-500">
-                        Volume ramps automatically and holds flat after an unhealthy day.
-                    </p>
-                    <div className="mt-4 flex items-baseline gap-2">
-                        <span className="text-3xl font-bold tabular-nums text-slate-900">
-                            {todayStat.sent.toLocaleString()}
-                        </span>
-                        <span className="text-sm text-slate-400">/ {todayStat.dailyCap.toLocaleString()} cap</span>
-                    </div>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                        <div
-                            className="h-full rounded-full bg-violet-600 transition-all"
-                            style={{ width: `${Math.min(100, (todayStat.sent / todayStat.dailyCap) * 100)}%` }}
-                        />
-                    </div>
-                </div>
+                <TodayUsage stats={stats} />
 
                 <div className="rounded-xl border border-slate-200 bg-white p-5">
                     <h2 className="text-sm font-semibold text-slate-900">Reputation signals</h2>

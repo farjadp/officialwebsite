@@ -15,7 +15,7 @@ import {
     marketingFrom,
     sendOne,
     recordSend,
-    remainingDailyQuota,
+    campaignQuotaRemaining,
     throttleDelayMs,
     sleep,
 } from "./provider"
@@ -161,7 +161,7 @@ export async function drainQueue(
         quotaExhausted: false, remainingQueued: 0, deferred: 0,
     }
 
-    const quota = await remainingDailyQuota()
+    const { remaining: quota } = await campaignQuotaRemaining(campaignId)
     if (quota <= 0) {
         result.quotaExhausted = true
         result.remainingQueued = await prisma.campaignRecipient.count({
