@@ -297,8 +297,17 @@ export interface EmailEditorProps {
     fromEmail?: string
     onSave: (blocks: Block[], theme: EmailTheme) => Promise<void>
     onSubjectChange?: (subject: string, preheader: string) => void
-    /** Extra controls rendered in the top bar (send, schedule, test) */
-    toolbarExtra?: React.ReactNode
+    /**
+     * Extra controls for the top bar. Receives the live document so an action
+     * like "send a test" operates on what is on screen rather than on the last
+     * saved row.
+     */
+    toolbarExtra?: (context: {
+        blocks: Block[]
+        theme: EmailTheme
+        dirty: boolean
+        save: () => Promise<void>
+    }) => React.ReactNode
 }
 
 export function EmailEditor({
@@ -394,11 +403,12 @@ export function EmailEditor({
             .catch(() => window.alert("AI rewrite failed"))
     }, [])
 
-    const save = () =>
-        startSave(async () => {
-            await onSave(blocks, theme)
-            setDirty(false)
-        })
+    const persist = useCallback(async () => {
+        await onSave(blocks, theme)
+        setDirty(false)
+    }, [blocks, theme, onSave])
+
+    const save = () => startSave(persist)
 
     return (
         <div className="flex h-[calc(100vh-4rem)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -444,7 +454,7 @@ export function EmailEditor({
 
                 <div className="ml-auto flex flex-wrap items-center gap-2">
                     {dirty && <span className="text-xs text-amber-600">Unsaved changes</span>}
-                    {toolbarExtra}
+                    {toolbarExtra?.({ blocks, theme, dirty, save: persist })}
                     <button
                         type="button"
                         onClick={() => setShowAi((v) => !v)}

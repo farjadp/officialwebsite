@@ -11,7 +11,7 @@ import { DEFAULT_THEME } from "./blocks"
 import { renderEmail } from "./render"
 import { applyMergeTags } from "./merge"
 import { unsubscribeUrl, preferencesUrl } from "./campaign-engine"
-import { marketingFrom, sendOne, recordSend, remainingDailyQuota } from "./provider"
+import { marketingFrom, senderName, sendOne, recordSend, remainingDailyQuota } from "./provider"
 
 /** Finds contacts matching each active automation's trigger and enrolls them. */
 export async function enrollContacts(): Promise<number> {
@@ -146,7 +146,7 @@ export async function runDueSteps(limit = 100): Promise<{ sent: number; complete
 
         const outcome = await sendOne({
             to: contact.email,
-            from: marketingFrom("Farjad Pezeshk"),
+            from: marketingFrom(senderName()),
             subject: applyMergeTags(step.subject, ctx),
             html: applyMergeTags(html, ctx),
             text: applyMergeTags(text, ctx),

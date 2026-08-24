@@ -632,7 +632,7 @@ model Campaign {
   subject   String @default("")
   preheader String @default("")
 
-  fromName  String  @default("Farjad Pezeshk")
+  fromName  String  @default("Farjad PMD")
   fromEmail String  @default("")
   replyTo   String?
 

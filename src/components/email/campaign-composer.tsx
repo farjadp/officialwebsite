@@ -311,7 +311,7 @@ export function CampaignComposer({
                     setSubject(nextSubject)
                     setPreheader(nextPreheader)
                 }}
-                toolbarExtra={
+                toolbarExtra={({ blocks, theme, dirty, save }) => (
                     <div className="flex flex-wrap items-center gap-2">
                         <input
                             value={testAddresses}
@@ -324,7 +324,17 @@ export function CampaignComposer({
                             disabled={pending || !testAddresses.trim()}
                             onClick={() =>
                                 act(async () => {
-                                    const result = await sendTestEmail(campaign.id, testAddresses)
+                                    // Persist first so the saved row matches what was tested
+                                    if (dirty) await save()
+                                    const result = await sendTestEmail(campaign.id, testAddresses, {
+                                        subject,
+                                        preheader,
+                                        blocks,
+                                        theme,
+                                        fromName,
+                                        fromEmail,
+                                        replyTo: replyTo || null,
+                                    })
                                     setMessage(
                                         result.success
                                             ? {
@@ -350,6 +360,7 @@ export function CampaignComposer({
                             disabled={pending}
                             onClick={() =>
                                 act(async () => {
+                                    if (dirty) await save()
                                     const result = await prepareCampaign(campaign.id)
                                     if (result.success) {
                                         setRecipients(result.data?.audience ?? 0)
@@ -420,6 +431,7 @@ export function CampaignComposer({
                                     )
                                         return
                                     act(async () => {
+                                        if (dirty) await save()
                                         const result = await startCampaign(campaign.id)
                                         if (result.success) {
                                             setStatus("SENDING")
@@ -440,7 +452,7 @@ export function CampaignComposer({
                             </button>
                         )}
                     </div>
-                }
+                )}
             />
         </div>
     )

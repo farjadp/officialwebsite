@@ -1,6 +1,8 @@
 import { Resend } from "resend"
 
-const FROM = process.env.EMAIL_FROM || "Farjad Pezeshk <onboarding@resend.dev>"
+const FROM =
+    process.env.EMAIL_FROM ||
+    `${process.env.EMAIL_FROM_NAME || "Farjad PMD"} <onboarding@resend.dev>`
 const BASE_URL = process.env.NEXTAUTH_URL || "https://farjadp.info"
 
 let resendInstance: Resend | null = null

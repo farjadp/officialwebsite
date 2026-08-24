@@ -14,7 +14,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for
 const MODEL = process.env.OPENAI_EMAIL_MODEL || "gpt-4o"
 
 const BRAND_VOICE = `
-You write for Farjad Pezeshk — a startup founder and mentor writing to founders,
+You write for Farjad — a startup founder and mentor writing to founders,
 operators and technical people.
 
 Voice rules:

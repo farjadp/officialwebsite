@@ -28,6 +28,11 @@ export function marketingBaseUrl(): string {
     ).replace(/\/$/, "")
 }
 
+/** Display name on outgoing mail. Configurable so it never needs a code change. */
+export function senderName(): string {
+    return process.env.EMAIL_FROM_NAME || "Farjad PMD"
+}
+
 /** Marketing mail must not share a subdomain with transactional mail. */
 export function marketingFrom(name: string, email?: string): string {
     const address =

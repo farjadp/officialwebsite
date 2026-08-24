@@ -574,10 +574,25 @@ export async function deleteCampaign(id: string): Promise<ActionResult> {
     return { success: true }
 }
 
-/** Sends the campaign to a handful of seed inboxes to check real placement. */
+/**
+ * Sends the campaign to a handful of seed inboxes to check real placement.
+ *
+ * Takes the draft straight from the editor. Reading the saved row instead meant
+ * a test could quietly send an empty email while the screen showed a finished
+ * design and an "Unsaved changes" badge.
+ */
 export async function sendTestEmail(
     campaignId: string,
-    recipients: string
+    recipients: string,
+    draft?: {
+        subject: string
+        preheader: string
+        blocks: Block[]
+        theme: EmailTheme
+        fromName?: string
+        fromEmail?: string
+        replyTo?: string | null
+    }
 ): Promise<ActionResult<{ sent: number; failed: string[] }>> {
     const denied = await requireAdmin()
     if (denied) return fail(denied)
@@ -593,9 +608,21 @@ export async function sendTestEmail(
 
     if (!addresses.length) return fail("Add at least one test address")
 
-    const { html, text } = renderEmail(campaign.blocks as unknown as Block[], {
-        theme: campaign.theme as Partial<EmailTheme>,
-        preheader: campaign.preheader,
+    const blocks = draft?.blocks ?? (campaign.blocks as unknown as Block[]) ?? []
+    const subject = draft?.subject ?? campaign.subject
+    const preheader = draft?.preheader ?? campaign.preheader
+
+    // An empty send tells you nothing about placement and wastes reputation
+    if (!blocks.length) {
+        return fail("There is nothing to send yet — add content to the campaign first.")
+    }
+    if (!subject.trim()) {
+        return fail("Add a subject line before sending a test — an empty subject is itself a spam signal.")
+    }
+
+    const { html, text } = renderEmail(blocks, {
+        theme: draft?.theme ?? (campaign.theme as Partial<EmailTheme>),
+        preheader,
         unsubscribeUrl: `${marketingBaseUrl()}/e/u/test`,
         postalAddress: process.env.EMAIL_POSTAL_ADDRESS,
         assetBaseUrl: marketingBaseUrl(),
@@ -607,9 +634,12 @@ export async function sendTestEmail(
     for (const address of addresses) {
         const outcome = await sendOne({
             to: address,
-            from: marketingFrom(campaign.fromName, campaign.fromEmail || undefined),
-            replyTo: campaign.replyTo || undefined,
-            subject: `[TEST] ${campaign.subject}`,
+            from: marketingFrom(
+                draft?.fromName || campaign.fromName,
+                draft?.fromEmail || campaign.fromEmail || undefined
+            ),
+            replyTo: draft?.replyTo ?? campaign.replyTo ?? undefined,
+            subject: `[TEST] ${subject}`,
             html,
             text,
             unsubscribeUrl: `${marketingBaseUrl()}/e/u/test`,
