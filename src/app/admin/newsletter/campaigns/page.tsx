@@ -8,6 +8,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { createCampaign } from "@/lib/actions/email"
+import { CampaignRowActions } from "@/components/email/campaign-row-actions"
 import { cn } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
@@ -87,13 +88,14 @@ export default async function CampaignsPage() {
                             <th className="px-3 py-2.5 font-medium">Open</th>
                             <th className="px-3 py-2.5 font-medium">Click</th>
                             <th className="px-3 py-2.5 font-medium">Spam score</th>
-                            <th className="px-5 py-2.5 font-medium">Status</th>
+                            <th className="px-3 py-2.5 font-medium">Status</th>
+                            <th className="px-5 py-2.5" />
                         </tr>
                     </thead>
                     <tbody>
                         {campaigns.length === 0 && (
                             <tr>
-                                <td colSpan={7} className="px-5 py-12 text-center text-sm text-slate-400">
+                                <td colSpan={8} className="px-5 py-12 text-center text-sm text-slate-400">
                                     No campaigns yet.
                                 </td>
                             </tr>
@@ -144,7 +146,7 @@ export default async function CampaignsPage() {
                                         </span>
                                     )}
                                 </td>
-                                <td className="px-5 py-3">
+                                <td className="px-3 py-3">
                                     <span
                                         className={cn(
                                             "rounded-full px-2 py-0.5 text-xs font-medium",
@@ -153,6 +155,13 @@ export default async function CampaignsPage() {
                                     >
                                         {campaign.status}
                                     </span>
+                                </td>
+                                <td className="px-5 py-3 text-right">
+                                    <CampaignRowActions
+                                        id={campaign.id}
+                                        name={campaign.name}
+                                        status={campaign.status}
+                                    />
                                 </td>
                             </tr>
                         ))}

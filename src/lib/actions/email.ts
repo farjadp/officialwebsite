@@ -559,19 +559,77 @@ export async function saveVariant(
     return { success: true }
 }
 
-export async function deleteCampaign(id: string): Promise<ActionResult> {
+export interface CampaignRemoval {
+    name: string
+    sentCount: number
+    recipients: number
+    events: number
+}
+
+/** What deleting this campaign would take with it, so the warning can be specific. */
+export async function describeCampaignRemoval(
+    id: string
+): Promise<ActionResult<CampaignRemoval>> {
     const denied = await requireAdmin()
     if (denied) return fail(denied)
 
     const campaign = await prisma.campaign.findUnique({
         where: { id },
-        select: { status: true },
+        select: { name: true, sentCount: true },
     })
-    if (campaign?.status === "SENDING") return fail("Pause the campaign before deleting it")
+    if (!campaign) return fail("Campaign not found")
 
-    await prisma.campaign.delete({ where: { id } })
+    const [recipients, events] = await Promise.all([
+        prisma.campaignRecipient.count({ where: { campaignId: id } }),
+        prisma.emailEvent.count({ where: { campaignId: id } }),
+    ])
+
+    return {
+        success: true,
+        data: { name: campaign.name, sentCount: campaign.sentCount, recipients, events },
+    }
+}
+
+/**
+ * Permanently removes a campaign and everything recorded about it.
+ *
+ * Events are deleted rather than detached. The schema nulls the link so history
+ * survives a deletion, but a campaign removed on purpose leaves rows nobody can
+ * attribute to anything, which is worse than not having them.
+ *
+ * Contacts keep their send history: those messages really were delivered, and
+ * the frequency cap and engagement scores depend on knowing that.
+ */
+export async function deleteCampaign(id: string): Promise<ActionResult<CampaignRemoval>> {
+    const denied = await requireAdmin()
+    if (denied) return fail(denied)
+
+    const campaign = await prisma.campaign.findUnique({
+        where: { id },
+        select: { name: true, status: true, sentCount: true },
+    })
+    if (!campaign) return fail("Campaign not found")
+    if (campaign.status === "SENDING") {
+        return fail("This campaign is still sending — pause it first, then delete.")
+    }
+
+    const [recipients, events] = await Promise.all([
+        prisma.campaignRecipient.count({ where: { campaignId: id } }),
+        prisma.emailEvent.count({ where: { campaignId: id } }),
+    ])
+
+    await prisma.$transaction([
+        prisma.emailEvent.deleteMany({ where: { campaignId: id } }),
+        // Recipients, variants and links cascade with the campaign row
+        prisma.campaign.delete({ where: { id } }),
+    ])
+
     revalidatePath(`${ROOT}/campaigns`)
-    return { success: true }
+    revalidatePath(ROOT)
+    return {
+        success: true,
+        data: { name: campaign.name, sentCount: campaign.sentCount, recipients, events },
+    }
 }
 
 /**
