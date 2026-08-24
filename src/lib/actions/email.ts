@@ -21,7 +21,6 @@ import {
     drainQueue,
     resolveAbWinner,
     syncCampaignLinks,
-    unsubscribeUrl,
 } from "@/lib/email/campaign-engine"
 import {
     marketingFrom,
@@ -708,5 +707,3 @@ export async function previewCampaignHtml(
     })
     return html
 }
-
-export { unsubscribeUrl }
