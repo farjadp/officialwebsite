@@ -10,6 +10,8 @@ import {
     type Block,
     type EmailTheme,
     DEFAULT_THEME,
+    WEBFONTS,
+    isRtlText,
 } from "./blocks"
 import {
     sanitizeRichText,
@@ -31,6 +33,11 @@ export interface RenderOptions {
     footerNote?: string
     /** Transparent pixel endpoint for open tracking */
     trackingPixelUrl?: string
+    /**
+     * Origin the webfont files are served from. Must be absolute — a mail client
+     * has no page to resolve a relative path against.
+     */
+    assetBaseUrl?: string
 }
 
 function pad(block: Block, theme: EmailTheme): string {
@@ -51,6 +58,36 @@ function align(value: Align, theme: EmailTheme): Align {
     return value === "left" ? "right" : "left"
 }
 
+/**
+ * Resolves the direction for one block's content.
+ *
+ * A campaign is often bilingual — a Persian body under an English product name —
+ * so direction is decided per block from the text itself rather than forced by
+ * the theme. An explicit alignment on the block always wins.
+ */
+function blockDirection(text: string, theme: EmailTheme): "rtl" | "ltr" {
+    if (!text.trim()) return theme.direction
+    return isRtlText(text) ? "rtl" : "ltr"
+}
+
+/** @font-face for the chosen Persian family, with absolute URLs. */
+function webfontFaces(theme: EmailTheme, baseUrl: string): string {
+    if (!theme.webfont) return ""
+    const font = WEBFONTS[theme.webfont]
+    return font.faces
+        .map(
+            (face) => `  @font-face {
+    font-family: '${font.family}';
+    font-style: normal;
+    font-weight: ${face.weight};
+    font-display: swap;
+    src: url('${baseUrl}${face.woff2}') format('woff2'),
+         url('${baseUrl}${face.woff}') format('woff');
+  }`
+        )
+        .join("\n")
+}
+
 function bg(block: Block): string {
     return block.backgroundColor ? `background-color:${block.backgroundColor};` : ""
 }
@@ -69,7 +106,8 @@ function renderBlock(block: Block, theme: EmailTheme): string {
         case "heading": {
             const sizes = { 1: 30, 2: 24, 3: 20 }
             const size = block.fontSize ?? sizes[block.level]
-            const inner = `<h${block.level} style="margin:0;font-family:${theme.fontFamily};font-size:${size}px;line-height:1.3;font-weight:700;color:${block.color ?? theme.textColor};text-align:${align(block.align, theme)};">${escapeHtml(block.text)}</h${block.level}>`
+            const dir = blockDirection(block.text, theme)
+            const inner = `<h${block.level} dir="${dir}" style="margin:0;font-family:${theme.fontFamily};font-size:${size}px;line-height:1.3;font-weight:700;color:${block.color ?? theme.textColor};text-align:${align(block.align, theme)};">${escapeHtml(block.text)}</h${block.level}>`
             return row(block, theme, inner)
         }
 
@@ -80,7 +118,9 @@ function renderBlock(block: Block, theme: EmailTheme): string {
                 lineHeight: block.lineHeight ?? theme.lineHeight,
                 textColor: block.color ?? theme.textColor,
             })
-            const inner = `<div style="text-align:${block.align ? align(block.align, theme) : theme.direction === "rtl" ? "right" : "left"};">${clean}</div>`
+            const dir = blockDirection(block.html, theme)
+            const defaultAlign = dir === "rtl" ? "right" : "left"
+            const inner = `<div dir="${dir}" style="text-align:${block.align ? align(block.align, theme) : defaultAlign};">${clean}</div>`
             return row(block, theme, inner)
         }
 
@@ -128,7 +168,8 @@ function renderBlock(block: Block, theme: EmailTheme): string {
             const cells = cols
                 .map((col) => {
                     const clean = inlineThemeStyles(sanitizeRichText(col.html), theme)
-                    return `<td class="${block.stackOnMobile !== false ? "stack-col" : ""}" width="${col.width}%" valign="top" style="width:${col.width}%;padding:0 ${gap / 2}px;">${clean}</td>`
+                    const dir = blockDirection(col.html, theme)
+                    return `<td class="${block.stackOnMobile !== false ? "stack-col" : ""}" width="${col.width}%" valign="top" dir="${dir}" style="width:${col.width}%;padding:0 ${gap / 2}px;text-align:${dir === "rtl" ? "right" : "left"};">${clean}</td>`
                 })
                 .join("")
             const inner = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="width:100%;border-collapse:collapse;"><tr>${cells}</tr></table>`
@@ -156,8 +197,9 @@ function renderBlock(block: Block, theme: EmailTheme): string {
 
         case "quote": {
             const clean = inlineThemeStyles(sanitizeRichText(block.html), theme)
-            const side = theme.direction === "rtl" ? "right" : "left"
-            const inner = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td style="border-${side}:3px solid ${block.accentColor ?? theme.accentColor};padding:4px 16px;">${clean}${block.cite ? `<div style="font-family:${theme.fontFamily};font-size:14px;color:${theme.mutedColor};margin-top:4px;">— ${escapeHtml(block.cite)}</div>` : ""}</td></tr></table>`
+            const quoteDir = blockDirection(block.html, theme)
+            const side = quoteDir === "rtl" ? "right" : "left"
+            const inner = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td dir="${quoteDir}" style="border-${side}:3px solid ${block.accentColor ?? theme.accentColor};padding:4px 16px;text-align:${side};">${clean}${block.cite ? `<div style="font-family:${theme.fontFamily};font-size:14px;color:${theme.mutedColor};margin-top:4px;">— ${escapeHtml(block.cite)}</div>` : ""}</td></tr></table>`
             return row(block, theme, inner)
         }
 
@@ -222,6 +264,7 @@ export function renderEmail(
 <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
 <![endif]-->
 <style type="text/css">
+${webfontFaces(theme, (options.assetBaseUrl ?? "https://www.farjadp.info").replace(/\/$/, ""))}
   body { margin:0; padding:0; width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
   table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
   img { -ms-interpolation-mode:bicubic; }

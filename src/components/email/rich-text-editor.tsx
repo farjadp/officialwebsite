@@ -28,6 +28,8 @@ import { cn } from "@/lib/utils"
 const FONT_SIZES = ["12px", "14px", "16px", "18px", "20px", "24px", "30px", "36px"]
 const FONT_FAMILIES = [
     { label: "System", value: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" },
+    { label: "Dana (FA)", value: "dana, Tahoma, 'Segoe UI', Arial, sans-serif" },
+    { label: "IRANSansX (FA)", value: "iransans, Tahoma, 'Segoe UI', Arial, sans-serif" },
     { label: "Georgia", value: "Georgia, 'Times New Roman', serif" },
     { label: "Helvetica", value: "Helvetica, Arial, sans-serif" },
     { label: "Verdana", value: "Verdana, Geneva, sans-serif" },

@@ -488,6 +488,7 @@ export async function saveCampaign(
         preheader: payload.preheader,
         unsubscribeUrl: `${marketingBaseUrl()}/e/u/preview`,
         postalAddress: process.env.EMAIL_POSTAL_ADDRESS,
+        assetBaseUrl: marketingBaseUrl(),
     })
 
     const audit = auditEmail({
@@ -597,6 +598,7 @@ export async function sendTestEmail(
         preheader: campaign.preheader,
         unsubscribeUrl: `${marketingBaseUrl()}/e/u/test`,
         postalAddress: process.env.EMAIL_POSTAL_ADDRESS,
+        assetBaseUrl: marketingBaseUrl(),
     })
 
     const failed: string[] = []

@@ -203,6 +203,7 @@ export async function drainQueue(
             preferencesUrl: prefs,
             postalAddress: process.env.EMAIL_POSTAL_ADDRESS,
             trackingPixelUrl: pixelUrl(campaignId, recipient.id),
+            assetBaseUrl: baseUrl,
         })
 
         const ctx = {

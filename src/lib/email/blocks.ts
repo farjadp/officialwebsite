@@ -143,6 +143,41 @@ export type Block =
     | QuoteBlock
     | HtmlBlock
 
+/** Persian families served from /public/fonts, embeddable via @font-face. */
+export type EmailWebfont = "dana" | "iransans" | null
+
+export interface WebfontDefinition {
+    label: string
+    family: string
+    /** Paths under the public origin, one per weight we actually use */
+    faces: { weight: number; woff2: string; woff: string }[]
+    /** Rendered after the family name — what most clients will really use */
+    fallback: string
+}
+
+export const WEBFONTS: Record<"dana" | "iransans", WebfontDefinition> = {
+    dana: {
+        label: "Dana",
+        family: "dana",
+        faces: [
+            { weight: 400, woff2: "/fonts/dana/woff2/Dana-Regular.woff2", woff: "/fonts/dana/woff/Dana-Regular.woff" },
+            { weight: 500, woff2: "/fonts/dana/woff2/Dana-Medium.woff2", woff: "/fonts/dana/woff/Dana-Medium.woff" },
+            { weight: 700, woff2: "/fonts/dana/woff2/Dana-Bold.woff2", woff: "/fonts/dana/woff/Dana-Bold.woff" },
+        ],
+        fallback: "Tahoma, 'Segoe UI', Arial, sans-serif",
+    },
+    iransans: {
+        label: "IRANSansX",
+        family: "iransans",
+        faces: [
+            { weight: 400, woff2: "/fonts/iransans/woff2/IRANSansX-Regular.woff2", woff: "/fonts/iransans/woff/IRANSansX-Regular.woff" },
+            { weight: 500, woff2: "/fonts/iransans/woff2/IRANSansX-Medium.woff2", woff: "/fonts/iransans/woff/IRANSansX-Medium.woff" },
+            { weight: 700, woff2: "/fonts/iransans/woff2/IRANSansX-Bold.woff2", woff: "/fonts/iransans/woff/IRANSansX-Bold.woff" },
+        ],
+        fallback: "Tahoma, 'Segoe UI', Arial, sans-serif",
+    },
+}
+
 export interface EmailTheme {
     /** Content width in px — 600 is the safe universal maximum */
     width: number
@@ -157,6 +192,12 @@ export interface EmailTheme {
     lineHeight: number
     direction: "ltr" | "rtl"
     radius: number
+    /**
+     * Embeds a Persian webfont. Gmail and Outlook strip @font-face, so the
+     * fallback in fontFamily is what most readers actually see — Apple Mail,
+     * iOS Mail and the browser view get the real face.
+     */
+    webfont?: EmailWebfont
 }
 
 export const DEFAULT_THEME: EmailTheme = {
@@ -174,12 +215,48 @@ export const DEFAULT_THEME: EmailTheme = {
     lineHeight: 1.65,
     direction: "ltr",
     radius: 8,
+    webfont: null,
 }
 
 export const RTL_THEME: EmailTheme = {
     ...DEFAULT_THEME,
     direction: "rtl",
-    fontFamily: "Tahoma, 'Segoe UI', Arial, sans-serif",
+    fontFamily: `iransans, ${WEBFONTS.iransans.fallback}`,
+    webfont: "iransans",
+    // Persian sits lower in its line box than Latin; a little extra room stops
+    // descenders from crowding the line beneath
+    lineHeight: 1.9,
+}
+
+/** Builds the font stack for a chosen webfont, always keeping the fallback. */
+export function fontStackFor(webfont: EmailWebfont): string {
+    if (!webfont) return DEFAULT_THEME.fontFamily
+    const definition = WEBFONTS[webfont]
+    return `${definition.family}, ${definition.fallback}`
+}
+
+/**
+ * Decides direction the way Unicode does: the first strong directional
+ * character wins (UAX #9, and what `dir="auto"` implements in a browser).
+ *
+ * Counting letters instead looks reasonable and gets bilingual copy wrong —
+ * "مسیر Startup Visa اروپا" holds more Latin letters than Persian ones despite
+ * plainly being a Persian line.
+ */
+export function isRtlText(value: string): boolean {
+    const text = value
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&[a-z]+;|&#\d+;/gi, " ")
+
+    for (const char of text) {
+        // Arabic, Persian, Hebrew and their presentation forms
+        if (/[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F\u0750-\u077F\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(char)) {
+            return true
+        }
+        if (/[A-Za-z\u00C0-\u024F]/.test(char)) return false
+    }
+
+    return false
 }
 
 let counter = 0
@@ -197,11 +274,12 @@ export function createBlock(type: BlockType): Block {
         case "heading":
             return { id, type, text: "Your headline", level: 2, align: "left", padding }
         case "text":
+            // No default alignment: the renderer follows the text's own script
+            // until the author picks one explicitly
             return {
                 id,
                 type,
                 html: "<p>Write something worth opening.</p>",
-                align: "left",
                 padding,
             }
         case "image":

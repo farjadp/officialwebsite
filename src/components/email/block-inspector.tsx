@@ -9,7 +9,8 @@
 
 import { useRef, useState } from "react"
 import { Loader2, Upload, Trash2, Plus } from "lucide-react"
-import type { Block, EmailTheme, Align } from "@/lib/email/blocks"
+import type { Block, EmailTheme, Align, EmailWebfont } from "@/lib/email/blocks"
+import { WEBFONTS, DEFAULT_THEME, fontStackFor } from "@/lib/email/blocks"
 import { cn } from "@/lib/utils"
 
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
@@ -218,6 +219,31 @@ export function BlockInspector({ block, theme, onBlockChange, onThemeChange }: B
                         <Field label="Accent / button colour">
                             <ColorInput value={theme.accentColor} onChange={(accentColor) => onThemeChange({ accentColor, linkColor: accentColor })} />
                         </Field>
+                        <Field
+                            label="Font"
+                            hint="Gmail and Outlook strip webfonts and fall back to Tahoma. Apple Mail, iOS Mail and the browser view show the real face."
+                        >
+                            <select
+                                className={inputClass}
+                                value={theme.webfont ?? "system"}
+                                onChange={(event) => {
+                                    const choice = event.target.value
+                                    const webfont: EmailWebfont =
+                                        choice === "system" ? null : (choice as "dana" | "iransans")
+                                    onThemeChange({
+                                        webfont,
+                                        fontFamily: webfont ? fontStackFor(webfont) : DEFAULT_THEME.fontFamily,
+                                    })
+                                }}
+                            >
+                                <option value="system">System (Latin)</option>
+                                {Object.entries(WEBFONTS).map(([key, font]) => (
+                                    <option key={key} value={key}>
+                                        {font.label} (Persian)
+                                    </option>
+                                ))}
+                            </select>
+                        </Field>
                         <Field label="Base font size">
                             <NumberInput value={theme.fontSize} min={12} max={22} suffix="px" onChange={(fontSize) => onThemeChange({ fontSize })} />
                         </Field>
@@ -231,13 +257,20 @@ export function BlockInspector({ block, theme, onBlockChange, onThemeChange }: B
                                         key={dir}
                                         type="button"
                                         onClick={() =>
-                                            onThemeChange({
-                                                direction: dir,
-                                                fontFamily:
-                                                    dir === "rtl"
-                                                        ? "Tahoma, 'Segoe UI', Arial, sans-serif"
-                                                        : "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-                                            })
+                                            onThemeChange(
+                                                dir === "rtl"
+                                                    ? {
+                                                          direction: "rtl",
+                                                          webfont: theme.webfont ?? "iransans",
+                                                          fontFamily: fontStackFor(theme.webfont ?? "iransans"),
+                                                          lineHeight: Math.max(theme.lineHeight, 1.9),
+                                                      }
+                                                    : {
+                                                          direction: "ltr",
+                                                          webfont: null,
+                                                          fontFamily: DEFAULT_THEME.fontFamily,
+                                                      }
+                                            )
                                         }
                                         className={cn(
                                             "rounded px-2 py-1 text-xs font-medium uppercase transition-colors",
