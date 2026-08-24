@@ -11,7 +11,13 @@ import {
     type EmailTheme,
     DEFAULT_THEME,
 } from "./blocks"
-import { sanitizeRichText, inlineThemeStyles, escapeHtml, htmlToText } from "./sanitize"
+import {
+    sanitizeRichText,
+    sanitizeEmailHtml,
+    inlineThemeStyles,
+    escapeHtml,
+    htmlToText,
+} from "./sanitize"
 
 export interface RenderOptions {
     theme?: Partial<EmailTheme>
@@ -156,7 +162,9 @@ function renderBlock(block: Block, theme: EmailTheme): string {
         }
 
         case "html":
-            return row(block, theme, sanitizeRichText(block.html))
+            // Author-supplied markup keeps its own structure; the strict
+            // rich-text profile would strip every container and flatten it
+            return row(block, theme, sanitizeEmailHtml(block.html))
     }
 }
 

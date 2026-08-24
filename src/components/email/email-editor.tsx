@@ -19,7 +19,7 @@ import {
     createBlock, blockId, DEFAULT_THEME, BLOCK_LABELS,
 } from "@/lib/email/blocks"
 import { renderEmail } from "@/lib/email/render"
-import { sanitizeRichText } from "@/lib/email/sanitize"
+import { sanitizeEmailHtml } from "@/lib/email/sanitize"
 import { RichTextEditor } from "./rich-text-editor"
 import { BlockInspector } from "./block-inspector"
 import { AiAssistant } from "./ai-assistant"
@@ -281,7 +281,7 @@ function CanvasBlock({
                     />
                     <div
                         className="mt-2 rounded-md border border-slate-200 p-2"
-                        dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.html) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(block.html) }}
                     />
                 </div>
             )}

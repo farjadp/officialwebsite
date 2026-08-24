@@ -393,9 +393,25 @@ export async function importHtmlTemplate(formData: FormData): Promise<ActionResu
 
     if (!html) return fail("Provide an HTML file or paste the markup")
 
-    // Keep only what is inside <body> — the renderer supplies its own document shell
+    // The renderer supplies its own document shell, so only the body survives —
+    // but <style> lives in <head>, and dropping it takes the template's media
+    // queries and any class-based styling with it.
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
-    const inner = bodyMatch ? bodyMatch[1] : html
+    const body = bodyMatch ? bodyMatch[1] : html
+
+    const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i)
+    const headStyles = headMatch
+        ? (headMatch[1].match(/<style[\s\S]*?<\/style>/gi) ?? []).join("\n")
+        : ""
+
+    // Carry the body's own styling too — a <body style="..."> holds the
+    // background and font the design was built around
+    const bodyAttrs = html.match(/<body([^>]*)>/i)?.[1] ?? ""
+    const bodyStyle = bodyAttrs.match(/style\s*=\s*"([^"]*)"/i)?.[1] ?? ""
+
+    const inner = bodyStyle
+        ? `${headStyles}<div style="${bodyStyle}">${body}</div>`
+        : `${headStyles}${body}`
 
     const template = await prisma.emailTemplate.create({
         data: {

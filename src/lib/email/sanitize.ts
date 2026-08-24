@@ -188,3 +188,124 @@ export function htmlToText(html: string): string {
         .join("\n")
         .trim()
 }
+
+// ── Author-supplied email HTML ──────────────────────────────────────────────
+
+/**
+ * Layout and presentation tags an imported email template relies on.
+ *
+ * `sanitizeRichText` deliberately forbids most of these: it guards the rich-text
+ * blocks, where arbitrary structure would fight the block model. A Custom HTML
+ * block is the opposite case — its whole purpose is to carry markup someone
+ * already designed — so running it through the strict profile stripped every
+ * <div> and collapsed the design into unstyled text, in the sent mail as well as
+ * the preview.
+ */
+const EMAIL_TAGS = new Set([
+    "div", "center", "span", "p", "br", "hr", "a", "img",
+    "table", "thead", "tbody", "tfoot", "tr", "td", "th", "caption", "colgroup", "col",
+    "h1", "h2", "h3", "h4", "h5", "h6",
+    "ul", "ol", "li", "dl", "dt", "dd",
+    "strong", "b", "em", "i", "u", "s", "strike", "small", "big", "sub", "sup",
+    "blockquote", "code", "pre", "font", "abbr", "cite", "q",
+    "section", "article", "header", "footer", "main", "aside", "nav", "figure", "figcaption",
+    "style",
+])
+
+/** Anything that can execute, navigate or exfiltrate is removed outright. */
+const EMAIL_FORBIDDEN = [
+    "script", "iframe", "frame", "frameset", "object", "embed", "applet",
+    "form", "input", "button", "select", "textarea", "option",
+    "link", "meta", "base", "svg", "math", "portal",
+]
+
+const EMAIL_GLOBAL_ATTRS = new Set([
+    "style", "class", "id", "dir", "lang", "title", "role", "align", "valign",
+    "width", "height", "bgcolor", "background", "border", "cellpadding",
+    "cellspacing", "colspan", "rowspan", "nowrap",
+])
+
+const EMAIL_TAG_ATTRS: Record<string, Set<string>> = {
+    a: new Set(["href", "target", "rel", "name"]),
+    img: new Set(["src", "alt", "srcset", "usemap"]),
+    font: new Set(["color", "face", "size"]),
+    col: new Set(["span"]),
+    colgroup: new Set(["span"]),
+    table: new Set(["summary"]),
+}
+
+/** Strips executable constructs from a CSS block while leaving layout intact. */
+function sanitizeCss(css: string): string {
+    return css
+        .replace(/@import[^;]*;?/gi, "")
+        .replace(/expression\s*\(/gi, "(")
+        .replace(/(javascript|vbscript)\s*:/gi, "")
+        .replace(/behavior\s*:[^;}]*/gi, "")
+        .replace(/-moz-binding\s*:[^;}]*/gi, "")
+}
+
+/**
+ * Sanitizes a complete email design without flattening it.
+ *
+ * Keeps structure and inline styling as authored — including the table layouts
+ * and box models real email templates are built from — and removes only what
+ * could execute or phone home.
+ */
+export function sanitizeEmailHtml(input: string): string {
+    if (!input) return ""
+
+    let html = input
+        // Comments can hide markup from a naive pass; MSO conditionals are the
+        // one exception worth keeping, so they are preserved verbatim below.
+        .replace(/<!--(?!\[if)[\s\S]*?-->/g, "")
+
+    for (const tag of EMAIL_FORBIDDEN) {
+        html = html
+            .replace(new RegExp(`<${tag}\\b[\\s\\S]*?<\\/${tag}>`, "gi"), "")
+            .replace(new RegExp(`<${tag}\\b[^>]*\\/?>`, "gi"), "")
+    }
+
+    // Inline event handlers, in either quoting style or bare
+    html = html.replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+
+    // Keep <style> content, minus anything executable
+    html = html.replace(/<style\b([^>]*)>([\s\S]*?)<\/style>/gi, (_m, attrs, css) => {
+        void attrs
+        return `<style type="text/css">${sanitizeCss(String(css))}</style>`
+    })
+
+    html = html.replace(/<\/?([a-zA-Z0-9]+)((?:\s+[^>]*)?)\/?>/g, (match, rawTag, rawAttrs) => {
+        const tag = String(rawTag).toLowerCase()
+        if (!EMAIL_TAGS.has(tag)) return ""
+        if (match.startsWith("</")) return `</${tag}>`
+        if (tag === "style") return match
+
+        const allowed = EMAIL_TAG_ATTRS[tag]
+        const attrs: string[] = []
+        const attrRe = /([a-zA-Z-]+)\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))/g
+        let m: RegExpExecArray | null
+
+        while ((m = attrRe.exec(String(rawAttrs))) !== null) {
+            const name = m[1].toLowerCase()
+            if (!EMAIL_GLOBAL_ATTRS.has(name) && !allowed?.has(name)) continue
+
+            let value = m[3] ?? m[4] ?? m[5] ?? ""
+            if ((name === "href" || name === "src" || name === "background") && !isSafeUrl(value)) continue
+            if (name === "style") {
+                value = sanitizeCss(value)
+                if (!value.trim()) continue
+            }
+            attrs.push(`${name}="${escapeAttr(value)}"`)
+        }
+
+        if (tag === "a" && !attrs.some((a) => a.startsWith("target="))) {
+            attrs.push('target="_blank"', 'rel="noopener noreferrer"')
+        }
+        if (tag === "img" || tag === "br" || tag === "hr" || tag === "col") {
+            return `<${tag}${attrs.length ? " " + attrs.join(" ") : ""} />`
+        }
+        return `<${tag}${attrs.length ? " " + attrs.join(" ") : ""}>`
+    })
+
+    return html.trim()
+}
