@@ -99,6 +99,15 @@ export async function recordClick(
     const isFirstClick = !recipient.clickedAt
     const now = new Date()
 
+    // Uniqueness on a link means "distinct people who clicked THIS link".
+    // Reusing the campaign-level first-click flag counted only the reader's very
+    // first click anywhere, so a second link they opened scored zero unique.
+    const seenThisLink = await prisma.emailEvent.findFirst({
+        where: { campaignId, contactId: recipient.contactId, type: "CLICKED", linkUrl: url },
+        select: { id: true },
+    })
+    const isFirstOnLink = !seenThisLink
+
     await Promise.all([
         prisma.emailEvent.create({
             data: {
@@ -138,7 +147,10 @@ export async function recordClick(
         }),
         prisma.campaignLink.updateMany({
             where: { campaignId, url },
-            data: { clickCount: { increment: 1 }, uniqueCount: isFirstClick ? { increment: 1 } : undefined },
+            data: {
+                clickCount: { increment: 1 },
+                uniqueCount: isFirstOnLink ? { increment: 1 } : undefined,
+            },
         }),
     ])
 }

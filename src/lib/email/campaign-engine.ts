@@ -338,7 +338,12 @@ export async function resolveAbWinner(campaignId: string): Promise<string | null
 
 /** Pre-registers outbound links so the report can name them before any click. */
 export async function syncCampaignLinks(campaignId: string, html: string): Promise<void> {
-    const urls = extractLinks(html)
+    const ours = marketingBaseUrl()
+    const urls = extractLinks(html).filter(
+        // Unsubscribe, preferences and the tracking endpoints belong to the
+        // footer we generate, not to the campaign's own content
+        (url) => !url.startsWith(`${ours}/e/`)
+    )
     if (!urls.length) return
 
     const existing = await prisma.campaignLink.findMany({

@@ -62,6 +62,7 @@ export default async function NewsletterOverview() {
         unsubscribed,
         suppressed,
         engaged,
+        mailed,
         campaigns,
         recentCampaigns,
         todayStat,
@@ -72,6 +73,7 @@ export default async function NewsletterOverview() {
         prisma.contact.count({ where: { status: "UNSUBSCRIBED" } }),
         prisma.suppression.count(),
         prisma.contact.count({ where: { status: "ACTIVE", lastOpenedAt: { gte: thirtyDaysAgo } } }),
+        prisma.contact.count({ where: { status: "ACTIVE", sendCount: { gt: 0 } } }),
         prisma.campaign.count(),
         prisma.campaign.findMany({
             where: { status: { in: ["SENT", "SENDING"] } },
@@ -80,7 +82,10 @@ export default async function NewsletterOverview() {
         }),
         getTodayStat(),
         prisma.campaign.aggregate({
-            where: { status: "SENT" },
+            // A campaign still sending has already put real mail in real inboxes.
+            // Counting only finished ones showed "0 emails sent" beside a live
+            // campaign, and blanked the bounce and complaint rates with it.
+            where: { status: { in: ["SENT", "SENDING", "PAUSED"] } },
             _sum: {
                 sentCount: true,
                 uniqueOpenCount: true,
@@ -106,10 +111,17 @@ export default async function NewsletterOverview() {
                 />
                 <Stat
                     label="Engaged (30d)"
-                    value={active ? percent(engaged, active) : "—"}
-                    sub={`${engaged.toLocaleString()} opened recently`}
+                    // Measured against contacts who have actually been emailed.
+                    // Against the whole list it reads as near zero purely because
+                    // most of the list has never been sent anything yet.
+                    value={mailed ? percent(engaged, mailed) : "—"}
+                    sub={
+                        mailed
+                            ? `${engaged.toLocaleString()} of ${mailed.toLocaleString()} emailed so far`
+                            : "nobody emailed yet"
+                    }
                     icon={TrendingUp}
-                    tone={active && engaged / active > 0.25 ? "good" : "warn"}
+                    tone={mailed && engaged / mailed > 0.25 ? "good" : "warn"}
                 />
                 <Stat
                     label="Open rate (all time)"

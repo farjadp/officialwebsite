@@ -52,6 +52,19 @@ export default async function CampaignReport({ params }: { params: Promise<{ id:
     })
     if (!campaign) notFound()
 
+    // Unique clicks per link are derived from the events rather than read off the
+    // stored counter, so campaigns sent before that counter was corrected still
+    // report the truth.
+    const uniqueByLink = new Map<string, number>()
+    for (const link of campaign.links) {
+        const distinct = await prisma.emailEvent.findMany({
+            where: { campaignId: id, type: "CLICKED", linkUrl: link.url },
+            select: { contactId: true },
+            distinct: ["contactId"],
+        })
+        uniqueByLink.set(link.url, distinct.length)
+    }
+
     const [recentEvents, topOpeners] = await Promise.all([
         prisma.emailEvent.findMany({
             where: { campaignId: id, type: { in: ["OPENED", "CLICKED", "BOUNCED", "COMPLAINED", "UNSUBSCRIBED"] } },
@@ -178,7 +191,7 @@ export default async function CampaignReport({ params }: { params: Promise<{ id:
                                     <span className="shrink-0 text-sm font-semibold tabular-nums text-slate-900">
                                         {link.clickCount}
                                         <span className="ml-1 text-xs font-normal text-slate-400">
-                                            ({link.uniqueCount} unique)
+                                            ({uniqueByLink.get(link.url) ?? 0} unique)
                                         </span>
                                     </span>
                                 </li>
