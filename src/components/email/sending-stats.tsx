@@ -8,8 +8,10 @@
 import type { SendingStats } from "@/lib/email/stats"
 import { cn } from "@/lib/utils"
 
-function Bar({ used, cap }: { used: number; cap: number }) {
-    const pct = cap ? Math.min(100, (used / cap) * 100) : 0
+function Bar({ used, cap }: { used: number; cap: number | null }) {
+    // With no ceiling there is nothing to fill toward, so the bar just shows
+    // that sending is happening rather than pretending to measure progress
+    const pct = cap ? Math.min(100, (used / cap) * 100) : used > 0 ? 100 : 0
     return (
         <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div
@@ -24,7 +26,13 @@ function Bar({ used, cap }: { used: number; cap: number }) {
 }
 
 export function TodayUsage({ stats }: { stats: SendingStats }) {
-    const { cap, domainSent, campaigns } = stats.today
+    const { cap, warmupEnabled, domainSent, campaigns } = stats.today
+    const { bounceRate, complaintRate } = stats.allTime
+
+    // With the ceiling removed these numbers are the only thing left watching
+    const bounceAlarm = bounceRate >= 5
+    const bounceWarn = bounceRate >= 2
+    const complaintAlarm = complaintRate >= 0.1
 
     return (
         <div className="rounded-xl border border-slate-200 bg-white p-5">
@@ -32,8 +40,17 @@ export function TodayUsage({ stats }: { stats: SendingStats }) {
                 <div>
                     <h2 className="text-sm font-semibold text-slate-900">Today&apos;s sending</h2>
                     <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
-                        Each campaign has its own allowance of {cap.toLocaleString()}. The ceiling still
-                        halves after a day with complaints or excess bounces.
+                        {warmupEnabled ? (
+                            <>
+                                Each campaign has its own allowance of {cap?.toLocaleString()}. The ceiling
+                                still halves after a day with complaints or excess bounces.
+                            </>
+                        ) : (
+                            <>
+                                No daily limit. Volume is whatever the campaigns and their throttle produce,
+                                so the bounce and complaint rates below are the only warning you get.
+                            </>
+                        )}
                     </p>
                 </div>
                 <div className="shrink-0 text-right">
@@ -43,6 +60,29 @@ export function TodayUsage({ stats }: { stats: SendingStats }) {
                     <div className="text-[11px] text-slate-400">sent from the domain</div>
                 </div>
             </div>
+
+            {!warmupEnabled && (bounceWarn || complaintAlarm) && (
+                <div
+                    className={cn(
+                        "mt-4 rounded-lg border p-3 text-xs leading-relaxed",
+                        bounceAlarm || complaintAlarm
+                            ? "border-rose-200 bg-rose-50 text-rose-900"
+                            : "border-amber-200 bg-amber-50 text-amber-900"
+                    )}
+                    role="alert"
+                >
+                    <strong>
+                        {complaintAlarm
+                            ? `Complaint rate is ${complaintRate.toFixed(3)}%.`
+                            : `Bounce rate is ${bounceRate.toFixed(1)}%.`}
+                    </strong>{" "}
+                    {complaintAlarm
+                        ? "Gmail's threshold is 0.1%. Above it, delivery degrades for everything sent from this domain."
+                        : bounceAlarm
+                          ? "Above 5% many providers suspend an account. There is no automatic ceiling to catch this now — pause and clean the list."
+                          : "Healthy is under 2%. Worth watching now that nothing throttles automatically."}
+                </div>
+            )}
 
             {campaigns.length === 0 ? (
                 <p className="mt-4 rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
@@ -57,14 +97,20 @@ export function TodayUsage({ stats }: { stats: SendingStats }) {
                                     {campaign.name}
                                 </span>
                                 <span className="shrink-0 text-xs tabular-nums text-slate-500">
-                                    {campaign.used.toLocaleString()} / {cap.toLocaleString()}
+                                    {campaign.used.toLocaleString()}
+                                    {cap != null && ` / ${cap.toLocaleString()}`}
+                                    {cap == null && " sent today"}
                                 </span>
                             </div>
                             <div className="mt-1.5">
                                 <Bar used={campaign.used} cap={cap} />
                             </div>
                             <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-slate-400">
-                                <span>{campaign.remaining.toLocaleString()} left today</span>
+                                <span>
+                                    {campaign.remaining == null
+                                        ? "no daily limit"
+                                        : `${campaign.remaining.toLocaleString()} left today`}
+                                </span>
                                 <span>{campaign.queued.toLocaleString()} still queued</span>
                                 {campaign.deferred > 0 && (
                                     <span className="text-amber-600">

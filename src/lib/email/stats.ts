@@ -6,14 +6,15 @@
 // ============================================================================
 
 import { prisma } from "@/lib/prisma"
-import { getTodayStat, startOfUtcDay } from "./provider"
+import { getTodayStat, startOfUtcDay, isWarmupEnabled } from "./provider"
 
 export interface CampaignUsage {
     id: string
     name: string
     status: string
     used: number
-    remaining: number
+    /** null when there is no daily ceiling */
+    remaining: number | null
     queued: number
     /** Held back because the reader was mailed by another campaign too recently */
     deferred: number
@@ -32,7 +33,9 @@ export interface DayStat {
 
 export interface SendingStats {
     today: {
-        cap: number
+        /** null when warm-up is off */
+        cap: number | null
+        warmupEnabled: boolean
         /** Every campaign shares this ceiling, each with its own allowance */
         domainSent: number
         campaigns: CampaignUsage[]
@@ -58,6 +61,7 @@ const MIN_HOURS_BETWEEN_SENDS = Number(process.env.EMAIL_MIN_HOURS_BETWEEN_SENDS
 
 export async function getSendingStats(historyDays = 30): Promise<SendingStats> {
     const stat = await getTodayStat()
+    const warmup = isWarmupEnabled()
     const dayStart = startOfUtcDay()
     const recentCutoff = new Date(Date.now() - MIN_HOURS_BETWEEN_SENDS * 3_600_000)
 
@@ -95,7 +99,7 @@ export async function getSendingStats(historyDays = 30): Promise<SendingStats> {
             name: campaign.name,
             status: campaign.status,
             used,
-            remaining: Math.max(0, stat.dailyCap - used),
+            remaining: warmup ? Math.max(0, stat.dailyCap - used) : null,
             queued,
             deferred,
         })
@@ -138,7 +142,8 @@ export async function getSendingStats(historyDays = 30): Promise<SendingStats> {
 
     return {
         today: {
-            cap: stat.dailyCap,
+            cap: warmup ? stat.dailyCap : null,
+            warmupEnabled: warmup,
             domainSent: stat.sent,
             campaigns,
         },

@@ -132,6 +132,15 @@ export async function sendOne(args: SendArgs): Promise<SendResult> {
 // A new sending domain that pushes thousands of messages on day one gets
 // filtered wholesale. Volume ramps geometrically and only on healthy days.
 
+/**
+ * Warm-up can be switched off entirely. Volume and health are still recorded —
+ * the numbers are the only guardrail left once the ceiling is gone, so they
+ * matter more, not less.
+ */
+export function isWarmupEnabled(): boolean {
+    return process.env.EMAIL_WARMUP_ENABLED !== "false"
+}
+
 const WARMUP_START = Number(process.env.EMAIL_WARMUP_START ?? 50)
 const WARMUP_MULTIPLIER = 1.5
 const WARMUP_CEILING = Number(process.env.EMAIL_DAILY_CAP ?? 20_000)
@@ -188,7 +197,8 @@ export function startOfUtcDay(date = new Date()): Date {
  * unaffected by how the quota is divided.
  */
 export async function campaignQuotaRemaining(campaignId: string): Promise<{
-    cap: number
+    /** null when warm-up is off — there is no ceiling to report */
+    cap: number | null
     used: number
     remaining: number
 }> {
@@ -196,6 +206,11 @@ export async function campaignQuotaRemaining(campaignId: string): Promise<{
     const used = await prisma.campaignRecipient.count({
         where: { campaignId, sentAt: { gte: startOfUtcDay() } },
     })
+
+    if (!isWarmupEnabled()) {
+        return { cap: null, used, remaining: Number.MAX_SAFE_INTEGER }
+    }
+
     return { cap: stat.dailyCap, used, remaining: Math.max(0, stat.dailyCap - used) }
 }
 
