@@ -114,8 +114,9 @@ export function ApplicationForm() {
         </div>
         <h3 className="text-2xl font-black">رسید. ممنون که وقت گذاشتید.</h3>
         <p className="text-emerald-100/90 leading-loose max-w-md mx-auto">
-          درخواست‌تان مستقیم برای خودم آمد. طی ۴۸ ساعت جواب می‌دهم و زمان یک
-          گفت‌وگوی ۳۰ دقیقه‌ای را هماهنگ می‌کنیم.
+          درخواست‌تان مستقیم برای خودم آمد. کوهورت اول (آستانه) پر شده، پس الان
+          در صف دوره‌ی بعدی هستید — وقتی باز شود، اول از همه با شما تماس
+          می‌گیرم.
         </p>
         <p className="text-emerald-100/60 text-sm">فرجاد · Founder Development Lab</p>
       </div>

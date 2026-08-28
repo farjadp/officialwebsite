@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { ArrowDown, Linkedin, Send, Youtube } from "lucide-react";
+import { ArrowDown, CheckCircle2, Linkedin, Send, Youtube } from "lucide-react";
 import { ApplicationForm } from "./application-form";
 
 export const metadata: Metadata = {
@@ -463,12 +463,26 @@ export default function FounderLabPage() {
       {/* ─── فرم ──────────────────────────────────────────────── */}
       <section id="apply" className="px-6 pb-28 scroll-mt-24">
         <div className="max-w-3xl mx-auto">
+          <div className="mb-8 bg-[#1B4B43] text-white rounded-2xl p-6 md:p-8 flex items-start gap-4">
+            <div className="w-10 h-10 shrink-0 bg-white/15 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div className="space-y-1.5">
+              <p className="font-black text-lg md:text-xl">کوهورت اول — آستانه — بسته شد</p>
+              <p className="text-emerald-100/90 leading-[1.9]">
+                ۵ تیم پذیرش شدند و کار شروع شده. اگر فرم زیر را پر کنید، برای دوره‌ی
+                بعدی جزو اولویت‌های من خواهید بود — وقتی باز شود، اول از همه با شما
+                تماس می‌گیرم.
+              </p>
+            </div>
+          </div>
+
           <div className="mb-10 space-y-4">
-            <h2 className="text-3xl md:text-4xl font-black text-[#111827]">فرم درخواست</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-[#111827]">فرم درخواست برای دوره‌ی بعدی</h2>
             <p className="text-lg text-stone-600 leading-[1.9] max-w-xl">
-              پنج دقیقه وقت می‌گیرد و جواب صادقانه مهم‌تر از جواب کامل است. طی ۴۸
-              ساعت جواب می‌دهم و یک گفت‌وگوی ۳۰ دقیقه‌ای می‌گذاریم — این فرم،
-              اپلیکیشن نهایی نیست.
+              پنج دقیقه وقت می‌گیرد و جواب صادقانه مهم‌تر از جواب کامل است. دوره‌ی
+              بعدی که باز شود، این فرم‌ها اول بررسی می‌شوند — این فرم اپلیکیشن نهایی
+              نیست.
             </p>
           </div>
 
