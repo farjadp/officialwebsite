@@ -12,6 +12,7 @@ const TOOL_LABELS: Record<string, string> = {
     "startup-readiness": "Startup Readiness",
     "ai-website-readiness": "AI Website Readiness",
     "business-model-stress-test": "BM Stress Test",
+    "trl-assessment": "TRL Assessment",
 }
 
 const TOOL_COLORS: Record<string, string> = {
@@ -22,6 +23,7 @@ const TOOL_COLORS: Record<string, string> = {
     "startup-readiness": "bg-purple-50 text-purple-700",
     "ai-website-readiness": "bg-cyan-50 text-cyan-700",
     "business-model-stress-test": "bg-amber-50 text-amber-700",
+    "trl-assessment": "bg-teal-50 text-teal-700",
 }
 
 const SCORE_COLOR = (score: number) => {

@@ -8,6 +8,7 @@ const TOOL_LABELS: Record<string, string> = {
     "business-model-score": "Business Model Score",
     "investor-readiness": "Investor Readiness",
     "startup-readiness": "Startup Readiness",
+    "trl-assessment": "TRL Assessment",
     "unknown": "Unknown Tool",
 }
 

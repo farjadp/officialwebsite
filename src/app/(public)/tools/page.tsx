@@ -5,7 +5,7 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
-import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Flame, Globe2, FlaskConical } from "lucide-react"
+import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Flame, Globe2, FlaskConical, Gauge } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
@@ -31,6 +31,15 @@ export default function ToolsPage() {
             action: "Stress Test My Model",
             icon: FlaskConical,
             href: "/tools/business-model-stress-test",
+            available: true,
+        },
+        {
+            name: "TRL Assessment",
+            type: "Diagnostic Tool",
+            desc: "Locate your technology on the NASA 1–9 readiness scale used by government innovation programs. Get your TRL, the evidence gaps to the next level, and funding context.",
+            action: "Calculate My TRL",
+            icon: Gauge,
+            href: "/tools/trl-assessment",
             available: true,
         },
         {
