@@ -219,7 +219,6 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
                         <input
                             id="trl-email"
                             type="email"
-                            required
                             dir="ltr"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -233,7 +232,7 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
 
                     <button
                         type="submit"
-                        disabled={isCalculating || !email}
+                        disabled={isCalculating}
                         className="w-full h-14 text-lg font-bold rounded-xl mt-6 bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center justify-center gap-2"
                     >
                         {isCalculating ? (
