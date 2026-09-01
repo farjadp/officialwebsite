@@ -1,5 +1,6 @@
 // ============================================================================
-// Data model and configuration for the TRL (Technology Readiness Level) Assessment
+// Data model and English content for the TRL (Technology Readiness Level)
+// Assessment.
 //
 // Grounded in:
 // - NASA TRL 1-9 definitions (nasa.gov, SCaN program)
@@ -12,7 +13,11 @@
 // Methodology: evidence-gate calculator (AFRL/NASA "TRL calculator" style).
 // Each level has concrete evidence criteria; a level counts as achieved only
 // when its criteria are substantially met AND every lower level is achieved.
+//
+// Persian content lives in config.fa.ts with the same ids and shape.
 // ============================================================================
+
+export type TrlLocale = "en" | "fa";
 
 export interface TrlCriterion {
     id: string;
@@ -34,6 +39,32 @@ export interface TrlPhase {
     trlRange: string;
     description: string;
     levels: number[];
+}
+
+// Strings consumed by the scoring logic (localized result text).
+export interface TrlLogicStrings {
+    preTrl1Label: string;
+    trlLabel: (n: number) => string;
+    preTrl1LevelName: string;
+    preTrl1NasaDefinition: string;
+    summaryPreTrl1: string;
+    summaryResearch: (label: string) => string;
+    summaryDevelopment: (label: string) => string;
+    summaryDeployment: (label: string) => string;
+    summaryTrl9: string;
+    reachRecommendation: (level: number, name: string, gap: string) => string;
+    pairingRecommendation: string;
+    fundingEarly: string;
+    fundingMid: string;
+    fundingLate: string;
+}
+
+export interface TrlContent {
+    locale: TrlLocale;
+    dir: "ltr" | "rtl";
+    phases: TrlPhase[];
+    levels: TrlLevel[];
+    logic: TrlLogicStrings;
 }
 
 export const trlPhases: TrlPhase[] = [
@@ -170,5 +201,30 @@ export const trlLevels: TrlLevel[] = [
         advanceHint: "Technology maturity is complete — the frontier is now market, scale, and business readiness.",
     },
 ];
+
+export const trlLogicStringsEn: TrlLogicStrings = {
+    preTrl1Label: "Pre-TRL 1",
+    trlLabel: (n) => `TRL ${n}`,
+    preTrl1LevelName: "Idea Stage",
+    preTrl1NasaDefinition: "Basic principles not yet observed and reported.",
+    summaryPreTrl1: "The underlying principles of your technology are not yet observed and documented. You are at the idea stage — the immediate task is turning the idea into reported, reviewable findings.",
+    summaryResearch: (label) => `Your technology is in the research phase (${label}). The core question is still scientific feasibility — prove the critical functions before investing in integration or productization.`,
+    summaryDevelopment: (label) => `Your technology is in the development phase (${label}). Feasibility is established; the work now is raising fidelity and demonstrating a complete prototype under realistic conditions.`,
+    summaryDeployment: (label) => `Your technology is in the demonstration and deployment phase (${label}). You are crossing the pre-commercialization gap — the distance between a working prototype and a qualified, operating product.`,
+    summaryTrl9: "Your technology is fully mature (TRL 9): proven in continuous real operations. The frontier is no longer technology readiness — it is market, investment, and organizational readiness.",
+    reachRecommendation: (level, name, gap) => `To reach TRL ${level} (${name}): ${gap}`,
+    pairingRecommendation: "TRL measures technology maturity only. Pair this result with a market and investment readiness check — a TRL 7 technology with TRL 2 market evidence is still an unfundable venture.",
+    fundingEarly: "At TRL 1–3, the natural funding sources are research grants, university partnerships, and early innovation programs. Government programs (e.g. ISED Canada initiatives) typically class this range as early-stage R&D, and often measure success as advancing at least two TRLs.",
+    fundingMid: "At TRL 4–6, you fit development-stage innovation funding: R&D grants, innovation networks, and technical co-development with industry partners. Many programs fund projects that commit to advancing a minimum of two TRLs.",
+    fundingLate: "At TRL 7–9, you are in what program guides call the pre-commercialization gap. Funding shifts from research grants toward commercialization programs, strategic partners, and private capital — and investors will now weigh market and business readiness at least as heavily as technology.",
+};
+
+export const trlContentEn: TrlContent = {
+    locale: "en",
+    dir: "ltr",
+    phases: trlPhases,
+    levels: trlLevels,
+    logic: trlLogicStringsEn,
+};
 
 export const TOTAL_CRITERIA = trlLevels.reduce((sum, l) => sum + l.criteria.length, 0);

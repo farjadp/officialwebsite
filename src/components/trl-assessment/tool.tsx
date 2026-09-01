@@ -1,47 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import { trlPhases, trlLevels, TOTAL_CRITERIA, TrlCriterion } from "@/data/trl-assessment/config";
-import { TrlAnswers, calculateTrl, TrlResult } from "@/data/trl-assessment/logic";
+import { TOTAL_CRITERIA, TrlCriterion, TrlLocale } from "@/data/trl-assessment/config";
+import { TrlAnswers, calculateTrl, getTrlContent, TrlResult } from "@/data/trl-assessment/logic";
+import { getTrlUiStrings } from "@/data/trl-assessment/ui";
 import { ResultSummary } from "./result-summary";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Loader2, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const evidenceOptions = [
-    { value: 0, label: "No" },
-    { value: 1, label: "Partially" },
-    { value: 2, label: "Yes, with evidence" },
-];
 
 function CriterionCard({
     criterion,
     index,
     value,
     onChange,
+    options,
 }: {
     criterion: TrlCriterion;
     index: number;
     value: number | undefined;
     onChange: (value: number) => void;
+    options: { value: number; label: string }[];
 }) {
+    // Distinct selected states: No -> stone, Partially -> amber, Yes -> green
+    const selectedClasses = [
+        "border-stone-400 bg-stone-100 text-stone-700",
+        "border-[#D97706] bg-[#D97706]/10 text-[#B45309]",
+        "border-[#0F3F35] bg-[#0F3F35] text-white",
+    ];
+
     return (
-        <div className="bg-white border rounded-xl p-6 shadow-sm transition-all hover:shadow-md">
-            <h4 className="text-base sm:text-lg font-medium text-slate-800 mb-4">
-                <span className="text-slate-400 mr-2">{index + 1}.</span>
+        <div className="bg-white border border-stone-200 rounded-2xl p-6 transition-all hover:border-stone-300 hover:shadow-md">
+            <h4 className="text-base sm:text-lg font-medium text-[#1C1917] mb-4 leading-relaxed">
+                <span className="text-stone-400 me-2">{index + 1}.</span>
                 {criterion.text}
             </h4>
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                {evidenceOptions.map((option) => (
+                {options.map((option) => (
                     <button
                         key={option.value}
                         onClick={() => onChange(option.value)}
                         className={cn(
-                            "flex items-center justify-center p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 text-center text-sm font-medium",
+                            "flex items-center justify-center p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-center text-sm font-medium",
                             value === option.value
-                                ? "border-primary bg-primary/5 text-primary scale-[1.02]"
-                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-300 hover:bg-slate-100"
+                                ? selectedClasses[option.value]
+                                : "border-stone-100 bg-[#FDFBF7] text-stone-500 hover:border-stone-300 hover:bg-stone-50"
                         )}
                     >
                         {option.label}
@@ -52,7 +55,11 @@ function CriterionCard({
     );
 }
 
-export function TrlAssessmentTool() {
+export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
+    const content = getTrlContent(locale);
+    const ui = getTrlUiStrings(locale);
+    const isRtl = content.dir === "rtl";
+
     const [step, setStep] = useState<"intro" | "questions" | "lead" | "result">("intro");
     const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
     const [answers, setAnswers] = useState<TrlAnswers>({});
@@ -62,15 +69,24 @@ export function TrlAssessmentTool() {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
 
-    const currentPhase = trlPhases[currentPhaseIndex];
-    const currentLevels = currentPhase.levels.map((l) => trlLevels[l - 1]);
+    const currentPhase = content.phases[currentPhaseIndex];
+    const currentLevels = currentPhase.levels.map((l) => content.levels[l - 1]);
+
+    const answerOptions = [
+        { value: 0, label: ui.answerNo },
+        { value: 1, label: ui.answerPartially },
+        { value: 2, label: ui.answerYes },
+    ];
+
+    const NextArrow = isRtl ? ArrowLeft : ArrowRight;
+    const PrevArrow = isRtl ? ArrowRight : ArrowLeft;
 
     const handleAnswer = (criterionId: string, value: number) => {
         setAnswers((prev) => ({ ...prev, [criterionId]: value }));
     };
 
     const handleNext = () => {
-        if (currentPhaseIndex < trlPhases.length - 1) {
+        if (currentPhaseIndex < content.phases.length - 1) {
             setCurrentPhaseIndex((prev) => prev + 1);
             window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
@@ -92,7 +108,7 @@ export function TrlAssessmentTool() {
 
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        const finalResult = calculateTrl(answers);
+        const finalResult = calculateTrl(answers, locale);
 
         fetch("/api/tool-usage", {
             method: "POST",
@@ -137,30 +153,39 @@ export function TrlAssessmentTool() {
 
     if (step === "intro") {
         return (
-            <div className="max-w-3xl mx-auto text-center space-y-8 py-12 px-6">
-                <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
-                    Technology Readiness Level (TRL) Assessment
+            <div dir={content.dir} className="max-w-3xl mx-auto text-center space-y-8 py-12 px-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D97706]/30 bg-[#D97706]/5 text-[#D97706] text-xs font-bold uppercase tracking-widest">
+                    {ui.badge}
+                </div>
+                <h1 className="font-serif text-4xl sm:text-6xl leading-[1.15] text-[#0F3F35]">
+                    {ui.introTitleLead}{" "}
+                    <span className="text-[#D97706]">{ui.introTitleAccent}</span>
                 </h1>
-                <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                    Locate your technology on the NASA 1–9 readiness scale — the same scale government innovation programs use to decide what to fund. Answer evidence questions, get your TRL, the gaps to the next level, and the funding context for your stage.
+                <p className="text-lg sm:text-xl text-stone-600 leading-relaxed max-w-2xl mx-auto">
+                    {ui.introBody}
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
-                    {trlPhases.map((phase) => (
-                        <div key={phase.id} className="bg-white border border-slate-200 rounded-xl p-4">
-                            <div className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">{phase.trlRange}</div>
-                            <div className="font-semibold text-slate-800 text-sm">{phase.title}</div>
-                            <div className="text-xs text-slate-500 mt-1 leading-snug">{phase.description}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-start">
+                    {content.phases.map((phase, i) => (
+                        <div key={phase.id} className="bg-white border border-stone-200 rounded-2xl p-5 relative overflow-hidden">
+                            <div className="absolute top-0 end-0 w-16 h-16 bg-[#0F3F35]/5 rounded-bl-full" />
+                            <div className="text-xs font-mono uppercase tracking-widest text-[#D97706] mb-2">{phase.trlRange}</div>
+                            <div className="font-bold text-[#0F3F35]">{phase.title}</div>
+                            <div className="text-xs text-stone-500 mt-2 leading-relaxed">{phase.description}</div>
+                            <div className="w-6 h-1 bg-[#D97706] mt-4" style={{ width: `${(i + 1) * 16}px` }} />
                         </div>
                     ))}
                 </div>
                 <div className="pt-4">
-                    <Button size="lg" className="h-14 px-8 text-lg rounded-full" onClick={() => setStep("questions")}>
-                        Start Free Assessment
-                        <Play className="ml-2 w-5 h-5" />
-                    </Button>
-                    <p className="text-sm text-slate-500 mt-4">Takes about 4-6 minutes • 27 evidence checks</p>
-                    <p className="text-xs text-slate-400 mt-2 max-w-xl mx-auto">
-                        Answer honestly and only claim &quot;Yes&quot; where you could show the evidence to a reviewer. TRL is a ladder — skipped levels don&apos;t count.
+                    <button
+                        onClick={() => setStep("questions")}
+                        className="inline-flex items-center gap-2 h-14 px-10 text-lg font-bold rounded-full bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 transition-all duration-300 hover:scale-105"
+                    >
+                        {ui.startButton}
+                        <Play className={cn("w-5 h-5", isRtl && "rotate-180")} />
+                    </button>
+                    <p className="text-sm text-stone-500 mt-4">{ui.durationLine}</p>
+                    <p className="text-xs text-stone-400 mt-2 max-w-xl mx-auto leading-relaxed">
+                        {ui.honestyNote}
                     </p>
                 </div>
             </div>
@@ -168,55 +193,59 @@ export function TrlAssessmentTool() {
     }
 
     if (step === "result" && result) {
-        return <ResultSummary result={result} onReset={handleReset} />;
+        return <ResultSummary result={result} onReset={handleReset} locale={locale} />;
     }
 
     if (step === "lead") {
         return (
-            <div className="max-w-xl mx-auto bg-white border border-slate-200 shadow-xl rounded-3xl p-8 sm:p-12 text-center animate-in fade-in zoom-in-95 duration-500">
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">Analyzing your evidence...</h2>
-                <p className="text-slate-600 mb-8">
-                    Your TRL has been calculated. Enter your info below to see your level, the gaps to the next one, and the funding context for your stage.
-                </p>
+            <div dir={content.dir} className="max-w-xl mx-auto bg-white border border-stone-200 shadow-xl rounded-3xl p-8 sm:p-12 text-center animate-in fade-in zoom-in-95 duration-500">
+                <h2 className="font-serif text-3xl text-[#0F3F35] mb-3">{ui.leadTitle}</h2>
+                <p className="text-stone-600 mb-8 leading-relaxed">{ui.leadBody}</p>
 
-                <form onSubmit={handleCalculateResult} className="space-y-4 text-left">
+                <form onSubmit={handleCalculateResult} className="space-y-4 text-start">
                     <div className="space-y-2">
-                        <label htmlFor="name" className="text-sm font-medium text-slate-700">First Name (Optional)</label>
+                        <label htmlFor="trl-name" className="text-sm font-medium text-stone-700">{ui.nameLabel}</label>
                         <input
-                            id="name"
+                            id="trl-name"
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="flex h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                            placeholder="Grace"
+                            className="flex h-12 w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F3F35] focus:border-transparent transition-all"
+                            placeholder={ui.namePlaceholder}
                         />
                     </div>
                     <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium text-slate-700">Work Email</label>
+                        <label htmlFor="trl-email" className="text-sm font-medium text-stone-700">{ui.emailLabel}</label>
                         <input
-                            id="email"
+                            id="trl-email"
                             type="email"
                             required
+                            dir="ltr"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="flex h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                            placeholder="grace@deeptech.co"
+                            className={cn(
+                                "flex h-12 w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F3F35] focus:border-transparent transition-all",
+                                isRtl && "text-right placeholder:text-left"
+                            )}
+                            placeholder={ui.emailPlaceholder}
                         />
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full h-14 text-lg rounded-xl mt-6" disabled={isCalculating || !email}>
+                    <button
+                        type="submit"
+                        disabled={isCalculating || !email}
+                        className="w-full h-14 text-lg font-bold rounded-xl mt-6 bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center justify-center gap-2"
+                    >
                         {isCalculating ? (
                             <>
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                Generating Report...
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                {ui.generating}
                             </>
                         ) : (
-                            "Reveal My TRL & Roadmap"
+                            ui.submit
                         )}
-                    </Button>
-                    <p className="text-xs text-slate-400 text-center mt-4">
-                        We respect your inbox. No spam, just value.
-                    </p>
+                    </button>
+                    <p className="text-xs text-stone-400 text-center mt-4">{ui.noSpam}</p>
                 </form>
             </div>
         );
@@ -224,28 +253,30 @@ export function TrlAssessmentTool() {
 
     // "questions" step
     return (
-        <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div dir={content.dir} className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
 
             {/* Progress Header */}
-            <div className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur-md pt-4 pb-4 border-b border-slate-200">
-                <div className="flex justify-between text-sm font-medium text-slate-500 mb-2">
-                    <span>Phase {currentPhaseIndex + 1} of {trlPhases.length}</span>
-                    <span className="text-primary">{Math.round(progressPercentage)}% Completed</span>
+            <div className="sticky top-0 z-10 bg-[#FDFBF7]/90 backdrop-blur-md pt-4 pb-4 border-b border-stone-200">
+                <div className="flex justify-between text-sm font-medium text-stone-500 mb-2">
+                    <span>{ui.phaseOf(currentPhaseIndex + 1, content.phases.length)}</span>
+                    <span className="text-[#D97706] font-bold">{ui.completed(Math.round(progressPercentage))}</span>
                 </div>
-                <Progress value={progressPercentage} className="h-2" />
-                <h2 className="text-2xl font-bold text-slate-900 mt-6">{currentPhase.title} <span className="text-slate-400 font-normal">({currentPhase.trlRange})</span></h2>
-                <p className="text-sm text-slate-500 mt-1">{currentPhase.description}</p>
+                <Progress value={progressPercentage} className="h-2 [&>div]:bg-[#0F3F35]" />
+                <h2 className="font-serif text-3xl text-[#0F3F35] mt-6">
+                    {currentPhase.title} <span className="text-stone-400 text-xl font-sans">({currentPhase.trlRange})</span>
+                </h2>
+                <p className="text-sm text-stone-500 mt-1">{currentPhase.description}</p>
             </div>
 
             {/* Levels & Criteria */}
-            <div className="space-y-10 pt-4">
+            <div className="space-y-12 pt-4">
                 {currentLevels.map((level) => (
                     <div key={level.level} className="space-y-4">
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-xs font-mono uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded">TRL {level.level}</span>
-                            <h3 className="text-xl font-bold text-slate-900">{level.name}</h3>
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <span className="text-xs font-mono uppercase tracking-widest text-white bg-[#0F3F35] px-2.5 py-1 rounded">TRL {level.level}</span>
+                            <h3 className="text-xl font-bold text-[#1C1917]">{level.name}</h3>
                         </div>
-                        <p className="text-sm text-slate-500 italic">{level.startupTranslation}</p>
+                        <p className="text-sm text-stone-500 leading-relaxed border-s-2 border-[#D97706]/40 ps-3">{level.startupTranslation}</p>
                         <div className="space-y-4">
                             {level.criteria.map((c, index) => (
                                 <CriterionCard
@@ -254,6 +285,7 @@ export function TrlAssessmentTool() {
                                     criterion={c}
                                     value={answers[c.id]}
                                     onChange={(val) => handleAnswer(c.id, val)}
+                                    options={answerOptions}
                                 />
                             ))}
                         </div>
@@ -262,25 +294,24 @@ export function TrlAssessmentTool() {
             </div>
 
             {/* Navigation Footer */}
-            <div className="flex items-center justify-between pt-6 border-t border-slate-200">
-                <Button
-                    variant="ghost"
+            <div className="flex items-center justify-between pt-6 border-t border-stone-200">
+                <button
                     onClick={handlePrevious}
                     disabled={currentPhaseIndex === 0}
-                    className="text-slate-500"
+                    className="inline-flex items-center gap-2 text-stone-500 hover:text-[#0F3F35] disabled:opacity-40 disabled:cursor-not-allowed font-medium px-4 py-2 transition-colors"
                 >
-                    <ArrowLeft className="mr-2 w-4 h-4" />
-                    Previous
-                </Button>
+                    <PrevArrow className="w-4 h-4" />
+                    {ui.previous}
+                </button>
 
-                <Button
+                <button
                     onClick={handleNext}
                     disabled={!isCurrentPhaseComplete()}
-                    className="rounded-full px-8"
+                    className="inline-flex items-center gap-2 rounded-full px-8 h-12 font-bold bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                    {currentPhaseIndex === trlPhases.length - 1 ? "Finish Assessment" : "Next Phase"}
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
+                    {currentPhaseIndex === content.phases.length - 1 ? ui.finish : ui.nextPhase}
+                    <NextArrow className="w-4 h-4" />
+                </button>
             </div>
 
         </div>

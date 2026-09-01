@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { Button } from "@/components/ui/button"
-import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse } from "lucide-react"
+import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Gauge } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
@@ -16,6 +16,15 @@ export const metadata = {
 
 export default function ToolsPage() {
     const tools = [
+        {
+            name: "ارزیابی TRL",
+            type: "ابزار تشخیصی",
+            desc: "جایگاه فناوری‌تان را روی مقیاس ۱ تا ۹ ناسا پیدا کنید؛ همان مقیاسی که برنامه‌های نوآوری دولتی برای تأمین مالی به‌کار می‌برند. با تحلیل شکاف تا سطح بعدی.",
+            action: "محاسبه‌ی TRL من",
+            icon: Gauge,
+            href: "/fa/tools/trl-assessment",
+            available: true,
+        },
         {
             name: "Sales Funnel Health Score",
             type: "Diagnostic Tool",
