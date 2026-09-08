@@ -1,8 +1,9 @@
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 
-export async function POST(req: NextRequest) {
+async function rateLimitedPOSTHandler(req: NextRequest) {
     try {
         const session = await auth()
         const body = await req.json()
@@ -34,3 +35,5 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Failed to submit bug report" }, { status: 500 })
     }
 }
+
+export const POST = withRateLimit("bug-report", RATE_RULES.bugReport, rateLimitedPOSTHandler as any)

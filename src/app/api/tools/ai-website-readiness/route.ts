@@ -1,3 +1,4 @@
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { analyzeWebsite } from "@/lib/ai-website-readiness";
@@ -24,7 +25,7 @@ async function saveAuditLog(data: Parameters<typeof prisma.websiteAuditLog.creat
   }
 }
 
-export async function POST(request: Request) {
+async function rateLimitedPOSTHandler(request: Request) {
   const startedAt = Date.now();
   let requestedUrl = "unknown";
   try {
@@ -65,3 +66,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
+
+export const POST = withRateLimit("website-audit", RATE_RULES.websiteAudit, rateLimitedPOSTHandler as any)

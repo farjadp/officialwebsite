@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withApiLogging } from "@/lib/api-logger"
+import { withAdminAuth } from "@/lib/api-auth"
 
 async function getHandler() {
     try {
@@ -67,7 +68,7 @@ async function deleteHandler(req: NextRequest) {
     }
 }
 
-export const GET = withApiLogging("GET", getHandler as any)
-export const POST = withApiLogging("POST", postHandler as any)
-export const PATCH = withApiLogging("PATCH", patchHandler as any)
-export const DELETE = withApiLogging("DELETE", deleteHandler as any)
+export const GET = withApiLogging("GET", withAdminAuth(getHandler as any))
+export const POST = withApiLogging("POST", withAdminAuth(postHandler as any))
+export const PATCH = withApiLogging("PATCH", withAdminAuth(patchHandler as any))
+export const DELETE = withApiLogging("DELETE", withAdminAuth(deleteHandler as any))

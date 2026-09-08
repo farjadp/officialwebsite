@@ -1,6 +1,8 @@
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withApiLogging } from "@/lib/api-logger";
+import { withAdminAuth } from "@/lib/api-auth";
 
 async function postHandler(req: NextRequest) {
     try {
@@ -49,5 +51,7 @@ async function getHandler() {
     }
 }
 
-export const POST = withApiLogging("POST", postHandler as any);
-export const GET = withApiLogging("GET", getHandler as any);
+export const POST = withApiLogging("POST", withRateLimit("leads", RATE_RULES.leads, postHandler as any))
+// Reading leads exposes email addresses, names and every answer submitted to
+// a tool. It is an admin operation and was public until 8 Sep 2026.
+export const GET = withApiLogging("GET", withAdminAuth(getHandler as any));

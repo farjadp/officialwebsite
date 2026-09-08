@@ -1,7 +1,8 @@
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(req: NextRequest) {
+async function rateLimitedPOSTHandler(req: NextRequest) {
   try {
     const body = await req.json();
     const { name, email, phone, telegram, social, stage, problem, why, deckUrl, deckName } = body;
@@ -109,3 +110,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
+
+export const POST = withRateLimit("lab-apply", RATE_RULES.labApply, rateLimitedPOSTHandler as any)

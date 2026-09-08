@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withApiLogging } from "@/lib/api-logger";
+import { withAdminAuth } from "@/lib/api-auth"
 
 async function getHandler(req: NextRequest) {
     const status = req.nextUrl.searchParams.get("status") || "PUBLISHED";
@@ -22,4 +23,4 @@ async function getHandler(req: NextRequest) {
     }
 }
 
-export const GET = withApiLogging("GET", getHandler as any);
+export const GET = withApiLogging("GET", withAdminAuth(getHandler as any));

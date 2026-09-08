@@ -1,6 +1,8 @@
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withApiLogging } from "@/lib/api-logger";
+import { withAdminAuth } from "@/lib/api-auth";
 
 // Resolve real client IP from headers (Cloud Run / proxy aware)
 function getClientIP(req: NextRequest): string {
@@ -70,5 +72,7 @@ async function getHandler() {
     }
 }
 
-export const POST = withApiLogging("POST", postHandler as any);
-export const GET = withApiLogging("GET", getHandler as any);
+export const POST = withApiLogging("POST", withRateLimit("tool-usage", RATE_RULES.toolUsage, postHandler as any))
+// Reading usage exposes the IP address stored against each tool run.
+// It is an admin operation and was public until 8 Sep 2026.
+export const GET = withApiLogging("GET", withAdminAuth(getHandler as any));

@@ -8,6 +8,7 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { withApiLogging } from "@/lib/api-logger"
+import { withAdminAuth } from "@/lib/api-auth"
 
 async function getHandler() {
     const categories = [
@@ -78,4 +79,6 @@ async function getHandler() {
     }
 }
 
-export const GET = withApiLogging("GET", getHandler as any)
+// Seeding writes to the production database, so it is POST-only (a GET that
+// mutates can be fired by a link, a prefetch or a crawler) and OWNER-only.
+export const POST = withApiLogging("POST", withAdminAuth(getHandler as any, ["OWNER"]))

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withApiLogging } from "@/lib/api-logger";
+import { withAdminAuth } from "@/lib/api-auth"
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
 import { fal } from "@fal-ai/client";
@@ -132,4 +133,4 @@ ALWAYS respond with valid JSON in exactly this structure:
     }
 }
 
-export const POST = withApiLogging("POST", postHandler as any);
+export const POST = withApiLogging("POST", withAdminAuth(postHandler as any));

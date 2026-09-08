@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withApiLogging } from "@/lib/api-logger";
+import { withAdminAuth } from "@/lib/api-auth"
 
 async function getHandler() {
     try {
@@ -17,4 +18,4 @@ async function getHandler() {
     }
 }
 
-export const GET = withApiLogging("GET", getHandler as any);
+export const GET = withApiLogging("GET", withAdminAuth(getHandler as any));

@@ -10,6 +10,7 @@ import {
     publishToLinkedIn,
 } from "@/lib/social-publisher";
 import { withApiLogging } from "@/lib/api-logger";
+import { withAdminAuth } from "@/lib/api-auth"
 
 async function postHandler(
     req: NextRequest,
@@ -119,4 +120,4 @@ async function postHandler(
     }
 }
 
-export const POST = withApiLogging("POST", postHandler as any);
+export const POST = withApiLogging("POST", withAdminAuth(postHandler as any));

@@ -157,7 +157,7 @@ export function CategoryManager({ categories: initialCategories }: CategoryManag
     const handleSeed = async () => {
         setIsSeeding(true)
         try {
-            const res = await fetch('/api/admin/seed')
+            const res = await fetch('/api/admin/seed', { method: 'POST' })
             const data = await res.json()
             if (data.success) {
                 toast.success('Categories seeded successfully')

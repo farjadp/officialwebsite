@@ -1,3 +1,4 @@
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withApiLogging } from '@/lib/api-logger'
@@ -35,4 +36,4 @@ async function postHandler(req: NextRequest) {
     }
 }
 
-export const POST = withApiLogging('POST', postHandler)
+export const POST = withApiLogging('POST', withRateLimit("logs", RATE_RULES.logs, postHandler))

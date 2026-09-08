@@ -2,6 +2,7 @@
 // POST /api/lab-apply/upload — public pitch-deck upload for the Founder Lab form
 // ============================================================================
 
+import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 
@@ -19,7 +20,7 @@ function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9.\-_]/g, "") || "deck";
 }
 
-export async function POST(req: NextRequest) {
+async function rateLimitedPOSTHandler(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -62,3 +63,5 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export const POST = withRateLimit("lab-upload", RATE_RULES.upload, rateLimitedPOSTHandler as any)

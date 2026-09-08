@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withApiLogging } from '@/lib/api-logger'
+import { withAdminAuth } from "@/lib/api-auth"
 
 // GET /api/admin/settings
 // Fetch all generic app settings as a key-value pair object
@@ -52,5 +53,5 @@ async function postHandler(req: NextRequest) {
     }
 }
 
-export const GET = withApiLogging('GET', getHandler as any)
-export const POST = withApiLogging('POST', postHandler as any)
+export const GET = withApiLogging('GET', withAdminAuth(getHandler as any))
+export const POST = withApiLogging('POST', withAdminAuth(postHandler as any))
