@@ -5,6 +5,8 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import type { Metadata } from "next"
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
@@ -46,6 +48,13 @@ const FAQS = [
         a: "Yes. The session can be conducted in your preferred language (Farsi or English)."
     },
 ];
+
+export const metadata: Metadata = {
+    alternates: localeAlternates("/booking", "fa"),
+    title: "رزرو جلسه استراتژی | مشاوره ۳۰ دقیقه‌ای",
+    description:
+        "یک جلسه ۳۰ دقیقه‌ای با فرجاد رزرو کنید؛ مسئله اصلی را تشخیص دهید و گام بعدی را تعیین کنید.",
+}
 
 export default function BookingPage() {
     return (

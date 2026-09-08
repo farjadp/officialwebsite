@@ -1,7 +1,16 @@
+import type { Metadata } from "next"
+import { canonicalOnly } from "@/lib/seo"
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Compass, ShieldAlert, Landmark, FileX, Presentation, Users, BriefcaseBusiness, Route, CheckCircle2, Target, UsersRound, XCircle, SearchIcon, Crosshair } from "lucide-react";
 import { ServiceCta } from "@/components/public/service-cta";
+
+export const metadata: Metadata = {
+    alternates: canonicalOnly("/fa/services/startup-visa"),
+    title: "استراتژی استارتاپ ویزای کانادا",
+    description:
+        "آماده‌سازی کسب‌وکار برای برنامه Start-up Visa کانادا — منطق کسب‌وکار، شواهد بازار و روایتی که زیر سؤال دوام می‌آورد.",
+}
 
 export default function StartupVisaPage() {
   return (

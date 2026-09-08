@@ -5,6 +5,7 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { canonicalOnly } from "@/lib/seo"
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma"
 import { BookClubJoinForm } from "@/components/book-club/join-form"
@@ -13,6 +14,7 @@ import { BookOpen, CalendarDays, ExternalLink, Video } from "lucide-react"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/fa/book-club"),
     title: "دورهمی کتاب‌خوانی مشروطه | فرجاد",
     description:
         "دورهمی آنلاین کتاب‌خوانی درباره جنبش مشروطه ایران — هر جلسه یک گفت‌وگو، یک کتاب، یک قدم به فهم تاریخ.",

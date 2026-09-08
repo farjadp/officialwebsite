@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+import { NOINDEX } from "@/lib/seo"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -9,6 +11,8 @@ import { ChangePasswordForm } from "@/components/auth/change-password-form"
 import { UserPortalNav } from "@/components/auth/user-portal-nav"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = { robots: NOINDEX }
 
 export default async function ProfilePage() {
     const session = await auth()

@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+import { NOINDEX } from "@/lib/seo"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -6,6 +8,8 @@ import Link from "next/link"
 import { Plus, Rocket, Clock, CheckCircle2, ChevronLeft } from "lucide-react"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = { robots: NOINDEX }
 
 export default async function StartupIntakeDashboard() {
     const session = await auth()

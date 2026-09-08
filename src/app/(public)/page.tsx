@@ -1,3 +1,5 @@
+import Image from "next/image"
+import { localeAlternates } from "@/lib/seo"
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -14,6 +16,7 @@ import {
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
+    alternates: localeAlternates("/", "en"),
   title: "Farjad | Venture Builder & Systems Architect",
   description:
     "I help ambitious teams turn unclear ideas, fragile products, and manual operations into companies that can scale.",
@@ -115,11 +118,13 @@ export default async function HomePage() {
               Engineer × Advisor
             </div>
             <div className="relative aspect-[4/5] w-full max-w-[420px] overflow-hidden bg-zinc-900 grayscale transition duration-700 hover:grayscale-0">
-              <img
+              <Image
                 src="/images/farjad-portrait.jpg"
                 alt="Farjad Pourmohammad"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="h-full w-full object-cover object-top opacity-80 mix-blend-luminosity"
-              />
+            />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent px-6 pb-6 pt-24">
                 <div className="flex items-end justify-between gap-5">
                   <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">

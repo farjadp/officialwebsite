@@ -5,11 +5,13 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { canonicalOnly } from "@/lib/seo"
 import type { Metadata } from "next";
 import { getPosts } from "@/app/actions/posts"
 import { getCategories } from "@/app/actions/categories"
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/blog"),
     title: "Insights & Thoughts",
     description: "Deep dives into building real businesses, software engineering, and the psychology behind startup survival.",
 };

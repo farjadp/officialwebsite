@@ -5,11 +5,13 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { localeAlternates } from "@/lib/seo"
 import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Flame, Globe2, FlaskConical, Gauge } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
-    title: "Free Tools & Frameworks | Ashavid",
+    alternates: localeAlternates("/tools", "en"),
+    title: "Free Tools & Frameworks",
     description: "Systems, diagnostics, and tools to help founders build and scale without the hype.",
 }
 

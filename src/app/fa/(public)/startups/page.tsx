@@ -1,9 +1,11 @@
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Mentored Startups",
-    description: "A portfolio of the 25+ startups I have mentored, advised, and helped scale.",
+    alternates: localeAlternates("/startups", "fa"),
+    title: "استارتاپ‌های منتورشده",
+    description: "کارنامه‌ای از بیش از ۲۵ استارتاپی که به آن‌ها منتورشیپ، مشاوره و کمک به رشد داده‌ام.",
 };
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

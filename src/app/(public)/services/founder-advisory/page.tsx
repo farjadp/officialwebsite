@@ -1,3 +1,4 @@
+import { canonicalOnly } from "@/lib/seo"
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -5,6 +6,7 @@ import { ArrowLeft, Target, ShieldAlert, SplitSquareHorizontal, EyeOff, BrainCir
 import { ServiceCta } from "@/components/public/service-cta";
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/services/founder-advisory"),
   title: "Founder Advisory | Strategic Mentorship for Early-Stage Founders",
   description: "1:1 strategic advisory for early-stage founders. Accountability, decision clarity, and structured thinking to help you build with less chaos.",
   openGraph: {

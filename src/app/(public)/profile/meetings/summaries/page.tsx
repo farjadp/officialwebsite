@@ -1,8 +1,12 @@
+import type { Metadata } from "next"
+import { NOINDEX } from "@/lib/seo"
 import { UserPortalNav } from "@/components/auth/user-portal-nav"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { Lock } from "lucide-react"
+
+export const metadata: Metadata = { robots: NOINDEX }
 
 export default async function MeetingsSummariesPage() {
     const session = await auth()

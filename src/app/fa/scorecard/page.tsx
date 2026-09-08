@@ -1,4 +1,8 @@
+import type { Metadata } from "next"
+import { NOINDEX } from "@/lib/seo"
 import { ScorecardWidget } from "@/components/public/scorecard-widget"
+
+export const metadata: Metadata = { robots: NOINDEX }
 
 export default function ScorecardPage() {
     return (

@@ -1,7 +1,16 @@
+import type { Metadata } from "next"
+import { canonicalOnly } from "@/lib/seo"
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Target, ShieldAlert, SplitSquareHorizontal, EyeOff, BrainCircuit, Columns, Filter, CheckCircle2, XCircle, LineChart, Network, ListOrdered, MoveRight, ActivitySquare } from "lucide-react";
 import { ServiceCta } from "@/components/public/service-cta";
+
+export const metadata: Metadata = {
+    alternates: canonicalOnly("/fa/services/founder-advisory"),
+    title: "مشاوره استراتژیک و اجرای صفر تا یک",
+    description:
+        "همراهی با فاندرها از ایده مبهم تا محصولی که در واقعیت دوام می‌آورد — استراتژی، مسیر ورود به بازار و اجرا.",
+}
 
 export default function FounderAdvisoryPage() {
   return (

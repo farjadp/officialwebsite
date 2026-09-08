@@ -1,7 +1,10 @@
+import { localeAlternates, NOINDEX } from "@/lib/seo"
 import { Suspense } from "react"
 import { LoginForm } from "./login-form"
 
 export const metadata = {
+    robots: NOINDEX,
+    alternates: localeAlternates("/login", "en"),
     title: "Sign In | farjadp.info",
 }
 

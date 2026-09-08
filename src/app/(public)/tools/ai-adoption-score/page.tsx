@@ -1,7 +1,9 @@
+import { localeAlternates } from "@/lib/seo"
 import { AIAdoptionScoreTool } from "@/components/ai-adoption-score/tool";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+    alternates: localeAlternates("/tools/ai-adoption-score", "en"),
     title: "AI Adoption Readiness Score | Free Business Diagnostic",
     description: "Find out whether your business is structurally ready to adopt AI — or whether you still need foundational work first. A 6-dimension readiness diagnostic for founders, managers, and business owners.",
 };

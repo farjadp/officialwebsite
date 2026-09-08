@@ -5,11 +5,15 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import type { Metadata } from "next"
+import { NOINDEX } from "@/lib/seo"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { updatePreferences } from "@/lib/email/preferences-action"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = { robots: NOINDEX }
 
 export default async function PreferenceCenter({
     params,

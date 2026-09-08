@@ -5,6 +5,7 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { canonicalOnly } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ import {
 import Link from "next/link"
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/work"),
   title: "Work & Ventures | Active Projects and Past Experiments",
   description: "A transparent look at Farjad's active ventures, past projects, and ongoing experiments. Honest about what worked and what didn't.",
 };

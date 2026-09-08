@@ -5,6 +5,8 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import type { Metadata } from "next"
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -82,6 +84,13 @@ const EXPERIMENTS = [
   { title: "The 3-Minute Journal", type: "Content Series", desc: "A framework for busy founders." },
   { title: "No-Code CRM", type: "Tool", desc: "Template for service agencies." },
 ];
+
+export const metadata: Metadata = {
+    alternates: localeAlternates("/work", "fa"),
+    title: "کارها و کسب‌وکارها | پروژه‌های فعال و آزمایش‌های گذشته",
+    description:
+        "نگاهی شفاف به کسب‌وکارهای فعال، پروژه‌های گذشته و آزمایش‌های در جریان — صادقانه دربارهٔ آنچه جواب داد و آنچه نداد.",
+}
 
 export default function WorkPage() {
   return (

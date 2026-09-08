@@ -5,6 +5,7 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -28,8 +29,9 @@ import {
 import { EDUCATION, CERTIFICATIONS } from "./data";
 
 export const metadata: Metadata = {
-  title: "About Farjad | Founder, Mentor, Systems Builder",
-  description: "Founder, mentor, and systems builder helping immigrant founders and serious business owners build with clarity in Canada.",
+    alternates: localeAlternates("/about", "fa"),
+  title: "درباره فرجاد | بنیان‌گذار، منتور و معمار سیستم",
+  description: "بنیان‌گذار، منتور و معمار سیستم — کمک به فاندرهای مهاجر و صاحبان کسب‌وکار جدی برای ساختن با وضوح در کانادا.",
 };
 
 export default function AboutPageInteractive() {

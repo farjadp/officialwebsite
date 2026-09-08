@@ -1,3 +1,5 @@
+import Image from "next/image"
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
+    alternates: localeAlternates("/", "fa"),
   title: "فرجاد | مشاور استراتژیک و طراح سیستم",
   description: "کمک به بنیان‌گذاران جدی برای ساخت کسب‌وکار مقیاس‌پذیر و سیستم‌سازی دیجیتال.",
 };
@@ -196,7 +199,13 @@ export default function PersianHomePage() {
               <div className="relative group">
                 <div className="absolute inset-0 bg-[#1B4B43] rounded-[3rem] rotate-6 group-hover:rotate-3 transition-transform duration-500"></div>
                 <div className="relative w-64 h-80 rounded-[3rem] overflow-hidden border-2 border-white shadow-2xl bg-stone-100">
-                   <img src="/images/farjad-portrait.jpg" alt="فرجاد پورمحمد" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                   <Image
+                src="/images/farjad-portrait.jpg"
+                alt="فرجاد پورمحمد"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
                 </div>
               </div>
               

@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+import { NOINDEX } from "@/lib/seo"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -6,6 +8,8 @@ import { UserPortalNav } from "@/components/auth/user-portal-nav"
 import type { IntakeCountry } from "@/data/startup-intake/config"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = { robots: NOINDEX }
 
 export default async function StartupIntakeFormPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params

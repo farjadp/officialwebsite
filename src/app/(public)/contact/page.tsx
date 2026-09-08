@@ -10,10 +10,13 @@
 //    - Highlight: #D97706 (Burnt Orange)
 // ============================================================================
 
+import Image from "next/image"
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+    alternates: localeAlternates("/contact", "en"),
   title: "Contact",
   description: "Get in touch for mentorship, consulting, or speaking engagements.",
 };
@@ -92,10 +95,12 @@ export default function ContactHub() {
             {/* Abstract Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D97706] rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity z-10" />
             {/* Placeholder Portrait Image */}
-            <img
-              src="/images/farjad-personalbranding.png"
-              alt="Farjad Portrait Placeholder"
-              className="object-cover object-center w-full h-full grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+            <Image
+                src="/images/farjad-personalbranding.png"
+                alt="Farjad Pourmohammad, startup advisor, in portrait"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-center w-full h-full grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
             />
           </div>
         </section>
@@ -119,11 +124,13 @@ export default function ContactHub() {
             {/* Inline Secondary Image */}
             <div className="relative h-[200px] w-full rounded-sm overflow-hidden border border-stone-200 shadow-sm group">
               {/* Placeholder Workspace/Lifestyle Image */}
-              <img
+              <Image
                 src="/images/farjad-mentorship.png"
-                alt="Workspace Placeholder"
+                alt="Farjad Pourmohammad mentoring a founding team"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover w-full h-full opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105 grayscale group-hover:grayscale-0"
-              />
+            />
               <div className="absolute inset-0 bg-[#1B4B43]/10 pointer-events-none group-hover:bg-transparent transition-colors duration-500" />
             </div>
 

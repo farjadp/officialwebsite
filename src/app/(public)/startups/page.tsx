@@ -1,7 +1,9 @@
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+    alternates: localeAlternates("/startups", "en"),
     title: "Mentored Startups",
     description: "A portfolio of the 25+ startups I have mentored, advised, and helped scale.",
 };

@@ -1,3 +1,4 @@
+import { canonicalOnly } from "@/lib/seo"
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -5,6 +6,7 @@ import { ArrowLeft, Compass, ShieldAlert, Landmark, FileX, Presentation, Users, 
 import { ServiceCta } from "@/components/public/service-cta";
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/services/startup-visa"),
   title: "Startup Visa Advisory | Canada Business Immigration",
   description: "Strategic advisory for entrepreneurs pursuing Canada's Startup Visa. Build a real, qualifying business — not just a visa application.",
   openGraph: {

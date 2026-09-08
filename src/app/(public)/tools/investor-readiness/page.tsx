@@ -1,8 +1,10 @@
+import { localeAlternates } from "@/lib/seo"
 import { InvestorReadinessTool } from "@/components/investor-readiness/tool";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Investor Readiness Score | Ashavid",
+    alternates: localeAlternates("/tools/investor-readiness", "en"),
+    title: "Investor Readiness Score",
     description: "Evaluate your startup's fundability before pitching to angel investors and VC firms. Get a professional diagnostic report measuring 6 critical readiness areas.",
 };
 

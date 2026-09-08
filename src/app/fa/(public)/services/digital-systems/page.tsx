@@ -1,7 +1,16 @@
+import type { Metadata } from "next"
+import { canonicalOnly } from "@/lib/seo"
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Box, Network, Orbit, RefreshCw, TriangleAlert, BrainCircuit, ShieldAlert, CheckCircle2, XCircle, ActivitySquare, SplitSquareHorizontal, MoveRight, Copy } from "lucide-react";
 import { ServiceCta } from "@/components/public/service-cta";
+
+export const metadata: Metadata = {
+    alternates: canonicalOnly("/fa/services/digital-systems"),
+    title: "سیستم‌های دیجیتال و هوش مصنوعی سفارشی",
+    description:
+        "جایگزینی کارهای دستی، داده پراکنده و فرایندهای تکراری با سیستم‌هایی که خودشان کار می‌کنند.",
+}
 
 export default function DigitalSystemsPage() {
   return (

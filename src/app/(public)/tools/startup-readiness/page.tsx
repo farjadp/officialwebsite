@@ -1,8 +1,10 @@
+import { localeAlternates } from "@/lib/seo"
 import { StartupReadinessTool } from "@/components/startup-readiness/tool";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Startup Readiness Score Assessment | Ashavid",
+    alternates: localeAlternates("/tools/startup-readiness", "en"),
+    title: "Startup Readiness Score Assessment",
     description: "Evaluate your startup idea across 6 critical dimensions in under 5 minutes. Find out instantly if you're ready to launch, raise money, or if you need to pivot.",
 };
 

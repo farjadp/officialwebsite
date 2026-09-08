@@ -5,11 +5,13 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { canonicalOnly } from "@/lib/seo"
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DownloadResumeButton } from "./download-button";
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/resume"),
   title: "Resume — Farjad P.D. | Strategy Thinker & Systems Builder",
   description:
     "Full professional resume of Farjad Pour Mohammad — Founder, CTO, Startup Mentor, ISO 27001 Lead Auditor, and Systems Builder with 17+ years of experience across Iran and Canada.",

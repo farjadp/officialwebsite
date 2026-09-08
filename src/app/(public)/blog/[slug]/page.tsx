@@ -24,6 +24,7 @@ import {
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Metadata } from "next"
+import { SITE_URL, canonicalOnly } from "@/lib/seo"
 import { ScorecardWidget } from "@/components/public/scorecard-widget"
 import { VaultAssetWidget } from "@/components/public/vault-asset-widget"
 import { RelatedArticleWidget } from "@/components/public/related-article-widget"
@@ -162,13 +163,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     return {
         title: post.seoTitle || post.title,
         description: post.seoDescription || post.excerpt,
-        alternates: {
-            canonical: `https://farjadp.info/blog/${slug}`,
-            languages: {
-                "en": `https://farjadp.info/blog/${slug}`,
-                "fa": `https://fa.farjadp.info/blog/${slug}`,
-            }
-        },
+        // English-only: the Persian blog routes were deleted, so there is no
+        // alternate to declare.
+        alternates: canonicalOnly(`/blog/${slug}`),
         openGraph: {
             title: post.seoTitle || post.title,
             description: post.seoDescription || post.excerpt || undefined,
@@ -257,27 +254,27 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "BlogPosting",
         "headline": post.title,
         "description": post.excerpt || post.seoDescription || "",
-        "image": post.coverImage ? [post.coverImage] : ["https://farjadp.info/images/og-default.png"],
+        "image": post.coverImage ? [post.coverImage] : [`${SITE_URL}/images/og-default.png`],
         "datePublished": post.createdAt.toISOString(),
         "dateModified": post.updatedAt.toISOString(),
-        "url": `https://farjadp.info/blog/${post.slug}`,
+        "url": `${SITE_URL}/blog/${post.slug}`,
         "inLanguage": "en",
         "author": {
             "@type": "Person",
             "name": "Farjad Pourmohammad",
-            "url": "https://farjadp.info/about"
+            "url": `${SITE_URL}/about`
         },
         "publisher": {
             "@type": "Organization",
             "name": "Farjad .P",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://farjadp.info/images/og-default.png"
+                "url": `${SITE_URL}/images/og-default.png`
             }
         },
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": `https://farjadp.info/blog/${post.slug}`
+            "@id": `${SITE_URL}/blog/${post.slug}`
         }
     }
 

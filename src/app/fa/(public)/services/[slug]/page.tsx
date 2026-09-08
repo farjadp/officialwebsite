@@ -1,9 +1,23 @@
+import type { Metadata } from "next"
+import { localeAlternates } from "@/lib/seo"
 import React from "react";
 import { notFound } from "next/navigation";
 import { SERVICES } from "../data";
 import { ServiceCta } from "@/components/public/service-cta";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params
+    const service = SERVICES.find((s) => s.id === slug)
+    if (!service) return { title: "Service Not Found", robots: { index: false, follow: true } }
+
+    return {
+        alternates: localeAlternates(`/services/${slug}`, "fa"),
+        title: service.title,
+        description: `${service.for} ${service.outcomes[0] ?? ""}`.trim().slice(0, 155),
+    }
+}
 
 export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;

@@ -5,6 +5,8 @@
 // New Features: The Filter (Funnel), Intellectual Output, Failure Rate, Time Zones.
 // ============================================================================
 
+import type { Metadata } from "next"
+import { localeAlternates } from "@/lib/seo"
 import React from 'react';
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,6 +30,13 @@ import {
   Layers,
   AlertTriangle
 } from "lucide-react"
+
+export const metadata: Metadata = {
+    alternates: localeAlternates("/stats", "fa"),
+    title: "آمار سایت | چه چیزی خوانده می‌شود و چه چیزی به کار می‌رود",
+    description:
+        "اعداد باز این سایت: کدام مقاله‌ها خوانده می‌شوند، کدام ابزارها تا آخر پیش می‌روند، و این‌ها چه می‌گویند.",
+}
 
 export default function StatisticsPage() {
     return (

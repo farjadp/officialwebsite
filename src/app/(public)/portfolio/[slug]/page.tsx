@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+import { localeAlternates } from "@/lib/seo"
 import { notFound } from "next/navigation";
 import { PORTFOLIO_ITEMS } from "../data";
 import { prisma } from "@/lib/prisma";
@@ -7,6 +9,18 @@ import { PremiumCaseStudyPage } from "@/components/portfolio/premium-case-study"
 
 // Make it dynamic so view counter always runs on load
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params
+    const item = PORTFOLIO_ITEMS.find((p) => p.id === slug)
+    if (!item) return { title: "Case Study Not Found", robots: { index: false, follow: true } }
+
+    return {
+        alternates: localeAlternates(`/portfolio/${slug}`, "en"),
+        title: `${item.title} — ${item.role}`,
+        description: item.summary.slice(0, 155),
+    }
+}
 
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;

@@ -4,12 +4,14 @@
 // Why: Increases engagement using Bento grids, interactive cards, and rich typography.
 // ============================================================================
 
+import { localeAlternates } from "@/lib/seo"
 import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Services & Execution Partner",
-  description: "Strategic advisory, 0-to-1 launch execution, and AI system design for ambitious founders and SMEs.",
+    alternates: localeAlternates("/services", "fa"),
+  title: "خدمات و شریک اجرا",
+  description: "مشاوره استراتژیک، اجرای پرتاب صفر تا یک، و طراحی سیستم‌های هوش مصنوعی برای فاندرها و کسب‌وکارهای کوچک و متوسط.",
 };
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

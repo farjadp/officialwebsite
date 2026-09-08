@@ -1,9 +1,11 @@
+import { localeAlternates } from "@/lib/seo"
 import { BusinessModelScoreTool } from "@/components/business-model-score/tool";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Business Model Strength Score | Free Diagnostic Tool",
-    description: "Evaluate whether your business model is logical, revenue-capable, scalable, and defensible. Get an instant diagnostic report across 6 critical dimensions.",
+    alternates: localeAlternates("/tools/business-model-score", "fa"),
+    title: "امتیاز استحکام مدل کسب‌وکار | ابزار تشخیص رایگان",
+    description: "مدل کسب‌وکارتان را روی محورهایی که واقعاً تعیین‌کننده‌اند امتیاز بگیرید و ببینید کدام بخش شکننده است.",
 };
 
 export default function BusinessModelScorePage() {

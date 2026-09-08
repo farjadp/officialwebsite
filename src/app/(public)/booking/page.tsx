@@ -5,6 +5,7 @@
 // Env / Identity: React Server Component
 // ============================================================================
 
+import { canonicalOnly } from "@/lib/seo"
 import React from 'react';
 import type { Metadata } from "next";
 import Link from 'next/link';
@@ -30,6 +31,7 @@ import {
 } from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/booking"),
   title: "Book a Strategy Call | 30-Minute Consultation",
   description: "Book a 30-minute strategy call with Farjad. Diagnose your core problem and decide on next steps. Session fee goes directly to charity.",
   openGraph: {

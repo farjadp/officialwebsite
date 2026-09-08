@@ -1,9 +1,11 @@
+import { canonicalOnly, SITE_URL } from "@/lib/seo"
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowDown, CheckCircle2, Linkedin, Send, Youtube } from "lucide-react";
 import { ApplicationForm } from "./application-form";
 
 export const metadata: Metadata = {
+    alternates: canonicalOnly("/fa/lab"),
   title: "Founder Development Lab | فرجاد پورمحمد",
   description:
     "۸ هفته کار واقعی روی استارتاپ شما — ۵ تیم، رایگان. از ایده تا شواهد، با منتورشیپ مستقیم فرجاد پورمحمد.",
@@ -72,7 +74,7 @@ export default function FounderLabPage() {
     provider: {
       "@type": "Person",
       name: "Farjad Pourmohammad",
-      url: "https://farjadp.info",
+      url: `${SITE_URL}/fa/lab`,
     },
     hasCourseInstance: {
       "@type": "CourseInstance",
