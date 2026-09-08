@@ -45,16 +45,26 @@ export default auth((req) => {
         return NextResponse.redirect(new URL("/profile", req.url));
     }
 
-    // 4. Subdomain Routing (Internationalization)
+    // 4. Internationalization
+    //
+    // The Persian site is served from the /fa path segment. The fa.* subdomain
+    // is not deployed (it answers 404 DEPLOYMENT_NOT_FOUND), but the rewrite is
+    // kept so the subdomain works the moment DNS points somewhere real.
+    //
+    // Locale MUST be derived from the path as well as the host: without it every
+    // /fa/* page renders inside the root layout as <html lang="en" dir="ltr">,
+    // which is what production was doing — Persian content labelled English.
     const hostname = req.headers.get("host") || "";
-    const isPersian = hostname.startsWith("fa.");
-    
+    const isPersianHost = hostname.startsWith("fa.");
+    const isPersianPath = url.pathname === "/fa" || url.pathname.startsWith("/fa/");
+    const isPersian = isPersianHost || isPersianPath;
+
     // Inject x-locale header for the layout to determine language / direction
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-locale", isPersian ? "fa" : "en");
 
     // Rewrite to the /fa directory if it's the Persian subdomain
-    if (isPersian && !url.pathname.startsWith("/fa")) {
+    if (isPersianHost && !isPersianPath) {
         return NextResponse.rewrite(new URL(`/fa${url.pathname}`, req.url), {
             request: {
                 headers: requestHeaders,

@@ -114,11 +114,11 @@ export function Header({ locale = "en" }: { locale?: string }) {
                     </div>
 
                     {locale === "en" ? (
-                        <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="hover:opacity-80 transition-opacity" title="Persian">
+                        <a href="/fa" className="hover:opacity-80 transition-opacity" title="Persian">
                             <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" />
                         </a>
                     ) : (
-                        <a href={process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://farjadp.info"} className="hover:opacity-80 transition-opacity" title="English" dir="ltr">
+                        <a href="/" className="hover:opacity-80 transition-opacity" title="English" dir="ltr">
                             <img src="/images/canada-flag.svg" alt="English" className="w-6 h-6 rounded-sm shadow-sm" />
                         </a>
                     )}
@@ -186,11 +186,11 @@ export function Header({ locale = "en" }: { locale?: string }) {
                             </div>
 
                             {locale === "en" ? (
-                                <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className="flex items-center gap-3 text-xl font-serif text-[#1B4B43] font-bold hover:opacity-80 transition-opacity">
+                                <a href="/fa" className="flex items-center gap-3 text-xl font-serif text-[#1B4B43] font-bold hover:opacity-80 transition-opacity">
                                     <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" /> فارسی
                                 </a>
                             ) : (
-                                <a href={process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://farjadp.info"} className="flex items-center gap-3 text-xl font-sans text-[#1B4B43] font-bold hover:opacity-80 transition-opacity" dir="ltr">
+                                <a href="/" className="flex items-center gap-3 text-xl font-sans text-[#1B4B43] font-bold hover:opacity-80 transition-opacity" dir="ltr">
                                     <img src="/images/canada-flag.svg" alt="English" className="w-6 h-6 rounded-sm shadow-sm" /> English
                                 </a>
                             )}

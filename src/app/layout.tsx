@@ -12,6 +12,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
+import { SITE_URL } from "@/lib/seo"
 
 const danaFont = localFont({
   src: [
@@ -38,23 +39,23 @@ const danaFont = localFont({
 // Fonts are imported directly from the geist package
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://farjadp.info"), // Update to actual production domain
+  metadataBase: new URL(SITE_URL),
   title: {
     template: "%s | Farjad .P",
     default: "Farjad .P — Startup Advisor & Systems Architect",
   },
   description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
-  alternates: {
-    canonical: "https://farjadp.info",
-    languages: {
-      "fa": "https://farjadp.info/fa",
-      "en": "https://farjadp.info",
-    },
-  },
+  // NOTE: deliberately NO `alternates` here — neither canonical nor languages.
+  // Next.js hands the root layout's `alternates` to every page that does not
+  // export its own, so anything set here is a claim made on behalf of all 212
+  // URLs. A canonical here told every page it was the homepage; a `languages`
+  // map here told every page its translations were the homepage. Pages declare
+  // their own via localeAlternates()/canonicalOnly() from @/lib/seo, and a page
+  // with no metadata correctly emits nothing (search engines self-canonicalise).
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://farjadp.info",
+    url: SITE_URL,
     siteName: "Farjad .P",
     title: "Farjad .P — Startup Advisor & Systems Architect",
     description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
@@ -93,31 +94,54 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Farjad .P",
-    "url": "https://farjadp.info",
+    "url": SITE_URL,
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://farjadp.info/blog?q={search_term_string}",
+      "target": `${SITE_URL}/blog?q={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
   };
 
+  // The entity behind this site is a person, not a registered company, so there
+  // is deliberately no Organization node. `sameAs` is what actually connects
+  // this page to the knowledge graph — it previously listed only this domain,
+  // which links the entity to nothing.
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": `${SITE_URL}/#person`,
     "name": "Farjad Pourmohammad",
+    "alternateName": "\u0641\u0631\u062c\u0627\u062f \u067e\u0648\u0631\u0645\u062d\u0645\u062f",
     "jobTitle": "Startup Advisor & Systems Architect",
     "description": "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
-    "url": "https://farjadp.info",
-    "image": "https://farjadp.info/images/og-default.png",
+    "url": SITE_URL,
+    "image": `${SITE_URL}/images/og-default.png`,
+    "email": "mailto:contact@farjadp.info",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "Toronto",
+      "addressLocality": "Newmarket",
+      "addressRegion": "ON",
       "addressCountry": "CA"
     },
+    "areaServed": [
+      { "@type": "Country", "name": "Canada" },
+      { "@type": "Country", "name": "Iran" }
+    ],
     "knowsLanguage": ["en", "fa"],
+    "knowsAbout": [
+      "Startup advisory",
+      "Technology Readiness Level assessment",
+      "Go-to-market strategy",
+      "Business model design",
+      "AI adoption for small and medium enterprises",
+      "Canada Start-up Visa program"
+    ],
     "sameAs": [
-      "https://farjadp.info",
-      "https://farjadp.info/about"
+      "https://www.linkedin.com/in/farjadpourmohammad/",
+      "https://github.com/Farjadp",
+      "https://youtube.com/@FarjadTalks",
+      "https://instagram.com/FarjadTalks",
+      "https://t.me/FarjadTalks"
     ]
   };
 

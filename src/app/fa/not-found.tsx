@@ -70,7 +70,7 @@ export default function NotFound() {
                             </Link>
 
                             {/* Option 2: Essays */}
-                            <Link href="/series" className="group bg-white border border-stone-200 p-6 rounded-sm hover:border-[#D97706] hover:shadow-md transition-all duration-300">
+                            <Link href="/tools" className="group bg-white border border-stone-200 p-6 rounded-sm hover:border-[#D97706] hover:shadow-md transition-all duration-300">
                                 <div className="w-10 h-10 bg-[#D97706]/10 text-[#D97706] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                     <BookOpen className="w-5 h-5" />
                                 </div>

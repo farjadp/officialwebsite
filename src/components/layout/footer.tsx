@@ -86,10 +86,10 @@ export function Footer({ locale = "en" }: { locale?: string }) {
                     <div className="space-y-6">
                         <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">The Library</h4>
                         <ul className="space-y-3 text-sm">
-                            <li><Link href="/essays" className="hover:text-[#D97706] transition-colors">All Essays</Link></li>
-                            <li><Link href="/series" className="hover:text-[#D97706] transition-colors">Curated Series</Link></li>
-                            <li><Link href="/topics/mental-models" className="hover:text-[#D97706] transition-colors">Mental Models</Link></li>
-                            <li><Link href="/start-here" className="hover:text-[#D97706] transition-colors font-medium text-white">Start Here</Link></li>
+                            <li><Link href="/blog" className="hover:text-[#D97706] transition-colors">All Essays</Link></li>
+                            <li><Link href="/work" className="hover:text-[#D97706] transition-colors">Work & Ventures</Link></li>
+                            <li><Link href="/resume" className="hover:text-[#D97706] transition-colors">Resume</Link></li>
+                            <li><Link href="/about" className="hover:text-[#D97706] transition-colors font-medium text-white">Start Here</Link></li>
                         </ul>
                     </div>
 
@@ -111,8 +111,7 @@ export function Footer({ locale = "en" }: { locale?: string }) {
                         <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">Resources</h4>
                         <ul className="space-y-3 text-sm">
                             <li><Link href="/tools" className="hover:text-[#D97706] transition-colors">Founder Tools</Link></li>
-                            <li><Link href="/reading-list" className="hover:text-[#D97706] transition-colors">Bookshelf</Link></li>
-                            <li><Link href="/newsletter" className="hover:text-[#D97706] transition-colors">Newsletter Archive</Link></li>
+                            <li><Link href="/booking" className="hover:text-[#D97706] transition-colors">Book a Call</Link></li>
                         </ul>
                     </div>
 
@@ -143,7 +142,7 @@ export function Footer({ locale = "en" }: { locale?: string }) {
                 <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-stone-500 font-mono">
 
                     <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center mb-4 md:mb-0">
-                        <span>© {new Date().getFullYear()} Farjad Inc.</span>
+                        <span>© {new Date().getFullYear()} Farjad Pourmohammad</span>
                         <div className="hidden md:block w-1 h-1 bg-stone-700 rounded-full" />
                         <Link href="/privacy" className="hover:text-stone-300">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-stone-300">Terms of Service</Link>
@@ -152,7 +151,7 @@ export function Footer({ locale = "en" }: { locale?: string }) {
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2">
                             <MapPin className="w-3 h-3 text-[#1B4B43]" />
-                            <span>Toronto, Canada</span>
+                            <span>Newmarket, Ontario, Canada</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-3 h-3 text-[#1B4B43]" />
@@ -160,10 +159,10 @@ export function Footer({ locale = "en" }: { locale?: string }) {
                         </div>
 
                         <div className="flex items-center gap-4 border-l border-white/10 pl-6 ml-2" dir="ltr">
-                            <a href={process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://farjadp.info"} className={`flex items-center gap-2 text-xs font-bold font-sans ${locale === 'en' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
+                            <a href="/" className={`flex items-center gap-2 text-xs font-bold font-sans ${locale === 'en' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
                                 <img src="/images/canada-flag.svg" alt="English" className={`w-5 h-5 rounded-sm ${locale === 'en' ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'}`} /> EN
                             </a>
-                            <a href={process.env.NODE_ENV === "development" ? "http://fa.localhost:3000" : "https://fa.farjadp.info"} className={`flex items-center gap-2 text-xs font-bold font-serif ${locale === 'fa' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
+                            <a href="/fa" className={`flex items-center gap-2 text-xs font-bold font-serif ${locale === 'fa' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
                                 <img src="/images/lion-sun.svg" alt="Persian" className={`w-5 h-5 rounded-sm ${locale === 'fa' ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'}`} /> فا
                             </a>
                         </div>
