@@ -3,6 +3,28 @@ import { resolve4, resolve6 } from "node:dns/promises";
 
 export type CheckStatus = "passing" | "attention" | "missing" | "info" | "na";
 
+/**
+ * How much a check moves the score.
+ *
+ * The scanner used to average every check equally, so a missing canonical
+ * counted exactly as much as a missing twitter:card. It graded this very site
+ * 84/100 while every one of its pages was canonicalising to the homepage.
+ *
+ * - critical: the site is actively working against itself. Caps the total.
+ * - important: a real gap that costs visibility.
+ * - minor: worth fixing, not worth alarming anyone about.
+ */
+export type CheckWeight = "critical" | "important" | "minor";
+
+const WEIGHTS: Record<CheckWeight, number> = {
+  critical: 5,
+  important: 3,
+  minor: 1,
+};
+
+/** A failing critical check holds the whole report down to this. */
+const CRITICAL_FAILURE_SCORE_CAP = 50;
+
 export type ReadinessCheck = {
   id: string;
   title: string;
@@ -10,6 +32,7 @@ export type ReadinessCheck = {
   status: CheckStatus;
   recommendation?: string;
   scored: boolean;
+  weight: CheckWeight;
 };
 
 export type ReadinessCategory = {
@@ -232,20 +255,45 @@ function check(
   detail: string,
   status: CheckStatus,
   recommendation?: string,
-  scored = true
+  scored = true,
+  weight: CheckWeight = "important"
 ): ReadinessCheck {
-  return { id, title, detail, status, recommendation, scored };
+  return { id, title, detail, status, recommendation, scored, weight };
 }
 
+function statusPoints(status: CheckStatus) {
+  return status === "passing" ? 1 : status === "attention" ? 0.5 : 0;
+}
+
+/** Weighted mean, so the checks that actually matter dominate the number. */
 function scoreChecks(checks: ReadinessCheck[]) {
   const scored = checks.filter((item) => item.scored && item.status !== "na");
   if (!scored.length) return 0;
-  const points = scored.reduce(
-    (total, item) =>
-      total + (item.status === "passing" ? 1 : item.status === "attention" ? 0.5 : 0),
+  const earned = scored.reduce(
+    (total, item) => total + statusPoints(item.status) * WEIGHTS[item.weight],
     0
   );
-  return Math.round((points / scored.length) * 100);
+  const available = scored.reduce((total, item) => total + WEIGHTS[item.weight], 0);
+  return Math.round((earned / available) * 100);
+}
+
+/** Critical checks that are outright failing (not merely "attention"). */
+function failingCritical(checks: ReadinessCheck[]) {
+  return checks.filter(
+    (item) => item.scored && item.weight === "critical" && (item.status === "missing" || item.status === "attention")
+  );
+}
+
+/** Compare URLs without tripping over a trailing slash or a www prefix. */
+function normalizeForCompare(input: string) {
+  try {
+    const url = new URL(input);
+    const host = url.hostname.replace(/^www\./i, "");
+    const path = url.pathname.replace(/\/+$/, "");
+    return `${host}${path}`.toLowerCase();
+  } catch {
+    return input.trim().toLowerCase();
+  }
 }
 
 function parseSitemap(xml: string) {
@@ -329,6 +377,38 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       }
     })
   );
+  // The sampled pages used to be checked only for status and noindex. That is
+  // why this scanner scored farjadp.info 84/100 while every page on it declared
+  // the homepage as its canonical: the canonical check only ever ran against
+  // the homepage, where the value looks fine in isolation. Canonical is a
+  // site-wide property, so it has to be sampled site-wide.
+  const sampleCanonicals = sampleResults
+    .map((result, index) => {
+      if (!result || result.status !== 200) return null;
+      const declared = getCanonical(result.text);
+      if (!declared) return null;
+      try {
+        return {
+          page: new URL(sampleEntries[index].loc).toString(),
+          canonical: new URL(declared, result.url).toString(),
+        };
+      } catch {
+        return null;
+      }
+    })
+    .filter((entry): entry is { page: string; canonical: string } => entry !== null);
+
+  const selfReferencing = sampleCanonicals.filter(
+    (entry) => normalizeForCompare(entry.page) === normalizeForCompare(entry.canonical)
+  ).length;
+  const distinctCanonicals = new Set(
+    sampleCanonicals.map((entry) => normalizeForCompare(entry.canonical))
+  );
+  // Several different pages all naming one URL as their original is the
+  // signature of a canonical set in a shared layout.
+  const collapsedToOne =
+    sampleCanonicals.length >= 3 && distinctCanonicals.size === 1 && selfReferencing === 0;
+
   const healthySamples = sampleResults.filter(
     (result) =>
       result?.status === 200 &&
@@ -402,7 +482,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : `The homepage responded HTTP ${homepage.status}.`,
       homepage.status === 200 && finalUrl.protocol === "https:" ? "passing" : "attention",
       "Serve the canonical homepage over HTTPS with a 200 response."
-    ),
+    , true, "critical"),
     check(
       "1.2",
       "robots.txt",
@@ -411,7 +491,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "robots.txt is missing or does not contain a valid User-agent directive.",
       robotsOk ? "passing" : "missing",
       "Publish a plain-text /robots.txt file with explicit crawler rules."
-    ),
+    , true, "important"),
     check(
       "1.3",
       "AI crawler access",
@@ -424,7 +504,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         ? "passing"
         : "attention",
       "Allow OAI-SearchBot and PerplexityBot unless your publishing policy requires blocking them."
-    ),
+    , true, "critical"),
     check(
       "1.4",
       "Bot/visitor parity",
@@ -437,7 +517,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         ? "passing"
         : "attention",
       "Avoid serving AI crawlers an error, challenge, or materially different page."
-    ),
+    , true, "critical"),
     check(
       "1.5",
       "XML sitemap",
@@ -446,7 +526,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "No valid XML sitemap was found.",
       sitemapResponse ? "passing" : "missing",
       "Publish a sitemap.xml and declare it in robots.txt."
-    ),
+    , true, "important"),
     check(
       "1.6",
       "Sitemap URL health",
@@ -459,7 +539,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
           ? "attention"
           : "na",
       "Remove broken or noindex URLs from the sitemap."
-    ),
+    , true, "important"),
     check(
       "1.7",
       "Sitemap freshness",
@@ -472,7 +552,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
           ? "attention"
           : "na",
       "Add accurate lastmod values to sitemap entries."
-    ),
+    , true, "minor"),
     check(
       "1.8",
       "Challenge-free access",
@@ -483,7 +563,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         ? "attention"
         : "passing",
       "Let legitimate crawlers access public content without interactive challenges."
-    ),
+    , true, "critical"),
   ];
 
   const metadataChecks = [
@@ -495,7 +575,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : `Missing ${[!title && "title", !description && "meta description"].filter(Boolean).join(" and ")}.`,
       title && description ? "passing" : "missing",
       "Add a unique, descriptive title and meta description."
-    ),
+    , true, "important"),
     check(
       "2.2",
       "Canonical URL",
@@ -506,7 +586,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
           ? "attention"
           : "missing",
       "Add a self-referencing canonical URL on the homepage."
-    ),
+    , true, "critical"),
     check(
       "2.3",
       "Open Graph metadata",
@@ -515,7 +595,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "All four core Open Graph tags are present.",
       missingOg.length ? "attention" : "passing",
       "Add og:title, og:description, og:image, and og:url to the raw HTML."
-    ),
+    , true, "important"),
     check(
       "2.4",
       "Social image",
@@ -528,7 +608,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         ? "passing"
         : "attention",
       "Use an absolute, crawlable 1200×630 social image URL."
-    ),
+    , true, "minor"),
     check(
       "2.5",
       "Twitter card",
@@ -538,7 +618,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       getMeta(html, "twitter:card") ? "info" : "attention",
       "Add twitter:card for richer link previews.",
       false
-    ),
+    , "minor"),
     check(
       "2.6",
       "Business structured data",
@@ -549,7 +629,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "No business or organization JSON-LD node was found.",
       business && !businessMissing.length ? "passing" : business ? "attention" : "missing",
       "Add Organization or LocalBusiness JSON-LD with name, URL, address, and telephone."
-    ),
+    , true, "important"),
     check(
       "2.7",
       "Service and product schema",
@@ -561,7 +641,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "attention",
       "Add schema only for services, products, and FAQs that are visible on the page.",
       false
-    ),
+    , "minor"),
     check(
       "2.8",
       "Language annotations",
@@ -570,6 +650,25 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "The html lang attribute is missing.",
       htmlLang ? "passing" : "missing",
       "Set html lang and add hreflang links for alternate language versions."
+    , true, "important"),
+    check(
+      "2.9",
+      "Canonical consistency across pages",
+      !sampleCanonicals.length
+        ? "No sampled page declared a canonical URL, so consistency could not be checked."
+        : collapsedToOne
+          ? `All ${sampleCanonicals.length} sampled pages declare the same canonical URL (${[...distinctCanonicals][0]}) and none points at itself. Those pages are telling search engines not to index them.`
+          : `${selfReferencing}/${sampleCanonicals.length} sampled pages canonicalise to themselves.`,
+      !sampleCanonicals.length
+        ? "na"
+        : collapsedToOne
+          ? "missing"
+          : selfReferencing === sampleCanonicals.length
+            ? "passing"
+            : "attention",
+      "Every page needs its own self-referencing canonical. A canonical set in a shared root layout is inherited by every page, which makes the whole site claim to be one URL.",
+      sampleCanonicals.length > 0,
+      "critical"
     ),
   ];
 
@@ -582,7 +681,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "llms.txt is missing from the site root.",
       llms?.status === 200 ? "passing" : "missing",
       "Publish /llms.txt with a concise description and links to authoritative pages."
-    ),
+    , true, "minor"),
     check(
       "3.2",
       "Extended agent files",
@@ -592,7 +691,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       llmsFull?.status === 200 || agents?.status === 200 ? "info" : "attention",
       "Consider an extended machine-readable guide for complex sites.",
       false
-    ),
+    , "minor"),
     check(
       "3.3",
       "Server-readable content",
@@ -601,7 +700,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : `Only ${text.length.toLocaleString()} characters of visible text were found in the initial HTML.`,
       text.length >= 300 ? "passing" : "attention",
       "Render the core page copy in HTML instead of requiring JavaScript."
-    ),
+    , true, "critical"),
     check(
       "3.4",
       "Primary heading",
@@ -610,7 +709,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "The H1 heading is missing from the homepage.",
       h1s.length ? "passing" : "missing",
       "Add one descriptive H1 that states the page's primary topic."
-    ),
+    , true, "important"),
     check(
       "3.5",
       "Machine-readable contact details",
@@ -621,14 +720,14 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         ? "passing"
         : "attention",
       "Include address plus telephone or email in your business JSON-LD."
-    ),
+    , true, "minor"),
     check(
       "3.6",
       "Signal-to-markup ratio",
       `Visible text is ${textRatio.toFixed(1)}% of the homepage HTML.`,
       textRatio >= 10 ? "passing" : "attention",
       "Reduce boilerplate markup and ship more useful text in the initial HTML."
-    ),
+    , true, "important"),
     check(
       "3.7",
       "Agent commerce endpoints",
@@ -638,7 +737,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       ucp?.status === 200 || catalog?.status === 200 ? "info" : "attention",
       "For transactional sites, consider publishing a structured agent-facing catalog.",
       false
-    ),
+    , "minor"),
   ];
 
   const contentChecks = [
@@ -650,7 +749,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "No sufficiently clear one-sentence business description was found.",
       description.length >= 40 ? "passing" : "attention",
       "State who you help, what you provide, and where you operate in one plain sentence."
-    ),
+    , true, "important"),
     check(
       "4.2",
       "Question-led answers",
@@ -659,7 +758,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "No question-form headings or FAQ-style answer content was found.",
       hasFaq ? "passing" : "attention",
       "Add concise answers under real customer questions; avoid thin or invented FAQs."
-    ),
+    , true, "important"),
     check(
       "4.3",
       "Concrete pricing",
@@ -668,7 +767,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : "No concrete price was found in the visible text.",
       hasPrice ? "passing" : "attention",
       "Where relevant, publish prices, ranges, or a clear explanation of how pricing is calculated."
-    ),
+    , true, "minor"),
     check(
       "4.4",
       "Content freshness",
@@ -677,7 +776,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : `The newest explicit year found in the page text is ${newestYear}.`,
       newestYear === null || newestYear < currentYear - 1 ? "attention" : "passing",
       "Show clear publish/update dates and review time-sensitive claims regularly."
-    ),
+    , true, "minor"),
     check(
       "4.5",
       "Content concreteness",
@@ -686,7 +785,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
         : `Only ${concreteSignals} concrete numeric facts or quantified claims were detected.`,
       concreteSignals >= 3 ? "passing" : "attention",
       "Replace vague adjectives with evidence: numbers, dates, locations, examples, and named outcomes."
-    ),
+    , true, "important"),
   ];
 
   const visibilityChecks = [
@@ -699,7 +798,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       businessName ? "info" : "na",
       "Add a consistent organization name in JSON-LD and og:site_name.",
       false
-    ),
+    , "minor"),
     check(
       "5.2",
       "Google Business Profile",
@@ -709,7 +808,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       hasGoogleBusiness ? "info" : "attention",
       "If the business serves a location, link its verified Google Business Profile.",
       false
-    ),
+    , "minor"),
     check(
       "5.3",
       "External AI recall",
@@ -717,7 +816,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
       "na",
       undefined,
       false
-    ),
+    , "minor"),
   ];
 
   const categories: ReadinessCategory[] = [
@@ -743,10 +842,25 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
     { id: "ai-visibility", name: "AI visibility", score: null, checks: visibilityChecks },
   ];
   const scoredCategories = categories.filter((category) => category.score !== null);
-  const overallScore = Math.round(
-    scoredCategories.reduce((total, category) => total + category.score!, 0) /
-      scoredCategories.length
-  );
+  const allChecks = categories.flatMap((category) => category.checks);
+  const criticalFailures = failingCritical(allChecks);
+
+  // Weight the categories by how many scored checks each holds, so a category
+  // with five checks no longer outweighs one with eight on a per-check basis.
+  const weightedTotal = scoredCategories.reduce((total, category) => {
+    const count = category.checks.filter((item) => item.scored && item.status !== "na").length;
+    return total + category.score! * count;
+  }, 0);
+  const weightDivisor = scoredCategories.reduce((total, category) => {
+    return total + category.checks.filter((item) => item.scored && item.status !== "na").length;
+  }, 0);
+  const rawScore = weightDivisor ? Math.round(weightedTotal / weightDivisor) : 0;
+
+  // A site that blocks AI crawlers, serves nothing to bots, or de-indexes itself
+  // is not "STRONG" no matter how many minor checks pass. Report the fault.
+  const overallScore = criticalFailures.length
+    ? Math.min(rawScore, CRITICAL_FAILURE_SCORE_CAP)
+    : rawScore;
   const grade =
     overallScore >= 90
       ? "Excellent"
@@ -767,9 +881,13 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
     scannedAt: new Date().toISOString(),
     overallScore,
     grade,
-    summary: attentionCount
-      ? `${attentionCount} scored checks need attention. Start with missing access and agent-readiness signals, then improve content clarity.`
-      : "The site passes all scored technical and content checks in this scan.",
+    summary: criticalFailures.length
+      ? `${criticalFailures.length} critical ${criticalFailures.length === 1 ? "check is" : "checks are"} failing (${criticalFailures
+          .map((item) => item.title)
+          .join(", ")}). The score is capped at ${CRITICAL_FAILURE_SCORE_CAP} until ${criticalFailures.length === 1 ? "it is" : "they are"} fixed — start there, the rest can wait.`
+      : attentionCount
+        ? `${attentionCount} scored checks need attention. Start with missing access and agent-readiness signals, then improve content clarity.`
+        : "The site passes all scored technical and content checks in this scan.",
     categories,
   };
 }
