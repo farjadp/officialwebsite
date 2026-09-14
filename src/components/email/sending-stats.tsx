@@ -26,7 +26,7 @@ function Bar({ used, cap }: { used: number; cap: number | null }) {
 }
 
 export function TodayUsage({ stats }: { stats: SendingStats }) {
-    const { cap, warmupEnabled, domainSent, campaigns } = stats.today
+    const { cap, warmupEnabled, limitMode, domainSent, campaigns } = stats.today
     const { bounceRate, complaintRate } = stats.allTime
 
     // With the ceiling removed these numbers are the only thing left watching
@@ -40,7 +40,12 @@ export function TodayUsage({ stats }: { stats: SendingStats }) {
                 <div>
                     <h2 className="text-sm font-semibold text-slate-900">Today&apos;s sending</h2>
                     <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
-                        {warmupEnabled ? (
+                        {limitMode === "fixed" ? (
+                            <>
+                                Each campaign may send up to {cap?.toLocaleString()} a day. Two campaigns running
+                                together send up to {((cap ?? 0) * 2).toLocaleString()} from the domain.
+                            </>
+                        ) : warmupEnabled ? (
                             <>
                                 Each campaign has its own allowance of {cap?.toLocaleString()}. The ceiling
                                 still halves after a day with complaints or excess bounces.

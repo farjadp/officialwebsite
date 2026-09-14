@@ -46,6 +46,9 @@ export default async function CampaignEditorPage({
                 optimizeSendTime: campaign.optimizeSendTime,
                 throttlePerHour: campaign.throttlePerHour,
                 scheduledAt: campaign.scheduledAt?.toISOString() ?? null,
+                previouslyDelivered: Boolean(
+                    (campaign.segmentFilter as { previouslyDelivered?: boolean } | null)?.previouslyDelivered
+                ),
                 totalRecipients: campaign.totalRecipients,
                 sentCount: campaign.sentCount,
                 spamScore: campaign.spamScore,

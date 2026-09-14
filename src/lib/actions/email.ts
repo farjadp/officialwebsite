@@ -448,6 +448,8 @@ export async function createCampaign(formData: FormData): Promise<void> {
             blocks: (template?.blocks ?? []) as object,
             theme: (template?.theme ?? DEFAULT_THEME) as unknown as object,
             fromEmail: process.env.EMAIL_MARKETING_FROM ?? "",
+            // Safe by default until the list has been verified
+            segmentFilter: { previouslyDelivered: true },
         },
     })
 

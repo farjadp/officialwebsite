@@ -40,6 +40,7 @@ export interface CampaignData {
     optimizeSendTime: boolean
     throttlePerHour: number
     scheduledAt: string | null
+    previouslyDelivered: boolean
     totalRecipients: number
     sentCount: number
     spamScore: number | null
@@ -87,6 +88,7 @@ export function CampaignComposer({
     const [optimizeSendTime, setOptimizeSendTime] = useState(campaign.optimizeSendTime)
     const [throttlePerHour, setThrottlePerHour] = useState(campaign.throttlePerHour)
     const [scheduledAt, setScheduledAt] = useState(campaign.scheduledAt?.slice(0, 16) ?? "")
+    const [previouslyDelivered, setPreviouslyDelivered] = useState(campaign.previouslyDelivered)
 
     const [showSettings, setShowSettings] = useState(true)
     const [testAddresses, setTestAddresses] = useState("")
@@ -107,6 +109,8 @@ export function CampaignComposer({
             abEnabled, abTestPercent, abWinnerMetric,
             optimizeSendTime, throttlePerHour,
             scheduledAt: scheduledAt || null,
+            // Always sent explicitly so unticking actually clears it
+            segmentFilter: { previouslyDelivered },
         })
 
         if (result.success) {
@@ -207,6 +211,19 @@ export function CampaignComposer({
                                     ))}
                                 </select>
                             </Field>
+                            <label className="flex items-start gap-2 text-xs text-slate-600">
+                                <input
+                                    type="checkbox"
+                                    checked={previouslyDelivered}
+                                    onChange={(e) => setPreviouslyDelivered(e.target.checked)}
+                                    className="mt-0.5 h-4 w-4 accent-violet-600"
+                                />
+                                <span>
+                                    Only contacts an earlier campaign was delivered to. About one address in eleven
+                                    on this list bounced permanently the first time — this skips every address not
+                                    yet proven. Untick only once the list has been verified.
+                                </span>
+                            </label>
                         </div>
 
                         <div className="space-y-3">

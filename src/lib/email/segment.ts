@@ -24,6 +24,12 @@ export interface SegmentFilter {
     joinedBefore?: string
     /** Never received anything from us */
     neverSent?: boolean
+    /**
+     * Only contacts a previous campaign was confirmed delivered to. The safest
+     * audience on this list: roughly one address in eleven bounced permanently
+     * the first time, and this excludes every address not yet proven.
+     */
+    previouslyDelivered?: boolean
     search?: string
 }
 
@@ -79,6 +85,7 @@ export function buildContactWhere(
     if (f.joinedAfter) and.push({ createdAt: { gte: new Date(f.joinedAfter) } })
     if (f.joinedBefore) and.push({ createdAt: { lte: new Date(f.joinedBefore) } })
     if (f.neverSent) and.push({ sendCount: 0 })
+    if (f.previouslyDelivered) and.push({ recipients: { some: { status: "DELIVERED" } } })
 
     if (f.search?.trim()) {
         const q = f.search.trim()

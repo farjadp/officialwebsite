@@ -137,6 +137,16 @@ export async function sendOne(args: SendArgs): Promise<SendResult> {
  * the numbers are the only guardrail left once the ceiling is gone, so they
  * matter more, not less.
  */
+/**
+ * A fixed daily ceiling per campaign, set by the operator. When present it wins
+ * over both the warm-up ramp and unlimited mode: it is the explicit number
+ * chosen after the one uncapped day sent 5,481 messages at an 18.8% bounce rate.
+ */
+export function campaignDailyLimit(): number | null {
+    const value = Number(process.env.EMAIL_CAMPAIGN_DAILY_LIMIT)
+    return Number.isFinite(value) && value > 0 ? Math.floor(value) : null
+}
+
 export function isWarmupEnabled(): boolean {
     return process.env.EMAIL_WARMUP_ENABLED !== "false"
 }
@@ -206,6 +216,11 @@ export async function campaignQuotaRemaining(campaignId: string): Promise<{
     const used = await prisma.campaignRecipient.count({
         where: { campaignId, sentAt: { gte: startOfUtcDay() } },
     })
+
+    const fixed = campaignDailyLimit()
+    if (fixed != null) {
+        return { cap: fixed, used, remaining: Math.max(0, fixed - used) }
+    }
 
     if (!isWarmupEnabled()) {
         return { cap: null, used, remaining: Number.MAX_SAFE_INTEGER }

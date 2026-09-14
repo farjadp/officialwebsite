@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { prisma } from "@/lib/prisma"
-import { getTodayStat, startOfUtcDay, isWarmupEnabled } from "./provider"
+import { getTodayStat, startOfUtcDay, isWarmupEnabled, campaignDailyLimit } from "./provider"
 
 export interface CampaignUsage {
     id: string
@@ -36,6 +36,7 @@ export interface SendingStats {
         /** null when warm-up is off */
         cap: number | null
         warmupEnabled: boolean
+        limitMode: "fixed" | "ramp" | "none"
         /** Every campaign shares this ceiling, each with its own allowance */
         domainSent: number
         campaigns: CampaignUsage[]
@@ -61,7 +62,10 @@ const MIN_HOURS_BETWEEN_SENDS = Number(process.env.EMAIL_MIN_HOURS_BETWEEN_SENDS
 
 export async function getSendingStats(historyDays = 30): Promise<SendingStats> {
     const stat = await getTodayStat()
+    const fixedLimit = campaignDailyLimit()
     const warmup = isWarmupEnabled()
+    // The ceiling each campaign is actually held to today, if any
+    const perCampaignCap = fixedLimit ?? (warmup ? stat.dailyCap : null)
     const dayStart = startOfUtcDay()
     const recentCutoff = new Date(Date.now() - MIN_HOURS_BETWEEN_SENDS * 3_600_000)
 
@@ -99,7 +103,7 @@ export async function getSendingStats(historyDays = 30): Promise<SendingStats> {
             name: campaign.name,
             status: campaign.status,
             used,
-            remaining: warmup ? Math.max(0, stat.dailyCap - used) : null,
+            remaining: perCampaignCap != null ? Math.max(0, perCampaignCap - used) : null,
             queued,
             deferred,
         })
@@ -142,8 +146,9 @@ export async function getSendingStats(historyDays = 30): Promise<SendingStats> {
 
     return {
         today: {
-            cap: warmup ? stat.dailyCap : null,
-            warmupEnabled: warmup,
+            cap: perCampaignCap,
+            warmupEnabled: perCampaignCap != null,
+            limitMode: fixedLimit != null ? ("fixed" as const) : warmup ? ("ramp" as const) : ("none" as const),
             domainSent: stat.sent,
             campaigns,
         },
