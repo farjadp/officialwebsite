@@ -62,11 +62,12 @@ export async function buildAudience(campaignId: string): Promise<number> {
     const eligible = contacts.filter((c) => !blocked.has(c.email.toLowerCase()))
 
     if (!eligible.length) {
+        const total = await prisma.campaignRecipient.count({ where: { campaignId } })
         await prisma.campaign.update({
             where: { id: campaignId },
-            data: { totalRecipients: 0 },
+            data: { totalRecipients: total },
         })
-        return 0
+        return total
     }
 
     // A/B split: only the test slice is divided; the remainder waits for a winner.
@@ -100,12 +101,16 @@ export async function buildAudience(campaignId: string): Promise<number> {
     })
 
     await prisma.campaignRecipient.createMany({ data: rows, skipDuplicates: true })
+
+    // Counted from the queue rather than this run's audience, so a rebuild keeps
+    // everyone already sent even if their contact is no longer eligible
+    const total = await prisma.campaignRecipient.count({ where: { campaignId } })
     await prisma.campaign.update({
         where: { id: campaignId },
-        data: { totalRecipients: rows.length },
+        data: { totalRecipients: total },
     })
 
-    return rows.length
+    return total
 }
 
 /** Compiles the campaign body once; per-recipient work is only merge + tracking. */
@@ -205,6 +210,8 @@ export async function drainQueue(
         result.remainingQueued = await prisma.campaignRecipient.count({
             where: { campaignId, status: "QUEUED" },
         })
+        // Nothing left at all: finish, rather than sit in SENDING forever
+        if (result.remainingQueued === 0) await markSentIfDone(campaignId)
         return result
     }
 
@@ -318,19 +325,21 @@ export async function drainQueue(
         where: { campaignId, status: "QUEUED" },
     })
 
-    if (result.remainingQueued === 0) {
-        const stillHeld = await prisma.campaignRecipient.count({
-            where: { campaignId, variantLabel: "HOLD" },
-        })
-        if (stillHeld === 0) {
-            await prisma.campaign.update({
-                where: { id: campaignId },
-                data: { status: "SENT", sentAt: new Date() },
-            })
-        }
-    }
+    if (result.remainingQueued === 0) await markSentIfDone(campaignId)
 
     return result
+}
+
+async function markSentIfDone(campaignId: string): Promise<void> {
+    const stillHeld = await prisma.campaignRecipient.count({
+        where: { campaignId, variantLabel: "HOLD" },
+    })
+    if (stillHeld === 0) {
+        await prisma.campaign.update({
+            where: { id: campaignId },
+            data: { status: "SENT", sentAt: new Date() },
+        })
+    }
 }
 
 /**

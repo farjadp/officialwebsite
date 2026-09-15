@@ -738,10 +738,11 @@ export async function startCampaign(id: string): Promise<ActionResult<{ queued: 
     })
     if (!campaign) return fail("Campaign not found")
 
-    if (!campaign.totalRecipients) {
-        const audience = await buildAudience(id)
-        if (!audience) return fail("No eligible contacts match this audience")
-    }
+    // Rebuilt on every start, not only the first. A restarted campaign may have a
+    // wider audience (a filter removed, contacts added to the list); building is
+    // idempotent, so people already queued or sent are never added twice.
+    const audience = await buildAudience(id)
+    if (!audience) return fail("No eligible contacts match this audience")
 
     // A critical-severity audit result means near-certain spam foldering.
     if (campaign.spamScore != null && campaign.spamScore < 40) {

@@ -328,7 +328,7 @@ export function CampaignComposer({
                     setSubject(nextSubject)
                     setPreheader(nextPreheader)
                 }}
-                toolbarExtra={({ blocks, theme, dirty, save }) => (
+                toolbarExtra={({ blocks, theme, save }) => (
                     <div className="flex flex-wrap items-center gap-2">
                         <input
                             value={testAddresses}
@@ -341,8 +341,10 @@ export function CampaignComposer({
                             disabled={pending || !testAddresses.trim()}
                             onClick={() =>
                                 act(async () => {
-                                    // Persist first so the saved row matches what was tested
-                                    if (dirty) await save()
+                                    // Persist first so the saved row matches what was tested.
+                                    // Always, not only when dirty: the editor's dirty flag
+                                    // tracks blocks and theme, never the settings panel.
+                                    await save()
                                     const result = await sendTestEmail(campaign.id, testAddresses, {
                                         subject,
                                         preheader,
@@ -377,7 +379,7 @@ export function CampaignComposer({
                             disabled={pending}
                             onClick={() =>
                                 act(async () => {
-                                    if (dirty) await save()
+                                    await save()
                                     const result = await prepareCampaign(campaign.id)
                                     if (result.success) {
                                         setRecipients(result.data?.audience ?? 0)
@@ -448,7 +450,7 @@ export function CampaignComposer({
                                     )
                                         return
                                     act(async () => {
-                                        if (dirty) await save()
+                                        await save()
                                         const result = await startCampaign(campaign.id)
                                         if (result.success) {
                                             setStatus("SENDING")
