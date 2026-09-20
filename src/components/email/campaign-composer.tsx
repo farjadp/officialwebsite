@@ -170,7 +170,10 @@ export function CampaignComposer({
             {message && (
                 <div
                     className={cn(
-                        "flex items-center gap-2 rounded-lg border p-3 text-sm",
+                        // Sticky: the send buttons sit far below this banner, so an
+                        // error about a missing subject was scrolled out of view and
+                        // read as the button doing nothing at all
+                        "sticky top-2 z-20 flex items-center gap-2 rounded-lg border p-3 text-sm shadow-sm",
                         message.tone === "ok" && "border-emerald-200 bg-emerald-50 text-emerald-800",
                         message.tone === "warn" && "border-amber-200 bg-amber-50 text-amber-800",
                         message.tone === "bad" && "border-rose-200 bg-rose-50 text-rose-700"
