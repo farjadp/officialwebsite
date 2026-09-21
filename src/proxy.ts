@@ -19,33 +19,7 @@ export default auth((req) => {
     // @ts-ignore
     const userRole = req.auth?.user?.role;
 
-    // 1. Protect Admin Routes
-    const isAdminRoute = url.pathname.startsWith("/admin");
-    if (isAdminRoute) {
-        if (!isLoggedIn) {
-            return NextResponse.redirect(new URL("/login", req.url));
-        }
-        if (userRole === "USER") {
-            // Regular users cannot access admin. Send to profile.
-            return NextResponse.redirect(new URL("/profile", req.url));
-        }
-    }
-
-    // 2. Protect Profile Routes
-    const isProfileRoute = url.pathname.startsWith("/profile");
-    if (isProfileRoute) {
-        if (!isLoggedIn) {
-            return NextResponse.redirect(new URL("/login", req.url));
-        }
-    }
-
-    // 3. User already logged in should not access login/register
-    const isAuthRoute = url.pathname === "/login" || url.pathname === "/register";
-    if (isLoggedIn && isAuthRoute) {
-        return NextResponse.redirect(new URL("/profile", req.url));
-    }
-
-    // 4. Internationalization
+    // 0. Locale
     //
     // The Persian site is served from the /fa path segment. The fa.* subdomain
     // is not deployed (it answers 404 DEPLOYMENT_NOT_FOUND), but the rewrite is
@@ -59,7 +33,46 @@ export default auth((req) => {
     const isPersianPath = url.pathname === "/fa" || url.pathname.startsWith("/fa/");
     const isPersian = isPersianHost || isPersianPath;
 
-    // Inject x-locale header for the layout to determine language / direction
+    // The route guards below must match on the path WITHOUT the locale segment.
+    // Matching the raw pathname left /fa/admin unprotected — it does not start
+    // with "/admin", so the admin dashboard (subscriber counts, leads, inbox,
+    // settings, backups) was served to anyone who asked for the Persian URL.
+    // Same for /fa/profile and the /fa/login redirect-away rule.
+    const routePath = isPersianPath ? (url.pathname.slice(3) || "/") : url.pathname;
+
+    // Send a visitor of the Persian site back into the Persian site.
+    // On the fa.* subdomain the rewrite below already supplies /fa, so the
+    // prefix is only needed for the path-based form.
+    const localePrefix = isPersianPath ? "/fa" : "";
+    const to = (path: string) => new URL(`${localePrefix}${path}`, req.url);
+
+    // 1. Protect Admin Routes
+    const isAdminRoute = routePath === "/admin" || routePath.startsWith("/admin/");
+    if (isAdminRoute) {
+        if (!isLoggedIn) {
+            return NextResponse.redirect(to("/login"));
+        }
+        if (userRole === "USER") {
+            // Regular users cannot access admin. Send to profile.
+            return NextResponse.redirect(to("/profile"));
+        }
+    }
+
+    // 2. Protect Profile Routes
+    const isProfileRoute = routePath === "/profile" || routePath.startsWith("/profile/");
+    if (isProfileRoute) {
+        if (!isLoggedIn) {
+            return NextResponse.redirect(to("/login"));
+        }
+    }
+
+    // 3. User already logged in should not access login/register
+    const isAuthRoute = routePath === "/login" || routePath === "/register";
+    if (isLoggedIn && isAuthRoute) {
+        return NextResponse.redirect(to("/profile"));
+    }
+
+    // 4. Inject x-locale header for the layout to determine language / direction
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-locale", isPersian ? "fa" : "en");
 
