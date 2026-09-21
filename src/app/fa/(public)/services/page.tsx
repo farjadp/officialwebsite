@@ -41,100 +41,100 @@ import {
 const SERVICES = [
   {
     id: "startup-visa",
-    title: "Startup Visa Strategy",
-    for: "Immigrant founders needing a business case, not just a form filler.",
+    title: "استراتژی استارتاپ ویزا",
+    for: "بنیان‌گذاران مهاجری که به یک بیزینس‌کیس نیاز دارند، نه به کسی که فرم پر کند.",
     icon: Compass,
     details: [
-      "Audit concept against SUV criteria.",
-      "Roadmap to early traction.",
-      "Mock incubator interviews."
+      "سنجش ایده در برابر معیارهای SUV.",
+      "نقشه‌ی راه رسیدن به تراکشن اولیه.",
+      "مصاحبه‌ی آزمایشی انکوباتور."
     ],
-    outcome: "A defensible business case that stands up to scrutiny."
+    outcome: "بیزینس‌کیسی که زیر ذره‌بین دوام می‌آورد."
   },
   {
     id: "founder-advisory",
-    title: "Strategic Advisory",
-    for: "Early-stage founders who need a sparring partner.",
+    title: "مشاوره‌ی استراتژیک",
+    for: "بنیان‌گذاران مرحله‌ی اولیه که به یک طرف مقابل فکری نیاز دارند.",
     icon: Lightbulb,
     details: [
-      "GTM Strategy validation.",
-      "Business Model stress-testing.",
-      "Prioritization frameworks."
+      "اعتبارسنجی استراتژی ورود به بازار.",
+      "تست فشار مدل کسب‌وکار.",
+      "چارچوب‌های اولویت‌بندی."
     ],
-    outcome: "Stop building features nobody wants. Focus on revenue."
+    outcome: "ساختن قابلیت‌های بی‌مشتری تمام می‌شود. تمرکز می‌رود روی درآمد."
   },
   {
     id: "digital-systems",
-    title: "Digital Systems & AI",
-    for: "SMEs bottlenecked by manual work.",
+    title: "سیستم‌های دیجیتال و هوش مصنوعی",
+    for: "کسب‌وکارهای کوچک و متوسطی که کار دستی گلوگاهشان شده است.",
     icon: Zap,
     details: [
-      "Operational workflow audit.",
-      "AI integration architecture.",
-      "Tech stack selection."
+      "ارزیابی گردش‌کار عملیاتی.",
+      "معماری یکپارچه‌سازی هوش مصنوعی.",
+      "انتخاب استک فناوری."
     ],
-    outcome: "Reclaim 10+ hours/week and reduce human error."
+    outcome: "بیش از ۱۰ ساعت در هفته برمی‌گردد و خطای انسانی کم می‌شود."
   },
   {
     id: "private-mentorship",
-    title: "Private Mentorship",
-    for: "High-potential founders.",
+    title: "منتورشیپ خصوصی",
+    for: "بنیان‌گذاران با پتانسیل بالا.",
     icon: Key,
     isLimited: true,
     details: [
-      "Weekly 1:1 strategy calls.",
-      "Async access (WhatsApp).",
-      "Document review."
+      "جلسه‌ی استراتژی هفتگی یک‌به‌یک.",
+      "دسترسی غیرهم‌زمان از طریق واتساپ.",
+      "بازبینی اسناد."
     ],
-    outcome: "A trusted co-pilot to navigate chaos."
+    outcome: "یک هم‌خلبان قابل‌اعتماد برای عبور از آشوب."
   }
 ];
 
 const CREDIBILITY_BENTO = [
   {
-    title: "Current Role",
-    desc: "Founder & CSO at AshaVid",
-    sub: "Toronto, Since 2025",
+    title: "نقش فعلی",
+    desc: "بنیان‌گذار و مدیر ارشد استراتژی AshaVid",
+    sub: "تورنتو، از ۲۰۲۵",
     icon: Briefcase,
     col: "md:col-span-2",
     bg: "bg-[#1B4B43] text-white"
   },
   {
-    title: "Exit / Past",
-    desc: "Founder & Director at DPF",
-    sub: "Data Processing (17 Years)",
+    title: "کارنامه‌ی پیشین",
+    desc: "بنیان‌گذار و مدیر DPF",
+    sub: "پردازش داده، ۱۷ سال",
     icon: Award,
     col: "md:col-span-1",
     bg: "bg-stone-100 text-[#1C1917]"
   },
   {
-    title: "Tech Leadership",
-    desc: "Former CTO",
-    sub: "Iran's Gov-backed Cloud Firm",
+    title: "رهبری فنی",
+    desc: "مدیر ارشد فنی سابق",
+    sub: "نخستین شرکت ابری دولتی ایران",
     icon: Zap,
     col: "md:col-span-1",
     bg: "bg-white text-[#1C1917] border border-stone-200"
   },
   {
-    title: "Education",
-    desc: "MSc Software , MA, MSc and PHD at Anthropology, DBA Branding",
-    sub: "Rare mix of Code & Culture",
+    title: "تحصیلات",
+    desc: "کارشناسی ارشد نرم‌افزار، کارشناسی ارشد و دکتری انسان‌شناسی، DBA مدیریت برند",
+    sub: "ترکیب کمیابِ کد و فرهنگ",
     icon: GraduationCap,
     col: "md:col-span-2",
     bg: "bg-stone-900 text-stone-200"
   },
   {
-    title: "Global Reach",
-    desc: "Based in Newmarket, ON",
-    sub: "Serving Global Founders",
+    title: "دامنه‌ی کار",
+    desc: "ساکن نیومارکت، انتاریو",
+    sub: "همکاری با بنیان‌گذاران در سراسر دنیا",
     icon: Globe2,
     col: "md:col-span-1",
     bg: "bg-[#D97706] text-white"
   },
   {
-    title: "Certification",
-    desc: "ISO 27001 Lead Auditor",
-    sub: "Information Security",
+    title: "گواهی‌نامه",
+    desc: "ممیز ارشد ISO 27001",
+    sub: "امنیت اطلاعات",
     icon: Key,
     col: "md:col-span-1",
     bg: "bg-white text-[#1C1917] border border-stone-200"
@@ -142,10 +142,10 @@ const CREDIBILITY_BENTO = [
 ];
 
 const FAQS = [
-  { q: "Do you guarantee immigration results?", a: "No. I am not a lawyer. I help you build a real business that meets the criteria, but the outcome is never guaranteed." },
-  { q: "How do we start?", a: "Book a strategy call. We diagnose the problem in 30 minutes. If it fits, we move forward." },
-  { q: "What is your hourly rate?", a: "I generally work on a retainer or project basis to ensure outcomes, not just hours spent." },
-  { q: "Do you work with non-tech businesses?", a: "Yes, specifically for digital transformation and systemizing operations." },
+  { q: "نتیجه‌ی مهاجرتی را تضمین می‌کنید؟", a: "نه. من وکیل نیستم. کمک می‌کنم کسب‌وکاری واقعی بسازید که معیارها را برآورده کند، ولی نتیجه هیچ‌وقت تضمینی نیست." },
+  { q: "از کجا شروع کنیم؟", a: "یک جلسه‌ی استراتژی رزرو کنید. در سی دقیقه مسئله را تشخیص می‌دهیم. اگر جور بود، جلو می‌رویم." },
+  { q: "نرخ ساعتی‌تان چقدر است؟", a: "معمولاً قراردادی یا پروژه‌ای کار می‌کنم تا نتیجه تضمین شود، نه فقط ساعت‌هایی که صرف شده." },
+  { q: "با کسب‌وکارهای غیرفناوری هم کار می‌کنید؟", a: "بله، مشخصاً برای تحول دیجیتال و سیستم‌مند کردن عملیات." },
 ];
 
 export default function ServicesPageBento() {
@@ -163,27 +163,27 @@ export default function ServicesPageBento() {
         {/* --- 1. HERO: The Manifesto --- */}
         <section className="pt-32 pb-20 px-6 md:px-12 max-w-6xl mx-auto">
           <Badge className="mb-6 bg-[#1B4B43]/10 text-[#1B4B43] hover:bg-[#1B4B43]/20 border-none uppercase tracking-widest px-3 py-1 rounded-sm">
-            Advisory & Mentorship
+            مشاوره و منتورشیپ
           </Badge>
 
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.9] text-[#111827] mb-8 tracking-tight">
-            Clarity for the builder. <br />
+            وضوح برای سازنده. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1B4B43] to-stone-500 italic">
-              Structure for the business.
+              ساختار برای کسب‌وکار.
             </span>
           </h1>
 
           <div className="grid md:grid-cols-12 gap-12 items-end">
             <div className="md:col-span-7">
               <p className="text-xl md:text-2xl text-stone-600 font-light leading-relaxed">
-                I help immigrant founders and serious SMEs navigate the chaos of building.
-                No hype. No fake numbers. Just direct, strategic engineering applied to your business.
+                به بنیان‌گذاران مهاجر و کسب‌وکارهای کوچک و متوسط جدی کمک می‌کنم از آشوب ساختن عبور کنند.
+                بدون هیاهو، بدون عدد ساختگی. فقط مهندسی مستقیم و استراتژیک روی کسب‌وکار شما.
               </p>
             </div>
             <div className="md:col-span-5 flex flex-col sm:flex-row gap-4">
               <Link href="/fa/booking" className="w-full">
                 <Button className="w-full bg-[#1B4B43] hover:bg-[#133832] text-white rounded-sm h-14 text-lg font-medium shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                  Book Strategy Call
+                  رزرو جلسه‌ی استراتژی
                 </Button>
               </Link>
             </div>
@@ -202,9 +202,9 @@ export default function ServicesPageBento() {
           <div className="max-w-6xl mx-auto px-6 relative z-10">
 
             <div className="text-center mb-16">
-              <h2 className="font-serif text-4xl text-[#111827] mb-4">Are we a match?</h2>
+              <h2 className="font-serif text-4xl text-[#111827] mb-4">به درد هم می‌خوریم؟</h2>
               <p className="text-stone-500 max-w-xl mx-auto text-lg font-light">
-                I don't work with everyone. To protect both of our time, let's make sure our expectations align before we hop on a call.
+با همه کار نمی‌کنم. برای اینکه وقت هردومان هدر نرود، قبل از تماس مطمئن شویم انتظارهامان یکی است.
               </p>
             </div>
 
@@ -217,16 +217,16 @@ export default function ServicesPageBento() {
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-2xl font-bold text-[#111827]">Right Fit</h3>
-                    <p className="text-sm text-stone-500 uppercase tracking-widest mt-1">Who this is for</p>
+                    <h3 className="font-serif text-2xl font-bold text-[#111827]">انتخاب درست</h3>
+                    <p className="text-sm text-stone-500 uppercase tracking-widest mt-1">این کار برای چه کسی است</p>
                   </div>
                 </div>
                 <ul className="space-y-6">
                   {[
-                    "Founders who want to build a real company, not a visa shell.",
-                    "Immigrants who need to understand the Canadian market code.",
-                    "SME owners tired of manual chaos and ready for AI.",
-                    "Leaders who value brutal honesty over polite lies."
+                    "بنیان‌گذارانی که می‌خواهند شرکت واقعی بسازند، نه پوسته‌ای برای ویزا.",
+                    "مهاجرانی که باید قواعد نانوشته‌ی بازار کانادا را بفهمند.",
+                    "صاحبان کسب‌وکاری که از آشوب کار دستی خسته‌اند و آماده‌ی هوش مصنوعی‌اند.",
+                    "مدیرانی که صداقت تلخ را به دروغ مؤدبانه ترجیح می‌دهند."
                   ].map((item, i) => (
                     <li key={i} className="flex gap-4 items-start group">
                       <CheckCircle2 className="w-6 h-6 text-[#1B4B43] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
@@ -243,16 +243,16 @@ export default function ServicesPageBento() {
                     <XCircle className="w-8 h-8" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-2xl font-bold text-stone-600 group-hover:text-red-900 transition-colors">Wrong Fit</h3>
-                    <p className="text-sm text-stone-400 uppercase tracking-widest mt-1 group-hover:text-red-400 transition-colors">Who this is NOT for</p>
+                    <h3 className="font-serif text-2xl font-bold text-stone-600 group-hover:text-red-900 transition-colors">انتخاب غلط</h3>
+                    <p className="text-sm text-stone-400 uppercase tracking-widest mt-1 group-hover:text-red-400 transition-colors">این کار برای چه کسی نیست</p>
                   </div>
                 </div>
                 <ul className="space-y-6 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
                   {[
-                    "People looking for guaranteed PR or 'easy' visas.",
-                    "Founders who want a 'Yes Man' to validate their ego.",
-                    "Those looking for get-rich-quick shortcuts.",
-                    "Anyone unwilling to do the heavy lifting themselves."
+                    "کسانی که دنبال اقامت تضمینی یا ویزای «آسان» هستند.",
+                    "بنیان‌گذارانی که دنبال کسی‌اند که فقط تأییدشان کند.",
+                    "هرکسی که دنبال میان‌بر یک‌شبه پولدار شدن است.",
+                    "هرکسی که حاضر نیست بار سنگین کار را خودش بردارد."
                   ].map((item, i) => (
                     <li key={i} className="flex gap-4 items-start">
                       <XCircle className="w-6 h-6 text-stone-400 group-hover:text-red-400 shrink-0 mt-0.5 transition-colors" />
@@ -272,8 +272,8 @@ export default function ServicesPageBento() {
         <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
           <div className="mb-16 md:flex justify-between items-end">
             <div>
-              <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-4">Core Services</h2>
-              <p className="text-stone-500 max-w-md">Four ways we can work together. Each designed for a specific stage of maturity.</p>
+              <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-4">خدمات اصلی</h2>
+              <p className="text-stone-500 max-w-md">چهار شکل همکاری. هرکدام برای مرحله‌ی مشخصی از بلوغ کسب‌وکار طراحی شده است.</p>
             </div>
             <div className="hidden md:block">
               <ArrowRight className="w-12 h-12 text-stone-200" />
@@ -293,7 +293,7 @@ export default function ServicesPageBento() {
                       <service.icon className="w-6 h-6 text-[#1B4B43] group-hover:text-white transition-colors" />
                     </div>
                     {service.isLimited && (
-                      <Badge className="bg-[#D97706] text-white text-[10px] hover:bg-[#D97706]">LIMITED</Badge>
+                      <Badge className="bg-[#D97706] text-white text-[10px] hover:bg-[#D97706]">ظرفیت محدود</Badge>
                     )}
                   </div>
 
@@ -316,7 +316,7 @@ export default function ServicesPageBento() {
                     ))}
                   </ul>
                   <div className="block w-full py-3 text-center text-xs font-bold uppercase tracking-widest border border-stone-200 group-hover:border-white text-[#111827] group-hover:text-white mt-4 group-hover:bg-white group-hover:text-[#1B4B43] transition-all">
-                    Inquire
+                    جزئیات بیشتر
                   </div>
                 </div>
               </Link>
@@ -330,7 +330,7 @@ export default function ServicesPageBento() {
 
             {/* Minimal Header */}
             <div className="text-center mb-14">
-              <h2 className="font-serif text-4xl text-[#111827] mb-4">The Track Record</h2>
+              <h2 className="font-serif text-4xl text-[#111827] mb-4">کارنامه</h2>
               <div className="w-12 h-1 bg-[#1B4B43]/40 mx-auto rounded-full"></div>
             </div>
 
@@ -377,21 +377,21 @@ export default function ServicesPageBento() {
             {/* Left Side: Static Content */}
             <div className="lg:col-span-5 space-y-6">
               <Badge className="bg-[#1B4B43]/10 text-[#1B4B43] border-none uppercase tracking-[0.2em] px-3 py-1 rounded-sm text-[10px]">
-                Knowledge Base
+                پایگاه دانش
               </Badge>
               <h2 className="font-serif text-4xl md:text-5xl text-[#111827] leading-[1.1]">
-                Common <br />
-                <span className="italic text-stone-400">Questions</span>
+                پرسش‌های <br />
+                <span className="italic text-stone-400">پرتکرار</span>
               </h2>
               <p className="text-stone-500 text-lg font-light leading-relaxed max-w-sm">
-                Everything you need to know about the process, expectations, and how we build together.
+هرچه لازم است درباره‌ی روند کار، انتظارها و شکل همکاری بدانید.
               </p>
 
               <div className="pt-8">
                 <div className="inline-flex flex-col p-6 bg-stone-50 border border-stone-200 rounded-xl">
-                  <p className="text-sm text-stone-600 mb-4">Still have questions?</p>
+                  <p className="text-sm text-stone-600 mb-4">هنوز سؤالی دارید؟</p>
                   <Link href="mailto:farjad@ashavid.ca" className="text-[#1B4B43] font-bold flex items-center gap-2 group">
-                    Send a direct message
+                    پیام مستقیم بفرستید
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -431,14 +431,14 @@ export default function ServicesPageBento() {
             <div className="inline-block mb-6 animate-bounce">
               <ArrowRight className="w-8 h-8 text-[#D97706] rotate-90" />
             </div>
-            <h2 className="font-serif text-5xl md:text-6xl mb-6">Ready to work?</h2>
+            <h2 className="font-serif text-5xl md:text-6xl mb-6">آماده‌ی کار هستید؟</h2>
             <p className="text-stone-400 text-xl mb-10 font-light">
-              I have limited capacity for new advisory clients.<br />
-              If you are serious, let's determine if we are a fit.
+              ظرفیتم برای مشتری مشاوره‌ی تازه محدود است.<br />
+              اگر جدی هستید، بیایید ببینیم به درد هم می‌خوریم یا نه.
             </p>
             <Link href="/fa/booking">
               <Button className="bg-white text-[#111827] hover:bg-stone-200 h-16 px-10 text-lg font-bold rounded-sm w-full md:w-auto">
-                Book Strategy Call
+                رزرو جلسه‌ی استراتژی
               </Button>
             </Link>
           </div>

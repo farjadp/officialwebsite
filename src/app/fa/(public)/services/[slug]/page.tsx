@@ -44,9 +44,9 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         
         {/* Navigation / Back */}
         <div className="pt-32 pb-6 px-6 md:px-12 max-w-5xl mx-auto">
-          <Link href="/fa/services" className="inline-flex items-center gap-2 text-stone-500 hover:text-[#1B4B43] hover:translate-x-[-2px] transition-all font-medium text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Services
+          <Link href="/fa/services" className="inline-flex items-center gap-2 text-stone-500 hover:text-[#1B4B43] rtl:hover:translate-x-[2px] ltr:hover:translate-x-[-2px] transition-all font-medium text-sm">
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+            بازگشت به خدمات
           </Link>
         </div>
 
@@ -58,7 +58,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             </div>
             {service.isLimited && (
               <span className="bg-[#D97706] text-white text-[10px] uppercase font-bold px-2 py-1 tracking-widest rounded-sm">
-                Limited Availability
+                ظرفیت محدود
               </span>
             )}
           </div>
@@ -78,7 +78,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             {/* What You Get */}
             <div>
               <h2 className="font-serif text-3xl text-[#111827] mb-8 pb-4 border-b border-stone-100">
-                What You Get
+                چه چیزی می‌گیرید
               </h2>
               <ul className="space-y-6">
                 {(service.whatYouGet || []).map((item: string, i: number) => (
@@ -93,7 +93,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             {/* Outcomes */}
             <div className="bg-[#F5F5F4] p-8 md:p-10 rounded-2xl border border-stone-200">
               <h2 className="font-serif text-2xl text-[#111827] mb-6">
-                Direct Outcomes
+                نتیجه‌ی مستقیم
               </h2>
               <div className="h-1 w-12 bg-[#1B4B43] mb-8" />
               <ul className="space-y-6">
@@ -109,7 +109,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         </section>
 
         {/* DYNAMIC CTA SECTION */}
-        <ServiceCta />
+        <ServiceCta locale="fa" />
       </div>
     </div>
   );

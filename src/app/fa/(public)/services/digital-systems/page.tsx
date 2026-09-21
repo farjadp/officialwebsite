@@ -27,10 +27,10 @@ export default function DigitalSystemsPage() {
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
       {/* Navigation */}
-      <div className="absolute top-8 left-6 md:left-12 z-50">
+      <div className="absolute top-8 start-6 md:start-12 z-50">
         <Link href="/fa/services" className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-md border border-stone-200 rounded-full text-stone-600 hover:text-[#1B4B43] hover:bg-white transition-all font-medium text-sm shadow-sm">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Services
+          <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+          بازگشت به خدمات
         </Link>
       </div>
 
@@ -40,21 +40,21 @@ export default function DigitalSystemsPage() {
         <section className="min-h-[90vh] flex flex-col justify-center items-center text-center px-6 pt-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-stone-100 border border-stone-200 rounded-full text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-8 overflow-hidden group">
             <span className="w-2 h-2 rounded-full bg-[#1B4B43] group-hover:animate-pulse" />
-            Digital Systems & AI
+            سیستم‌های دیجیتال و هوش مصنوعی
           </div>
           
           <h1 className="font-serif text-6xl md:text-8xl lg:text-[7rem] text-[#111827] tracking-tighter leading-[0.9] max-w-5xl">
-            You cannot <br />
-            <span className="text-[#D97706] italic">automate</span> confusion.
+            سردرگمی را نمی‌شود <br />
+            <span className="text-[#D97706] italic">خودکار</span> کرد.
           </h1>
           
           <div className="mt-12 text-xl md:text-2xl text-stone-500 font-light max-w-2xl leading-relaxed space-y-4">
             <p className="font-medium text-[#111827]">
-              Most businesses today don’t have a technology problem.<br />
-              They have a clarity problem.
+              مشکل بیشتر کسب‌وکارها امروز فناوری نیست.<br />
+              مشکلشان شفافیت است.
             </p>
             <p className="text-lg">
-              They jump into automation. They experiment with AI. They subscribe to tools. And still — nothing fundamentally improves. Work remains chaotic. Teams stay overloaded. Decisions are slow.
+می‌پرند وسط خودکارسازی. با هوش مصنوعی ور می‌روند. اشتراک ابزار می‌خرند. و باز هیچ‌چیز از بنیان بهتر نمی‌شود. کار آشفته می‌ماند، تیم زیر بار له است و تصمیم‌ها کند.
             </p>
           </div>
           
@@ -71,28 +71,28 @@ export default function DigitalSystemsPage() {
             <div className="space-y-8">
                <ShieldAlert className="w-12 h-12 text-[#D97706]" />
                <h2 className="font-serif text-4xl md:text-5xl leading-tight">
-                 The Illusion of "Digital Transformation"
+                 توهم «تحول دیجیتال»
                </h2>
                <p className="text-stone-400 text-lg leading-relaxed font-light">
-                 “Digital transformation” has become an overused term. In practice, it usually means adding more tools, dashboards, and AI features — while hiring someone to "handle automation."
+«تحول دیجیتال» عبارتی است که آن‌قدر تکرار شده که معنایش را از دست داده. در عمل معمولاً یعنی ابزار بیشتر، داشبورد بیشتر و قابلیت هوش مصنوعی بیشتر، به‌علاوه‌ی استخدام کسی که «خودکارسازی را انجام دهد».
                </p>
-               <div className="p-6 border-l-2 border-red-500 bg-white/5 backdrop-blur-sm rounded-r-lg">
+               <div className="p-6 border-s-2 border-red-500 bg-white/5 backdrop-blur-sm rounded-e-lg">
                  <p className="text-xl font-serif text-white mb-2">
-                   "Over 70% of digital transformation initiatives fail."
+                   «بیش از ۷۰ درصد طرح‌های تحول دیجیتال شکست می‌خورند.»
                  </p>
-                 <p className="text-sm font-sans text-stone-500 uppercase tracking-widest">— McKinsey, 2018–2022</p>
+                 <p className="text-sm font-sans text-stone-500 uppercase tracking-widest" dir="ltr">McKinsey, 2018–2022</p>
                </div>
                <p className="text-xl text-stone-300">
-                 Why? <strong className="text-red-400">Because companies digitize existing chaos instead of redesigning how work actually happens.</strong>
+چرا؟ <strong className="text-red-400">چون شرکت‌ها به‌جای بازطراحی شکل واقعی انجام کار، آشوب موجود را دیجیتال می‌کنند.</strong>
                </p>
             </div>
             
             <div className="grid gap-6">
                {/* Think vs Actually Need Bento */}
                <div className="bg-white/5 border border-white/10 p-8 rounded-3xl backdrop-blur-sm group hover:border-white/20 transition-all">
-                  <h3 className="text-stone-500 uppercase tracking-widest text-xs font-bold mb-6">What businesses think they need</h3>
+                  <h3 className="text-stone-500 uppercase tracking-widest text-xs font-bold mb-6">کسب‌وکارها فکر می‌کنند به چه نیاز دارند</h3>
                   <ul className="space-y-4">
-                    {["We need automation", "We need AI", "We need better tools"].map((t, i) => (
+                    {["خودکارسازی لازم داریم", "هوش مصنوعی لازم داریم", "ابزار بهتر لازم داریم"].map((t, i) => (
                       <li key={i} className="flex gap-4 items-center text-stone-300 line-through decoration-red-500/50">
                         <XCircle className="w-5 h-5 text-red-500/50" /> {t}
                       </li>
@@ -101,16 +101,16 @@ export default function DigitalSystemsPage() {
                </div>
 
                <div className="bg-[#1B4B43]/20 border border-[#1B4B43]/40 p-8 rounded-3xl backdrop-blur-sm shadow-[0_0_40px_rgba(27,75,67,0.2)]">
-                  <h3 className="text-[#34D399] uppercase tracking-widest text-xs font-bold mb-6">What they actually need</h3>
+                  <h3 className="text-[#34D399] uppercase tracking-widest text-xs font-bold mb-6">واقعاً به چه نیاز دارند</h3>
                   <ul className="space-y-4">
-                    {["Clear workflows", "Defined responsibilities", "Structured data flow", "System-level thinking"].map((t, i) => (
+                    {["گردش‌کار شفاف", "مسئولیت‌های تعریف‌شده", "جریان داده‌ی ساختارمند", "تفکر در سطح سیستم"].map((t, i) => (
                       <li key={i} className="flex gap-4 items-center text-white font-medium">
                         <CheckCircle2 className="w-5 h-5 text-[#34D399]" /> {t}
                       </li>
                     ))}
                   </ul>
                </div>
-               <p className="text-center text-stone-400 text-sm mt-2 italic font-serif">Without this foundation, every tool becomes another layer of complexity.</p>
+               <p className="text-center text-stone-400 text-sm mt-2 italic font-serif">بدون این پایه، هر ابزار تازه یک لایه‌ی پیچیدگی تازه است.</p>
             </div>
           </div>
         </section>
@@ -118,18 +118,18 @@ export default function DigitalSystemsPage() {
         {/* 3. THE REAL PROBLEM (Visual Fragmenting) */}
         <section className="py-32 px-6 md:px-12 max-w-6xl mx-auto">
           <div className="text-center mb-20 max-w-3xl mx-auto">
-            <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">Fragmented Operations</h2>
+            <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">عملیات تکه‌تکه</h2>
             <p className="text-xl text-stone-500 font-light">
-              In most SMEs and startups, operations evolve organically. Sales uses one system. Marketing uses another. Operations runs on spreadsheets. <em className="text-[#1B4B43]">Founders connect everything manually.</em>
+در بیشتر کسب‌وکارهای کوچک و متوسط و استارتاپ‌ها، عملیات خودرو رشد می‌کند. فروش یک سیستم دارد، بازاریابی یکی دیگر، و عملیات روی صفحه‌گسترده می‌چرخد. <em className="text-[#1B4B43]">بنیان‌گذار همه را دستی به هم وصل می‌کند.</em>
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-4 mb-16">
             {[
-              { title: "Duplicated Work", icon: Copy },
-              { title: "Inconsistent Data", icon: Network },
-              { title: "Communication Gaps", icon: SplitSquareHorizontal },
-              { title: "Decision Delays", icon: Orbit },
+              { title: "کار تکراری", icon: Copy },
+              { title: "داده‌ی ناسازگار", icon: Network },
+              { title: "شکاف ارتباطی", icon: SplitSquareHorizontal },
+              { title: "تأخیر در تصمیم", icon: Orbit },
             ].map((step, i) => (
               <div key={i} className="p-8 flex flex-col justify-between rounded-3xl bg-white border border-stone-200 text-stone-800 shadow-sm hover:-translate-y-1 transition-transform">
                 <step.icon className="w-8 h-8 text-stone-300 mb-6" />
@@ -141,10 +141,10 @@ export default function DigitalSystemsPage() {
           <div className="mt-12 bg-[#F5F5F4] p-8 md:p-12 rounded-3xl border border-stone-200 text-center max-w-4xl mx-auto relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-stone-300/20 rounded-full blur-3xl" />
             <h3 className="font-serif text-3xl md:text-4xl text-[#111827] leading-tight mb-4">
-              Employees spend up to 60% of their time on "work about work"
+کارکنان تا ۶۰ درصد وقتشان را صرف «کار درباره‌ی کار» می‌کنند
             </h3>
-            <p className="text-stone-500 uppercase tracking-widest text-xs mb-8">— Harvard Business Review, 2019</p>
-            <p className="text-xl font-bold text-[#D97706]">That’s not inefficiency. That’s structural failure.</p>
+            <p className="text-stone-500 uppercase tracking-widest text-xs mb-8" dir="ltr">Harvard Business Review, 2019</p>
+            <p className="text-xl font-bold text-[#D97706]">این ناکارآمدی نیست. شکست ساختاری است.</p>
           </div>
         </section>
 
@@ -159,15 +159,15 @@ export default function DigitalSystemsPage() {
               <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#D97706] rounded-full blur-[120px] opacity-10 group-hover:opacity-30 transition-opacity pointer-events-none" />
               
               <BrainCircuit className="w-12 h-12 text-[#D97706] mb-8 relative z-10" />
-              <h2 className="font-serif text-4xl text-white mb-6 relative z-10">Why AI Fails in Most Businesses</h2>
+              <h2 className="font-serif text-4xl text-white mb-6 relative z-10">چرا هوش مصنوعی در بیشتر کسب‌وکارها شکست می‌خورد</h2>
               
               <div className="space-y-6 text-stone-300 text-lg font-light leading-relaxed relative z-10">
-                <p>AI is powerful. That’s not the problem. The problem is where and how it’s applied.</p>
-                <blockquote className="border-l-2 border-[#D97706] pl-6 py-2 my-8 text-xl font-serif text-white">
-                  "80% of AI projects fail to deliver meaningful ROI."<br/>
-                  <span className="text-xs font-sans text-stone-500 uppercase tracking-widest mt-2 block">— Gartner AI Adoption Report, 2023</span>
+                <p>هوش مصنوعی قدرتمند است. مشکل این نیست. مشکل این است که کجا و چطور به کار گرفته می‌شود.</p>
+                <blockquote className="border-s-2 border-[#D97706] ps-6 py-2 my-8 text-xl font-serif text-white">
+                  «۸۰ درصد پروژه‌های هوش مصنوعی بازگشت سرمایه‌ی معناداری تحویل نمی‌دهند.»<br/>
+                  <span className="text-xs font-sans text-stone-500 uppercase tracking-widest mt-2 block" dir="ltr">Gartner AI Adoption Report, 2023</span>
                 </blockquote>
-                <p>Not because the models are weak. But because businesses apply AI without structured workflows, lack clean data, and expect AI to replace thinking.</p>
+                <p>نه به این دلیل که مدل‌ها ضعیف‌اند. به این دلیل که کسب‌وکارها هوش مصنوعی را بدون گردش‌کار ساختارمند به کار می‌گیرند، داده‌ی تمیز ندارند، و انتظار دارند هوش مصنوعی جای فکر کردن را بگیرد.</p>
               </div>
             </div>
 
@@ -175,18 +175,18 @@ export default function DigitalSystemsPage() {
             <div className="flex flex-col gap-6">
               <div className="bg-[#111827] border border-stone-800 rounded-3xl p-10 flex-1 flex flex-col justify-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-red-900/20 blur-3xl pointer-events-none" />
-                <span className="text-red-400 font-bold tracking-widest uppercase text-xs mb-6">The Core Mistake</span>
-                <p className="text-3xl font-serif text-white leading-snug mb-4">Most teams try to use AI as a shortcut.</p>
-                <p className="text-xl text-stone-400 font-light">It only works as a multiplier.</p>
+                <span className="text-red-400 font-bold tracking-widest uppercase text-xs mb-6">اشتباه اصلی</span>
+                <p className="text-3xl font-serif text-white leading-snug mb-4">بیشتر تیم‌ها هوش مصنوعی را میان‌بر می‌بینند.</p>
+                <p className="text-xl text-stone-400 font-light">ولی فقط به‌عنوان ضریب‌افزا کار می‌کند.</p>
               </div>
               
               <div className="bg-[#1B4B43] border border-[#19403a] rounded-3xl p-10 flex-1 flex flex-col justify-center shadow-2xl relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
                 <h3 className="text-2xl font-serif text-white leading-snug">
-                  AI does not fix broken processes.
+                  هوش مصنوعی فرایند خراب را درست نمی‌کند.
                 </h3>
                 <p className="text-[#A7F3D0] text-lg mt-4 font-light">
-                  It amplifies whatever system already exists — good or bad.
+هر سیستمی که از قبل هست را بزرگ‌تر می‌کند، خوب باشد یا بد.
                 </p>
               </div>
             </div>
@@ -197,37 +197,37 @@ export default function DigitalSystemsPage() {
         {/* 5. WHAT IT ACTUALLY MEANS (Methodology Grid) */}
         <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
           <div className="text-center mb-20 max-w-3xl mx-auto">
-            <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">What "Digital Systems & AI" Actually Means</h2>
+            <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">«سیستم‌های دیجیتال و هوش مصنوعی» دقیقاً یعنی چه</h2>
             <p className="text-lg text-stone-500 font-light">
-              This is where most people misunderstand the work. It is not about installing tools, building random automations, or adding AI for the sake of it. <strong className="text-[#111827]">It is about designing how your business runs.</strong>
+بیشتر آدم‌ها همین‌جا کار را اشتباه می‌فهمند. موضوع نصب ابزار، ساختن خودکارسازی‌های پراکنده یا اضافه کردن هوش مصنوعی محض خودش نیست. <strong className="text-[#111827]">موضوع طراحی شکل کارکرد کسب‌وکار شماست.</strong>
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { 
-                num: "01", 
-                title: "Workflow Clarity Before Automation", 
-                desc: "Before automating, we answer: What is the exact workflow? Where are the bottlenecks? Who owns each step?",
-                alert: "If workflow is unclear, automation will fail." 
+                num: "۰۱", 
+                title: "شفافیت گردش‌کار پیش از خودکارسازی", 
+                desc: "قبل از خودکارسازی به این‌ها جواب می‌دهیم: گردش‌کار دقیقاً چیست؟ گلوگاه‌ها کجایند؟ هر قدم مسئولش کیست؟",
+                alert: "اگر گردش‌کار مبهم باشد، خودکارسازی شکست می‌خورد." 
               },
               { 
-                num: "02", 
-                title: "System Design, Not Tool Selection", 
-                desc: "Most start with tools. We start with structure. We define processes, dependencies, and decision points first.",
-                alert: "Only then do we choose tools." 
+                num: "۰۲", 
+                title: "طراحی سیستم، نه انتخاب ابزار", 
+                desc: "بیشترشان از ابزار شروع می‌کنند. ما از ساختار شروع می‌کنیم. اول فرایندها، وابستگی‌ها و نقاط تصمیم را تعریف می‌کنیم.",
+                alert: "ابزار را تازه بعد از آن انتخاب می‌کنیم." 
               },
               { 
-                num: "03", 
-                title: "AI Integration as a Layer", 
-                desc: "Not a foundation. We introduce AI only where it creates leverage: repetitive decisions, high volume, data-heavy flows.",
-                alert: "Always within a defined system." 
+                num: "۰۳", 
+                title: "هوش مصنوعی به‌عنوان یک لایه", 
+                desc: "نه به‌عنوان پایه. هوش مصنوعی را فقط جایی می‌آوریم که اهرم بسازد: تصمیم‌های تکراری، حجم بالا، جریان‌های داده‌سنگین.",
+                alert: "همیشه درون یک سیستم تعریف‌شده." 
               },
               { 
-                num: "04", 
-                title: "Reducing Complexity", 
-                desc: "A good system feels simpler over time, not heavier. This means removing tools and consolidating workflows.",
-                alert: "Complexity is the silent killer." 
+                num: "۰۴", 
+                title: "کم کردن پیچیدگی", 
+                desc: "سیستم خوب با گذشت زمان ساده‌تر حس می‌شود، نه سنگین‌تر. یعنی حذف ابزار و یکپارچه کردن گردش‌کارها.",
+                alert: "پیچیدگی قاتل خاموش است." 
               }
             ].map((step, i) => (
               <div key={i} className="bg-white border border-stone-200 rounded-3xl p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
@@ -249,19 +249,19 @@ export default function DigitalSystemsPage() {
            <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
              <div>
                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#111827] text-white rounded-full text-[10px] uppercase tracking-widest mb-6">
-                 Case Study
+                 نمونه‌ی واقعی
                </div>
-               <h2 className="font-serif text-3xl md:text-5xl text-[#111827] mb-6">A Real Example</h2>
-               <p className="text-stone-500 font-light text-lg mb-8">How a growing SME shifted from chaos to leverage utilizing structured systems.</p>
+               <h2 className="font-serif text-3xl md:text-5xl text-[#111827] mb-6">یک مثال واقعی</h2>
+               <p className="text-stone-500 font-light text-lg mb-8">چطور یک کسب‌وکار در حال رشد با سیستم‌های ساختارمند از آشوب به اهرم رسید.</p>
                
                <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm mb-6 relative overflow-hidden">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500" />
-                  <h4 className="font-bold text-stone-800 mb-2">Before: Chaos</h4>
+                  <div className="absolute start-0 top-0 bottom-0 w-1 bg-red-500" />
+                  <h4 className="font-bold text-stone-800 mb-2">قبل: آشوب</h4>
                   <ul className="text-stone-500 text-sm space-y-2">
-                    <li>• Using 6+ disconnected tools</li>
-                    <li>• Manual reporting every week</li>
-                    <li>• Founders stuck in daily operations</li>
-                    <li>• Agonizingly slow decision-making</li>
+                    <li>• بیش از شش ابزار بی‌ارتباط با هم</li>
+                    <li>• گزارش‌گیری دستی هر هفته</li>
+                    <li>• بنیان‌گذار گیرافتاده در عملیات روزمره</li>
+                    <li>• تصمیم‌گیری به‌طرز آزاردهنده‌ای کند</li>
                   </ul>
                </div>
 
@@ -270,26 +270,26 @@ export default function DigitalSystemsPage() {
              <div className="space-y-6">
                <div className="bg-white p-8 rounded-3xl border-2 border-[#1B4B43] shadow-[8px_8px_0px_0px_rgba(27,75,67,0.1)]">
                   <h4 className="font-serif text-2xl text-[#111827] mb-4 flex items-center gap-3">
-                    <RefreshCw className="w-6 h-6 text-[#1B4B43]" /> What Changed
+                    <RefreshCw className="w-6 h-6 text-[#1B4B43]" /> چه چیزی عوض شد
                   </h4>
                   <ol className="text-stone-600 space-y-3 mb-6 relative z-10">
-                    <li><strong>1.</strong> Mapped actual workflows</li>
-                    <li><strong>2.</strong> Removed redundant steps</li>
-                    <li><strong>3.</strong> Integrated key tools cleanly</li>
-                    <li><strong>4.</strong> Introduced AI for reporting & queries</li>
+                    <li><strong>۱.</strong> نقشه‌برداری از گردش‌کارهای واقعی</li>
+                    <li><strong>۲.</strong> حذف قدم‌های زائد</li>
+                    <li><strong>۳.</strong> یکپارچه‌سازی تمیز ابزارهای کلیدی</li>
+                    <li><strong>۴.</strong> آوردن هوش مصنوعی برای گزارش و پرس‌وجو</li>
                   </ol>
                   
                   <div className="pt-6 border-t border-stone-100">
-                    <h5 className="font-bold text-xs uppercase tracking-widest text-[#D97706] mb-3">Result: Leverage</h5>
+                    <h5 className="font-bold text-xs uppercase tracking-widest text-[#D97706] mb-3">نتیجه: اهرم</h5>
                     <ul className="text-[#111827] font-medium space-y-2">
-                      <li className="flex gap-2"><MoveRight className="w-5 h-5 text-[#34D399]" /> Faster decisions</li>
-                      <li className="flex gap-2"><MoveRight className="w-5 h-5 text-[#34D399]" /> Reduced manual work</li>
-                      <li className="flex gap-2"><MoveRight className="w-5 h-5 text-[#34D399]" /> Clearer accountability</li>
+                      <li className="flex gap-2"><MoveRight className="w-5 h-5 text-[#34D399] rtl:rotate-180" /> تصمیم‌های سریع‌تر</li>
+                      <li className="flex gap-2"><MoveRight className="w-5 h-5 text-[#34D399] rtl:rotate-180" /> کار دستی کمتر</li>
+                      <li className="flex gap-2"><MoveRight className="w-5 h-5 text-[#34D399] rtl:rotate-180" /> پاسخ‌گویی شفاف‌تر</li>
                     </ul>
                   </div>
                </div>
                <p className="text-center font-serif italic text-stone-500 text-lg">
-                 "No fancy AI product. Just structured systems."
+                 «هیچ محصول هوش مصنوعی پرزرق‌وبرقی در کار نبود. فقط سیستم ساختارمند.»
                </p>
              </div>
            </div>
@@ -300,16 +300,16 @@ export default function DigitalSystemsPage() {
           <div className="md:col-span-5 relative">
             <div className="sticky top-24 bg-[#111827] p-10 rounded-3xl text-white overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B4B43] rounded-full blur-[80px] opacity-40 pointer-events-none" />
-              <h3 className="font-serif text-3xl mb-6 relative z-10">The Strategic Advantage</h3>
-              <p className="text-stone-300 font-light mb-8 relative z-10">Businesses that invest in robust systems gain massive leverage.</p>
-              <ul className="space-y-4 mb-10 relative z-10 border-l-2 border-white/10 pl-4">
-                <li className="text-white">Operational clarity</li>
-                <li className="text-white">Faster execution</li>
-                <li className="text-white">Lower dependency on individuals</li>
-                <li className="text-white">Better scalability</li>
+              <h3 className="font-serif text-3xl mb-6 relative z-10">مزیت استراتژیک</h3>
+              <p className="text-stone-300 font-light mb-8 relative z-10">کسب‌وکارهایی که روی سیستم‌های محکم سرمایه‌گذاری می‌کنند اهرم بزرگی به دست می‌آورند.</p>
+              <ul className="space-y-4 mb-10 relative z-10 border-s-2 border-white/10 ps-4">
+                <li className="text-white">شفافیت عملیاتی</li>
+                <li className="text-white">اجرای سریع‌تر</li>
+                <li className="text-white">وابستگی کمتر به افراد</li>
+                <li className="text-white">مقیاس‌پذیری بهتر</li>
               </ul>
               <div className="bg-white/10 p-4 rounded-xl backdrop-blur-md relative z-10 text-xs text-stone-300 font-light italic">
-                Deloitte: "Organizations with strong operational design outperform peers in both efficiency and employee satisfaction."
+دیلویت: «سازمان‌هایی که طراحی عملیاتی قوی دارند، هم در کارایی و هم در رضایت کارکنان از رقبایشان جلوترند.»
               </div>
             </div>
           </div>
@@ -317,15 +317,15 @@ export default function DigitalSystemsPage() {
           <div className="md:col-span-7 space-y-12">
             <div>
               <h2 className="font-serif text-3xl text-[#111827] mb-6 flex items-center gap-3">
-                <CheckCircle2 className="w-8 h-8 text-[#1B4B43]" /> Who This Is Actually For
+                <CheckCircle2 className="w-8 h-8 text-[#1B4B43]" /> این کار دقیقاً برای چه کسی است
               </h2>
-              <p className="text-stone-500 mb-6">This work is not for everyone. It's for:</p>
+              <p className="text-stone-500 mb-6">این کار برای همه نیست. برای این‌هاست:</p>
               <ul className="space-y-4">
                 {[
-                  "Founders scaling beyond early chaos",
-                  "SMEs stuck in operational inefficiency",
-                  "Teams overwhelmed by manual processes",
-                  "Companies trying (and failing) to use AI effectively"
+                  "بنیان‌گذارانی که از آشوب اولیه عبور کرده‌اند و در حال رشدند",
+                  "کسب‌وکارهایی که در ناکارآمدی عملیاتی گیر کرده‌اند",
+                  "تیم‌هایی که زیر بار فرایندهای دستی له شده‌اند",
+                  "شرکت‌هایی که تلاش می‌کنند از هوش مصنوعی درست استفاده کنند و موفق نمی‌شوند"
                 ].map((item, i) => (
                   <li key={i} className="flex gap-4 items-center p-4 bg-white border border-stone-200 rounded-xl shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-[#1B4B43]" /> 
@@ -337,23 +337,23 @@ export default function DigitalSystemsPage() {
 
             <div>
                <h2 className="font-serif text-3xl text-stone-400 mb-6 flex items-center gap-3">
-                <XCircle className="w-8 h-8 text-stone-300" /> Who This Is Not For
+                <XCircle className="w-8 h-8 text-stone-300" /> این کار برای چه کسی نیست
               </h2>
-              <p className="text-stone-500 mb-6">Let's be clear.</p>
+              <p className="text-stone-500 mb-6">روشن بگویم.</p>
                <ul className="space-y-4 opacity-70">
                 {[
-                  "People looking for 'quick AI hacks'",
-                  "Teams unwilling to change how they operate",
-                  "Businesses without real workflows yet"
+                  "کسانی که دنبال «ترفندهای سریع هوش مصنوعی» هستند",
+                  "تیم‌هایی که حاضر نیستند شیوه‌ی کارشان را عوض کنند",
+                  "کسب‌وکارهایی که هنوز گردش‌کار واقعی ندارند"
                 ].map((item, i) => (
                   <li key={i} className="flex gap-4 items-center p-4 bg-stone-50 border border-stone-200 rounded-xl">
                     <span className="text-stone-600">{item}</span>
                   </li>
                 ))}
               </ul>
-              <div className="mt-6 p-4 border-l-4 border-[#D97706] bg-amber-50 rounded-r-lg">
-                <p className="text-stone-800 font-bold">Because this work requires:</p>
-                <p className="text-[#D97706] font-serif text-2xl mt-2 italic">Clarity. Discipline. Implementation.</p>
+              <div className="mt-6 p-4 border-s-4 border-[#D97706] bg-amber-50 rounded-e-lg">
+                <p className="text-stone-800 font-bold">چون این کار این‌ها را لازم دارد:</p>
+                <p className="text-[#D97706] font-serif text-2xl mt-2 italic">شفافیت، نظم، پیاده‌سازی.</p>
               </div>
             </div>
           </div>
@@ -363,14 +363,14 @@ export default function DigitalSystemsPage() {
         <section className="py-32 bg-[#1B4B43] text-white text-center relative overflow-hidden">
            <div className="absolute inset-0 bg-[#0f2e29] opacity-50 z-0 mix-blend-multiply transition-opacity pointer-events-none" />
            <div className="relative z-10 max-w-4xl mx-auto px-6">
-             <h2 className="font-serif text-4xl md:text-6xl mb-12 text-[#A7F3D0]">A Simple Reality Check</h2>
+             <h2 className="font-serif text-4xl md:text-6xl mb-12 text-[#A7F3D0]">یک محک ساده‌ی واقعیت</h2>
              
-             <div className="grid sm:grid-cols-2 gap-4 mb-16 text-left">
+             <div className="grid sm:grid-cols-2 gap-4 mb-16 text-start">
                 {[
-                  "Are your operations dependent on specific people?",
-                  "Do your tools actually reduce friction — or add it?",
-                  "Can you clearly explain how work flows in your business?",
-                  "Are you using AI — or just experimenting with it?"
+                  "عملیات شما به آدم‌های خاصی وابسته است؟",
+                  "ابزارهایتان واقعاً اصطکاک را کم می‌کنند یا اضافه می‌کنند؟",
+                  "می‌توانید شفاف توضیح دهید کار در کسب‌وکارتان چطور جریان دارد؟",
+                  "از هوش مصنوعی استفاده می‌کنید یا فقط با آن ور می‌روید؟"
                 ].map((q, i) => (
                   <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 p-6 rounded-2xl">
                     <p className="font-medium text-white/90">{q}</p>
@@ -379,22 +379,22 @@ export default function DigitalSystemsPage() {
              </div>
 
              <div className="space-y-6">
-                <p className="text-2xl font-light text-[#D1FAE5]">If these answers are unclear, your problem is not technology.</p>
+                <p className="text-2xl font-light text-[#D1FAE5]">اگر این جواب‌ها روشن نیست، مشکل شما فناوری نیست.</p>
                 <p className="font-serif text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#FBBF24] to-[#F59E0B]">
-                  It's structure.
+                  ساختار است.
                 </p>
                 <div className="max-w-xl mx-auto pt-16 mt-16 border-t border-white/20">
                   <p className="text-lg font-light italic opacity-80 mb-4">
-                    "Teams don’t fail because they lack effort. They fail because they lack structure."
+                    «تیم‌ها به‌خاطر کم‌کاری شکست نمی‌خورند. به‌خاطر نداشتن ساختار شکست می‌خورند.»
                   </p>
-                  <p className="text-xl font-bold">And structure is not built by tools. It is designed.</p>
+                  <p className="text-xl font-bold">و ساختار را ابزار نمی‌سازد. ساختار طراحی می‌شود.</p>
                 </div>
              </div>
            </div>
         </section>
 
         {/* 9. CTA */}
-        <ServiceCta />
+        <ServiceCta locale="fa" />
         
       </div>
     </div>

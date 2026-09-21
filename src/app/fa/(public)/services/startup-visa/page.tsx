@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     alternates: canonicalOnly("/fa/services/startup-visa"),
     title: "استراتژی استارتاپ ویزای کانادا",
     description:
-        "آماده‌سازی کسب‌وکار برای برنامه Start-up Visa کانادا — منطق کسب‌وکار، شواهد بازار و روایتی که زیر سؤال دوام می‌آورد.",
+        "آماده‌سازی کسب‌وکار برای برنامه‌ی استارتاپ ویزای کانادا: منطق کسب‌وکار، شواهد بازار و روایتی که زیر سؤال دوام می‌آورد.",
 }
 
 export default function StartupVisaPage() {
@@ -26,10 +26,10 @@ export default function StartupVisaPage() {
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
       {/* Navigation */}
-      <div className="absolute top-8 left-6 md:left-12 z-50">
+      <div className="absolute top-8 start-6 md:start-12 z-50">
         <Link href="/fa/services" className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-md border border-stone-200 rounded-full text-stone-600 hover:text-[#D97706] hover:bg-white transition-all font-medium text-sm shadow-sm">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Services
+          <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+          بازگشت به خدمات
         </Link>
       </div>
 
@@ -41,21 +41,21 @@ export default function StartupVisaPage() {
           
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-stone-100 border border-stone-200 rounded-full text-[10px] uppercase tracking-[0.2em] text-[#D97706] font-bold mb-8 relative z-10">
             <Compass className="w-3 h-3" />
-            Startup Visa Strategy
+            استراتژی استارتاپ ویزا
           </div>
           
           <h1 className="font-serif text-5xl md:text-7xl lg:text-[6rem] tracking-tight text-[#111827] leading-[1.05] max-w-5xl relative z-10">
-            Why Most SUV Applications <br/>
-            <span className="italic text-red-600/90 underline decoration-red-200 underline-offset-8">Fail Before They Start.</span>
+            چرا بیشتر پرونده‌های استارتاپ ویزا <br/>
+            <span className="italic text-red-600/90 underline decoration-red-200 underline-offset-8">قبل از شروع شکست می‌خورند</span>
           </h1>
           
           <div className="mt-10 text-xl md:text-2xl text-stone-500 font-light max-w-3xl leading-relaxed relative z-10">
             <p className="font-medium text-[#111827]">
-              Most people think the Canada Startup Visa is about paperwork. It’s not.
+بیشتر آدم‌ها فکر می‌کنند استارتاپ ویزای کانادا یعنی کاغذبازی. این‌طور نیست.
             </p>
             <p className="mt-3 text-lg">
-              It’s about building a business case strong enough to survive scrutiny. 
-              Immigration officers don't reject forms. They reject weak businesses.
+              موضوع ساختن بیزینس‌کیسی است که زیر ذره‌بین دوام بیاورد.
+              افسر مهاجرت فرم را رد نمی‌کند. کسب‌وکار ضعیف را رد می‌کند.
             </p>
           </div>
           
@@ -71,36 +71,36 @@ export default function StartupVisaPage() {
             <div className="lg:col-span-3">
               <ShieldAlert className="w-12 h-12 text-[#D97706] mb-6" />
               <h2 className="font-serif text-4xl leading-tight mb-8">
-                The Program Is Not Designed For You to "Just Get In."
+                این برنامه برای «فقط وارد شدن» طراحی نشده است.
               </h2>
               
               <div className="grid sm:grid-cols-3 gap-4 mb-10">
-                {["Passive investors", "Template startups", "Copied business models"].map((item, i) => (
+                {["سرمایه‌گذار منفعل", "استارتاپ قالبی", "مدل کسب‌وکار کپی‌شده"].map((item, i) => (
                   <div key={i} className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex flex-col items-center justify-center text-center">
                     <XCircle className="w-6 h-6 text-red-400 mb-2" />
-                    <span className="text-sm font-medium text-stone-300">Not for {item}</span>
+                    <span className="text-sm font-medium text-stone-300">نه برای {item}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="p-6 border-l-2 border-[#D97706] bg-white/5 backdrop-blur-sm rounded-r-lg">
+              <div className="p-6 border-s-2 border-[#D97706] bg-white/5 backdrop-blur-sm rounded-e-lg">
                 <p className="text-lg font-serif text-white mb-2 leading-relaxed">
-                  "The Startup Visa program targets innovative, scalable businesses that can compete globally."
+                  «برنامه‌ی استارتاپ ویزا کسب‌وکارهای نوآور و مقیاس‌پذیری را هدف گرفته که بتوانند در سطح جهانی رقابت کنند.»
                 </p>
-                <p className="text-sm font-sans text-stone-500 uppercase tracking-widest">— Government of Canada (IRCC)</p>
+                <p className="text-sm font-sans text-stone-500 uppercase tracking-widest">دولت کانادا (IRCC)</p>
               </div>
             </div>
 
             <div className="lg:col-span-2 space-y-6">
-              <h3 className="font-serif text-2xl text-stone-300 mb-4 border-b border-stone-800 pb-4">Applicant Reality vs. IRCC Expectation</h3>
+              <h3 className="font-serif text-2xl text-stone-300 mb-4 border-b border-stone-800 pb-4">واقعیت متقاضی در برابر انتظار IRCC</h3>
               <div className="bg-[#1a2332] border border-stone-800 p-6 rounded-2xl relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-2 h-full bg-stone-700" />
-                <p className="text-stone-400 text-sm uppercase tracking-wider mb-2 font-bold">What Applicants Do:</p>
-                <p className="text-xl text-stone-300 italic mb-4">"I need an idea... I need an incubator... I need documents."</p>
+                <div className="absolute top-0 start-0 w-2 h-full bg-stone-700" />
+                <p className="text-stone-400 text-sm uppercase tracking-wider mb-2 font-bold">متقاضی‌ها چه می‌کنند:</p>
+                <p className="text-xl text-stone-300 italic mb-4">«یک ایده لازم دارم... یک انکوباتور لازم دارم... مدارک لازم دارم.»</p>
                 <div className="flex gap-2">
-                  <span className="bg-stone-800 text-stone-400 text-xs px-2 py-1 rounded">Generic</span>
-                  <span className="bg-stone-800 text-stone-400 text-xs px-2 py-1 rounded">Local</span>
-                  <span className="bg-stone-800 text-stone-400 text-xs px-2 py-1 rounded">Weak Execution</span>
+                  <span className="bg-stone-800 text-stone-400 text-xs px-2 py-1 rounded">کلیشه‌ای</span>
+                  <span className="bg-stone-800 text-stone-400 text-xs px-2 py-1 rounded">محلی</span>
+                  <span className="bg-stone-800 text-stone-400 text-xs px-2 py-1 rounded">اجرای ضعیف</span>
                 </div>
               </div>
             </div>
@@ -112,19 +112,19 @@ export default function StartupVisaPage() {
         <section className="py-24 bg-white border-b border-stone-200">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto">
-              <h2 className="font-serif text-4xl text-[#111827] mb-4">Why Applications Get Rejected</h2>
+              <h2 className="font-serif text-4xl text-[#111827] mb-4">چرا پرونده‌ها رد می‌شوند</h2>
               <p className="text-xl text-stone-500 font-light">
-                Based on real patterns, not theory. This is where the filter catches you.
+بر پایه‌ی الگوهای واقعی، نه تئوری. فیلتر دقیقاً همین‌جا شما را می‌گیرد.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { title: "Weak Business Logic", desc: "Ideas that sound good but don’t survive basic questioning.", icon: FileX },
-                { title: "Market Ignorance", desc: "No clear answer to 'Who is the customer?' and 'Why would they switch?'", icon: SearchIcon },
-                { title: "Over-Engineered Decks", desc: "Visually polished pitch decks that are strategically completely empty.", icon: Presentation },
-                { title: "Incubator Misalignment", desc: "Founders blindly applying to the wrong designated organizations.", icon: Landmark },
-                { title: "Credibility Gap", desc: "Zero logical connection between the founder’s background and the new business idea.", icon: Users }
+                { title: "منطق ضعیف کسب‌وکار", desc: "ایده‌هایی که خوب به گوش می‌رسند ولی جلوی ساده‌ترین سؤال دوام نمی‌آورند.", icon: FileX },
+                { title: "ناآشنایی با بازار", desc: "جواب روشنی برای «مشتری کیست؟» و «چرا باید عوض کند؟» وجود ندارد.", icon: SearchIcon },
+                { title: "پیچ‌دک بیش از حد صیقلی", desc: "اسلایدهایی که از نظر بصری بی‌نقص‌اند و از نظر استراتژیک کاملاً خالی.", icon: Presentation },
+                { title: "انتخاب اشتباه انکوباتور", desc: "بنیان‌گذارانی که کورکورانه به سازمان‌های نامرتبط درخواست می‌دهند.", icon: Landmark },
+                { title: "شکاف اعتبار", desc: "هیچ ارتباط منطقی‌ای میان پیشینه‌ی بنیان‌گذار و ایده‌ی جدید وجود ندارد.", icon: Users }
               ].map((item, i) => (
                 <div key={i} className="bg-[#FDFCF8] border border-stone-200 rounded-3xl p-8 hover:border-red-200 transition-colors group">
                   <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center mb-6 group-hover:bg-red-50 group-hover:text-red-600 text-stone-500 transition-colors">
@@ -141,35 +141,35 @@ export default function StartupVisaPage() {
         {/* 4. THE HIDDEN REALITY (The Process Flip) */}
         <section className="py-24 bg-[#F5F5F4] border-b border-stone-200">
            <div className="max-w-5xl mx-auto px-6 text-center">
-              <h2 className="font-serif text-3xl md:text-5xl text-[#111827] mb-12">The Hidden Reality of SUV</h2>
+              <h2 className="font-serif text-3xl md:text-5xl text-[#111827] mb-12">واقعیت پنهان استارتاپ ویزا</h2>
               
               <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
                  
                  {/* The Myth */}
                  <div className="w-full md:w-1/2 bg-white border border-stone-200 p-8 rounded-3xl opacity-60">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-stone-400 mb-6">The Myth (How people think it works)</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-stone-400 mb-6">افسانه (تصور رایج از روند کار)</h3>
                     <div className="space-y-4">
-                      <div className="p-3 bg-stone-50 border border-stone-100 rounded-xl text-stone-500">1. Build a pitch deck</div>
-                      <div className="p-3 bg-stone-50 border border-stone-100 rounded-xl text-stone-500">2. Apply to an incubator</div>
-                      <div className="p-3 bg-stone-50 border border-stone-100 rounded-xl text-stone-500">3. Get Approved</div>
+                      <div className="p-3 bg-stone-50 border border-stone-100 rounded-xl text-stone-500">۱. پیچ‌دک بساز</div>
+                      <div className="p-3 bg-stone-50 border border-stone-100 rounded-xl text-stone-500">۲. به انکوباتور درخواست بده</div>
+                      <div className="p-3 bg-stone-50 border border-stone-100 rounded-xl text-stone-500">۳. تأیید بگیر</div>
                     </div>
                  </div>
 
                  {/* The Reality */}
                  <div className="w-full md:w-1/2 bg-white border-2 border-[#1B4B43] p-8 rounded-3xl shadow-xl relative top-0 md:-top-4">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-[#1B4B43] mb-6">The Reality</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-[#1B4B43] mb-6">واقعیت</h3>
                     <div className="space-y-4">
-                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> 1. Validate business logic</div>
-                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> 2. Align with the RIGHT incubator</div>
-                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> 3. Pass REAL evaluation</div>
-                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> 4. Then move forward</div>
+                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> ۱. اعتبارسنجی منطق کسب‌وکار</div>
+                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> ۲. هم‌راستا شدن با انکوباتور <strong>درست</strong></div>
+                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> ۳. عبور از ارزیابی <strong>واقعی</strong></div>
+                      <div className="p-3 bg-[#1B4B43]/5 border border-[#1B4B43]/20 rounded-xl text-[#111827] font-medium flex items-center gap-3"><CheckCircle2 className="w-4 h-4 text-[#1B4B43]" /> ۴. و بعد حرکت به جلو</div>
                     </div>
                  </div>
 
               </div>
 
               <div className="mt-16 inline-block bg-[#111827] text-white px-8 py-4 rounded-xl font-serif text-2xl shadow-lg">
-                The real work happens <span className="text-[#D97706]">before</span> the application.
+کار اصلی <span className="text-[#D97706]">قبل از</span> درخواست انجام می‌شود.
               </div>
            </div>
         </section>
@@ -177,9 +177,9 @@ export default function StartupVisaPage() {
         {/* 5. THE STRATEGY DESIGN (Our 5 Steps) */}
         <section className="py-32 px-6 max-w-7xl mx-auto">
           <div className="text-center mb-20 max-w-3xl mx-auto">
-             <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">What We Actually Do</h2>
+             <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">دقیقاً چه کاری می‌کنیم</h2>
              <p className="text-xl text-stone-500 font-light">
-               This is not document preparation. This is <strong className="text-[#111827]">pre-approval strategy design.</strong>
+این آماده‌سازی مدارک نیست. این <strong className="text-[#111827]">طراحی استراتژی پیش از تأیید</strong> است.
              </p>
           </div>
 
@@ -191,9 +191,9 @@ export default function StartupVisaPage() {
                  <Target className="w-8 h-8 text-stone-400 group-hover:text-[#D97706]" />
                </div>
                <div>
-                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">1. Concept Validation Against SUV Criteria</h3>
+                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">۱. اعتبارسنجی ایده در برابر معیارهای SUV</h3>
                  <p className="text-stone-600 font-light mb-4">
-                   We evaluate innovation level, scalability potential, and global market relevance. Not based on our opinion — based on what incubators actually accept.
+سطح نوآوری، ظرفیت مقیاس‌پذیری و ارتباط با بازار جهانی را می‌سنجیم. نه بر اساس نظر ما، بر اساس چیزی که انکوباتورها واقعاً می‌پذیرند.
                  </p>
                </div>
             </div>
@@ -204,9 +204,9 @@ export default function StartupVisaPage() {
                  <UsersRound className="w-8 h-8 text-stone-400 group-hover:text-[#D97706]" />
                </div>
                <div>
-                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">2. Founder–Startup Alignment</h3>
+                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">۲. تناسب بنیان‌گذار با استارتاپ</h3>
                  <p className="text-stone-600 font-light mb-4">
-                   One of the most ignored factors. We ask: Why YOU for THIS business? Does your background support this idea? Misalignment is the fastest way to get rejected.
+یکی از نادیده‌گرفته‌شده‌ترین عامل‌ها. می‌پرسیم: چرا <strong>شما</strong> برای <strong>این</strong> کسب‌وکار؟ آیا پیشینه‌تان پشتیبان این ایده است؟ ناهم‌خوانی سریع‌ترین راه رد شدن است.
                  </p>
                </div>
             </div>
@@ -217,9 +217,9 @@ export default function StartupVisaPage() {
                  <Crosshair className="w-8 h-8 text-[#D97706]" />
                </div>
                <div>
-                 <h3 className="font-serif text-2xl font-bold text-white mb-3">3. Incubator Targeting Strategy</h3>
+                 <h3 className="font-serif text-2xl font-bold text-white mb-3">۳. استراتژی هدف‌گیری انکوباتور</h3>
                  <p className="text-stone-300 font-light mb-4">
-                   Not all designated organizations are the same. We match based on industry focus, risk tolerance, and evaluation style. Applying blindly reduces your chances to zero.
+سازمان‌های تعیین‌شده مثل هم نیستند. بر اساس تمرکز صنعتی، تحمل ریسک و سبک ارزیابی تطبیق می‌دهیم. درخواست کورکورانه شانس شما را صفر می‌کند.
                  </p>
                </div>
             </div>
@@ -230,9 +230,9 @@ export default function StartupVisaPage() {
                  <BriefcaseBusiness className="w-8 h-8 text-stone-400 group-hover:text-[#D97706]" />
                </div>
                <div>
-                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">4. Business Case Structuring</h3>
+                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">۴. ساختاردهی بیزینس‌کیس</h3>
                  <p className="text-stone-600 font-light mb-4">
-                   Where most fail. We build clear problem-solution logic, realistic market positioning, and a credible growth narrative. No buzzwords. No inflated claims.
+جایی که بیشترشان می‌بازند. منطق روشن مسئله و راه‌حل، جایگاه واقع‌گرایانه در بازار و روایت رشدی باورپذیر می‌سازیم. بدون واژه‌های پرطمطراق و ادعای بادکرده.
                  </p>
                </div>
             </div>
@@ -243,9 +243,9 @@ export default function StartupVisaPage() {
                  <Presentation className="w-8 h-8 text-stone-400 group-hover:text-[#D97706]" />
                </div>
                <div>
-                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">5. Interview Preparation</h3>
+                 <h3 className="font-serif text-2xl font-bold text-[#111827] mb-3">۵. آماده‌سازی مصاحبه</h3>
                  <p className="text-stone-600 font-light mb-4">
-                   Getting attention is one thing. Passing evaluation is another. We prepare you for tough questions, logical gaps, and real-time pressure.
+جلب توجه یک چیز است و عبور از ارزیابی چیز دیگر. شما را برای سؤال‌های سخت، شکاف‌های منطقی و فشار لحظه‌ای آماده می‌کنیم.
                  </p>
                </div>
             </div>
@@ -257,43 +257,43 @@ export default function StartupVisaPage() {
         <section className="py-24 bg-[#111827] text-white">
           <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="font-serif text-4xl mb-6">Let's be very clear.</h2>
-              <p className="text-stone-400 text-lg mb-8">This is NOT immigration consulting. This is NOT legal advice. This is NOT a document filing service.</p>
+              <h2 className="font-serif text-4xl mb-6">کاملاً روشن بگویم.</h2>
+              <p className="text-stone-400 text-lg mb-8">این مشاوره‌ی مهاجرت نیست. مشاوره‌ی حقوقی نیست. خدمات تنظیم و ارسال مدارک هم نیست.</p>
               
-              <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border-l-4 border-[#34D399]">
-                <p className="text-2xl font-bold text-[#34D399] mb-2">This is Business Strategy</p>
-                <p className="text-stone-200">designed exclusively for the high-stakes standard of immigration context.</p>
+              <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border-s-4 border-[#34D399]">
+                <p className="text-2xl font-bold text-[#34D399] mb-2">این استراتژی کسب‌وکار است</p>
+                <p className="text-stone-200">که اختصاصاً برای استاندارد پرریسک فضای مهاجرت طراحی شده است.</p>
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="border border-white/10 rounded-xl p-4 bg-white/5"><span className="text-[#34D399]">✓</span> Stronger logic</div>
-                <div className="border border-white/10 rounded-xl p-4 bg-white/5"><span className="text-[#34D399]">✓</span> Higher probability</div>
-                <div className="border border-white/10 rounded-xl p-4 bg-white/5 md:col-span-2"><span className="text-[#34D399]">✓</span> Credible global positioning</div>
+                <div className="border border-white/10 rounded-xl p-4 bg-white/5"><span className="text-[#34D399]">✓</span> منطق محکم‌تر</div>
+                <div className="border border-white/10 rounded-xl p-4 bg-white/5"><span className="text-[#34D399]">✓</span> احتمال بالاتر</div>
+                <div className="border border-white/10 rounded-xl p-4 bg-white/5 md:col-span-2"><span className="text-[#34D399]">✓</span> جایگاه جهانی باورپذیر</div>
               </div>
             </div>
 
             {/* REAL PATTERNS */}
             <div className="space-y-4">
-              <h3 className="font-bold text-stone-500 uppercase tracking-widest text-xs mb-4">Real Patterns We See</h3>
+              <h3 className="font-bold text-stone-500 uppercase tracking-widest text-xs mb-4">الگوهایی که واقعاً می‌بینیم</h3>
               
               <div className="bg-white p-5 rounded-2xl text-[#111827]">
-                <p className="font-bold border-b border-stone-100 pb-2 mb-2">Case 1: No Idea</p>
-                <p className="text-sm text-stone-600 mb-2">They want “any startup” to get PR.</p>
-                <p className="text-xs font-bold text-red-600 uppercase">→ Wrong approach. Denied.</p>
+                <p className="font-bold border-b border-stone-100 pb-2 mb-2">مورد ۱: بدون ایده</p>
+                <p className="text-sm text-stone-600 mb-2">«هر استارتاپی» می‌خواهند تا اقامت بگیرند.</p>
+                <p className="text-xs font-bold text-red-600 uppercase">← رویکرد غلط. رد می‌شود.</p>
               </div>
 
               <div className="bg-white p-5 rounded-2xl text-[#111827]">
-                <p className="font-bold border-b border-stone-100 pb-2 mb-2">Case 2: Weak Idea</p>
-                <p className="text-sm text-stone-600 mb-2">They have something — but it’s not scalable.</p>
-                <p className="text-xs font-bold text-[#D97706] uppercase">→ Needs massive restructuring.</p>
+                <p className="font-bold border-b border-stone-100 pb-2 mb-2">مورد ۲: ایده‌ی ضعیف</p>
+                <p className="text-sm text-stone-600 mb-2">چیزی دارند، ولی مقیاس‌پذیر نیست.</p>
+                <p className="text-xs font-bold text-[#D97706] uppercase">← بازسازی اساسی لازم دارد.</p>
               </div>
 
               <div className="bg-white p-5 rounded-2xl text-[#111827] border-2 border-[#1B4B43]">
                 <p className="font-bold border-b border-stone-100 pb-2 mb-2 flex items-center justify-between">
-                  Case 3: Strong Idea <span className="text-[10px] bg-[#1B4B43] text-white px-2 py-0.5 rounded-full">Common</span>
+                  مورد ۳: ایده‌ی قوی <span className="text-[10px] bg-[#1B4B43] text-white px-2 py-0.5 rounded-full">پرتکرار</span>
                 </p>
-                <p className="text-sm text-stone-600 mb-2">Good foundation, but terrible presentation & positioning.</p>
-                <p className="text-xs font-bold text-[#1B4B43] uppercase">→ Needs clarity, focus and alignment.</p>
+                <p className="text-sm text-stone-600 mb-2">پایه‌ی خوبی دارد، ولی ارائه و جایگاه‌سازی‌اش افتضاح است.</p>
+                <p className="text-xs font-bold text-[#1B4B43] uppercase">← به شفافیت، تمرکز و هم‌راستایی نیاز دارد.</p>
               </div>
             </div>
           </div>
@@ -301,29 +301,29 @@ export default function StartupVisaPage() {
 
         {/* 7. AUDIENCE & EXCLUSION */}
         <section className="py-24 bg-white border-b border-stone-200 text-center">
-          <div className="max-w-4xl mx-auto px-6 grid md:grid-cols-2 gap-12 text-left">
+          <div className="max-w-4xl mx-auto px-6 grid md:grid-cols-2 gap-12 text-start">
             <div>
               <h2 className="font-serif text-3xl text-[#111827] mb-6 flex items-center gap-3">
-                <CheckCircle2 className="w-8 h-8 text-[#1B4B43]" /> Who This Is For
+                <CheckCircle2 className="w-8 h-8 text-[#1B4B43]" /> این کار برای چه کسی است
               </h2>
               <ul className="space-y-4 text-stone-700">
-                <li className="flex gap-3"><span className="text-[#1B4B43]">✓</span> Founders serious about building a real startup</li>
-                <li className="flex gap-3"><span className="text-[#1B4B43]">✓</span> Applicants treating SUV as a business entry</li>
-                <li className="flex gap-3"><span className="text-[#1B4B43]">✓</span> Teams preparing for deep incubator evaluation</li>
+                <li className="flex gap-3"><span className="text-[#1B4B43]">✓</span> بنیان‌گذارانی که جدی دنبال ساختن استارتاپ واقعی‌اند</li>
+                <li className="flex gap-3"><span className="text-[#1B4B43]">✓</span> متقاضیانی که SUV را ورود به کسب‌وکار می‌بینند</li>
+                <li className="flex gap-3"><span className="text-[#1B4B43]">✓</span> تیم‌هایی که خود را برای ارزیابی عمیق انکوباتور آماده می‌کنند</li>
               </ul>
             </div>
 
             <div>
               <h2 className="font-serif text-3xl text-stone-400 mb-6 flex items-center gap-3">
-                <XCircle className="w-8 h-8 text-stone-300" /> Who This Is Not For
+                <XCircle className="w-8 h-8 text-stone-300" /> این کار برای چه کسی نیست
               </h2>
               <ul className="space-y-4 text-stone-500 line-through decoration-stone-300/50">
-                <li>People looking for shortcuts to PR</li>
-                <li>Those who want "template-based" applications</li>
-                <li>Passive investors with zero involvement</li>
+                <li>کسانی که دنبال میان‌بر برای اقامت هستند</li>
+                <li>کسانی که پرونده‌ی «قالبی» می‌خواهند</li>
+                <li>سرمایه‌گذاران منفعل بدون هیچ درگیری</li>
               </ul>
               <div className="mt-6 p-4 bg-stone-50 border border-stone-200 rounded-lg">
-                <p className="text-sm font-semibold text-stone-700">The SUV program is not designed for shortcuts.</p>
+                <p className="text-sm font-semibold text-stone-700">برنامه‌ی استارتاپ ویزا برای میان‌بر طراحی نشده است.</p>
               </div>
             </div>
           </div>
@@ -332,14 +332,14 @@ export default function StartupVisaPage() {
         {/* 8. REALITY CHECK & CONCLUSION */}
         <section className="py-32 bg-[#F5F5F4] text-center px-6">
            <div className="max-w-4xl mx-auto">
-             <h2 className="font-serif text-4xl mb-12 text-[#111827]">A Simple Reality Check</h2>
+             <h2 className="font-serif text-4xl mb-12 text-[#111827]">یک محک ساده‌ی واقعیت</h2>
              
-             <div className="grid sm:grid-cols-2 gap-4 mb-16 text-left">
+             <div className="grid sm:grid-cols-2 gap-4 mb-16 text-start">
                 {[
-                  "Is my idea truly scalable — or just 'good' locally?",
-                  "Can I defend my business logic under harsh pressure?",
-                  "Do I understand my global target market clearly?",
-                  "Am I building a company — or just an application?"
+                  "ایده‌ام واقعاً مقیاس‌پذیر است یا فقط در سطح محلی «خوب» است؟",
+                  "می‌توانم زیر فشار سخت از منطق کسب‌وکارم دفاع کنم؟",
+                  "بازار هدف جهانی‌ام را شفاف می‌شناسم؟",
+                  "دارم شرکت می‌سازم یا فقط یک پرونده؟"
                 ].map((q, i) => (
                   <div key={i} className="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm text-stone-700 font-medium">
                     {q}
@@ -348,20 +348,20 @@ export default function StartupVisaPage() {
              </div>
 
              <div className="max-w-2xl mx-auto border-t border-stone-300 pt-16">
-               <p className="text-xl font-light text-stone-500 mb-6">If these answers are unclear, your risk of rapid rejection is high.</p>
+               <p className="text-xl font-light text-stone-500 mb-6">اگر این جواب‌ها روشن نیست، احتمال رد شدن سریع پرونده‌تان بالاست.</p>
                
                <p className="font-serif text-4xl text-[#111827] italic leading-relaxed mb-6">
-                 "I’ve seen too many people treat this program like a transaction. It’s not. It’s a filter."
+                 «آدم‌های زیادی را دیده‌ام که با این برنامه مثل یک معامله برخورد می‌کنند. معامله نیست. فیلتر است.»
                </p>
                <p className="text-2xl font-bold text-red-600 bg-red-50 inline-block px-6 py-2 rounded-xl">
-                 Are you building something real — or just trying to pass?
+دارید چیز واقعی می‌سازید، یا فقط می‌خواهید رد شوید؟
                </p>
              </div>
            </div>
         </section>
 
         {/* 9. CTA */}
-        <ServiceCta />
+        <ServiceCta locale="fa" />
         
       </div>
     </div>

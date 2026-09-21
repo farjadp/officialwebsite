@@ -2,8 +2,57 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Copy, Navigation, MessageCircle, Bot, Zap, ArrowRight, UserCircle2, Mail, Link as LinkIcon, Instagram, Youtube, Linkedin, MoveUpRight } from "lucide-react";
+import { localePath, type Locale } from "@/lib/nav";
 
-export function ServiceCta() {
+// This block is the closing CTA on every service page in BOTH locales. It used
+// to be English-only with a hardcoded href="/booking", so the primary call to
+// action on the Persian service pages was an English panel that dropped the
+// visitor back into the English site.
+const COPY = {
+  en: {
+    headingLead: "Ready to build something that",
+    headingAccent: "survives",
+    headingTail: "real life?",
+    sub: 'I exist for founders who refuse to live on "what if".',
+    availableNow: "Available Now",
+    diagnosticTitle: "Strategic Fit Diagnostic",
+    diagnosticBody:
+      "Instant triage, readiness scan, and next-step recommendations. We find out if we are a match.",
+    bookCall: "Book Strategy Call",
+    name: "Farjad P.",
+    tagline: "عاشق وطن، مشتاق به استارتاپ",
+    bio: "An immigrant founder, patriot, and deeply passionate about building startups that survive reality.",
+    online: "Online",
+    readyToTalk: "Ready to talk",
+    whatsapp: "WhatsApp",
+    directEmail: "Direct Email",
+    ashavidNote: "Innovation & Systems",
+    northroadNote: "Venture Capital",
+  },
+  fa: {
+    headingLead: "آماده‌اید چیزی بسازید که",
+    headingAccent: "دوام بیاورد",
+    headingTail: "در واقعیت؟",
+    sub: "من برای بنیان‌گذارانی هستم که حاضر نیستند با «اگر» زندگی کنند.",
+    availableNow: "ظرفیت باز است",
+    diagnosticTitle: "سنجش تناسب استراتژیک",
+    diagnosticBody:
+      "تشخیص سریع، بررسی آمادگی و پیشنهاد قدم بعدی. معلوم می‌شود به درد هم می‌خوریم یا نه.",
+    bookCall: "رزرو جلسه‌ی استراتژی",
+    name: "فرجاد پورمحمد",
+    tagline: "عاشق وطن، مشتاق به استارتاپ",
+    bio: "یک بنیان‌گذار مهاجر که به ساختن استارتاپ‌هایی که در واقعیت دوام می‌آورند دل بسته است.",
+    online: "آنلاین",
+    readyToTalk: "آماده‌ی گفت‌وگو",
+    whatsapp: "واتساپ",
+    directEmail: "ایمیل مستقیم",
+    ashavidNote: "نوآوری و سیستم",
+    northroadNote: "سرمایه‌گذاری خطرپذیر",
+  },
+} as const;
+
+export function ServiceCta({ locale = "en" }: { locale?: Locale }) {
+  const t = COPY[locale];
   return (
     <section className="py-24 bg-[#111827] px-6 text-white relative overflow-hidden font-sans">
       {/* Abstract Glows */}
@@ -15,13 +64,13 @@ export function ServiceCta() {
         {/* Title Area */}
         <div className="text-center mb-16 space-y-6">
           <h2 className="font-serif text-5xl md:text-6xl text-white tracking-tight leading-tight">
-            Ready to build something that <br />
+            {t.headingLead} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D97706] to-yellow-200">
-              survives
-            </span> real life?
+              {t.headingAccent}
+            </span> {t.headingTail}
           </h2>
           <p className="text-stone-400 text-lg md:text-xl font-light">
-            I exist for founders who refuse to live on "what if".
+            {t.sub}
           </p>
         </div>
 
@@ -33,22 +82,22 @@ export function ServiceCta() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#D97706]/20 text-[#FBBF24] border border-[#D97706]/30 rounded-full text-[10px] font-bold tracking-widest uppercase mb-8">
                 <Zap className="w-3 h-3 fill-current" />
-                Available Now
+                {t.availableNow}
               </div>
               
               <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-3">
-                Strategic Fit Diagnostic
+                {t.diagnosticTitle}
               </h3>
-              <p className="text-stone-400 text-sm md:text-base leading-relaxed font-light pr-4">
-                Instant triage, readiness scan, and next-step recommendations. We find out if we are a match.
+              <p className="text-stone-400 text-sm md:text-base leading-relaxed font-light pe-4">
+                {t.diagnosticBody}
               </p>
             </div>
             
-            <Link href="/booking" className="mt-12 w-full block">
+            <Link href={localePath(locale, "/booking")} className="mt-12 w-full block">
               <Button className="w-full h-14 bg-gradient-to-br from-[#D97706] to-[#B45309] hover:from-[#F59E0B] hover:to-[#D97706] text-white font-bold text-base rounded-xl flex justify-between items-center px-6 shadow-lg shadow-[#D97706]/20 transition-all hover:scale-[1.02]">
                 <div className="flex items-center gap-2">
                   <UserCircle2 className="w-5 h-5" />
-                  Book Strategy Call
+                  {t.bookCall}
                 </div>
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -61,11 +110,11 @@ export function ServiceCta() {
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-8">
                 <div>
                   <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-3">
-                    Farjad P.
+                    {t.name}
                   </h3>
                   <p className="text-stone-400 text-sm md:text-base font-light leading-relaxed">
-                    <span className="text-[#34D399] tracking-widest font-medium uppercase text-xs">عاشق وطن، مشتاق به استارتاپ</span><br />
-                    An immigrant founder, patriot, and deeply passionate about building startups that survive reality.
+                    <span className="text-[#34D399] tracking-widest font-medium uppercase text-xs">{t.tagline}</span><br />
+                    {t.bio}
                   </p>
                 </div>
                 
@@ -74,12 +123,12 @@ export function ServiceCta() {
                   <div className="flex -space-x-2">
                     <img src="https://ui-avatars.com/api/?name=Farjad&background=1B4B43&color=fff&bold=true" alt="Farjad" className="w-8 h-8 rounded-full border-2 border-[#171717]" />
                   </div>
-                  <div className="text-[10px] leading-tight pr-2">
+                  <div className="text-[10px] leading-tight pe-2">
                     <span className="text-white font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse relative top-px" />
-                      Online
+                      {t.online}
                     </span>
-                    <span className="text-stone-400">Ready to talk</span>
+                    <span className="text-stone-400">{t.readyToTalk}</span>
                   </div>
                 </div>
               </div>
@@ -87,7 +136,7 @@ export function ServiceCta() {
               {/* Social Ecosystem Links */}
               <div className="flex flex-wrap gap-2 mb-10">
                 <Link href={"https://t.me/FarjadTalks"} target="_blank" className="flex items-center justify-center w-10 h-10 rounded-lg bg-stone-800/50 hover:bg-[#229ED9]/20 text-stone-400 hover:text-[#229ED9] transition-colors group">
-                  <Navigation className="w-5 h-5 -rotate-45 ml-[-2px] mt-[2px] fill-current group-hover:scale-110 transition-transform" />
+                  <Navigation className="w-5 h-5 -rotate-45 ms-[-2px] mt-[2px] fill-current group-hover:scale-110 transition-transform" />
                 </Link>
                 <Link href={"https://instagram.com/FarjadTalks"} target="_blank" className="flex items-center justify-center w-10 h-10 rounded-lg bg-stone-800/50 hover:bg-[#E1306C]/20 text-stone-400 hover:text-[#E1306C] transition-colors group">
                   <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -111,8 +160,8 @@ export function ServiceCta() {
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-white font-medium text-sm">WhatsApp</p>
-                    <p className="text-stone-500 text-xs">+1 (437) 661-1674</p>
+                    <p className="text-white font-medium text-sm">{t.whatsapp}</p>
+                    <p className="text-stone-500 text-xs" dir="ltr">+1 (437) 661-1674</p>
                   </div>
                 </div>
                 <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-[#25D366] transition-colors relative z-20" />
@@ -126,7 +175,7 @@ export function ServiceCta() {
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-white font-medium text-sm">Direct Email</p>
+                    <p className="text-white font-medium text-sm">{t.directEmail}</p>
                     <p className="text-stone-500 text-xs truncate max-w-[120px]">farjad@ashavid.ca</p>
                   </div>
                 </div>
@@ -142,7 +191,7 @@ export function ServiceCta() {
                   </div>
                   <div>
                     <p className="text-white font-medium text-sm">AshaVid</p>
-                    <p className="text-stone-500 text-xs">Innovation & Systems</p>
+                    <p className="text-stone-500 text-xs">{t.ashavidNote}</p>
                   </div>
                 </div>
                 <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-[#34D399] transition-colors relative z-20" />
@@ -157,7 +206,7 @@ export function ServiceCta() {
                   </div>
                   <div>
                     <p className="text-white font-medium text-sm">NorthRoad VC</p>
-                    <p className="text-stone-500 text-xs">Venture Capital</p>
+                    <p className="text-stone-500 text-xs">{t.northroadNote}</p>
                   </div>
                 </div>
                 <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-[#D97706] transition-colors relative z-20" />
