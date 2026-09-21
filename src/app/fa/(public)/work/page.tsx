@@ -263,7 +263,10 @@ export default function WorkPage() {
           <p className="text-stone-600 font-light text-lg mb-6">
             Everything I learn in these projects ends up in my essays.
           </p>
-          <Link href="/essays">
+          {/* /essays has never existed in either locale — this was a 404.
+              Points at the English blog until the Persian one is built,
+              then becomes /fa/blog. */}
+          <Link href="/blog">
             <Button variant="link" className="text-[#1B4B43] text-base font-bold underline decoration-2 underline-offset-4 hover:text-[#111827]">
               Read the Essays
             </Button>

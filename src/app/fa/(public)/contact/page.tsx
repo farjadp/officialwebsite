@@ -280,7 +280,7 @@ export default function ContactHub() {
           <p className="text-lg text-stone-600 font-light mb-10 max-w-2xl mx-auto leading-relaxed">
             If you’re a founder looking to untangle your business model, structure for North America, or plan a strategic immigration pathway, we should talk.
           </p>
-          <Link href="/booking">
+          <Link href="/fa/booking">
             <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white h-14 px-8 text-lg font-medium shadow-[4px_4px_0px_0px_rgba(217,119,6,1)] hover:shadow-[2px_2px_0px_0px_rgba(217,119,6,1)] hover:translate-y-[2px] hover:translate-x-[2px] transition-all">
               Book a Strategy Session <ArrowRight className="ml-2 w-5 h-5" />
             </Button>

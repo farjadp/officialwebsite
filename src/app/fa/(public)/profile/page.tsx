@@ -74,7 +74,7 @@ export default async function ProfilePage() {
                             </div>
                             {isPrivileged && (
                                 <Link
-                                    href="/admin"
+                                    href="/fa/admin"
                                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-sm font-medium hover:bg-indigo-600/30 transition-all"
                                 >
                                     <ShieldCheck className="w-4 h-4" />

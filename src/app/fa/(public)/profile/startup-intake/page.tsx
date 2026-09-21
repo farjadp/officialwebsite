@@ -57,7 +57,7 @@ export default async function StartupIntakeDashboard() {
                             </div>
                             
                             <Link 
-                                href="/profile/startup-intake/new"
+                                href="/fa/profile/startup-intake/new"
                                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-iran-lajvard hover:bg-[#003380] px-5 py-2.5 text-sm font-semibold text-white transition-all shadow-lg shadow-iran-lajvard/30 w-full sm:w-auto"
                             >
                                 <Plus className="w-4 h-4" />
@@ -73,7 +73,7 @@ export default async function StartupIntakeDashboard() {
                                 <h2 className="text-xl font-semibold text-white mb-2">هنوز استارتاپی ثبت نکردید!</h2>
                                 <p className="text-slate-400 max-w-md mb-6">شما می‌توانید چندین استارتاپ مختلف را در پروفایل خود ثبت و پیگیری کنید.</p>
                                 <Link 
-                                    href="/profile/startup-intake/new"
+                                    href="/fa/profile/startup-intake/new"
                                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 px-5 py-2.5 text-sm font-semibold text-white transition-all"
                                 >
                                     <Plus className="w-4 h-4" />

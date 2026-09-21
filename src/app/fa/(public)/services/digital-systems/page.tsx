@@ -28,7 +28,7 @@ export default function DigitalSystemsPage() {
 
       {/* Navigation */}
       <div className="absolute top-8 left-6 md:left-12 z-50">
-        <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-md border border-stone-200 rounded-full text-stone-600 hover:text-[#1B4B43] hover:bg-white transition-all font-medium text-sm shadow-sm">
+        <Link href="/fa/services" className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-md border border-stone-200 rounded-full text-stone-600 hover:text-[#1B4B43] hover:bg-white transition-all font-medium text-sm shadow-sm">
           <ArrowLeft className="w-4 h-4" />
           Back to Services
         </Link>

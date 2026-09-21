@@ -44,7 +44,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         
         {/* Navigation / Back */}
         <div className="pt-32 pb-6 px-6 md:px-12 max-w-5xl mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 text-stone-500 hover:text-[#1B4B43] hover:translate-x-[-2px] transition-all font-medium text-sm">
+          <Link href="/fa/services" className="inline-flex items-center gap-2 text-stone-500 hover:text-[#1B4B43] hover:translate-x-[-2px] transition-all font-medium text-sm">
             <ArrowLeft className="w-4 h-4" />
             Back to Services
           </Link>

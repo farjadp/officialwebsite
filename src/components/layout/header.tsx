@@ -2,26 +2,44 @@
 
 // ============================================================================
 // Hardware Source: header.tsx
-// Version: 1.0.0 — 2026-02-24
+// Version: 2.0.0 — 2026-09-21
 // Why: Global layout shell component
 // Env / Identity: Client Component
+//
+// Labels and hrefs come from @/lib/nav. They used to be hardcoded English,
+// so on the Persian site every nav link threw the visitor back into the
+// English site on their first click.
 // ============================================================================
 
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {
+    NAV,
+    ROUTES,
+    hasRoute,
+    localePath,
+    counterpartPath,
+    type Locale,
+} from "@/lib/nav"
 
-export function Header({ locale = "en" }: { locale?: string }) {
+export function Header({ locale = "en" }: { locale?: Locale }) {
     const [isOpen, setIsOpen] = useState(false)
+    const pathname = usePathname()
+    const t = NAV[locale]
+    const href = (path: string) => localePath(locale, path)
+    const other: Locale = locale === "fa" ? "en" : "fa"
+    const switchHref = counterpartPath(pathname ?? "/", other)
+    const switchFlag = other === "fa" ? "/images/lion-sun.svg" : "/images/canada-flag.svg"
 
     return (
         <header className="relative z-50 border-b border-white/15 bg-[#0a0a0a] px-5 py-6 text-[#f2f0e9] md:px-10 lg:px-14">
             <div className="max-w-[1600px] mx-auto flex justify-between items-center">
                 {/* Logo / Name */}
-                <Link href="/" className="flex items-center gap-3">
+                <Link href={href(ROUTES.home)} className="flex items-center gap-3">
                     <Image
                         src="/images/logo-mark-light.png"
                         alt=""
@@ -38,93 +56,97 @@ export function Header({ locale = "en" }: { locale?: string }) {
 
                 {/* Minimal Nav */}
                 <nav className="hidden md:flex items-center gap-7 text-[11px] font-bold uppercase tracking-[0.12em] text-white/55">
-                    <Link href="/services" className="hover:text-[#b9ff66] transition-colors">Services</Link>
+                    <Link href={href(ROUTES.services)} className="hover:text-[#b9ff66] transition-colors">{t.services}</Link>
 
                     {/* Proof of Work Dropdown */}
                     <div className="relative group">
                         <button className="flex items-center gap-1 hover:text-[#b9ff66] transition-colors outline-none pb-6 -mb-6">
-                            Proof of Work <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                            {t.proofOfWork} <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
                         </button>
-                        <div className="absolute top-full left-0 pt-0 hidden group-hover:block w-64 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
+                        <div className="absolute top-full start-0 pt-0 hidden group-hover:block w-64 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
                             <div className="bg-white border border-[#E7E5E4] rounded-sm shadow-xl p-2 flex flex-col gap-1">
                                 <Link
-                                    href="/portfolio"
+                                    href={href(ROUTES.portfolio)}
                                     className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
                                 >
-                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">Business Ventures</div>
-                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">Active portfolio companies</div>
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.portfolio}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.portfolioNote}</div>
                                 </Link>
                                 <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
                                 <Link
-                                    href="/startups"
+                                    href={href(ROUTES.startups)}
                                     className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
                                 >
-                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">Mentorship Portfolio</div>
-                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">Startups I've advised</div>
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.startups}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.startupsNote}</div>
                                 </Link>
                                 <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
                                 <Link
-                                    href="/stats"
+                                    href={href(ROUTES.stats)}
                                     className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
                                 >
-                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">Stats & Reality</div>
-                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">By the numbers</div>
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.stats}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.statsNote}</div>
                                 </Link>
                             </div>
                         </div>
                     </div>
 
-                    <Link href="/blog" className="hover:text-[#b9ff66] transition-colors">Essays</Link>
-                    <Link href="/tools" className="hover:text-[#b9ff66] transition-colors">Tools</Link>
-                    <Link href="/about" className="hover:text-[#b9ff66] transition-colors">About</Link>
-                    <Link href="/resume" className="hover:text-[#b9ff66] transition-colors">Resume</Link>
+                    {hasRoute("blog", locale) && (
+                        <Link href={href(ROUTES.blog)} className="hover:text-[#b9ff66] transition-colors">{t.blog}</Link>
+                    )}
+                    {hasRoute("bookClub", locale) && (
+                        <Link href={href(ROUTES.bookClub)} className="hover:text-[#b9ff66] transition-colors">{t.bookClub}</Link>
+                    )}
+                    {hasRoute("lab", locale) && (
+                        <Link href={href(ROUTES.lab)} className="hover:text-[#b9ff66] transition-colors">{t.lab}</Link>
+                    )}
+                    <Link href={href(ROUTES.tools)} className="hover:text-[#b9ff66] transition-colors">{t.tools}</Link>
+                    <Link href={href(ROUTES.about)} className="hover:text-[#b9ff66] transition-colors">{t.about}</Link>
+                    {hasRoute("resume", locale) && (
+                        <Link href={href(ROUTES.resume)} className="hover:text-[#b9ff66] transition-colors">{t.resume}</Link>
+                    )}
 
                     {/* User Portal Dropdown */}
                     <div className="relative group">
                         <button className="flex items-center gap-1 hover:text-[#b9ff66] transition-colors outline-none pb-6 -mb-6">
-                            {locale === "fa" ? "پرتال" : "Portal"} <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                            {t.portal} <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
                         </button>
-                        <div className="absolute top-full left-0 pt-0 hidden group-hover:block w-56 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
+                        <div className="absolute top-full start-0 pt-0 hidden group-hover:block w-56 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
                             <div className="bg-white border border-[#E7E5E4] rounded-sm shadow-xl p-2 flex flex-col gap-1">
                                 <Link
-                                    href="/login"
+                                    href={href(ROUTES.login)}
                                     className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
                                 >
-                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{locale === "fa" ? "ورود" : "Login"}</div>
-                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{locale === "fa" ? "دسترسی به حساب کاربری" : "Access your account"}</div>
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.login}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.loginNote}</div>
                                 </Link>
                                 <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
                                 <Link
-                                    href="/register"
+                                    href={href(ROUTES.register)}
                                     className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
                                 >
-                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{locale === "fa" ? "ثبت‌نام" : "Register"}</div>
-                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{locale === "fa" ? "ایجاد حساب کاربری جدید" : "Create a new account"}</div>
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.register}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.registerNote}</div>
                                 </Link>
                                 <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
                                 <Link
-                                    href="/profile"
+                                    href={href(ROUTES.profile)}
                                     className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
                                 >
-                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{locale === "fa" ? "پروفایل" : "Profile"}</div>
-                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{locale === "fa" ? "مدیریت حساب و آواتار" : "Manage account & avatar"}</div>
+                                    <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.profile}</div>
+                                    <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.profileNote}</div>
                                 </Link>
                             </div>
                         </div>
                     </div>
 
-                    {locale === "en" ? (
-                        <a href="/fa" className="hover:opacity-80 transition-opacity" title="Persian">
-                            <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" />
-                        </a>
-                    ) : (
-                        <a href="/" className="hover:opacity-80 transition-opacity" title="English" dir="ltr">
-                            <img src="/images/canada-flag.svg" alt="English" className="w-6 h-6 rounded-sm shadow-sm" />
-                        </a>
-                    )}
+                    <a href={switchHref} className="hover:opacity-80 transition-opacity" title={t.switchLabel}>
+                        <img src={switchFlag} alt={t.switchLabel} className="w-6 h-6 rounded-sm shadow-sm" />
+                    </a>
 
-                    <Link href="/contact" className="ml-2 border border-[#b9ff66] bg-[#b9ff66] px-5 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-black transition-colors hover:bg-transparent hover:text-[#b9ff66]">
-                        Start a project ↗
+                    <Link href={href(ROUTES.contact)} className="ms-2 border border-[#b9ff66] bg-[#b9ff66] px-5 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-black transition-colors hover:bg-transparent hover:text-[#b9ff66]">
+                        {t.cta}
                     </Link>
                 </nav>
 
@@ -132,71 +154,83 @@ export function Header({ locale = "en" }: { locale?: string }) {
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                     <SheetTrigger className="md:hidden text-white hover:text-[#b9ff66] transition-colors">
                         <Menu className="h-6 w-6" />
-                        <span className="sr-only">Toggle menu</span>
+                        <span className="sr-only">{t.menu}</span>
                     </SheetTrigger>
-                    <SheetContent side="right" className="bg-[#FDFCF8] border-[#E7E5E4]">
+                    <SheetContent side={locale === "fa" ? "left" : "right"} className="bg-[#FDFCF8] border-[#E7E5E4]">
                         <div className="flex flex-col gap-6 mt-12 text-stone-600">
-                            <Link href="/services" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
-                                Services
+                            <Link href={href(ROUTES.services)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                {t.services}
                             </Link>
 
                             {/* Mobile Proof of Work Group */}
                             <div className="flex flex-col gap-4">
-                                <span className="text-xl font-serif text-[#111827]">Proof of Work</span>
-                                <div className="flex flex-col gap-4 pl-4 border-l-2 border-[#1B4B43]/20 ml-2">
-                                    <Link href="/portfolio" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
-                                        Business Ventures
+                                <span className="text-xl font-serif text-[#111827]">{t.proofOfWork}</span>
+                                <div className="flex flex-col gap-4 ps-4 border-s-2 border-[#1B4B43]/20 ms-2">
+                                    <Link href={href(ROUTES.portfolio)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {t.portfolio}
                                     </Link>
-                                    <Link href="/startups" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
-                                        Mentorship Portfolio
+                                    <Link href={href(ROUTES.startups)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {t.startups}
                                     </Link>
-                                    <Link href="/stats" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
-                                        Stats & Reality
+                                    <Link href={href(ROUTES.stats)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {t.stats}
                                     </Link>
                                 </div>
                             </div>
 
-                            <Link href="/blog" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
-                                Essays
+                            {hasRoute("blog", locale) && (
+                                <Link href={href(ROUTES.blog)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                    {t.blog}
+                                </Link>
+                            )}
+                            {hasRoute("bookClub", locale) && (
+                                <Link href={href(ROUTES.bookClub)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                    {t.bookClub}
+                                </Link>
+                            )}
+                            {hasRoute("lab", locale) && (
+                                <Link href={href(ROUTES.lab)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                    {t.lab}
+                                </Link>
+                            )}
+                            <Link href={href(ROUTES.tools)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                {t.tools}
                             </Link>
-                            <Link href="/tools" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
-                                Tools
+                            <Link href={href(ROUTES.about)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                {t.about}
                             </Link>
-                            <Link href="/about" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
-                                About
-                            </Link>
-                            <Link href="/resume" onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
-                                Resume
-                            </Link>
+                            {hasRoute("resume", locale) && (
+                                <Link href={href(ROUTES.resume)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
+                                    {t.resume}
+                                </Link>
+                            )}
 
                             {/* Mobile User Portal Group */}
                             <div className="flex flex-col gap-4">
-                                <span className="text-xl font-serif text-[#111827]">{locale === "fa" ? "پرتال کاربر" : "User Portal"}</span>
-                                <div className="flex flex-col gap-4 pl-4 border-l-2 border-[#1B4B43]/20 ml-2">
-                                    <Link href="/login" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
-                                        {locale === "fa" ? "ورود" : "Login"}
+                                <span className="text-xl font-serif text-[#111827]">{t.portalMobile}</span>
+                                <div className="flex flex-col gap-4 ps-4 border-s-2 border-[#1B4B43]/20 ms-2">
+                                    <Link href={href(ROUTES.login)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {t.login}
                                     </Link>
-                                    <Link href="/register" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
-                                        {locale === "fa" ? "ثبت‌نام" : "Register"}
+                                    <Link href={href(ROUTES.register)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {t.register}
                                     </Link>
-                                    <Link href="/profile" onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
-                                        {locale === "fa" ? "پروفایل" : "Profile"}
+                                    <Link href={href(ROUTES.profile)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                        {t.profile}
                                     </Link>
                                 </div>
                             </div>
 
-                            {locale === "en" ? (
-                                <a href="/fa" className="flex items-center gap-3 text-xl font-serif text-[#1B4B43] font-bold hover:opacity-80 transition-opacity">
-                                    <img src="/images/lion-sun.svg" alt="Persian" className="w-6 h-6 rounded-sm shadow-sm" /> فارسی
-                                </a>
-                            ) : (
-                                <a href="/" className="flex items-center gap-3 text-xl font-sans text-[#1B4B43] font-bold hover:opacity-80 transition-opacity" dir="ltr">
-                                    <img src="/images/canada-flag.svg" alt="English" className="w-6 h-6 rounded-sm shadow-sm" /> English
-                                </a>
-                            )}
+                            <a
+                                href={switchHref}
+                                className={`flex items-center gap-3 text-xl font-bold text-[#1B4B43] hover:opacity-80 transition-opacity ${other === "fa" ? "font-serif" : "font-sans"}`}
+                                dir={other === "fa" ? "rtl" : "ltr"}
+                            >
+                                <img src={switchFlag} alt={t.switchLabel} className="w-6 h-6 rounded-sm shadow-sm" /> {t.switchTo}
+                            </a>
 
-                            <Link href="/contact" onClick={() => setIsOpen(false)} className="mt-4 px-4 py-3 text-center rounded-full border border-[#1B4B43] bg-[#1B4B43] text-white hover:bg-[#133832] transition-all text-sm uppercase tracking-wider font-bold">
-                                Let's Talk
+                            <Link href={href(ROUTES.contact)} onClick={() => setIsOpen(false)} className="mt-4 px-4 py-3 text-center rounded-full border border-[#1B4B43] bg-[#1B4B43] text-white hover:bg-[#133832] transition-all text-sm uppercase tracking-wider font-bold">
+                                {t.ctaMobile}
                             </Link>
                         </div>
                     </SheetContent>

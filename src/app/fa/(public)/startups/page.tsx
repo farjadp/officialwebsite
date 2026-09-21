@@ -164,7 +164,7 @@ export default async function MentoredStartupsPage() {
                     <p className="text-lg text-stone-600 font-light mb-8 max-w-2xl mx-auto">
                         If you’re building something meaningful and need experienced guidance, let's explore how we can architect your success together.
                     </p>
-                    <Link href="/contact">
+                    <Link href="/fa/contact">
                         <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white h-12 px-8 text-base font-medium transition-all">
                             Get in Touch <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>

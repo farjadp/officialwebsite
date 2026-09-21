@@ -181,7 +181,7 @@ export default function ServicesPageBento() {
               </p>
             </div>
             <div className="md:col-span-5 flex flex-col sm:flex-row gap-4">
-              <Link href="/booking" className="w-full">
+              <Link href="/fa/booking" className="w-full">
                 <Button className="w-full bg-[#1B4B43] hover:bg-[#133832] text-white rounded-sm h-14 text-lg font-medium shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                   Book Strategy Call
                 </Button>
@@ -436,7 +436,7 @@ export default function ServicesPageBento() {
               I have limited capacity for new advisory clients.<br />
               If you are serious, let's determine if we are a fit.
             </p>
-            <Link href="/booking">
+            <Link href="/fa/booking">
               <Button className="bg-white text-[#111827] hover:bg-stone-200 h-16 px-10 text-lg font-bold rounded-sm w-full md:w-auto">
                 Book Strategy Call
               </Button>

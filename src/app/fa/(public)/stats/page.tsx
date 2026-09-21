@@ -378,7 +378,7 @@ export default function StatisticsPage() {
                     <p className="font-serif text-2xl text-[#111827] mb-8">
                         Numbers don't lie. Neither do I.
                     </p>
-                    <Link href="/contact">
+                    <Link href="/fa/contact">
                         <Button className="bg-[#1C1917] hover:bg-[#000000] text-white h-14 px-10 text-base font-bold rounded-sm shadow-xl">
                             Let's Talk Business <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>
