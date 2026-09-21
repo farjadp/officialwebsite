@@ -1,9 +1,9 @@
-import { canonicalOnly } from "@/lib/seo"
+import { localeAlternates } from "@/lib/seo"
 import { NPIAssessmentTool } from "@/components/npi-assessment/tool";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    alternates: canonicalOnly("/tools/npi-assessment"),
+    alternates: localeAlternates("/tools/npi-assessment", "en"),
     title: "NPI Personal Brand Assessment",
     description: "Evaluate the 3 core pillars of your personal brand: Narrative, Presence, and Impact. Discover your leverage points instantly.",
 };

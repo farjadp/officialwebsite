@@ -45,9 +45,9 @@ type RouteKey = keyof typeof ROUTES
  * A route missing from this map is assumed to exist in both.
  */
 const AVAILABILITY: Partial<Record<RouteKey, { en: boolean; fa: boolean }>> = {
-    // No Persian translation yet.
+    // No Persian blog: the Post model has no locale, so /fa/blog was deleted
+    // on 8 Sep and 301s to /blog. Flip this only once real Persian posts exist.
     blog: { en: true, fa: false },
-    resume: { en: true, fa: false },
     // Persian-only: these have never had an English counterpart.
     bookClub: { en: false, fa: true },
     lab: { en: false, fa: true },

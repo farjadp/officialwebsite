@@ -1,141 +1,133 @@
 // ============================================================================
 // Hardware Source: page.tsx
-// Version: 1.3.0 — 2026-03-07
-// Why: Main entry page for the tools route - Aligned with Ashavid Brand
+// Version: 2.0.0 — 2026-09-21
+// Why: Persian tools hub. Lists the same ten diagnostics as the English hub.
+//      Previously five entries linked to the ENGLISH routes and five more were
+//      href="#" placeholders for tools that do not exist; both are gone.
+//      Only TRL is a genuinely Persian tool today — the other nine render the
+//      shared English component under a Persian title.
 // Env / Identity: React Server Component
 // ============================================================================
 
 import { localeAlternates } from "@/lib/seo"
-import { Button } from "@/components/ui/button"
-import { Rocket, Briefcase, BarChart2, Bot, TrendingUp, ArrowRight, Target, BatteryWarning, Share2, Users, HeartPulse, Gauge } from "lucide-react"
+import {
+    Rocket,
+    Briefcase,
+    BarChart2,
+    Bot,
+    TrendingUp,
+    ArrowLeft,
+    Target,
+    Gauge,
+    Globe2,
+    FlaskConical,
+    Flame,
+} from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
     alternates: localeAlternates("/tools", "fa"),
     title: "ابزارها و چارچوب‌های رایگان",
-    description: "سیستم‌ها، ابزارهای تشخیصی و چارچوب‌هایی برای اینکه فاندرها بدون هیاهو بسازند و رشد کنند.",
+    description: "سیستم‌ها، ابزارهای تشخیصی و چارچوب‌هایی برای اینکه بنیان‌گذاران بدون هیاهو بسازند و رشد کنند.",
 }
 
-export default function ToolsPage() {
-    const tools = [
-        {
-            name: "ارزیابی TRL",
-            type: "ابزار تشخیصی",
-            desc: "جایگاه فناوری‌تان را روی مقیاس ۱ تا ۹ ناسا پیدا کنید؛ همان مقیاسی که برنامه‌های نوآوری دولتی برای تأمین مالی به‌کار می‌برند. با تحلیل شکاف تا سطح بعدی.",
-            action: "محاسبه‌ی TRL من",
-            icon: Gauge,
-            href: "/fa/tools/trl-assessment",
-            available: true,
-        },
-        {
-            name: "Sales Funnel Health Score",
-            type: "Diagnostic Tool",
-            desc: "Locate exactly where your funnel is leaking revenue. Covers lead generation, qualification, closing, and tracking.",
-            action: "Diagnose Funnel",
-            icon: TrendingUp,
-            href: "/tools/sales-funnel-score",
-            available: true,
-        },
-        {
-            name: "AI Adoption Readiness",
-            type: "Diagnostic Tool",
-            desc: "Determine if your business is structurally ready for AI integration, or if you need foundational data work first.",
-            action: "Take Assessment",
-            icon: Bot,
-            href: "/tools/ai-adoption-score",
-            available: true,
-        },
-        {
-            name: "Business Model Strength",
-            type: "Diagnostic Tool",
-            desc: "Evaluate whether your business model is logical, revenue-capable, scalable, and defensible across 6 dimensions.",
-            action: "Take Assessment",
-            icon: BarChart2,
-            href: "/tools/business-model-score",
-            available: true,
-        },
-        {
-            name: "Investor Readiness Score",
-            type: "Diagnostic Tool",
-            desc: "Evaluate your preparedness for raising capital. Find out instantly if you possess the signals needed to pitch angels or VCs.",
-            action: "Take Assessment",
-            icon: Briefcase,
-            href: "/tools/investor-readiness",
-            available: true,
-        },
-        {
-            name: "Startup Readiness Score",
-            type: "Interactive Tool",
-            desc: "Evaluate your startup idea across 6 critical dimensions. Uncover the gaps in your market, product, and team.",
-            action: "Take Assessment",
-            icon: Rocket,
-            href: "/tools/startup-readiness",
-            available: true,
-        },
-        {
-            name: "Product-Market Fit Score",
-            type: "Diagnostic Tool",
-            desc: "Evaluates whether a product truly matches a real market demand. Analyzes customer feedback, usage, retention, and willingness to pay.",
-            action: "Coming Soon",
-            icon: Target,
-            href: "#",
-            available: false,
-        },
-        {
-            name: "Founder Burnout Risk Test",
-            type: "Diagnostic Tool",
-            desc: "Measures the risk of burnout by evaluating workload intensity, decision fatigue, financial pressure, and emotional resilience.",
-            action: "Coming Soon",
-            icon: BatteryWarning,
-            href: "#",
-            available: false,
-        },
-        {
-            name: "Digital Marketing Maturity",
-            type: "Diagnostic Tool",
-            desc: "Evaluates how developed and structured your digital marketing capabilities are, measuring strategy clarity and automation.",
-            action: "Coming Soon",
-            icon: Share2,
-            href: "#",
-            available: false,
-        },
-        {
-            name: "Team Alignment Score",
-            type: "Diagnostic Tool",
-            desc: "Evaluates how aligned your startup team is around goals, responsibilities, and strategic direction to prevent internal friction.",
-            action: "Coming Soon",
-            icon: Users,
-            href: "#",
-            available: false,
-        },
-        {
-            name: "Startup Survival Probability",
-            type: "Diagnostic Tool",
-            desc: "Estimates the probability that a startup can survive the next 18–24 months by analyzing financial runway and market traction.",
-            action: "Coming Soon",
-            icon: HeartPulse,
-            href: "#",
-            available: false,
-        }
-    ]
+const TOOLS = [
+    {
+        name: "ارزیابی TRL",
+        type: "ابزار تشخیصی",
+        desc: "جایگاه فناوری‌تان را روی مقیاس ۱ تا ۹ ناسا پیدا کنید؛ همان مقیاسی که برنامه‌های نوآوری دولتی برای تأمین مالی به‌کار می‌برند. با تحلیل شکاف تا سطح بعدی.",
+        action: "محاسبه‌ی TRL من",
+        icon: Gauge,
+        href: "/fa/tools/trl-assessment",
+    },
+    {
+        name: "ممیزی آمادگی وب‌سایت برای هوش مصنوعی",
+        type: "تشخیص زنده",
+        desc: "سایتتان را اسکن کنید و ببینید خزنده‌های هوش مصنوعی می‌توانند آن را بخوانند، بفهمند و به آن ارجاع دهند یا نه. گزارش امتیازدهی‌شده با اصلاحات اولویت‌بندی‌شده.",
+        action: "ممیزی وب‌سایت",
+        icon: Globe2,
+        href: "/fa/tools/ai-website-readiness",
+    },
+    {
+        name: "تست فشار مدل کسب‌وکار",
+        type: "تشخیص با هوش مصنوعی",
+        desc: "مدل کسب‌وکارتان را در برابر آینده‌هایی بگذارید که می‌توانند آن را بشکنند. نقشه‌ی حرارتی از اینکه کدام اجزا از کار می‌افتند و اول باید چه چیزی را بازطراحی کرد.",
+        action: "تست فشار مدل من",
+        icon: FlaskConical,
+        href: "/fa/tools/business-model-stress-test",
+    },
+    {
+        name: "ارزیابی برند شخصی NPI",
+        type: "ابزار تشخیصی",
+        desc: "سه ستون اصلی برند شخصی‌تان را بسنجید: روایت، حضور و اثر. نقاط اهرمی‌تان را همان لحظه ببینید.",
+        action: "شروع ارزیابی",
+        icon: Target,
+        href: "/fa/tools/npi-assessment",
+    },
+    {
+        name: "امتیاز سلامت قیف فروش",
+        type: "ابزار تشخیصی",
+        desc: "دقیقاً پیدا کنید قیف فروشتان کجا درآمد را هدر می‌دهد. جذب سرنخ، صلاحیت‌سنجی، بستن قرارداد و پیگیری را پوشش می‌دهد.",
+        action: "تشخیص قیف",
+        icon: TrendingUp,
+        href: "/fa/tools/sales-funnel-score",
+    },
+    {
+        name: "آمادگی برای پذیرش هوش مصنوعی",
+        type: "ابزار تشخیصی",
+        desc: "بسنجید کسب‌وکارتان از نظر ساختاری برای یکپارچه‌سازی هوش مصنوعی آماده است، یا اول باید پایه‌ی داده‌ها را درست کنید.",
+        action: "شروع ارزیابی",
+        icon: Bot,
+        href: "/fa/tools/ai-adoption-score",
+    },
+    {
+        name: "قدرت مدل کسب‌وکار",
+        type: "ابزار تشخیصی",
+        desc: "بسنجید مدل کسب‌وکارتان در شش بُعد منطقی، درآمدزا، مقیاس‌پذیر و قابل‌دفاع هست یا نه.",
+        action: "شروع ارزیابی",
+        icon: BarChart2,
+        href: "/fa/tools/business-model-score",
+    },
+    {
+        name: "امتیاز آمادگی برای جذب سرمایه",
+        type: "ابزار تشخیصی",
+        desc: "آمادگی‌تان برای جذب سرمایه را بسنجید. همان لحظه ببینید سیگنال‌هایی که برای ارائه به فرشتگان یا VCها لازم است دارید یا نه.",
+        action: "شروع ارزیابی",
+        icon: Briefcase,
+        href: "/fa/tools/investor-readiness",
+    },
+    {
+        name: "امتیاز آمادگی استارتاپ",
+        type: "ابزار تعاملی",
+        desc: "ایده‌ی استارتاپ‌تان را در شش بُعد حیاتی بسنجید و شکاف‌های بازار، محصول و تیم را پیدا کنید.",
+        action: "شروع ارزیابی",
+        icon: Rocket,
+        href: "/fa/tools/startup-readiness",
+    },
+    {
+        name: "شبیه‌ساز مثلث ناممکن",
+        type: "ابزار تعاملی",
+        desc: "شبیه‌سازی فشاری که وقتی در یک قرارداد سود، سرعت و ایمنی را تا مرز می‌برید، به تیمتان وارد می‌شود.",
+        action: "شروع شبیه‌سازی",
+        icon: Flame,
+        href: "/fa/tools/impossible-trinity-simulator",
+    },
+]
 
+export default function ToolsFaPage() {
     return (
         <div className="min-h-screen bg-[#FDFBF7] text-[#1C1917] font-sans selection:bg-[#0F3F35] selection:text-white pb-24">
 
             {/* Header Section */}
             <header className="pt-32 pb-16 px-6 md:px-12 max-w-7xl mx-auto border-b border-stone-200">
                 <div className="max-w-3xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D97706]/30 bg-[#D97706]/5 text-[#D97706] text-xs font-bold uppercase tracking-widest mb-8">
-                        The Library
-                    </div>
-
-                    <h1 className="font-serif text-5xl md:text-7xl leading-[1.1] text-[#0F3F35] mb-6">
-                        Tools & <br />
-                        <span className="text-[#D97706]">Frameworks.</span>
+                    <h1 className="text-5xl md:text-7xl font-black leading-[1.1] text-[#0F3F35] mb-6">
+                        ابزارها و <br />
+                        <span className="text-[#D97706]">چارچوب‌ها.</span>
                     </h1>
 
                     <p className="text-xl text-stone-600 leading-relaxed font-medium max-w-2xl">
-                        No fluff. No hype. Just practical diagnostics and engineering systems applied to business building. Free for serious founders.
+                        بدون حرف اضافه، بدون هیاهو. فقط ابزارهای تشخیصی کاربردی و سیستم‌های مهندسی‌شده برای ساختن کسب‌وکار. رایگان، برای بنیان‌گذاران جدی.
                     </p>
                 </div>
             </header>
@@ -143,29 +135,21 @@ export default function ToolsPage() {
             {/* Main Grid */}
             <main className="px-6 md:px-12 py-16 max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {tools.map((tool) => (
+                    {TOOLS.map((tool) => (
                         <Link
-                            key={tool.name}
+                            key={tool.href}
                             href={tool.href}
                             className="group flex flex-col bg-white border border-stone-200 p-8 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-[#D97706] hover:shadow-xl hover:-translate-y-1"
                         >
-                            {/* Decorative Accent strictly using brand colors */}
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#0F3F35]/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+                            <div className="absolute top-0 end-0 w-24 h-24 bg-[#0F3F35]/5 rounded-es-full -me-4 -mt-4 transition-transform group-hover:scale-110" />
 
                             <div className="mb-6 flex justify-between items-start relative z-10">
                                 <div className="p-3 bg-stone-100 rounded-lg text-[#0F3F35] group-hover:bg-[#0F3F35] group-hover:text-white transition-colors duration-300">
                                     <tool.icon className="w-6 h-6" />
                                 </div>
-                                {!tool.available && (
-                                    <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 bg-stone-100 px-2 py-1 rounded">
-                                        Coming Soon
-                                    </span>
-                                )}
-                                {tool.available && (
-                                    <span className="text-[10px] font-mono tracking-widest uppercase text-[#D97706] bg-[#D97706]/10 px-2 py-1 rounded">
-                                        Active Component
-                                    </span>
-                                )}
+                                <span className="text-[10px] text-[#D97706] bg-[#D97706]/10 px-2 py-1 rounded">
+                                    {tool.type}
+                                </span>
                             </div>
 
                             <div className="flex-1 relative z-10">
@@ -180,7 +164,7 @@ export default function ToolsPage() {
 
                             <div className="mt-10 flex items-center justify-between text-[#0F3F35] font-medium border-t border-stone-100 pt-6 relative z-10">
                                 <span className="group-hover:text-[#D97706] transition-colors">{tool.action}</span>
-                                <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform text-[#D97706]" />
+                                <ArrowLeft className="w-5 h-5 transform group-hover:-translate-x-2 transition-transform text-[#D97706]" />
                             </div>
                         </Link>
                     ))}

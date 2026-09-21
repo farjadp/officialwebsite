@@ -11,9 +11,11 @@ import { Download } from "lucide-react";
 
 interface DownloadResumeButtonProps {
   variant?: "primary" | "outline";
+  /** Button text. The Persian resume passes its own; English is the default. */
+  label?: string;
 }
 
-export function DownloadResumeButton({ variant = "primary" }: DownloadResumeButtonProps) {
+export function DownloadResumeButton({ variant = "primary", label = "Download PDF" }: DownloadResumeButtonProps) {
   const handleDownload = () => {
     window.print();
   };
@@ -25,7 +27,7 @@ export function DownloadResumeButton({ variant = "primary" }: DownloadResumeButt
         className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/40 text-white font-bold text-sm uppercase tracking-widest hover:bg-white/10 transition-colors"
       >
         <Download className="w-4 h-4" />
-        Download PDF
+        {label}
       </button>
     );
   }
@@ -36,7 +38,7 @@ export function DownloadResumeButton({ variant = "primary" }: DownloadResumeButt
       className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#0F3F35] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#092822] transition-colors shadow-lg"
     >
       <Download className="w-3.5 h-3.5" />
-      Download PDF
+      {label}
     </button>
   );
 }

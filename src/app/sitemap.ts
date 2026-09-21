@@ -30,10 +30,19 @@ const BILINGUAL_PATHS = [
     '/services',
     '/startups',
     '/stats',
+    '/resume',
+    '/services/founder-advisory',
+    '/services/startup-visa',
+    '/services/digital-systems',
+    '/services/private-mentorship',
     '/tools',
     '/tools/ai-adoption-score',
+    '/tools/ai-website-readiness',
     '/tools/business-model-score',
+    '/tools/business-model-stress-test',
+    '/tools/impossible-trinity-simulator',
     '/tools/investor-readiness',
+    '/tools/npi-assessment',
     '/tools/sales-funnel-score',
     '/tools/startup-readiness',
     '/tools/trl-assessment',
@@ -47,24 +56,12 @@ const EN_ONLY_PATHS = [
     // The blog is English-only. The Persian blog routes rendered the same post
     // records under Persian URLs and were deleted.
     '/blog',
-    '/resume',
-    '/services/founder-advisory',
-    '/services/startup-visa',
-    '/services/digital-systems',
-    '/services/private-mentorship',
-    '/tools/ai-website-readiness',
-    '/tools/business-model-stress-test',
-    '/tools/impossible-trinity-simulator',
-    '/tools/npi-assessment',
 ]
 
 /** Persian-only routes. */
 const FA_ONLY_PATHS = [
     '/lab',
     '/book-club',
-    '/services/founder-advisory',
-    '/services/startup-visa',
-    '/services/digital-systems',
 ]
 
 /**
@@ -73,7 +70,7 @@ const FA_ONLY_PATHS = [
  * the whole site changed on every fetch, and the signal is then ignored.
  * Bump this when the static pages are meaningfully rewritten.
  */
-const STATIC_LAST_MODIFIED = new Date('2026-09-08T00:00:00.000Z')
+const STATIC_LAST_MODIFIED = new Date('2026-09-21T00:00:00.000Z')
 
 function entry(path: string, priority: number, changeFrequency: Entry['changeFrequency'], lastModified: Date = STATIC_LAST_MODIFIED): Entry {
     return { url: `${SITE_URL}${path}`, lastModified, changeFrequency, priority }
