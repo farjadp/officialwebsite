@@ -44,25 +44,25 @@ import Link from "next/link"
 
 // --- DATA ---
 const SOCIAL_LINKS = [
-  { name: "Hero's Journey", url: "https://t.me/Heros_Journey", icon: Send, color: "text-[#229ED9]", bg: "bg-[#229ED9]/10" },
-  { name: "Farjad Talks (TG)", url: "https://t.me/FarjadTalks", icon: Send, color: "text-[#229ED9]", bg: "bg-[#229ED9]/10" },
-  { name: "Farjad Talks (IG)", url: "https://instagram.com/FarjadTalks", icon: Instagram, color: "text-[#E1306C]", bg: "bg-[#E1306C]/10" },
-  { name: "Farjad Talks (YT)", url: "https://youtube.com/@FarjadTalks", icon: Youtube, color: "text-[#FF0000]", bg: "bg-[#FF0000]/10" },
-  { name: "LinkedIn Profile", url: "https://www.linkedin.com/in/farjadpourmohammad/", icon: Linkedin, color: "text-[#0077B5]", bg: "bg-[#0077B5]/10" },
+  { name: "سفر قهرمان", url: "https://t.me/Heros_Journey", icon: Send, color: "text-[#229ED9]", bg: "bg-[#229ED9]/10" },
+  { name: "فرجاد تاکس (تلگرام)", url: "https://t.me/FarjadTalks", icon: Send, color: "text-[#229ED9]", bg: "bg-[#229ED9]/10" },
+  { name: "فرجاد تاکس (اینستاگرام)", url: "https://instagram.com/FarjadTalks", icon: Instagram, color: "text-[#E1306C]", bg: "bg-[#E1306C]/10" },
+  { name: "فرجاد تاکس (یوتیوب)", url: "https://youtube.com/@FarjadTalks", icon: Youtube, color: "text-[#FF0000]", bg: "bg-[#FF0000]/10" },
+  { name: "پروفایل لینکدین", url: "https://www.linkedin.com/in/farjadpourmohammad/", icon: Linkedin, color: "text-[#0077B5]", bg: "bg-[#0077B5]/10" },
 ];
 
 const VENTURES = [
-  { name: "Startup Visa Roads", url: "https://www.startupvisaroads.ca", role: "Consulting", desc: "Strategic immigration for founders." },
-  { name: "AshaVid", url: "https://www.AshaVid.ca", role: "Advisory", desc: "Digital transformation & tech services." },
-  { name: "NorthRoad VC", url: "https://www.NorthRoad.vc", role: "Investment", desc: "Venture capital for new pathways." },
-  { name: "FarjadP.com", url: "https://www.farjadp.com", role: "Personal", desc: "Farsi content hub." },
+  { name: "Startup Visa Roads", url: "https://www.startupvisaroads.ca", role: "مشاوره", desc: "مهاجرت استراتژیک برای بنیان‌گذاران." },
+  { name: "AshaVid", url: "https://www.AshaVid.ca", role: "مشاوره", desc: "تحول دیجیتال و خدمات فناوری." },
+  { name: "NorthRoad VC", url: "https://www.NorthRoad.vc", role: "سرمایه‌گذاری", desc: "سرمایه‌گذاری خطرپذیر برای مسیرهای تازه." },
+  { name: "FarjadP.com", url: "https://www.farjadp.com", role: "شخصی", desc: "مرکز محتوای فارسی." },
 ];
 
 const STATS = [
-  { value: "22+", label: "Years Exp.", icon: Briefcase },
-  { value: "100+", label: "Founders", icon: Users },
-  { value: "5", label: "Ventures", icon: Globe },
-  { value: "Real", label: "Results", icon: TrendingUp },
+  { value: "۲۲+", label: "سال تجربه", icon: Briefcase },
+  { value: "۱۰۰+", label: "بنیان‌گذار", icon: Users },
+  { value: "۵", label: "کسب‌وکار", icon: Globe },
+  { value: "واقعی", label: "نتیجه", icon: TrendingUp },
 ];
 
 export default function ContactHub() {
@@ -81,14 +81,14 @@ export default function ContactHub() {
         <section className="mb-16 grid md:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
           <div>
             <Badge variant="outline" className="mb-6 border-[#1B4B43]/30 text-[#1B4B43] rounded-full font-mono tracking-widest text-[10px] uppercase px-3 py-1 bg-[#1B4B43]/5">
-              Connect & Explore
+              ارتباط و آشنایی
             </Badge>
             <h1 className="font-serif text-5xl md:text-7xl text-[#111827] leading-[1] mb-6 tracking-tight">
-              The Digital <br />
-              <span className="italic text-stone-500 font-light">Footprint.</span>
+              رد پای <br />
+              <span className="italic text-stone-500 font-light">دیجیتال</span>
             </h1>
             <p className="text-xl text-stone-600 font-light leading-relaxed">
-              Where to find me, follow my work, or get in touch directly.
+اینجا می‌توانید پیدایم کنید، کارم را دنبال کنید، یا مستقیم در تماس باشید.
             </p>
           </div>
           <div className="relative h-[300px] md:h-[350px] w-full rounded-sm overflow-hidden border border-stone-200 shadow-[8px_8px_0px_0px_rgba(27,75,67,0.1)] group">
@@ -138,19 +138,19 @@ export default function ContactHub() {
             <div>
               <div className="flex items-center gap-3 mb-8 border-b border-stone-200 pb-4">
                 <MessageCircle className="w-6 h-6 text-[#1B4B43]" />
-                <h2 className="font-serif text-2xl text-[#111827]">Social Channels</h2>
+                <h2 className="font-serif text-2xl text-[#111827]">کانال‌های اجتماعی</h2>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 {SOCIAL_LINKS.map((link, idx) => (
                   <Link key={idx} href={link.url} target="_blank" className="flex items-center p-4 bg-white border border-stone-200 rounded-sm hover:shadow-md hover:border-transparent transition-all group">
-                    <div className={`p-3 rounded-full mr-4 ${link.bg} ${link.color}`}>
+                    <div className={`p-3 rounded-full me-4 ${link.bg} ${link.color}`}>
                       <link.icon className="w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="font-bold text-[#111827] text-sm group-hover:text-[#1B4B43] transition-colors">{link.name}</h3>
-                      <p className="text-xs text-stone-400 group-hover:text-stone-500">View Profile</p>
+                      <p className="text-xs text-stone-400 group-hover:text-stone-500">مشاهده‌ی پروفایل</p>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-stone-300 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLink className="w-4 h-4 text-stone-300 ms-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
                 ))}
               </div>
@@ -160,7 +160,7 @@ export default function ContactHub() {
             <div>
               <div className="flex items-center gap-3 mb-8 border-b border-stone-200 pb-4">
                 <Globe className="w-6 h-6 text-[#1B4B43]" />
-                <h2 className="font-serif text-2xl text-[#111827]">Ventures & Websites</h2>
+                <h2 className="font-serif text-2xl text-[#111827]">کسب‌وکارها و سایت‌ها</h2>
               </div>
               <div className="space-y-4">
                 {VENTURES.map((site, idx) => (
@@ -174,7 +174,7 @@ export default function ContactHub() {
                         <p className="text-sm text-stone-500 font-light">{site.desc}</p>
                       </div>
                       <div className="w-10 h-10 rounded-full border border-stone-100 flex items-center justify-center group-hover:bg-[#1B4B43] group-hover:border-[#1B4B43] transition-all">
-                        <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-white -rotate-45 group-hover:rotate-0 transition-all duration-300" />
+                        <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-white -rotate-45 group-hover:rotate-0 rtl:-rotate-[135deg] rtl:group-hover:rotate-180 transition-all duration-300" />
                       </div>
                     </div>
                   </Link>
@@ -190,12 +190,12 @@ export default function ContactHub() {
             {/* Contact Card */}
             <div className="bg-[#111827] text-white p-8 md:p-10 rounded-sm shadow-2xl relative overflow-hidden group">
               {/* Abstract Decor */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#1B4B43] rounded-full blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute top-0 end-0 w-32 h-32 bg-[#1B4B43] rounded-full blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity" />
 
               <div className="relative z-10">
-                <h2 className="font-serif text-3xl mb-2">Direct Contact</h2>
+                <h2 className="font-serif text-3xl mb-2">تماس مستقیم</h2>
                 <p className="text-stone-400 text-sm mb-8 leading-relaxed">
-                  Physical and direct lines are open for serious inquiries regarding consulting, speaking, or investment.
+خطوط مستقیم برای درخواست‌های جدی در زمینه‌ی مشاوره، سخنرانی یا سرمایه‌گذاری باز است.
                 </p>
 
                 <div className="space-y-8">
@@ -204,8 +204,8 @@ export default function ContactHub() {
                       <Phone className="w-5 h-5 text-stone-300 group-hover/item:text-white" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">Direct Line / WhatsApp</p>
-                      <p className="font-mono text-lg text-white group-hover/item:text-[#D97706] transition-colors">+1 (437) 661-1674</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">خط مستقیم و واتساپ</p>
+                      <p dir="ltr" className="font-mono text-lg text-white group-hover/item:text-[#D97706] transition-colors">+1 (437) 661-1674</p>
                     </div>
                   </div>
 
@@ -214,13 +214,13 @@ export default function ContactHub() {
                       <Mail className="w-5 h-5 text-stone-300 group-hover/item:text-white" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">Primary Email</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">ایمیل اصلی</p>
                       <a href="mailto:farjad@ashavid.ca" className="font-mono text-lg text-white border-b border-white/20 hover:border-[#D97706] hover:text-[#D97706] transition-colors pb-0.5">
                         farjad@ashavid.ca
                       </a>
                       <p className="text-xs text-stone-500 mt-2 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                        Responds in English
+                        پاسخ‌گویی به انگلیسی
                       </p>
                     </div>
                   </div>
@@ -229,16 +229,16 @@ export default function ContactHub() {
             </div>
 
             {/* Testimonial Snippet */}
-            <div className="bg-[#F5F5F4] p-8 border-l-4 border-[#1B4B43] rounded-r-sm">
+            <div className="bg-[#F5F5F4] p-8 border-s-4 border-[#1B4B43] rounded-e-sm">
               <Quote className="w-8 h-8 text-[#1B4B43]/20 mb-4" />
               <p className="font-serif text-lg text-[#111827] italic leading-relaxed mb-4">
-                "Farjad doesn't just give you a checklist. He completely restructures how you approach your business logic."
+                «فرجاد فقط یک چک‌لیست دستت نمی‌دهد. کل نگاهت به منطق کسب‌وکارت را از نو می‌سازد.»
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-[#1B4B43] text-white rounded-full flex items-center justify-center font-bold font-serif text-sm">A</div>
                 <div>
-                  <p className="text-xs font-bold uppercase text-[#111827]">Amir S.</p>
-                  <p className="text-[10px] text-stone-500 uppercase tracking-wide">SaaS Founder</p>
+                  <p className="text-xs font-bold uppercase text-[#111827]">امیر س.</p>
+                  <p className="text-[10px] text-stone-500 uppercase tracking-wide">بنیان‌گذار SaaS</p>
                 </div>
               </div>
             </div>
@@ -247,21 +247,21 @@ export default function ContactHub() {
             <div className="pt-8">
               <div className="flex items-center gap-3 mb-6 border-b border-stone-200 pb-4">
                 <Youtube className="w-6 h-6 text-[#FF0000]" />
-                <h2 className="font-serif text-2xl text-[#111827]">Latest from YouTube</h2>
+                <h2 className="font-serif text-2xl text-[#111827]">تازه‌ترین‌ها در یوتیوب</h2>
               </div>
               {/* Embed Container (Aspect Ratio 16:9) */}
               <div className="relative w-full aspect-video rounded-sm overflow-hidden shadow-md border border-stone-200 bg-stone-100 group">
                 <iframe
-                  className="absolute top-0 left-0 w-full h-full"
+                  className="absolute top-0 start-0 w-full h-full"
                   src="https://www.youtube.com/embed?listType=playlist&list=UUKwrxko4YPDjWLsRSCTcTMg"
-                  title="AshaVid Group YouTube"
+                  title="یوتیوب گروه آشاوید"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
               </div>
               <p className="text-xs text-stone-500 text-center font-light mt-4">
-                Watch full series on <a href="https://youtube.com/@ashavidgroup?si=elPYHivIRM87N3IN" target="_blank" className="font-bold text-[#111827] hover:text-[#FF0000] border-b border-transparent hover:border-[#FF0000] transition-colors">@ashavidgroup</a>
+مجموعه‌ی کامل را در <a href="https://youtube.com/@ashavidgroup?si=elPYHivIRM87N3IN" target="_blank" dir="ltr" className="font-bold text-[#111827] hover:text-[#FF0000] border-b border-transparent hover:border-[#FF0000] transition-colors">@ashavidgroup</a> ببینید
               </p>
             </div>
 
@@ -275,18 +275,18 @@ export default function ContactHub() {
             <Users className="w-8 h-8 text-[#1B4B43]" />
           </div>
           <h2 className="font-serif text-4xl md:text-5xl text-[#111827] mb-6">
-            Ready to dive deep?
+            آماده‌اید وارد عمق شویم؟
           </h2>
           <p className="text-lg text-stone-600 font-light mb-10 max-w-2xl mx-auto leading-relaxed">
-            If you’re a founder looking to untangle your business model, structure for North America, or plan a strategic immigration pathway, we should talk.
+اگر بنیان‌گذاری هستید که می‌خواهد گره مدل کسب‌وکارش را باز کند، برای بازار آمریکای شمالی ساختار بدهد، یا مسیر مهاجرتی استراتژیک بچیند، باید با هم حرف بزنیم.
           </p>
           <Link href="/fa/booking">
-            <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white h-14 px-8 text-lg font-medium shadow-[4px_4px_0px_0px_rgba(217,119,6,1)] hover:shadow-[2px_2px_0px_0px_rgba(217,119,6,1)] hover:translate-y-[2px] hover:translate-x-[2px] transition-all">
-              Book a Strategy Session <ArrowRight className="ml-2 w-5 h-5" />
+            <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white h-14 px-8 text-lg font-medium shadow-[4px_4px_0px_0px_rgba(217,119,6,1)] hover:shadow-[2px_2px_0px_0px_rgba(217,119,6,1)] hover:translate-y-[2px] rtl:hover:-translate-x-[2px] ltr:hover:translate-x-[2px] transition-all">
+              رزرو جلسه‌ی استراتژی <ArrowRight className="ms-2 w-5 h-5 rtl:rotate-180" />
             </Button>
           </Link>
           <p className="text-xs text-stone-400 mt-6 font-mono uppercase tracking-widest">
-            Limited availability • Paid Sessions Only
+            ظرفیت محدود • فقط جلسه‌ی پولی
           </p>
         </section>
 
