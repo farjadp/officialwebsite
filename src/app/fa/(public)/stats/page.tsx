@@ -55,24 +55,24 @@ export default function StatisticsPage() {
                 {/* --- 1. HEADER: THE MANIFESTO --- */}
                 <section className="mb-24 max-w-4xl">
                     <div className="inline-flex items-center gap-2 px-3 py-1 border-b border-[#1B4B43] text-[#1B4B43] text-[10px] font-bold uppercase tracking-[0.2em] mb-8">
-                        The Unfiltered Log
+                        گزارش بی‌سانسور
                     </div>
                     <h1 className="font-serif text-5xl md:text-8xl text-[#111827] leading-[0.9] mb-8 tracking-tighter">
-                        7 Years in <br/>
-                        the <span className="italic text-stone-400 font-light">Trenches.</span>
+                        هفت سال <br/>
+                        در <span className="italic text-stone-400 font-light">سنگر</span>
                     </h1>
                     <div className="flex flex-col md:flex-row gap-8 items-start border-t border-stone-200 pt-8">
                         <p className="text-xl text-stone-600 font-light leading-relaxed max-w-xl">
-                            Startups are not built on Instagram. They are built on caffeine, uncomfortable truths, and thousands of hours of unglamorous work. Here is the receipt.
+استارتاپ روی اینستاگرام ساخته نمی‌شود. با کافئین ساخته می‌شود، با حقیقت‌های ناخوشایند و هزاران ساعت کار بی‌زرق‌وبرق. این هم صورت‌حسابش.
                         </p>
                         <div className="flex gap-4 text-xs font-mono uppercase tracking-widest text-stone-400">
                              <div>
-                                <span className="block text-[#1B4B43] font-bold">Data Source</span>
-                                <span>Internal Logs</span>
+                                <span className="block text-[#1B4B43] font-bold">منبع داده</span>
+                                <span>لاگ‌های داخلی</span>
                              </div>
                              <div>
-                                <span className="block text-[#1B4B43] font-bold">Last Update</span>
-                                <span>March 2026</span>
+                                <span className="block text-[#1B4B43] font-bold">آخرین به‌روزرسانی</span>
+                                <span>اسفند ۱۴۰۴</span>
                              </div>
                         </div>
                     </div>
@@ -85,22 +85,22 @@ export default function StatisticsPage() {
 
                     {/* ITEM: CAPITAL RAISED (Hero Card) */}
                     <div className="md:col-span-8 bg-[#1B4B43] text-white p-10 relative overflow-hidden group rounded-sm shadow-xl shadow-[#1B4B43]/10">
-                        <div className="absolute bottom-0 right-0 w-full h-32 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <div className="absolute bottom-0 end-0 w-full h-32 opacity-10 group-hover:opacity-20 transition-opacity">
                             <svg viewBox="0 0 100 20" className="w-full h-full fill-current">
                                 <path d="M0 20 L0 15 Q10 10 20 18 T40 10 T60 14 T80 5 L100 0 V20 Z" />
                             </svg>
                         </div>
                         <div className="relative z-10 h-full flex flex-col justify-between">
                             <div className="flex justify-between items-start">
-                                <Badge className="bg-white/10 hover:bg-white/20 text-white border-none uppercase tracking-widest text-[10px]">Ecosystem Impact</Badge>
+                                <Badge className="bg-white/10 hover:bg-white/20 text-white border-none uppercase tracking-widest text-[10px]">اثر بر اکوسیستم</Badge>
                                 <DollarSign className="w-6 h-6 opacity-50" />
                             </div>
                             <div className="mt-8">
                                 <h2 className="text-6xl md:text-8xl font-serif font-black tracking-tighter mb-2">
-                                    $3M<span className="text-[#F2B95E] text-5xl">+</span>
+                                    ۳ میلیون دلار<span className="text-[#F2B95E] text-5xl">+</span>
                                 </h2>
-                                <p className="text-stone-300 font-light text-lg max-w-md leading-relaxed border-l border-white/20 pl-4 mt-4">
-                                    Capital raised by teams I have mentored or advised. Real runway for real companies.
+                                <p className="text-stone-300 font-light text-lg max-w-md leading-relaxed border-s border-white/20 ps-4 mt-4">
+سرمایه‌ای که تیم‌های زیر منتورشیپ یا مشاوره‌ی من جذب کرده‌اند. رانوِی واقعی برای شرکت‌های واقعی.
                                 </p>
                             </div>
                         </div>
@@ -108,15 +108,15 @@ export default function StatisticsPage() {
 
                     {/* ITEM: PERSONAL SKIN IN THE GAME */}
                     <div className="md:col-span-4 bg-[#F5F5F4] p-10 relative group rounded-sm border border-stone-200 hover:border-[#1B4B43] transition-colors">
-                        <div className="absolute top-4 right-4 text-stone-300 group-hover:text-[#1B4B43] transition-colors">
+                        <div className="absolute top-4 end-4 text-stone-300 group-hover:text-[#1B4B43] transition-colors">
                             <TrendingUp className="w-6 h-6" />
                         </div>
                         <div className="h-full flex flex-col justify-between">
-                            <span className="text-xs font-bold uppercase tracking-widest text-stone-500">Self-Funded (Iran)</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-stone-500">سرمایه‌ی شخصی (ایران)</span>
                             <div>
-                                <h3 className="text-4xl md:text-5xl font-serif font-bold text-[#111827] mb-2">~$70k</h3>
+                                <h3 className="text-4xl md:text-5xl font-serif font-bold text-[#111827] mb-2">حدود ۷۰ هزار دلار</h3>
                                 <p className="text-xs text-stone-500 font-mono mt-2 leading-relaxed">
-                                    Bootstrapped from zero in a sanctioned economy. Money I personally risked and invested.
+از صفر و در اقتصادی تحریم‌شده بوت‌استرپ شد. پولی که خودم به خطر انداختم و سرمایه‌گذاری کردم.
                                 </p>
                             </div>
                         </div>
@@ -129,26 +129,26 @@ export default function StatisticsPage() {
                     <div className="md:col-span-6 bg-white border border-stone-200 p-8 rounded-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center gap-2 mb-8">
                             <Filter className="w-5 h-5 text-[#1B4B43]" />
-                            <span className="text-xs font-bold uppercase tracking-widest text-stone-500">Selection Criteria (The Funnel)</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-stone-500">معیار انتخاب (قیف)</span>
                         </div>
                         
                         <div className="space-y-6 max-w-md mx-auto">
                             {/* Stage 1 */}
                             <div className="relative">
                                 <div className="flex justify-between text-xs font-mono text-stone-500 mb-1">
-                                    <span>Applications Reviewed</span>
-                                    <span>500+</span>
+                                    <span>درخواست بررسی‌شده</span>
+                                    <span dir="ltr">۵۰۰+</span>
                                 </div>
-                                <div className="w-full h-8 bg-stone-100 rounded-sm flex items-center px-3 text-[10px] text-stone-400">100% Volume</div>
+                                <div className="w-full h-8 bg-stone-100 rounded-sm flex items-center px-3 text-[10px] text-stone-400">۱۰۰٪ حجم ورودی</div>
                             </div>
 
                             {/* Stage 2 */}
                             <div className="relative px-8">
                                 <div className="flex justify-between text-xs font-mono text-stone-500 mb-1">
-                                    <span>First Interviews</span>
-                                    <span>~50</span>
+                                    <span>مصاحبه‌ی اول</span>
+                                    <span>حدود ۵۰</span>
                                 </div>
-                                <div className="w-full h-8 bg-stone-200 rounded-sm flex items-center px-3 text-[10px] text-stone-500">10% Qualified</div>
+                                <div className="w-full h-8 bg-stone-200 rounded-sm flex items-center px-3 text-[10px] text-stone-500">۱۰٪ واجد شرایط</div>
                                 {/* Funnel Lines */}
                                 <div className="absolute top-[-24px] left-0 w-px h-6 bg-stone-200 -z-10 transform skew-x-[30deg] origin-bottom"></div>
                                 <div className="absolute top-[-24px] right-0 w-px h-6 bg-stone-200 -z-10 transform -skew-x-[30deg] origin-bottom"></div>
@@ -157,16 +157,16 @@ export default function StatisticsPage() {
                             {/* Stage 3 */}
                             <div className="relative px-16">
                                 <div className="flex justify-between text-sm font-bold text-[#1B4B43] mb-1">
-                                    <span>Active Mentees</span>
-                                    <span>5</span>
+                                    <span>منتی فعال</span>
+                                    <span>۵</span>
                                 </div>
                                 <div className="w-full h-10 bg-[#1B4B43] rounded-sm flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-[#1B4B43]/20">
-                                    1% Selected
+                                    ۱٪ انتخاب‌شده
                                 </div>
                             </div>
                         </div>
                         <p className="text-xs text-stone-400 mt-6 italic text-center border-t border-stone-100 pt-4">
-                            "I say no to 99% so I can give 100% to the few."
+                            «به ۹۹ درصد نه می‌گویم تا به آن چند نفر ۱۰۰ درصد بدهم.»
                         </p>
                     </div>
 
@@ -174,25 +174,25 @@ export default function StatisticsPage() {
                     <div className="md:col-span-6 bg-white border border-stone-200 p-8 rounded-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center gap-2 mb-8">
                             <Layers className="w-5 h-5 text-[#1B4B43]" />
-                            <span className="text-xs font-bold uppercase tracking-widest text-stone-500">Sector Experience</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-stone-500">تجربه‌ی صنعتی</span>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 h-full pb-6">
                             <div className="p-4 bg-stone-50 rounded-sm flex flex-col justify-center">
-                                <span className="text-2xl font-serif font-bold text-[#111827]">40%</span>
-                                <span className="text-xs uppercase tracking-wider text-stone-500 mt-1">SaaS & B2B</span>
+                                <span className="text-2xl font-serif font-bold text-[#111827]">۴۰٪</span>
+                                <span className="text-xs uppercase tracking-wider text-stone-500 mt-1">SaaS و B2B</span>
                             </div>
                             <div className="p-4 bg-stone-50 rounded-sm flex flex-col justify-center">
-                                <span className="text-2xl font-serif font-bold text-[#111827]">30%</span>
-                                <span className="text-xs uppercase tracking-wider text-stone-500 mt-1">AI & Data</span>
+                                <span className="text-2xl font-serif font-bold text-[#111827]">۳۰٪</span>
+                                <span className="text-xs uppercase tracking-wider text-stone-500 mt-1">هوش مصنوعی و داده</span>
                             </div>
                             <div className="p-4 bg-stone-50 rounded-sm flex flex-col justify-center">
-                                <span className="text-2xl font-serif font-bold text-[#111827]">20%</span>
-                                <span className="text-xs uppercase tracking-wider text-stone-500 mt-1">Health & Bio</span>
+                                <span className="text-2xl font-serif font-bold text-[#111827]">۲۰٪</span>
+                                <span className="text-xs uppercase tracking-wider text-stone-500 mt-1">سلامت و زیست‌فناوری</span>
                             </div>
                             <div className="p-4 bg-[#1B4B43]/10 border border-[#1B4B43]/20 rounded-sm flex flex-col justify-center">
-                                <span className="text-2xl font-serif font-bold text-[#1B4B43]">10%</span>
-                                <span className="text-xs uppercase tracking-wider text-[#1B4B43] mt-1">Deep Tech</span>
+                                <span className="text-2xl font-serif font-bold text-[#1B4B43]">۱۰٪</span>
+                                <span className="text-xs uppercase tracking-wider text-[#1B4B43] mt-1">دیپ‌تک</span>
                             </div>
                         </div>
                     </div>
@@ -210,32 +210,32 @@ export default function StatisticsPage() {
                                 <Globe className="w-6 h-6 text-stone-300" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-serif font-bold">The Time Zone Bridge</h3>
-                                <p className="text-sm text-stone-400">Working while the world sleeps.</p>
+                                <h3 className="text-xl font-serif font-bold">پل میان دو تایم‌زون</h3>
+                                <p className="text-sm text-stone-400">کار کردن وقتی دنیا خواب است.</p>
                             </div>
                          </div>
 
                          {/* Timeline Visual */}
                          <div className="relative z-10 flex-1 w-full max-w-2xl px-4">
                              <div className="flex justify-between text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-2">
-                                <span>Toronto (EST)</span>
-                                <span>Tehran/Dubai (+3.5/4)</span>
+                                <span>تورنتو (EST)</span>
+                                <span>تهران و دبی (‎+۳:۳۰‎ / ‎+۴‎)</span>
                              </div>
                              <div className="h-4 w-full bg-stone-800 rounded-full overflow-hidden flex relative">
                                  {/* Night */}
                                  <div className="h-full w-1/3 bg-[#0F172A]"></div>
                                  {/* The Grind (Overlap) */}
                                  <div className="h-full w-1/3 bg-[#D97706] animate-pulse relative group cursor-help">
-                                     <div className="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs px-2 py-1 rounded whitespace-nowrap">4 AM Calls</div>
+                                     <div className="hidden group-hover:block absolute -top-8 start-1/2 -translate-x-1/2 bg-white text-black text-xs px-2 py-1 rounded whitespace-nowrap">جلسه‌های ۴ صبح</div>
                                  </div>
                                  {/* Day */}
                                  <div className="h-full w-1/3 bg-stone-600"></div>
                              </div>
                          </div>
 
-                         <div className="relative z-10 text-right">
-                             <span className="block text-2xl font-bold text-white">4,000+</span>
-                             <span className="text-xs text-stone-500 uppercase">Hours of Overlap</span>
+                         <div className="relative z-10 text-end">
+                             <span dir="ltr" className="block text-2xl font-bold text-white">۴٬۰۰۰+</span>
+                             <span className="text-xs text-stone-500 uppercase">ساعت هم‌پوشانی</span>
                          </div>
                     </div>
 
@@ -243,12 +243,12 @@ export default function StatisticsPage() {
                     <div className="md:col-span-8 bg-white border border-stone-200 p-10 rounded-sm hover:shadow-lg transition-all duration-500 group">
                         <div className="flex justify-between items-end mb-8">
                             <div>
-                                <h3 className="text-5xl font-serif font-bold text-[#111827]">3,000+</h3>
-                                <p className="text-sm text-stone-500 font-mono mt-2 uppercase tracking-wider">Online Meetings (4 Years)</p>
+                                <h3 dir="ltr" className="text-5xl font-serif font-bold text-[#111827]">۳٬۰۰۰+</h3>
+                                <p className="text-sm text-stone-500 font-mono mt-2 uppercase tracking-wider">جلسه‌ی آنلاین (۴ سال)</p>
                             </div>
-                            <div className="text-right">
+                            <div className="text-end">
                                 <div className="flex items-center gap-2 justify-end text-[#1B4B43] font-bold">
-                                    <Video className="w-4 h-4" /> 90%
+                                    <Video className="w-4 h-4" /> ۹۰٪
                                 </div>
                                 <span className="text-[10px] text-stone-400 uppercase">Google Meet</span>
                             </div>
@@ -268,16 +268,16 @@ export default function StatisticsPage() {
                     <div className="md:col-span-4 bg-white border border-stone-200 p-8 rounded-sm flex flex-col justify-center">
                          <div className="flex items-center gap-2 mb-6 text-stone-400">
                              <PenTool className="w-5 h-5" />
-                             <span className="text-xs font-bold uppercase tracking-widest">Output</span>
+                             <span className="text-xs font-bold uppercase tracking-widest">خروجی</span>
                          </div>
                          <div className="space-y-6">
                              <div>
-                                 <span className="text-3xl font-serif font-bold text-[#111827] block">150k+</span>
-                                 <span className="text-xs text-stone-500">Words Written (Essays)</span>
+                                 <span className="text-3xl font-serif font-bold text-[#111827] block">‏۱۵۰ هزار+</span>
+                                 <span className="text-xs text-stone-500">کلمه‌ی نوشته‌شده (یادداشت‌ها)</span>
                              </div>
                              <div>
-                                 <span className="text-3xl font-serif font-bold text-[#111827] block">50+</span>
-                                 <span className="text-xs text-stone-500">Mental Models Documented</span>
+                                 <span className="text-3xl font-serif font-bold text-[#111827] block" dir="ltr">۵۰+</span>
+                                 <span className="text-xs text-stone-500">مدل ذهنی مستندشده</span>
                              </div>
                          </div>
                     </div>
@@ -287,19 +287,19 @@ export default function StatisticsPage() {
 
                     {/* ITEM: THE FAILURE RATE (NEW) */}
                     <div className="md:col-span-6 bg-stone-100 p-8 rounded-sm border border-stone-200 flex flex-col justify-center relative overflow-hidden">
-                        <AlertTriangle className="absolute -bottom-4 -right-4 w-24 h-24 text-stone-200" />
+                        <AlertTriangle className="absolute -bottom-4 -end-4 w-24 h-24 text-stone-200" />
                         
                         <div className="relative z-10">
-                            <h3 className="font-bold text-[#111827] text-lg mb-2">The Failure Rate</h3>
+                            <h3 className="font-bold text-[#111827] text-lg mb-2">نرخ شکست</h3>
                             <div className="flex items-end gap-2 mb-2">
-                                <span className="text-4xl font-serif font-black text-stone-400">~10%</span>
-                                <span className="text-xs text-stone-500 mb-2 font-mono">Project Mortality</span>
+                                <span className="text-4xl font-serif font-black text-stone-400">حدود ۱۰٪</span>
+                                <span className="text-xs text-stone-500 mb-2 font-mono">مرگ‌ومیر پروژه‌ها</span>
                             </div>
                             <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden mb-4">
                                 <div className="w-[10%] h-full bg-stone-400" />
                             </div>
                             <p className="text-xs text-stone-500 italic">
-                                "Not every venture survives. I don't hide the graveyard; I teach from it."
+                                «هر کسب‌وکاری زنده نمی‌ماند. گورستان را پنهان نمی‌کنم؛ از رویش درس می‌دهم.»
                             </p>
                         </div>
                     </div>
@@ -308,18 +308,18 @@ export default function StatisticsPage() {
                     <div className="md:col-span-6 bg-white border border-stone-200 p-8 rounded-sm flex flex-col justify-center">
                         <div className="flex items-center gap-2 mb-6">
                             <Swords className="w-5 h-5 text-red-400" />
-                            <span className="text-xs font-bold uppercase tracking-widest text-stone-400">Hard Truths</span>
+                            <span className="text-xs font-bold uppercase tracking-widest text-stone-400">حقیقت‌های تلخ</span>
                         </div>
                         <div className="flex justify-between items-center mb-4">
-                            <span className="text-stone-600 font-medium">Arguments with Founders</span>
-                            <span className="text-2xl font-serif font-bold text-[#111827]">12+</span>
+                            <span className="text-stone-600 font-medium">بحث جدی با بنیان‌گذاران</span>
+                            <span className="text-2xl font-serif font-bold text-[#111827]" dir="ltr">۱۲+</span>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span className="text-stone-600 font-medium">Pivots Forced</span>
-                            <span className="text-2xl font-serif font-bold text-[#111827]">8</span>
+                            <span className="text-stone-600 font-medium">پیوت تحمیل‌شده</span>
+                            <span className="text-2xl font-serif font-bold text-[#111827]">۸</span>
                         </div>
                         <p className="text-[10px] text-stone-400 mt-6 pt-4 border-t border-stone-100">
-                            *Arguments usually result in saving months of wasted dev time.
+                            * این بحث‌ها معمولاً ماه‌ها توسعه‌ی هدررفته را نجات می‌دهند.
                         </p>
                     </div>
 
@@ -327,7 +327,7 @@ export default function StatisticsPage() {
                     <div className="md:col-span-12 bg-[#FFF8F0] border border-[#D97706]/20 p-10 rounded-sm flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
                         
                         {/* Background Decor */}
-                        <Coffee className="absolute -bottom-10 -right-10 w-64 h-64 text-[#D97706] opacity-5 rotate-12 pointer-events-none transition-transform group-hover:rotate-6" />
+                        <Coffee className="absolute -bottom-10 -end-10 w-64 h-64 text-[#D97706] opacity-5 rotate-12 pointer-events-none transition-transform group-hover:rotate-6" />
 
                         {/* Left: The Ratio */}
                         <div className="flex items-center gap-6 relative z-10">
@@ -335,15 +335,15 @@ export default function StatisticsPage() {
                                 <Coffee className="w-8 h-8" strokeWidth={2.5} />
                              </div>
                              <div>
-                                <h3 className="text-4xl md:text-5xl font-serif font-black text-[#92400E] leading-none">5 : 1</h3>
-                                <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#92400E]/60 mt-2">Daily Coffee vs Tea</p>
+                                <h3 className="text-4xl md:text-5xl font-serif font-black text-[#92400E] leading-none">۵ : ۱</h3>
+                                <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#92400E]/60 mt-2">قهوه به چای در روز</p>
                              </div>
                         </div>
                         
                         {/* Center: The Visual Icons */}
                         <div className="flex-1 hidden md:flex items-center justify-center gap-8 relative z-10">
                              {/* 5 Coffees */}
-                             <div className="flex gap-3" title="5 Cups of Coffee">
+                             <div className="flex gap-3" title="۵ فنجان قهوه">
                                 {[...Array(5)].map((_, i) => (
                                     <Coffee 
                                         key={`coffee-${i}`} 
@@ -359,14 +359,14 @@ export default function StatisticsPage() {
                              {/* 1 Tea (Green) */}
                              <div className="flex flex-col items-center gap-1 group/tea cursor-help">
                                 <Coffee className="w-7 h-7 text-[#1B4B43] fill-[#1B4B43]/10 drop-shadow-sm" strokeWidth={2} />
-                                <span className="text-[9px] font-bold uppercase text-[#1B4B43] opacity-0 group-hover/tea:opacity-100 transition-opacity absolute -bottom-4">Tea</span>
+                                <span className="text-[9px] font-bold uppercase text-[#1B4B43] opacity-0 group-hover/tea:opacity-100 transition-opacity absolute -bottom-4">چای</span>
                              </div>
                         </div>
 
                         {/* Right: The Quote */}
-                        <div className="text-center md:text-right max-w-xs relative z-10">
+                        <div className="text-center md:text-end max-w-xs relative z-10">
                              <p className="text-sm text-[#92400E] font-medium leading-relaxed italic">
-                                 "The engine runs on espresso.<br/>The strategy runs on patience."
+                                 «موتور با اسپرسو کار می‌کند.<br/>استراتژی با صبر.»
                              </p>
                         </div>
                     </div>
@@ -376,11 +376,11 @@ export default function StatisticsPage() {
                 {/* --- 3. FOOTER CTA --- */}
                 <section className="text-center pt-16 border-t border-stone-200">
                     <p className="font-serif text-2xl text-[#111827] mb-8">
-                        Numbers don't lie. Neither do I.
+                        عددها دروغ نمی‌گویند. من هم نمی‌گویم.
                     </p>
                     <Link href="/fa/contact">
                         <Button className="bg-[#1C1917] hover:bg-[#000000] text-white h-14 px-10 text-base font-bold rounded-sm shadow-xl">
-                            Let's Talk Business <ArrowRight className="ml-2 w-4 h-4" />
+                            درباره‌ی کار حرف بزنیم <ArrowRight className="ms-2 w-4 h-4 rtl:rotate-180" />
                         </Button>
                     </Link>
                 </section>

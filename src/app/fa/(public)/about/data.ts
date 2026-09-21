@@ -1,59 +1,63 @@
 // ============================================================================
 // Hardware Source: data.ts
-// Why: Static content payload provider for the about page
+// Why: Static content payload provider for the about page (Persian)
 // Env / Identity: TypeScript Module
+//
+// This file was an untranslated copy of the English one. Institution names
+// stay in their original form where that is how they are known; degrees,
+// descriptions and dates are Persian.
 // ============================================================================
 
 export const EDUCATION = [
     {
-        degree: "Doctor of Philosophy (PhD), Anthropology",
-        institution: "Islamic Azad University",
-        years: "2016 — 2020",
-        description: "Research focused on cultural systems, human behavior, and the relationship between social structures and technological change."
+        degree: "دکتری (PhD) انسان‌شناسی",
+        institution: "دانشگاه آزاد اسلامی",
+        years: "۱۳۹۵ تا ۱۳۹۹",
+        description: "پژوهش روی سامانه‌های فرهنگی، رفتار انسان و نسبت میان ساختارهای اجتماعی و تغییر فناورانه."
     },
     {
-        degree: "Master’s Degree, Anthropology",
-        institution: "Islamic Azad University",
-        years: "2014 — 2016",
-        description: "Advanced study of social dynamics, culture, and human systems."
+        degree: "کارشناسی ارشد انسان‌شناسی",
+        institution: "دانشگاه آزاد اسلامی",
+        years: "۱۳۹۳ تا ۱۳۹۵",
+        description: "مطالعه‌ی پیشرفته‌ی پویایی‌های اجتماعی، فرهنگ و سامانه‌های انسانی."
     },
     {
-        degree: "Bachelor’s Degree, Anthropology",
-        institution: "Islamic Azad University",
-        years: "2011 — 2014",
-        description: "Foundational training in human societies, cultural analysis, and ethnographic thinking."
+        degree: "کارشناسی انسان‌شناسی",
+        institution: "دانشگاه آزاد اسلامی",
+        years: "۱۳۹۰ تا ۱۳۹۳",
+        description: "آموزش پایه در جوامع انسانی، تحلیل فرهنگی و تفکر مردم‌نگارانه."
     }
 ];
 
 export const CERTIFICATIONS = [
     {
-        title: "Digital Transformation Specialist",
-        institution: "Schulich School of Business – York University",
-        year: "2026"
+        title: "متخصص تحول دیجیتال",
+        institution: "دانشکده‌ی کسب‌وکار شولیک، دانشگاه یورک",
+        year: "۲۰۲۶"
     },
     {
-        title: "Masterclass Certificate in Venture Talent",
-        institution: "Schulich Venture Academy",
-        year: "2025"
+        title: "مسترکلاس استعداد سرمایه‌گذاری خطرپذیر",
+        institution: "آکادمی ونچر شولیک",
+        year: "۲۰۲۵"
     },
     {
-        title: "Business Model Validation",
+        title: "اعتبارسنجی مدل کسب‌وکار",
         institution: "MaRS Discovery District",
-        year: "2025"
+        year: "۲۰۲۵"
     },
     {
-        title: "Google Prompting Essentials",
+        title: "مبانی پرامپت‌نویسی گوگل",
         institution: "Google",
-        year: "2025"
+        year: "۲۰۲۵"
     },
     {
-        title: "Treefrog Accelerator Program",
+        title: "برنامه‌ی شتاب‌دهی تری‌فراگ",
         institution: "Treefrog Accelerator",
-        year: "2024"
+        year: "۲۰۲۴"
     },
     {
-        title: "Toronto Pitching Event – Certificate of Excellence",
+        title: "رویداد پیچ تورنتو، گواهی برتری",
         institution: "Yunnan International Innovation & Entrepreneurship Collective",
-        year: "2024"
+        year: "۲۰۲۴"
     }
 ];
