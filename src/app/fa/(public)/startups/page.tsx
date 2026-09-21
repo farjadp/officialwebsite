@@ -33,14 +33,14 @@ export default async function MentoredStartupsPage() {
                 {/* --- HEADER --- */}
                 <section className="text-center mb-20 max-w-4xl mx-auto">
                     <Badge variant="outline" className="mb-6 border-[#1B4B43]/30 text-[#1B4B43] rounded-full font-mono tracking-widest text-[10px] uppercase px-3 py-1 bg-[#1B4B43]/5">
-                        Mentorship & Advisory
+                        منتورشیپ و مشاوره
                     </Badge>
                     <h1 className="font-serif text-5xl md:text-7xl text-[#111827] leading-[1.1] mb-6 tracking-tight">
-                        The Startup <br className="hidden md:block" />
-                        <span className="italic text-stone-500 font-light">Portfolio.</span>
+                        پورتفولیوی <br className="hidden md:block" />
+                        <span className="italic text-stone-500 font-light">استارتاپ‌ها</span>
                     </h1>
                     <p className="text-xl text-stone-600 font-light leading-relaxed">
-                        A curated list of ambitious ventures I’ve had the privilege of advising, mentoring, and helping scale across diverse industries.
+فهرستی گزیده از کسب‌وکارهای جاه‌طلبی که افتخار مشاوره، منتورشیپ و همراهی در رشدشان را در صنایع مختلف داشته‌ام.
                     </p>
                 </section>
 
@@ -49,31 +49,31 @@ export default async function MentoredStartupsPage() {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
                         {/* Stat 1 */}
                         <div className="bg-[#111827] text-white p-8 rounded-sm flex flex-col items-center justify-center text-center shadow-lg group relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#1B4B43] rounded-full blur-[40px] opacity-30 group-hover:opacity-50 transition-opacity" />
-                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#D97706] mb-2 relative z-10">25</span>
-                            <span className="text-xs uppercase tracking-widest text-stone-300 font-mono relative z-10">Total Ventures</span>
-                            <span className="text-[10px] text-stone-400 mt-3 font-light relative z-10">Mentored & Advised</span>
+                            <div className="absolute top-0 end-0 w-24 h-24 bg-[#1B4B43] rounded-full blur-[40px] opacity-30 group-hover:opacity-50 transition-opacity" />
+                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#D97706] mb-2 relative z-10">۲۵</span>
+                            <span className="text-xs uppercase tracking-widest text-stone-300 font-mono relative z-10">مجموع کسب‌وکارها</span>
+                            <span className="text-[10px] text-stone-400 mt-3 font-light relative z-10">منتورشده و مشاوره‌گرفته</span>
                         </div>
 
                         {/* Stat 2 */}
                         <div className="border border-stone-200 bg-white p-8 rounded-sm flex flex-col items-center justify-center text-center group transition-colors hover:border-[#1B4B43]/30">
-                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors">7</span>
-                            <span className="text-xs uppercase tracking-widest text-stone-500 font-mono">Yrs Longest Eng.</span>
-                            <span className="text-[10px] text-stone-400 mt-3 font-light italic px-2">"We basically grew up together."</span>
+                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors">۷</span>
+                            <span className="text-xs uppercase tracking-widest text-stone-500 font-mono">سال، طولانی‌ترین همکاری</span>
+                            <span className="text-[10px] text-stone-400 mt-3 font-light italic px-2">«عملاً با هم بزرگ شدیم.»</span>
                         </div>
 
                         {/* Stat 3 */}
                         <div className="border border-stone-200 bg-white p-8 rounded-sm flex flex-col items-center justify-center text-center group transition-colors hover:border-[#1B4B43]/30">
-                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors">86<span className="text-3xl">%</span></span>
-                            <span className="text-xs uppercase tracking-widest text-stone-500 font-mono">Survival Rate</span>
-                            <span className="text-[10px] text-[#D97706] mt-3 font-bold uppercase tracking-wide bg-[#D97706]/10 px-2 py-1 rounded-sm">14% Pivoted Hard</span>
+                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors">۸۶<span className="text-3xl">٪</span></span>
+                            <span className="text-xs uppercase tracking-widest text-stone-500 font-mono">نرخ بقا</span>
+                            <span className="text-[10px] text-[#D97706] mt-3 font-bold uppercase tracking-wide bg-[#D97706]/10 px-2 py-1 rounded-sm">۱۴٪ پیوت سنگین</span>
                         </div>
 
                         {/* Stat 4 */}
                         <div className="border border-stone-200 bg-white p-8 rounded-sm flex flex-col items-center justify-center text-center group transition-colors hover:border-[#1B4B43]/30">
-                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors">4k<span className="text-3xl">+</span></span>
-                            <span className="text-xs uppercase tracking-widest text-stone-500 font-mono">Late Night Calls</span>
-                            <span className="text-[10px] text-stone-400 mt-3 font-light italic px-2">Plus an infinite amount of coffee.</span>
+                            <span className="font-serif text-5xl md:text-6xl font-bold text-[#111827] mb-2 group-hover:text-[#1B4B43] transition-colors" dir="ltr">۴ هزار<span className="text-3xl">+</span></span>
+                            <span className="text-xs uppercase tracking-widest text-stone-500 font-mono">تماس شبانه</span>
+                            <span className="text-[10px] text-stone-400 mt-3 font-light italic px-2">به‌علاوه‌ی مقدار بی‌نهایتی قهوه.</span>
                         </div>
                     </div>
                 </section>
@@ -87,11 +87,11 @@ export default async function MentoredStartupsPage() {
                             <div className="p-6 border-b border-stone-100 flex items-start gap-4 bg-stone-50/50">
                                 <div className="w-16 h-16 rounded-sm border border-stone-200 overflow-hidden shrink-0 bg-white">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        {startup.logo && <img src={startup.logo} alt={`${startup.name} Logo`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />}
+                                        {startup.logo && <img src={startup.logo} alt={`لوگوی ${startup.name}`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />}
                                     </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start mb-1">
-                                        <h3 className="font-serif text-xl font-bold text-[#111827] truncate pr-2 group-hover:text-[#1B4B43] transition-colors">{startup.name}</h3>
+                                        <h3 className="font-serif text-xl font-bold text-[#111827] truncate pe-2 group-hover:text-[#1B4B43] transition-colors">{startup.name}</h3>
                                         <div className="flex items-center gap-1 text-[#D97706] bg-[#D97706]/10 px-2 py-0.5 rounded-sm shrink-0">
                                             <Star className="w-3 h-3 fill-current" />
                                             <span className="text-[10px] font-bold">{startup.satisfaction}</span>
@@ -106,19 +106,19 @@ export default async function MentoredStartupsPage() {
                             {/* Card Body (Description & Founder) */}
                             <div className="p-6 flex-1 flex flex-col">
                                 <p className="text-sm text-stone-600 font-light leading-relaxed mb-6">
-                                    "{startup.description}"
+                                    «{startup.description}»
                                 </p>
 
                                 {/* Metadata Grid (Dates, Status, Satisfaction) */}
                                 <div className="grid grid-cols-2 gap-4 mb-8 bg-[#FDFCF8] p-4 rounded-sm border border-stone-100 flex-1">
                                     <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> Timeline</p>
-                                        <p className="text-xs font-mono text-[#111827]">{startup.startDate} — {startup.endDate}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> بازه‌ی زمانی</p>
+                                        <p className="text-xs font-mono text-[#111827]" dir="ltr">{startup.startDate} — {startup.endDate}</p>
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1 flex items-center gap-1">
                                             {startup.isActive ? <CircleDashed className="w-3 h-3 animate-spin duration-[3000ms]" /> : <CheckCircle2 className="w-3 h-3" />}
-                                            Status
+                                            وضعیت
                                         </p>
                                         <p className="text-xs font-medium text-[#111827]">{startup.status}</p>
                                     </div>
@@ -133,7 +133,7 @@ export default async function MentoredStartupsPage() {
                                             {startup.founderPhoto && <img src={startup.founderPhoto} alt={startup.founderName} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-0.5">Founder</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-0.5">بنیان‌گذار</p>
                                             <p className="text-xs font-medium text-[#111827] truncate">{startup.founderName}</p>
                                         </div>
                                     </div>
@@ -141,11 +141,11 @@ export default async function MentoredStartupsPage() {
                                     {/* Links Row */}
                                     <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
                                         <Link href={startup.website || "#"} target="_blank" className="flex-1 flex items-center justify-center gap-2 p-2 text-xs font-semibold text-stone-600 hover:text-[#1B4B43] hover:bg-[#1B4B43]/5 rounded-sm transition-colors border border-transparent hover:border-[#1B4B43]/20">
-                                            <Globe className="w-4 h-4" /> Website
+                                            <Globe className="w-4 h-4" /> وب‌سایت
                                         </Link>
                                         <div className="w-px h-6 bg-stone-200"></div>
                                         <Link href={startup.linkedin || "#"} target="_blank" className="flex-1 flex items-center justify-center gap-2 p-2 text-xs font-semibold text-stone-600 hover:text-[#0077B5] hover:bg-[#0077B5]/5 rounded-sm transition-colors border border-transparent hover:border-[#0077B5]/20">
-                                            <Linkedin className="w-4 h-4" /> LinkedIn
+                                            <Linkedin className="w-4 h-4" /> لینکدین
                                         </Link>
                                     </div>
 
@@ -159,14 +159,14 @@ export default async function MentoredStartupsPage() {
                 {/* --- CTA FOOTER --- */}
                 <section className="mt-24 text-center max-w-4xl mx-auto border-t border-stone-200 pt-16">
                     <h2 className="font-serif text-3xl md:text-4xl text-[#111827] mb-6">
-                        Join the Portfolio.
+                        به این پورتفولیو بپیوندید
                     </h2>
                     <p className="text-lg text-stone-600 font-light mb-8 max-w-2xl mx-auto">
-                        If you’re building something meaningful and need experienced guidance, let's explore how we can architect your success together.
+اگر چیز معناداری می‌سازید و به راهنمایی باتجربه نیاز دارید، بیایید ببینیم چطور می‌شود موفقیتتان را با هم معماری کرد.
                     </p>
                     <Link href="/fa/contact">
                         <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white h-12 px-8 text-base font-medium transition-all">
-                            Get in Touch <ArrowRight className="ml-2 w-4 h-4" />
+                            در تماس باشید <ArrowRight className="ms-2 w-4 h-4 rtl:rotate-180" />
                         </Button>
                     </Link>
                 </section>

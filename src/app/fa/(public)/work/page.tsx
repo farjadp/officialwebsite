@@ -26,32 +26,32 @@ import Link from "next/link"
 const ACTIVE_VENTURES = [
   {
     id: 1,
-    role: "Founder & Lead Mentor",
-    name: "The Immigrant Founder's Circle",
-    year: "2023 — Present",
-    description: "A private mentorship program for founders navigating the Canadian startup ecosystem.",
-    tags: ["Education", "Community"],
-    status: "Scaling",
+    role: "بنیان‌گذار و منتور ارشد",
+    name: "حلقه‌ی بنیان‌گذاران مهاجر",
+    year: "۲۰۲۳ تا امروز",
+    description: "یک برنامه‌ی منتورشیپ خصوصی برای بنیان‌گذارانی که در اکوسیستم استارتاپی کانادا مسیرشان را پیدا می‌کنند.",
+    tags: ["آموزش", "اجتماع"],
+    status: "در حال رشد",
     link: "#"
   },
   {
     id: 2,
-    role: "Principal Consultant",
-    name: "SME Digital Systems",
-    year: "2022 — Present",
-    description: "Helping traditional small businesses transition from paper/chaos to digital workflows and AI.",
-    tags: ["Consulting", "Automation"],
-    status: "Active",
+    role: "مشاور ارشد",
+    name: "سیستم‌های دیجیتال کسب‌وکارهای کوچک",
+    year: "۲۰۲۲ تا امروز",
+    description: "کمک به کسب‌وکارهای کوچک سنتی برای عبور از کاغذ و آشوب به گردش‌کار دیجیتال و هوش مصنوعی.",
+    tags: ["مشاوره", "خودکارسازی"],
+    status: "فعال",
     link: "#"
   },
   {
     id: 3,
-    role: "Writer & Creator",
-    name: "Farjad.co (The Library)",
-    year: "2021 — Present",
-    description: "This content hub. A personal library of mental models, essays, and frameworks for builders.",
-    tags: ["Media", "Writing"],
-    status: "Ongoing",
+    role: "نویسنده و سازنده",
+    name: "کتابخانه‌ی فرجاد",
+    year: "۲۰۲۱ تا امروز",
+    description: "همین مرکز محتوا. کتابخانه‌ای شخصی از مدل‌های ذهنی، یادداشت‌ها و چارچوب‌ها برای سازندگان.",
+    tags: ["رسانه", "نوشتن"],
+    status: "در جریان",
     link: "/"
   }
 ];
@@ -60,36 +60,36 @@ const ACTIVE_VENTURES = [
 const PAST_PROJECTS = [
   {
     id: 101,
-    name: "Tehran Tech Events",
-    role: "Co-Organizer",
-    years: "2016 — 2019",
-    outcome: "Built a community of 500+ developers.",
-    lesson: "Learned that community is about consistency, not venue size.",
-    status: "Completed"
+    name: "رویدادهای فناوری تهران",
+    role: "هم‌برگزارکننده",
+    years: "۲۰۱۶ تا ۲۰۱۹",
+    outcome: "ساختن اجتماعی با بیش از ۵۰۰ توسعه‌دهنده.",
+    lesson: "یاد گرفتم اجتماع را استمرار می‌سازد، نه بزرگی سالن.",
+    status: "تمام‌شده"
   },
   {
     id: 102,
-    name: "Project 'Alpha' SaaS",
-    role: "Co-Founder",
-    years: "2018 — 2020",
-    outcome: "Failed to find PMF. Closed after 18 months.",
-    lesson: "Learned that 'cool tech' does not equal a 'business problem'.",
-    status: "Sunsetted" // Honest language
+    name: "پروژه‌ی SaaS «آلفا»",
+    role: "هم‌بنیان‌گذار",
+    years: "۲۰۱۸ تا ۲۰۲۰",
+    outcome: "به تناسب محصول و بازار نرسید. بعد از ۱۸ ماه تعطیل شد.",
+    lesson: "یاد گرفتم «فناوری باحال» با «مسئله‌ی کسب‌وکار» یکی نیست.",
+    status: "تعطیل‌شده" // Honest language
   }
 ];
 
 // --- Mock Data: Experiments ---
 const EXPERIMENTS = [
-  { title: "AI for Visa Docs", type: "Prototype", desc: "Testing LLMs for summarizing legal jargon." },
-  { title: "The 3-Minute Journal", type: "Content Series", desc: "A framework for busy founders." },
-  { title: "No-Code CRM", type: "Tool", desc: "Template for service agencies." },
+  { title: "هوش مصنوعی برای مدارک ویزا", type: "نمونه‌ی اولیه", desc: "آزمودن مدل‌های زبانی برای خلاصه کردن زبان حقوقی." },
+  { title: "دفترچه‌ی سه‌دقیقه‌ای", type: "مجموعه‌ی محتوا", desc: "چارچوبی برای بنیان‌گذاران پرمشغله." },
+  { title: "CRM بدون کدنویسی", type: "ابزار", desc: "قالبی برای آژانس‌های خدماتی." },
 ];
 
 export const metadata: Metadata = {
     alternates: localeAlternates("/work", "fa"),
     title: "کارها و کسب‌وکارها | پروژه‌های فعال و آزمایش‌های گذشته",
     description:
-        "نگاهی شفاف به کسب‌وکارهای فعال، پروژه‌های گذشته و آزمایش‌های در جریان — صادقانه دربارهٔ آنچه جواب داد و آنچه نداد.",
+        "نگاهی شفاف به کسب‌وکارهای فعال، پروژه‌های گذشته و آزمایش‌های در جریان؛ صادقانه درباره‌ی آنچه جواب داد و آنچه نداد.",
 }
 
 export default function WorkPage() {
@@ -109,19 +109,19 @@ export default function WorkPage() {
         {/* --- 1. HERO: THE LEDGER --- */}
         <section className="mb-20 max-w-3xl">
           <Badge variant="outline" className="mb-6 border-[#1B4B43]/30 text-[#1B4B43] rounded-sm font-mono tracking-widest text-[10px] uppercase px-2 py-1 bg-[#1B4B43]/5">
-            The Ledger
+            دفتر کل
           </Badge>
           <h1 className="font-serif text-5xl md:text-6xl text-[#111827] leading-[1.1] mb-8">
-            What I actually <br />
-            <span className="italic text-stone-500 font-light">work on.</span>
+            واقعاً روی چه چیزی <br />
+            <span className="italic text-stone-500 font-light">کار می‌کنم</span>
           </h1>
           <div className="prose prose-stone text-lg md:text-xl text-stone-600 leading-relaxed font-light">
             <p>
-              This is not a trophy room. I don't list every coffee chat or advisory call as a "project."
+اینجا ویترین جایزه نیست. هر گپ سر قهوه یا تماس مشاوره‌ای را «پروژه» حساب نمی‌کنم.
             </p>
             <p>
-              This page is a log of my active ventures, my past lessons, and the experiments I am running right now.
-              It is the evidence that I build real things, not just talk about them.
+              این صفحه گزارش کسب‌وکارهای فعال، درس‌های گذشته و آزمایش‌هایی است که همین حالا در جریان‌اند.
+              مدرکی است بر اینکه چیز واقعی می‌سازم، نه فقط درباره‌اش حرف می‌زنم.
             </p>
           </div>
         </section>
@@ -129,8 +129,8 @@ export default function WorkPage() {
         {/* --- 2. ACTIVE VENTURES (Cards) --- */}
         <section className="mb-24">
           <div className="flex items-end justify-between mb-10 border-b border-[#1B4B43]/10 pb-4">
-            <h2 className="font-serif text-3xl text-[#111827]">Active Ventures</h2>
-            <span className="font-mono text-xs text-[#1B4B43] uppercase tracking-widest">/// Current Focus</span>
+            <h2 className="font-serif text-3xl text-[#111827]">کسب‌وکارهای فعال</h2>
+            <span className="font-mono text-xs text-[#1B4B43] uppercase tracking-widest">/// تمرکز فعلی</span>
           </div>
 
           <div className="grid gap-8">
@@ -168,7 +168,7 @@ export default function WorkPage() {
                     ))}
                   </div>
                   <Link href={venture.link} className="flex items-center text-sm font-bold text-[#1B4B43] hover:underline underline-offset-4">
-                    View Project <ArrowUpRight className="ml-1 w-4 h-4" />
+                    مشاهده‌ی پروژه <ArrowUpRight className="ms-1 w-4 h-4 rtl:-scale-x-100" />
                   </Link>
                 </div>
               </div>
@@ -179,8 +179,8 @@ export default function WorkPage() {
         {/* --- 3. THE ARCHIVE (Past Projects) --- */}
         <section className="mb-24">
           <div className="flex items-end justify-between mb-10 border-b border-stone-200 pb-4">
-            <h2 className="font-serif text-3xl text-stone-500">Selected Archive</h2>
-            <span className="font-mono text-xs text-stone-400 uppercase tracking-widest">/// Lessons Learned</span>
+            <h2 className="font-serif text-3xl text-stone-500">آرشیو منتخب</h2>
+            <span className="font-mono text-xs text-stone-400 uppercase tracking-widest">/// درس‌های گرفته‌شده</span>
           </div>
 
           <div className="space-y-6">
@@ -193,13 +193,13 @@ export default function WorkPage() {
                 </div>
                 <div className="md:w-3/4 grid md:grid-cols-2 gap-6">
                   <div>
-                    <span className="text-xs font-bold uppercase text-stone-400 tracking-wider">Outcome</span>
+                    <span className="text-xs font-bold uppercase text-stone-400 tracking-wider">نتیجه</span>
                     <p className="text-sm text-stone-700 mt-1 leading-relaxed">{project.outcome}</p>
                   </div>
                   <div>
-                    <span className="text-xs font-bold uppercase text-[#1B4B43] tracking-wider">The Lesson</span>
-                    <p className="text-sm text-stone-700 mt-1 leading-relaxed italic border-l-2 border-[#1B4B43]/20 pl-3">
-                      "{project.lesson}"
+                    <span className="text-xs font-bold uppercase text-[#1B4B43] tracking-wider">درس</span>
+                    <p className="text-sm text-stone-700 mt-1 leading-relaxed italic border-s-2 border-[#1B4B43]/20 ps-3">
+                      «{project.lesson}»
                     </p>
                   </div>
                 </div>
@@ -211,26 +211,26 @@ export default function WorkPage() {
         {/* --- 4. ADVISORY & MENTORING CONTEXT --- */}
         <section className="mb-24 bg-[#111827] text-stone-200 p-8 md:p-12 rounded-sm relative overflow-hidden">
           {/* Decoration */}
-          <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[#1B4B43] rounded-full blur-[80px] opacity-20" />
+          <div className="absolute -end-10 -bottom-10 w-64 h-64 bg-[#1B4B43] rounded-full blur-[80px] opacity-20" />
 
           <div className="relative z-10 flex flex-col md:flex-row gap-12 items-start">
             <div className="md:w-1/3">
               <div className="p-3 bg-white/10 w-fit rounded-full mb-6">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h2 className="font-serif text-3xl text-white mb-4">Advisory Work</h2>
+              <h2 className="font-serif text-3xl text-white mb-4">کار مشاوره‌ای</h2>
               <p className="text-stone-400 text-sm">
-                My project experience directly informs my mentoring. I don't give advice from a textbook; I give advice from the trenches.
+تجربه‌ی پروژه‌هایم مستقیماً به منتورشیپم شکل می‌دهد. از روی کتاب درسی نصیحت نمی‌کنم؛ از داخل سنگر حرف می‌زنم.
               </p>
             </div>
             <div className="md:w-2/3 grid gap-6">
-              <div className="border-l border-white/20 pl-6">
-                <h4 className="font-bold text-white mb-1">Startup Visa & Immigration</h4>
-                <p className="text-stone-400 text-sm">Advising founders on aligning their business model with immigration compliance. Moving from "fake traction" to real revenue.</p>
+              <div className="border-s border-white/20 ps-6">
+                <h4 className="font-bold text-white mb-1">استارتاپ ویزا و مهاجرت</h4>
+                <p className="text-stone-400 text-sm">مشاوره به بنیان‌گذاران برای هم‌راستا کردن مدل کسب‌وکارشان با الزامات مهاجرتی. حرکت از «تراکشن ساختگی» به درآمد واقعی.</p>
               </div>
-              <div className="border-l border-white/20 pl-6">
-                <h4 className="font-bold text-white mb-1">Small Business Modernization</h4>
-                <p className="text-stone-400 text-sm">Helping traditional owners understand that AI is not magic—it's just a better way to handle data and operations.</p>
+              <div className="border-s border-white/20 ps-6">
+                <h4 className="font-bold text-white mb-1">نوسازی کسب‌وکارهای کوچک</h4>
+                <p className="text-stone-400 text-sm">کمک به صاحبان سنتی کسب‌وکار تا بفهمند هوش مصنوعی جادو نیست، فقط راه بهتری برای اداره‌ی داده و عملیات است.</p>
               </div>
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function WorkPage() {
         <section className="mb-16">
           <div className="flex items-center gap-3 mb-8">
             <FlaskConical className="w-6 h-6 text-[#1B4B43]" />
-            <h2 className="font-serif text-2xl text-[#111827]">Experiments & Small Bets</h2>
+            <h2 className="font-serif text-2xl text-[#111827]">آزمایش‌ها و شرط‌های کوچک</h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -261,14 +261,14 @@ export default function WorkPage() {
         {/* --- 6. FOOTER CONNECT --- */}
         <section className="border-t border-[#1B4B43]/10 pt-10 pb-10 text-center">
           <p className="text-stone-600 font-light text-lg mb-6">
-            Everything I learn in these projects ends up in my essays.
+هرچه در این پروژه‌ها یاد می‌گیرم سر از یادداشت‌هایم درمی‌آورد.
           </p>
           {/* /essays has never existed in either locale — this was a 404.
               Points at the English blog until the Persian one is built,
               then becomes /fa/blog. */}
           <Link href="/blog">
             <Button variant="link" className="text-[#1B4B43] text-base font-bold underline decoration-2 underline-offset-4 hover:text-[#111827]">
-              Read the Essays
+              یادداشت‌ها را بخوانید
             </Button>
           </Link>
         </section>
