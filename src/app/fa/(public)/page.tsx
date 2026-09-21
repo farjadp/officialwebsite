@@ -1,254 +1,425 @@
+// ============================================================================
+// File Path: src/app/fa/(public)/page.tsx
+// Version: 3.0.0 — 2026-09-21
+// Why: The Persian home page, rebuilt inside the site's established world
+//      (the dark editorial identity of the English home and the shell).
+//      Every fact on this page already appears elsewhere on the site —
+//      resume, about/data.ts, services/data.ts, the lab page. Nothing here
+//      is claimed for the first time.
+// Env / Identity: React Server Component (motion lives in fa-motion.tsx)
+// ============================================================================
+
 import Image from "next/image"
+import Link from "next/link"
+import type { Metadata } from "next"
 import { localeAlternates } from "@/lib/seo"
-import React from 'react';
-import type { Metadata } from "next";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { 
-  CheckCircle2, 
-  Target, 
-  Zap, 
-  ShieldCheck, 
-  ArrowLeft, 
-  ArrowUpRight, 
-  TrendingUp, 
-  Network, 
-  ArrowDown, 
-  Users 
-} from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpLeft,
+  Asterisk,
+  BookOpen,
+  Check,
+  FlaskConical,
+  Gauge,
+} from "lucide-react"
+import {
+  CountUp,
+  DrawnRule,
+  Develop,
+  HeroFade,
+  HeroLine,
+  Reveal,
+} from "@/components/home/fa-motion"
 
 export const metadata: Metadata = {
-    alternates: localeAlternates("/", "fa"),
-  title: "فرجاد | مشاور استراتژیک و طراح سیستم",
-  description: "کمک به بنیان‌گذاران جدی برای ساخت کسب‌وکار مقیاس‌پذیر و سیستم‌سازی دیجیتال.",
-};
+  alternates: localeAlternates("/", "fa"),
+  title: "فرجاد | ونچر بیلدر و معمار سیستم",
+  description:
+    "به تیم‌های جدی کمک می‌کنم ایده‌های مبهم، محصول‌های شکننده و عملیات دستی را به شرکتی تبدیل کنند که مقیاس می‌گیرد.",
+}
+
+// Dates and roles come from the resume; institutions from about/data.ts.
+const LEDGER: { year: string; lines: string[] }[] = [
+  { year: "۲۰۰۶", lines: ["بنیان‌گذار و مدیر DPF، شرکت پردازش داده. تا ۲۰۲۳."] },
+  { year: "۲۰۱۷", lines: ["مدیر ارشد فنی نخستین شرکت رایانش ابری دولتی ایران. تا ۲۰۲۰."] },
+  {
+    year: "۲۰۲۰",
+    lines: [
+      "هم‌بنیان‌گذار HoFin، اپلیکیشن سلامت روان، منتشرشده روی اپ‌استور.",
+      "دکتری انسان‌شناسی.",
+    ],
+  },
+  {
+    year: "۲۰۲۲",
+    lines: [
+      "منتور استارتاپ‌ها در VisaRoads.",
+      "بنیان‌گذار NFTsShip، نخستین پلتفرم و رویداد NFT ایران. تا ۲۰۲۶.",
+    ],
+  },
+  { year: "۲۰۲۴", lines: ["برنامه‌ی شتاب‌دهی Treefrog، انتاریو."] },
+  {
+    year: "۲۰۲۵",
+    lines: ["بنیان‌گذار و مدیر ارشد استراتژی AshaVid، تورنتو.", "مسترکلاس ونچر، آکادمی شولیک."],
+  },
+  { year: "۲۰۲۶", lines: ["متخصص تحول دیجیتال، دانشکده‌ی کسب‌وکار شولیک، دانشگاه یورک."] },
+]
+
+// Captions are the lab page's own, word for word.
+const EVIDENCE = [
+  {
+    src: "/images/lab/council.jpg",
+    alt: "ارائه‌ی نتایج برنامه در صحن شورای منطقه‌ای یورک",
+    caption: "شورای منطقه‌ای یورک، ارائه‌ی نتایج تیم‌ها",
+  },
+  {
+    src: "/images/lab/panel.jpg",
+    alt: "پنل پایانی برنامه‌ی Digital Transformation",
+    caption: "پنل پایانی، تورنتو",
+  },
+]
+
+const SERVICES = [
+  {
+    href: "/fa/services/founder-advisory",
+    label: "مشاوره",
+    title: "مشاوره‌ی بنیان‌گذار",
+    copy: "یک طرف مقابل فکری برای تصمیم‌های سخت، نه تشویق‌کننده.",
+  },
+  {
+    href: "/fa/services/startup-visa",
+    label: "استارتاپ ویزا",
+    title: "بیزینس‌کیسی که دوام بیاورد",
+    copy: "برای بنیان‌گذاران مهاجری که می‌خواهند شرکت واقعی بسازند، نه پرونده‌ای قالبی.",
+  },
+  {
+    href: "/fa/services/digital-systems",
+    label: "سیستم و هوش مصنوعی",
+    title: "طراحی شکل کارکرد کسب‌وکار",
+    copy: "اول ساختار، بعد ابزار. هوش مصنوعی فقط جایی که اهرم بسازد.",
+  },
+]
+
+const PERSIAN_ONLY = [
+  {
+    href: "/fa/lab",
+    icon: FlaskConical,
+    title: "آزمایشگاه بنیان‌گذار",
+    copy: "۸ هفته کار واقعی روی استارتاپ شما. ۵ تیم، رایگان.",
+  },
+  {
+    href: "/fa/book-club",
+    icon: BookOpen,
+    title: "باشگاه کتاب",
+    copy: "خواندن جمعی، برای کسانی که می‌سازند.",
+  },
+  {
+    href: "/fa/tools",
+    icon: Gauge,
+    title: "ابزارهای رایگان",
+    copy: "۶ سنجه‌ی خودارزیابی برای بنیان‌گذاران، از آمادگی استارتاپ تا TRL.",
+  },
+]
+
+const FACTS = [
+  { value: 22, suffix: "+", label: "سال در فناوری" },
+  { value: 25, suffix: "", label: "استارتاپ منتورشده" },
+  { value: 3, suffix: "", label: "میلیون دلار جذب‌شده توسط تیم‌ها" },
+]
 
 export default function PersianHomePage() {
   return (
-    <div className="min-h-screen bg-[#FDFCF8] text-[#1C1917] font-sans selection:bg-[#1B4B43] selection:text-white" dir="rtl">
-      
-      {/* 1. HERO SECTION */}
-      <section className="relative pt-40 pb-24 px-6 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] -z-10 opacity-50" />
-        
-        <div className="max-w-5xl mx-auto text-center space-y-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100 border border-stone-200 text-stone-600 text-sm font-medium">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1B4B43] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1B4B43]"></span>
-              </span>
-              ظرفیت پذیرش محدود برای فصل جاری
-            </div>
+    <main className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-emerald-500 selection:text-black">
+      {/* ---------------------------------------------------------------- */}
+      {/* 1. HERO                                                          */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="relative flex min-h-[100dvh] flex-col border-b border-white/10 px-5 pb-10 pt-24 md:px-10 lg:px-14">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.06),transparent_40%)]" />
 
-            <h1 className="font-serif text-6xl md:text-8xl font-bold text-[#111827] leading-[1.1] tracking-tight">
-              معماری <span className="text-[#1B4B43]">نظم</span> در <br /> قلب آشفتگی.
+        <div className="relative mx-auto flex w-full max-w-[1600px] flex-1 flex-col justify-between gap-12 lg:flex-row lg:items-end">
+          <div className="lg:w-2/3 lg:pb-12">
+            <HeroFade delay={0} className="mb-12 flex items-center gap-3 text-xs text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+              نیومارکت، انتاریو · کار با تیم‌ها در سراسر دنیا · ۲۰۲۶
+            </HeroFade>
+
+            <h1 className="text-[clamp(3rem,7.4vw,7.5rem)] font-black leading-[1.08] text-zinc-50">
+              <HeroLine i={0}>چیزی بساز</HeroLine>
+              <HeroLine i={1} className="text-emerald-500">
+                که در واقعیت
+              </HeroLine>
+              <HeroLine i={2}>دوام بیاورد.</HeroLine>
             </h1>
-            
-            <p className="text-xl md:text-2xl text-stone-600 leading-relaxed font-light mx-auto max-w-3xl">
-              من به بنیان‌گذاران کمک می‌کنم تا فراتر از «تلاش سخت» بروند. 
-              ما با <span className="text-[#111827] font-semibold border-b-2 border-[#1B4B43]/30">سیستم‌سازی دقیق</span> و استراتژی، موتور رشد کسب‌وکارتان را مهندسی می‌کنیم.
-            </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-              <Link href="/fa/contact" className="group">
-                <Button className="bg-[#111827] hover:bg-[#1B4B43] text-white h-16 px-10 text-lg font-bold rounded-full transition-all duration-300 group-hover:scale-105">
-                  شروع همکاری استراتژیک
-                  <ArrowLeft className="mr-2 w-5 h-5 transition-transform group-hover:-translate-x-1" />
-                </Button>
+            <HeroFade
+              delay={0.55}
+              className="mt-12 grid max-w-4xl gap-8 border-t border-white/10 pt-8 md:grid-cols-[1fr_auto] md:items-end"
+            >
+              <p className="max-w-xl text-lg leading-relaxed text-zinc-400 md:text-2xl">
+                فرجاد هستم. ایده‌های مبهم، تیم‌های گیرکرده و عملیات دستی را به محصول و شرکتی تبدیل می‌کنم که روی خودش رشد می‌کند.
+              </p>
+              <Link
+                href="/fa/booking"
+                className="group inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-zinc-950 transition-transform duration-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:h-20 md:w-20"
+                aria-label="رزرو جلسه‌ی آشنایی"
+              >
+                <ArrowUpLeft className="h-6 w-6 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1 md:h-8 md:w-8" />
               </Link>
-            </div>
-        </div>
-      </section>
-
-      {/* 2. PROBLEM SECTION (بازطراحی شده مطابق تصویر) */}
-      <section className="py-24 bg-white px-6 border-y border-stone-100">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          
-          {/* بخش متنی (سمت راست در نسخه دسکتاپ - چپ در تصویر شما) */}
-          <div className="space-y-8 order-2 md:order-1">
-            <h2 className="font-serif text-5xl md:text-6xl font-bold text-[#111827] leading-[1.1]">
-              چرا اکثر بیزنس‌ها در <br />
-              تله رشد متوقف می‌شوند؟
-            </h2>
-            
-            <div className="space-y-6 text-xl text-stone-600 font-light leading-relaxed">
-              <p>
-                رشد بدون سیستم، فقط آشفتگی بزرگتری ایجاد می‌کند. وقتی ساختار نباشد، بنیان‌گذار تبدیل به گلوگاه (Bottleneck) می‌شود.
-              </p>
-              <p className="text-[#111827] font-bold italic border-r-4 border-[#1B4B43] pr-4">
-                سخت‌تر کار کردن راه حل نیست؛ مهندسی مجدد راه حل است.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-start gap-4 pt-6">
-               <ArrowDown className="w-8 h-8 text-[#1B4B43] animate-bounce" />
-               <Button variant="ghost" className="text-[#111827] p-0 text-lg font-bold hover:bg-transparent group">
-                 بیشتر بدانید (Learn More)
-                 <div className="h-0.5 w-full bg-[#1B4B43] scale-x-0 group-hover:scale-x-100 transition-transform origin-right"></div>
-               </Button>
-            </div>
+            </HeroFade>
           </div>
 
-          {/* بخش گرافیکی (سمت چپ در دسکتاپ - راست در تصویر شما) */}
-          <div className="relative order-1 md:order-2 px-4">
-            <div className="bg-white rounded-[3rem] p-8 shadow-2xl shadow-stone-200/50 border border-stone-100 aspect-square relative bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]">
-              
-              <div className="grid grid-cols-2 gap-4 h-full">
-                {/* کارت فرآیندها */}
-                <div className="bg-[#FDFCF8] rounded-3xl p-6 border border-stone-100 flex flex-col justify-between hover:shadow-lg transition-shadow">
-                  <Network className="w-8 h-8 text-[#1B4B43]" />
-                  <div>
-                    <h4 className="font-bold text-[#111827]">فرآیندها</h4>
-                    <p className="text-xs text-stone-500">سیستم‌سازی</p>
-                  </div>
-                </div>
-
-                {/* کارت عملکرد (تصویر) */}
-                <div className="bg-stone-200 rounded-3xl overflow-hidden relative group">
-                  <div className="absolute inset-0 bg-[#1B4B43]/10 group-hover:bg-transparent transition-colors z-10"></div>
-                  <img src="/api/placeholder/400/400" alt="عملکرد" className="w-full h-full object-cover" />
-                  <div className="absolute top-4 right-4 bg-[#111827] text-white text-[10px] px-2 py-1 rounded-md z-20">عملکرد</div>
-                </div>
-
-                {/* کارت عریض پایین */}
-                <div className="col-span-2 bg-[#FDFCF8] rounded-3xl p-6 border border-stone-100 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-stone-100 flex items-center justify-center">
-                      <Users className="w-6 h-6 text-stone-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-[#111827]">تیم‌سازی صحیح</h4>
-                      <p className="text-xs text-stone-500">جریان داده شفاف</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* کارت‌های شناور */}
-              <div className="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-2xl border border-stone-100 w-56 rotate-[-2deg]">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold text-stone-400">سود و هزینه‌ها</span>
-                  <TrendingUp className="w-4 h-4 text-green-500" />
-                </div>
-                <div className="h-12 flex items-end gap-1">
-                  <div className="flex-1 bg-stone-100 h-1/2 rounded-sm"></div>
-                  <div className="flex-1 bg-stone-200 h-3/4 rounded-sm"></div>
-                  <div className="flex-1 bg-[#1B4B43] h-full rounded-sm"></div>
-                </div>
-              </div>
-
-              <div className="absolute top-1/2 -right-10 transform -translate-y-1/2 bg-white p-6 rounded-2xl shadow-2xl border border-stone-100 max-w-[220px] rotate-[4deg]">
-                <p className="text-[#111827] font-bold text-center text-sm leading-relaxed">
-                  آشفتگی عملیاتی بزرگترین قاتل سودآوری است.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. SERVICES SECTION */}
-      <section id="services" className="py-32 bg-[#111827] px-6">
-        <div className="max-w-7xl mx-auto space-y-20">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-6">
-            <div className="space-y-4">
-              <h2 className="font-serif text-5xl font-bold text-white">حوزه‌های تمرکز</h2>
-              <p className="text-stone-400 text-xl font-light">خدماتی برای ساختن یک دارایی واقعی، نه فقط یک شغل.</p>
-            </div>
-            <div className="text-[#1B4B43] font-mono text-sm tracking-widest uppercase">Expertise / 01-03</div>
-          </div>
-
-          <div className="grid md:grid-cols-12 gap-6">
-            <div className="md:col-span-8 bg-stone-900/40 p-10 rounded-[2.5rem] border border-white/5 hover:border-[#1B4B43]/50 transition-all group">
-              <Target className="w-10 h-10 text-[#1B4B43] mb-8" />
-              <h3 className="text-3xl font-bold text-white mb-4">مشاوره استراتژیک اختصاصی</h3>
-              <p className="text-stone-400 text-lg leading-relaxed max-w-xl">
-                ما مدل کسب‌وکار شما را کالبدشکافی می‌کنیم تا گره‌های تصمیم‌گیری باز شوند. هدف ما طراحی نقشه راهی است که در دنیای واقعی کار کند.
-              </p>
-              <ArrowUpRight className="mt-10 text-stone-600 group-hover:text-white transition-colors" />
-            </div>
-
-            <div className="md:col-span-4 bg-[#1B4B43] p-10 rounded-[2.5rem] group hover:bg-[#1B4B43]/90 transition-all">
-              <Zap className="w-10 h-10 text-white/50 mb-8" />
-              <h3 className="text-3xl font-bold text-white mb-4">هوش مصنوعی و اتوماسیون</h3>
-              <p className="text-white/80 text-lg leading-relaxed">
-                ادغام ابزارهای مدرن برای حذف کارهای تکراری و آزاد کردن زمان شما.
-              </p>
-            </div>
-
-            <div className="md:col-span-4 bg-stone-50 p-10 rounded-[2.5rem] border border-stone-200">
-               <ShieldCheck className="w-10 h-10 text-[#1B4B43] mb-8" />
-               <h3 className="text-2xl font-bold text-[#111827] mb-4">استراتژی ویزا (کانادا)</h3>
-               <p className="text-stone-600">تطبیق بیزنس با استانداردهای مارکت بین‌المللی.</p>
-            </div>
-
-            <div className="md:col-span-8 bg-stone-900/40 p-10 rounded-[2.5rem] border border-white/5 flex items-center justify-center">
-                <p className="text-stone-500 font-serif italic text-2xl text-center">
-                  "سیستم‌ها اجازه می‌دهند آدم‌های معمولی، نتایج غیرمعمولی خلق کنند."
-                </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. TRUST SECTION */}
-      <section className="py-32 bg-[#FDFCF8] px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-[4rem] p-8 md:p-20 shadow-sm border border-stone-100 relative overflow-hidden">
-            <div className="flex flex-col md:flex-row gap-16 items-center">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-[#1B4B43] rounded-[3rem] rotate-6 group-hover:rotate-3 transition-transform duration-500"></div>
-                <div className="relative w-64 h-80 rounded-[3rem] overflow-hidden border-2 border-white shadow-2xl bg-stone-100">
-                   <Image
+          <div className="relative lg:w-1/3 lg:justify-self-end">
+            <HeroFade
+              delay={0.9}
+              className="absolute -end-4 top-6 z-10 bg-emerald-500 px-3 py-2 text-[11px] font-bold text-zinc-950 md:-end-8"
+            >
+              مهندس × مشاور
+            </HeroFade>
+            <Develop className="relative aspect-[4/5] w-full max-w-[420px] overflow-hidden bg-zinc-900 grayscale transition duration-700 hover:grayscale-0">
+              <Image
                 src="/images/farjad-portrait.jpg"
                 alt="فرجاد پورمحمد"
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+                priority
+                sizes="(max-width: 1024px) 100vw, 33vw"
+                className="h-full w-full object-cover object-top opacity-80 mix-blend-luminosity"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent px-6 pb-6 pt-24">
+                <div className="flex items-end justify-between gap-5">
+                  <p className="text-[11px] leading-relaxed text-zinc-400">
+                    نرم‌افزار / انسان‌شناسی
+                    <br />
+                    استراتژی / اجرا
+                  </p>
+                  <Asterisk className="h-8 w-8 animate-[spin_16s_linear_infinite] text-emerald-500" />
                 </div>
               </div>
-              
-              <div className="flex-1 space-y-8">
-                <h2 className="font-serif text-4xl font-bold text-[#111827]">تجربه عملیاتی، <br />نه توصیه‌های تئوریک.</h2>
-                <div className="grid gap-6">
-                  {[
-                    "بیش از یک دهه مهندسی ساختارهای بیزنسی",
-                    "تجربه مستقیم در اکوسیستم استارتاپی کانادا و ایران",
-                    "متمرکز بر بهینه‌سازی عملیات (Operations Optimization)"
-                  ].map((text, i) => (
-                    <div key={i} className="flex items-center gap-4 text-stone-700 text-lg">
-                      <div className="w-6 h-6 rounded-full bg-[#1B4B43]/10 flex items-center justify-center text-[#1B4B43]">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                      {text}
+            </Develop>
+          </div>
+        </div>
+
+        <HeroFade
+          delay={1.1}
+          className="relative mx-auto mt-12 flex w-full max-w-[1600px] items-center justify-between border-t border-white/10 pt-6 text-[11px] text-zinc-500"
+        >
+          <span>برای دیدن کارنامه پایین بروید</span>
+          <ArrowDownLeft className="h-4 w-4 text-emerald-500" />
+        </HeroFade>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* 2. FACTS — a marquee, and only figures already on the site        */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="overflow-hidden border-b border-zinc-950 bg-zinc-50 py-4 text-zinc-950" dir="ltr">
+        <div className="flex w-max animate-[home-marquee_30s_linear_infinite] items-center gap-8 whitespace-nowrap text-xs font-bold motion-reduce:animate-none">
+          {[0, 1].map((set) => (
+            <div className="flex items-center gap-8" key={set} aria-hidden={set === 1} dir="rtl">
+              <span>۲۲+ سال در فناوری</span>
+              <Asterisk className="h-3 w-3" />
+              <span>۲۵ استارتاپ منتورشده</span>
+              <Asterisk className="h-3 w-3" />
+              <span>بیش از ۳ میلیون دلار جذب‌شده توسط تیم‌ها</span>
+              <Asterisk className="h-3 w-3" />
+              <span>ممیز ارشد ISO 27001</span>
+              <Asterisk className="h-3 w-3" />
+              <span>دکتری انسان‌شناسی</span>
+              <Asterisk className="h-3 w-3" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* 3. THE RECORD — dated, no adjectives                              */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="border-b border-white/10 px-5 py-24 md:px-10 lg:px-14 lg:py-32">
+        <div className="mx-auto max-w-[1600px]">
+          <Reveal className="mb-16 grid gap-8 lg:mb-24 lg:grid-cols-12 lg:items-end">
+            <h2 className="text-4xl font-bold leading-tight md:text-6xl lg:col-span-8 lg:text-7xl">
+              کارنامه، به ترتیب تاریخ.
+            </h2>
+            <p className="max-w-md text-lg leading-relaxed text-zinc-400 lg:col-span-4">
+              بدون صفت. فقط اینکه کِی چه کاری کرده‌ام. هر خط این فهرست جای دیگری از همین سایت هم هست.
+            </p>
+          </Reveal>
+
+          <div className="grid gap-16 lg:grid-cols-12">
+            {/* Ledger */}
+            <div className="lg:col-span-7">
+              <DrawnRule ruleClassName="start-[3.25rem] md:start-[4.5rem]">
+              <ol className="space-y-0">
+                {LEDGER.map((row, i) => (
+                  <Reveal
+                    as="li"
+                    key={row.year}
+                    delay={Math.min(i * 0.05, 0.3)}
+                    className="group grid grid-cols-[3.25rem_1fr] gap-6 border-b border-white/10 py-7 md:grid-cols-[4.5rem_1fr] md:gap-10"
+                  >
+                    <span className="pt-1 text-sm font-bold tabular-nums text-emerald-400 md:text-base">
+                      {row.year}
+                    </span>
+                    <div className="space-y-2 ps-6">
+                      {row.lines.map((line) => (
+                        <p
+                          key={line}
+                          className="text-lg leading-relaxed text-zinc-200 transition-colors group-hover:text-zinc-50 md:text-2xl"
+                        >
+                          {line}
+                        </p>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </Reveal>
+                ))}
+              </ol>
+              </DrawnRule>
+
+              <div className="mt-8 flex flex-wrap items-baseline gap-x-10 gap-y-6 border-t border-white/10 pt-8">
+                {FACTS.map((f) => (
+                  <div key={f.label} className="flex items-baseline gap-3">
+                    <CountUp
+                      to={f.value}
+                      suffix={f.suffix}
+                      className="text-4xl font-black tabular-nums text-zinc-50 md:text-5xl"
+                    />
+                    <span className="text-sm text-zinc-400">{f.label}</span>
+                  </div>
+                ))}
               </div>
+            </div>
+
+            {/* Evidence */}
+            <div className="grid gap-6 lg:col-span-5">
+              {EVIDENCE.map((photo, i) => (
+                <Reveal as="figure" key={photo.src} delay={0.1 * i} className="group">
+                  <div className="relative aspect-[3/2] overflow-hidden bg-zinc-900">
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      className="object-cover grayscale transition duration-700 group-hover:scale-[1.02] group-hover:grayscale-0"
+                    />
+                  </div>
+                  <figcaption className="mt-3 flex items-center justify-between gap-4 text-xs text-zinc-500">
+                    <span>{photo.caption}</span>
+                    <Asterisk className="h-3 w-3 shrink-0 text-emerald-500" />
+                  </figcaption>
+                </Reveal>
+              ))}
+              <Reveal delay={0.2}>
+                <Link
+                  href="/fa/startups"
+                  className="group flex items-center justify-between border-t border-white/10 pt-5 text-sm font-medium text-emerald-400 transition-colors hover:text-emerald-300"
+                >
+                  ۲۵ استارتاپی که کنارشان بوده‌ام
+                  <ArrowUpLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1" />
+                </Link>
+              </Reveal>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. FINAL CTA */}
-      <section className="pb-32 pt-10 px-6">
-        <div className="max-w-5xl mx-auto bg-[#1B4B43] rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-[#1B4B43]/20">
-          <div className="relative z-10 space-y-10">
-            <h2 className="font-serif text-4xl md:text-6xl font-bold leading-tight">
-              آماده‌اید بیزنس خود را <br /> دوباره مهندسی کنید؟
+      {/* ---------------------------------------------------------------- */}
+      {/* 4. PRACTICE                                                       */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="border-b border-white/10 px-5 py-24 md:px-10 lg:px-14 lg:py-32">
+        <div className="mx-auto max-w-[1600px]">
+          <Reveal className="mb-20">
+            <h2 className="max-w-4xl text-4xl font-bold leading-tight md:text-6xl lg:text-7xl">
+              استراتژی تا وقتی چیزی را که دوشنبه ساخته می‌شود عوض نکند، بی‌فایده است.
             </h2>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/fa/contact">
-                <Button className="bg-white text-[#1B4B43] hover:bg-stone-100 h-16 px-12 text-xl font-bold rounded-full shadow-xl transition-all hover:scale-105">
-                  رزرو تایم استراتژی
-                </Button>
+          </Reveal>
+
+          <Reveal className="border-t border-white/10">
+            {SERVICES.map((service) => (
+              <Link
+                href={service.href}
+                key={service.href}
+                className="group grid gap-6 border-b border-white/10 py-10 transition-colors hover:bg-white/[0.02] focus-visible:bg-white/[0.03] focus-visible:outline-none md:grid-cols-12 md:items-center md:px-6"
+              >
+                <span className="text-sm font-medium text-emerald-400 md:col-span-3">{service.label}</span>
+                <h3 className="text-2xl font-bold leading-snug text-zinc-50 md:col-span-4 md:text-4xl">
+                  {service.title}
+                </h3>
+                <p className="max-w-lg leading-relaxed text-zinc-400 md:col-span-4">{service.copy}</p>
+                <ArrowUpLeft className="h-6 w-6 text-zinc-600 transition-all group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:text-emerald-500 md:col-span-1 md:justify-self-end" />
+              </Link>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* 5. PERSIAN-ONLY                                                   */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="grid border-b border-white/10 lg:grid-cols-2">
+        <div className="flex min-h-[520px] flex-col justify-between bg-zinc-900 p-8 md:p-14 lg:p-20">
+          <Asterisk className="h-5 w-5 text-zinc-600" />
+          <Reveal>
+            <p className="mb-8 max-w-md text-lg leading-relaxed text-zinc-400">
+              بخشی از کارم فقط به فارسی اتفاق می‌افتد: برای بنیان‌گذاران ایرانی، چه داخل ایران، چه در راه.
+            </p>
+            <h2 className="text-[clamp(3rem,6.5vw,6.5rem)] font-black leading-[1.05] text-zinc-50">
+              فقط
+              <br />
+              <span className="text-emerald-500">به فارسی.</span>
+            </h2>
+          </Reveal>
+        </div>
+
+        <div className="flex flex-col justify-center bg-zinc-950 p-8 md:p-14 lg:p-20">
+          <Reveal>
+            {PERSIAN_ONLY.map(({ href, icon: Icon, title, copy }) => (
+              <Link
+                key={href}
+                href={href}
+                className="group grid gap-6 border-b border-white/10 py-10 transition-colors first:border-t hover:bg-white/[0.02] focus-visible:bg-white/[0.03] focus-visible:outline-none md:grid-cols-[70px_1fr_auto] md:items-center"
+              >
+                <Icon className="h-8 w-8 text-emerald-500" />
+                <div>
+                  <h3 className="mb-2 text-xl font-bold text-zinc-50">{title}</h3>
+                  <p className="max-w-md leading-relaxed text-zinc-400">{copy}</p>
+                </div>
+                <ArrowUpLeft className="hidden h-5 w-5 text-zinc-600 transition-all group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:text-emerald-500 md:block" />
+              </Link>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* 6. CTA                                                            */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="px-5 py-10 md:px-10 lg:px-14">
+        <Reveal className="relative mx-auto overflow-hidden bg-emerald-500 px-8 py-16 text-zinc-950 md:px-16 md:py-24 lg:max-w-[1600px]">
+          <Asterisk className="absolute -start-16 -top-24 h-80 w-80 text-black/5" />
+          <div className="relative grid items-end gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <h2 className="text-[clamp(3rem,6.5vw,7rem)] font-black leading-[1.05]">
+                بیایید
+                <br />
+                راهش بیندازیم.
+              </h2>
+            </div>
+            <div className="lg:col-span-4">
+              <ul className="mb-10 space-y-4 text-sm font-semibold">
+                {["یک جلسه‌ی تشخیص", "بازخورد مستقیم و بی‌تعارف", "بدون نمایش آژانسی"].map((item) => (
+                  <li className="flex items-center gap-3" key={item}>
+                    <Check className="h-5 w-5" /> {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/fa/booking"
+                className="group flex items-center justify-between border-t-2 border-zinc-950 py-6 text-lg font-black hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950"
+              >
+                رزرو گفت‌وگو
+                <ArrowUpLeft className="h-6 w-6 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1" />
               </Link>
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
-
-    </div>
-  );
+    </main>
+  )
 }
