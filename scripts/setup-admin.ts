@@ -14,6 +14,10 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 async function main() {
+    // ADMIN_EMAIL is the OWNER account's LOGIN identity, not a mailbox. There is no
+    // inbox behind admin@farjadp.info and mail sent to it hard-bounces, so never reuse
+    // this as a notification recipient. Changing it here does not rename the existing
+    // account either — upsert keys on email, so a new value creates a SECOND OWNER.
     const email = process.env.ADMIN_EMAIL;
     const password = process.env.ADMIN_PASSWORD;
 

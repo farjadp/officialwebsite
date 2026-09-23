@@ -107,8 +107,11 @@ export async function sendPerkOfferNotification(offer: {
     markets: string
     validity: string
 }) {
-    const to = (process.env.PERK_NOTIFY_EMAIL || process.env.ADMIN_EMAIL)?.trim()
-    if (!to) throw new Error("Missing PERK_NOTIFY_EMAIL (or ADMIN_EMAIL) environment variable")
+    // Only PERK_NOTIFY_EMAIL. This used to fall back to ADMIN_EMAIL, which is the
+    // OWNER account's LOGIN identity (admin@farjadp.info), not a mailbox — mail to it
+    // hard-bounces. A login identity is never a delivery address.
+    const to = process.env.PERK_NOTIFY_EMAIL?.trim()
+    if (!to) throw new Error("Missing PERK_NOTIFY_EMAIL environment variable")
 
     // FROM falls back to onboarding@resend.dev, which Resend only delivers to the
     // account owner. Prefer the verified sending domain when EMAIL_FROM is unset.
