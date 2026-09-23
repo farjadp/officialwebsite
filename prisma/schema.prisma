@@ -467,6 +467,29 @@ model LabApplication {
   @@index([createdAt])
 }
 
+// Astaneh perk partners — companies offering perks to the Lab's teams.
+// Submitted from /fa/lab/perks; the row is the durable record, email is a notification.
+model PerkOffer {
+  id            String   @id @default(cuid())
+  companyName   String
+  website       String
+  contactName   String
+  email         String
+  telegram      String?
+  country       String
+  perkType      String
+  description   String
+  valueEstimate String?
+  markets       String[]
+  validity      String?
+  consent       Boolean
+  status        String   @default("NEW") // "NEW" | "CONTACTED" | "ACCEPTED" | "DECLINED"
+  emailOk       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // ============================================================================
 // Email Marketing Suite
 // Why: self-hosted campaign engine (contacts, templates, sending, analytics)

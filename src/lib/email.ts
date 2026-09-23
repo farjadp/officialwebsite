@@ -1,4 +1,5 @@
 import { Resend } from "resend"
+import { escapeHtml } from "@/lib/email/sanitize"
 
 const FROM =
     process.env.EMAIL_FROM ||
@@ -84,4 +85,74 @@ export async function sendWelcomeEmail(email: string, name: string) {
             </div>
         `,
     })
+}
+
+/**
+ * Tells Farjad a company has offered a perk to the Astaneh teams (/fa/lab/perks).
+ * Every value is submitter-supplied, so all of it is escaped. Reply-To is the
+ * submitter, so answering the notification answers the partner.
+ * Throws when no recipient or Resend is configured; the caller records that in `emailOk`.
+ */
+export async function sendPerkOfferNotification(offer: {
+    id: string
+    companyName: string
+    website: string
+    contactName: string
+    email: string
+    telegram: string
+    country: string
+    perkType: string
+    description: string
+    valueEstimate: string
+    markets: string
+    validity: string
+}) {
+    const to = (process.env.PERK_NOTIFY_EMAIL || process.env.ADMIN_EMAIL)?.trim()
+    if (!to) throw new Error("Missing PERK_NOTIFY_EMAIL (or ADMIN_EMAIL) environment variable")
+
+    // FROM falls back to onboarding@resend.dev, which Resend only delivers to the
+    // account owner. Prefer the verified sending domain when EMAIL_FROM is unset.
+    const marketingFrom = process.env.EMAIL_MARKETING_FROM?.trim()
+    const from = process.env.EMAIL_FROM
+        ? FROM
+        : marketingFrom
+            ? `${process.env.EMAIL_FROM_NAME || "Farjad PMD"} <${marketingFrom}>`
+            : FROM
+
+    const rows: [string, string][] = [
+        ["شرکت", offer.companyName],
+        ["وب‌سایت", offer.website],
+        ["رابط", offer.contactName],
+        ["ایمیل", offer.email],
+        ["تلگرام", offer.telegram || "—"],
+        ["کشور ثبت", offer.country],
+        ["نوع Perk", offer.perkType],
+        ["ارزش تقریبی", offer.valueEstimate || "—"],
+        ["بازارها", offer.markets],
+        ["اعتبار", offer.validity || "—"],
+    ]
+
+    const { error } = await getResend().emails.send({
+        from,
+        to,
+        replyTo: offer.email,
+        subject: `Perk جدید برای آستانه — ${offer.companyName.replace(/\s+/g, " ")}`,
+        html: `
+            <div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;max-width:600px;margin:0 auto;color:#1C1917;line-height:1.9;">
+                <h2 style="color:#1B4B43;margin:0 0 16px;">پیشنهاد Perk جدید برای آستانه</h2>
+                <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                    ${rows
+                        .map(
+                            ([k, v]) =>
+                                `<tr><td style="padding:6px 0;color:#78716c;width:120px;vertical-align:top;">${k}</td><td style="padding:6px 0;">${escapeHtml(v)}</td></tr>`
+                        )
+                        .join("")}
+                </table>
+                <h3 style="color:#1B4B43;margin:24px 0 8px;font-size:15px;">توضیح</h3>
+                <p style="white-space:pre-wrap;margin:0;background:#f6f3ec;padding:12px 16px;border-radius:8px;">${escapeHtml(offer.description)}</p>
+                <p style="color:#a8a29e;font-size:12px;margin-top:24px;">شناسه: ${escapeHtml(offer.id)} · با «پاسخ» مستقیم به ${escapeHtml(offer.contactName)} جواب می‌دهید.</p>
+            </div>
+        `,
+    })
+    if (error) throw new Error(`Resend rejected the perk notification: ${error.message}`)
 }

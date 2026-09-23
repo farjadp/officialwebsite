@@ -61,6 +61,7 @@ const EN_ONLY_PATHS = [
 /** Persian-only routes. */
 const FA_ONLY_PATHS = [
     '/lab',
+    '/lab/perks',
     '/book-club',
 ]
 
