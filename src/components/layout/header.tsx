@@ -98,8 +98,32 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                     {hasRoute("bookClub", locale) && (
                         <Link href={href(ROUTES.bookClub)} className="hover:text-[#b9ff66] transition-colors">{t.bookClub}</Link>
                     )}
+                    {/* Lab dropdown — the programme and its perk-partner call */}
                     {hasRoute("lab", locale) && (
-                        <Link href={href(ROUTES.lab)} className="hover:text-[#b9ff66] transition-colors">{t.lab}</Link>
+                        <div className="relative group">
+                            <button className="flex items-center gap-1 hover:text-[#b9ff66] transition-colors outline-none pb-6 -mb-6">
+                                {t.lab} <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                            </button>
+                            <div className="absolute top-full start-0 pt-0 hidden group-hover:block w-64 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
+                                <div className="bg-white border border-[#E7E5E4] rounded-sm shadow-xl p-2 flex flex-col gap-1">
+                                    <Link
+                                        href={href(ROUTES.lab)}
+                                        className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
+                                    >
+                                        <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.labProgramme}</div>
+                                        <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.labProgrammeNote}</div>
+                                    </Link>
+                                    <div className="h-px w-full bg-[#E7E5E4]/50 my-1"></div>
+                                    <Link
+                                        href={href(ROUTES.labPerks)}
+                                        className="p-3 text-sm hover:bg-[#FDFCF8] hover:text-[#1B4B43] rounded-sm transition-colors text-stone-600 group/link"
+                                    >
+                                        <div className="font-bold text-[#111827] group-hover/link:text-[#1B4B43] transition-colors">{t.labPerks}</div>
+                                        <div className="text-[10px] text-stone-500 mt-1 uppercase tracking-widest leading-relaxed">{t.labPerksNote}</div>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     )}
                     <Link href={href(ROUTES.tools)} className="hover:text-[#b9ff66] transition-colors">{t.tools}</Link>
                     <Link href={href(ROUTES.about)} className="hover:text-[#b9ff66] transition-colors">{t.about}</Link>
@@ -188,10 +212,19 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                                     {t.bookClub}
                                 </Link>
                             )}
+                            {/* Mobile Lab group — matches the desktop dropdown */}
                             {hasRoute("lab", locale) && (
-                                <Link href={href(ROUTES.lab)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
-                                    {t.lab}
-                                </Link>
+                                <div className="flex flex-col gap-4">
+                                    <span className="text-xl font-serif text-[#111827]">{t.lab}</span>
+                                    <div className="flex flex-col gap-4 ps-4 border-s-2 border-[#1B4B43]/20 ms-2">
+                                        <Link href={href(ROUTES.lab)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                            {t.labProgramme}
+                                        </Link>
+                                        <Link href={href(ROUTES.labPerks)} onClick={() => setIsOpen(false)} className="text-lg font-serif text-stone-500 hover:text-[#1B4B43] transition-colors">
+                                            {t.labPerks}
+                                        </Link>
+                                    </div>
+                                </div>
                             )}
                             <Link href={href(ROUTES.tools)} onClick={() => setIsOpen(false)} className="text-xl font-serif hover:text-[#1B4B43] transition-colors">
                                 {t.tools}

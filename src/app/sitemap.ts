@@ -47,6 +47,8 @@ const BILINGUAL_PATHS = [
     '/tools/startup-readiness',
     '/tools/trl-assessment',
     '/work',
+    '/lab',
+    '/lab/perks',
     '/privacy',
     '/terms',
 ]
@@ -60,8 +62,6 @@ const EN_ONLY_PATHS = [
 
 /** Persian-only routes. */
 const FA_ONLY_PATHS = [
-    '/lab',
-    '/lab/perks',
     '/book-club',
 ]
 

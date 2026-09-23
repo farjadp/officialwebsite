@@ -1,11 +1,11 @@
-import { canonicalOnly, SITE_URL } from "@/lib/seo"
+import { localeAlternates, SITE_URL } from "@/lib/seo"
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowDown, CheckCircle2, Linkedin, Send, Youtube } from "lucide-react";
-import { ApplicationForm } from "./application-form";
+import { ApplicationForm } from "@/components/lab/application-form";
 
 export const metadata: Metadata = {
-    alternates: canonicalOnly("/fa/lab"),
+    alternates: localeAlternates("/lab", "fa"),
   title: "Founder Development Lab | فرجاد پورمحمد",
   description:
     "۸ هفته کار واقعی روی استارتاپ شما — ۵ تیم، رایگان. از ایده تا شواهد، با منتورشیپ مستقیم فرجاد پورمحمد.",
@@ -489,7 +489,7 @@ export default function FounderLabPage() {
           </div>
 
           <div className="bg-white border border-stone-200 rounded-3xl p-6 md:p-10 shadow-[0_2px_16px_-6px_rgba(28,25,23,0.1)]">
-            <ApplicationForm />
+            <ApplicationForm locale="fa" />
           </div>
 
           <div className="mt-14 flex flex-col items-center gap-4">

@@ -36,6 +36,7 @@ export const ROUTES = {
     terms: "/terms",
     bookClub: "/book-club",
     lab: "/lab",
+    labPerks: "/lab/perks",
 } as const
 
 type RouteKey = keyof typeof ROUTES
@@ -48,9 +49,9 @@ const AVAILABILITY: Partial<Record<RouteKey, { en: boolean; fa: boolean }>> = {
     // No Persian blog: the Post model has no locale, so /fa/blog was deleted
     // on 8 Sep and 301s to /blog. Flip this only once real Persian posts exist.
     blog: { en: true, fa: false },
-    // Persian-only: these have never had an English counterpart.
+    // Persian-only: this has never had an English counterpart.
     bookClub: { en: false, fa: true },
-    lab: { en: false, fa: true },
+    // The Lab and its perk-partner call are published in both languages.
 }
 
 export function hasRoute(key: RouteKey, locale: Locale): boolean {
@@ -102,6 +103,10 @@ type NavLabels = {
     resume: string
     bookClub: string
     lab: string
+    labProgramme: string
+    labProgrammeNote: string
+    labPerks: string
+    labPerksNote: string
     portal: string
     portalMobile: string
     login: string
@@ -133,6 +138,10 @@ export const NAV: Record<Locale, NavLabels> = {
         resume: "Resume",
         bookClub: "Book Club",
         lab: "Lab",
+        labProgramme: "The Programme",
+        labProgrammeNote: "Eight weeks, five teams",
+        labPerks: "Perk Partners",
+        labPerksNote: "Offer a perk to the teams",
         portal: "Portal",
         portalMobile: "User Portal",
         login: "Login",
@@ -162,6 +171,10 @@ export const NAV: Record<Locale, NavLabels> = {
         resume: "رزومه",
         bookClub: "باشگاه کتاب",
         lab: "منتورشیپ",
+        labProgramme: "دوره‌ی منتورشیپ",
+        labProgrammeNote: "۸ هفته، ۵ تیم",
+        labPerks: "شرکای Perk",
+        labPerksNote: "ارائه‌ی Perk به تیم‌ها",
         portal: "پرتال",
         portalMobile: "پرتال کاربر",
         login: "ورود",
@@ -203,6 +216,7 @@ type FooterLabels = {
     booking: string
     bookClub: string
     lab: string
+    labPerks: string
     privacy: string
     terms: string
     location: string
@@ -236,6 +250,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         booking: "Book a Call",
         bookClub: "Book Club",
         lab: "Lab",
+        labPerks: "Perk Partners",
         privacy: "Privacy Policy",
         terms: "Terms of Service",
         location: "Newmarket, Ontario, Canada",
@@ -267,6 +282,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         booking: "رزرو جلسه",
         bookClub: "باشگاه کتاب",
         lab: "منتورشیپ",
+        labPerks: "شرکای Perk",
         privacy: "سیاست حریم خصوصی",
         terms: "شرایط استفاده",
         location: "نیومارکت، انتاریو، کانادا",

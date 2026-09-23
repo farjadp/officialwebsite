@@ -13,17 +13,17 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRateLimit, RATE_RULES } from "@/lib/rate-limit"
 import { sendPerkOfferNotification } from "@/lib/email"
-import { COUNTRIES, HONEYPOT_FIELD, MARKETS, PERK_TYPES, fieldErrors, labelOf, perkOfferSchema } from "@/lib/perk-offer"
+import { COUNTRIES, HONEYPOT_FIELD, MARKETS, PERK_TYPES, fieldErrors, labelOf, perkOfferSchema, type Locale } from "@/lib/perk-offer"
 
 async function handler(req: NextRequest) {
     let body: unknown
     try {
         body = await req.json()
     } catch {
-        return NextResponse.json({ error: "درخواست نامعتبر است." }, { status: 400 })
+        return NextResponse.json({ error: "Invalid request. / درخواست نامعتبر است." }, { status: 400 })
     }
     if (!body || typeof body !== "object") {
-        return NextResponse.json({ error: "درخواست نامعتبر است." }, { status: 400 })
+        return NextResponse.json({ error: "Invalid request. / درخواست نامعتبر است." }, { status: 400 })
     }
 
     // Answer a bot exactly like a success, so it has nothing to learn from.
@@ -33,10 +33,21 @@ async function handler(req: NextRequest) {
         return NextResponse.json({ ok: true })
     }
 
-    const parsed = perkOfferSchema.safeParse(body)
+    // Errors must come back in the language the visitor is reading. The form
+    // sends its own locale; anything else falls back to Persian, which is where
+    // this form started.
+    const raw = (body as Record<string, unknown>).locale
+    const locale: Locale = raw === "en" ? "en" : "fa"
+
+    const parsed = perkOfferSchema(locale).safeParse(body)
     if (!parsed.success) {
         return NextResponse.json(
-            { error: "چند فیلد نیاز به اصلاح دارد.", fields: fieldErrors(parsed.error) },
+            {
+                error: locale === "en"
+                    ? "A few fields need fixing."
+                    : "چند فیلد نیاز به اصلاح دارد.",
+                fields: fieldErrors(parsed.error),
+            },
             { status: 422 }
         )
     }
@@ -69,11 +80,11 @@ async function handler(req: NextRequest) {
                 contactName: data.contactName,
                 email: data.email,
                 telegram: data.telegram,
-                country: labelOf(COUNTRIES, data.country),
-                perkType: labelOf(PERK_TYPES, data.perkType),
+                country: labelOf(COUNTRIES, data.country, "fa"),
+                perkType: labelOf(PERK_TYPES, data.perkType, "fa"),
                 description: data.description,
                 valueEstimate: data.valueEstimate,
-                markets: data.markets.map((m) => labelOf(MARKETS, m)).join("، "),
+                markets: data.markets.map((m) => labelOf(MARKETS, m, "fa")).join("، "),
                 validity: data.validity,
             })
             emailOk = true
@@ -89,7 +100,11 @@ async function handler(req: NextRequest) {
     } catch (err) {
         console.error("[perk-offer] save failed:", err)
         return NextResponse.json(
-            { error: "ثبت پیشنهاد با خطا روبه‌رو شد. لطفاً چند دقیقه‌ی دیگر دوباره امتحان کنید یا ایمیل بزنید." },
+            {
+                error: locale === "en"
+                    ? "Saving your offer failed. Please try again in a few minutes, or email instead."
+                    : "ثبت پیشنهاد با خطا روبه‌رو شد. لطفاً چند دقیقه‌ی دیگر دوباره امتحان کنید یا ایمیل بزنید.",
+            },
             { status: 500 }
         )
     }

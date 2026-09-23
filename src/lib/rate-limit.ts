@@ -102,7 +102,7 @@ export const RATE_RULES = {
     /** Application forms: a person submits once. */
     labApply: { limit: 5, windowMs: 60 * 60 * 1000, message: "Too many applications from this address. Please try again later." },
     /** Astaneh perk-partner offers: a company submits once or twice. */
-    perkOffer: { limit: 5, windowMs: 60 * 60 * 1000, message: "تعداد درخواست‌ها از این نشانی زیاد است. لطفاً یک ساعت دیگر دوباره امتحان کنید." },
+    perkOffer: { limit: 5, windowMs: 60 * 60 * 1000, message: "Too many submissions from this address. Please try again in an hour. / تعداد درخواست‌ها از این نشانی زیاد است. لطفاً یک ساعت دیگر دوباره امتحان کنید." },
     bugReport: { limit: 10, windowMs: 60 * 60 * 1000 },
     /** Makes ~10 outbound requests per call against a caller-supplied host. */
     websiteAudit: { limit: 8, windowMs: 60 * 60 * 1000, message: "You have run several audits recently. Please try again in a little while." },

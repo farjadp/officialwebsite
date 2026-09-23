@@ -102,6 +102,9 @@ export function Footer({ locale = "en" }: { locale?: Locale }) {
                             {hasRoute("lab", locale) && (
                                 <li><Link href={href(ROUTES.lab)} className="hover:text-[#D97706] transition-colors">{t.lab}</Link></li>
                             )}
+                            {hasRoute("labPerks", locale) && (
+                                <li><Link href={href(ROUTES.labPerks)} className="hover:text-[#D97706] transition-colors">{t.labPerks}</Link></li>
+                            )}
                             <li><Link href={href(ROUTES.work)} className="hover:text-[#D97706] transition-colors">{t.work}</Link></li>
                             {hasRoute("resume", locale) && (
                                 <li><Link href={href(ROUTES.resume)} className="hover:text-[#D97706] transition-colors">{t.resume}</Link></li>
