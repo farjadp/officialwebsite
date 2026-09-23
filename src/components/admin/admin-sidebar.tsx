@@ -15,7 +15,7 @@ import {
     LayoutDashboard, FileText, Layers, Hash, Image as ImageIcon, Users, Settings,
     LogOut, FolderTree, Share2, BarChart3, Sparkles, Inbox, Activity, BookOpen,
     HardDrive, MessageSquareQuote, FolderGit2, Mail, Rocket, ScanSearch,
-    ClipboardList, Search, ChevronDown, ScrollText, X,
+    ClipboardList, Search, ChevronDown, ScrollText, X, Gift,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -72,6 +72,7 @@ const NAV_GROUPS: NavGroup[] = [
             { title: "Startups", href: "/admin/startups", icon: Rocket },
             { title: "Startup Intake", href: "/admin/intake", icon: ClipboardList },
             { title: "Lab Applications", href: "/admin/lab-applications", icon: ClipboardList },
+            { title: "Perk Offers", href: "/admin/perk-offers", icon: Gift },
             { title: "Book Club", href: "/admin/book-club", icon: BookOpen },
             { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
         ],

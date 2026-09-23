@@ -14,6 +14,9 @@ export const DESCRIPTION_MAX = 600
 /** Hidden field. Humans never see it; naive bots fill every input. */
 export const HONEYPOT_FIELD = "company_fax"
 
+/** Review states for an offer. The DB default is the first one. */
+export const PERK_STATUSES = ["NEW", "CONTACTED", "ACCEPTED", "DECLINED"] as const
+
 export const COUNTRIES = [
     { value: "IR", label: "ایران" },
     { value: "CA", label: "کانادا" },
