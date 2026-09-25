@@ -265,19 +265,43 @@ agent to parse.
 
 Not an LLM. Pure fetching and scoring.
 
-- RSS via `fast-xml-parser` (already a dependency). Medium exposes
-  `medium.com/feed/tag/<tag>`; Substack exposes `<publication>/feed`. **Only
-  RSS** — scraping Medium's HTML is fragile and against its terms.
-- Hacker News via the Algolia API (`hn.algolia.com/api/v1/search_by_date`).
-- Reddit via `reddit.com/r/<sub>/top.json?t=week`, with a descriptive
-  User-Agent as Reddit requires.
+- RSS via `fast-xml-parser` (already a dependency), handling both RSS 2.0 and
+  Atom. Medium exposes `medium.com/feed/tag/<tag>`; Substack exposes
+  `<publication>/feed`. **Only RSS** — scraping Medium's HTML is fragile and
+  against its terms.
+- Hacker News via the Algolia API, which does report points and comments.
+- **Reddit via its Atom feed**, not the JSON API. Corrected 25 Sep 2026 against
+  the live network: `www.reddit.com/r/<sub>/top.json` answers **403** to an
+  unauthenticated client, and `old.reddit.com`'s JSON answers **200 with the
+  body "Not Found"** — worse than an error, since a naive caller would store
+  it. `top.rss?t=week` answers 200 with a full week of posts. The cost is that
+  Atom carries no score or comment count; if those ever matter, the fix is a
+  Reddit OAuth app, not a different scrape. Reddit also rate-limits hard: at
+  four seconds between subreddits, three of five still got 429, so sources
+  sharing a host wait twelve seconds.
 - `URL` and `PDF` sources are **reference material**, never trends: they are
   fetched once, stored as text, and injected into briefs. PDF text extraction
-  needs a new dependency (`unpdf`, pure-JS, no native binary).
+  uses `unpdf` (pure JS, no native binary).
 
-Score = `log1p(engagement) * source.weight * recencyDecay(publishedAt)`, where
-recency halves every 7 days. Fingerprint = sha256 of the URL with tracking
-parameters stripped, so the same story from two feeds collapses to one row.
+Fingerprint = sha256 of the URL with tracking parameters stripped, so the same
+story from two feeds collapses to one row.
+
+**Scoring, corrected after the first real run.** The first formula was
+`log1p(engagement) * weight * recencyDecay`, and it was wrong: engagement is not
+comparable across sources. Hacker News reports points while Medium and Substack
+report nothing, so every one of the six leading signals was an HN story and a
+weight-3 Stratechery essay could never lead. Engagement is now normalised
+**within its own source** and contributes at most a 0.2 share:
+
+```
+score = (1 + 0.2 × log1p(engagement)/log1p(peakInThisSource)) × weight × 0.5^(ageDays/7)
+```
+
+That keeps the engagement swing smaller than one step of `weight`, so weight —
+the dial Farjad actually edits — strictly decides between sources, and
+engagement only orders stories inside one source, which is the only comparison
+it is valid for. The share must stay below `1 / maxWeight`; at 0.2 that holds
+for weights up to 4.
 
 ### 5.2 Brief — `src/lib/content/brief.ts`
 

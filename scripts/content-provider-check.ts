@@ -11,9 +11,7 @@
 //      failure; a present key that errors IS a failure (exit 1).
 // ============================================================================
 
-import { config } from "dotenv"
-config({ path: ".env.local" })
-config()
+import "./_env"
 
 import { z } from "zod"
 import { complete, hasKey, ProviderKeyMissing } from "../src/lib/content/provider"

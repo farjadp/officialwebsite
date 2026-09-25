@@ -27,6 +27,12 @@
   there is no dev database. Hand-written idempotent SQL applied with
   `prisma db execute` over `DATABASE_URL_UNPOOLED`, and only with Farjad's
   go-ahead. Full procedure in Task 2, Step 2.
+- **Any script that imports `src/lib/prisma` must `import "./_env"` first.**
+  `prisma.ts` reads `DATABASE_URL` at module load and falls back to a localhost
+  connection; ES imports are hoisted, so calling dotenv's `config()` in the
+  script body is too late and the script silently talks to a local Postgres
+  instead of Neon — reporting "table does not exist" rather than failing to
+  connect.
 - Commit after every task. Small, focused commits.
 - `docs/` plans and `CONTENT_ENGINE.md` are updated in the same commit as any change that contradicts them.
 
@@ -252,9 +258,13 @@ it("multiplies by source weight", () => { /* ... */ })
 
 - [ ] **Step 3: Implement `sources.ts`**
 
+<!-- Corrected 25 Sep 2026 against the live network. -->
+
 RSS through `fast-xml-parser` (handle both RSS 2.0 `<item>` and Atom `<entry>`);
-HN through the Algolia API; Reddit through `top.json?t=week` with a descriptive
-User-Agent. `URL` and `PDF` return no signals at all — they resolve to reference
+HN through the Algolia API; **Reddit through its Atom feed**, not `top.json` —
+that endpoint answers 403 unauthenticated, and `old.reddit.com`'s JSON answers
+200 with the body "Not Found". Reddit also rate-limits hard, so space calls to
+the same host. `URL` and `PDF` return no signals at all — they resolve to reference
 text. PDFs come from the blob URL through `unpdf`. Every fetch has a timeout and
 records `lastError` instead of throwing out of the loop; one dead feed must not
 stop the scout.
