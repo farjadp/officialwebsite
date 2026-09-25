@@ -69,11 +69,15 @@
 		 url('/fonts/dana/woff/Dana-Regular.woff') format('woff');
 }
 
-/* Apply exclusively to RTL body to avoid breaking English */
+/* Persian is set in IRANYekanX everywhere (25 Sep 2026, see iranyekan.css).
+   This rule used to force Dana on headings, buttons and inputs while
+   iransans.css set IRANSansX on text, so every Persian page mixed two
+   faces. The Dana @font-face declarations above stay for anything that
+   asks for it by name. */
 [dir="rtl"] body, 
 [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5, [dir="rtl"] h6,
 [dir="rtl"] input, [dir="rtl"] textarea, [dir="rtl"] button {
-	font-family: dana, Tahoma, Arial, sans-serif !important;
+	font-family: iranyekan, iransans, Tahoma, Arial, sans-serif !important;
 }
 
 [dir="rtl"] .ltr { direction: ltr; }

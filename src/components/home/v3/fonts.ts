@@ -1,11 +1,13 @@
 // ============================================================================
 // File Path: src/components/home/v3/fonts.ts
-// Why: The v3 home's type. A calm serif for the voice (Newsreader in
-//      English, Naskh in Persian), a plain sans for reading. Persian body
-//      text stays on Dana, the site's existing Persian face.
+// Why: The v3 type for English: a calm serif for the voice (Newsreader)
+//      and a plain sans for reading (Instrument Sans). Persian is set in
+//      IRANYekanX throughout (iranyekan.css); see globals.css for how the
+//      --v3-display / --v3-body variables switch under dir="rtl".
+//      Loaded once in the root layout so the header and footer share them.
 // ============================================================================
 
-import { Instrument_Sans, Newsreader, Noto_Naskh_Arabic } from "next/font/google"
+import { Instrument_Sans, Newsreader } from "next/font/google"
 
 export const newsreader = Newsreader({
   subsets: ["latin"],
@@ -19,12 +21,5 @@ export const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-instrument",
-  display: "swap",
-})
-
-export const naskh = Noto_Naskh_Arabic({
-  subsets: ["arabic"],
-  weight: ["400", "500", "600"],
-  variable: "--font-naskh",
   display: "swap",
 })

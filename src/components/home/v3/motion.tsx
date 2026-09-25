@@ -138,7 +138,7 @@ export function RoleSwitcher({
           >
             <motion.h1
               variants={RISE}
-              className="font-v3-display text-[clamp(2.6rem,5.4vw,4.9rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:font-medium rtl:leading-[1.5] rtl:tracking-normal"
+              className="font-v3-display text-[clamp(2.6rem,5.4vw,4.9rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:font-light rtl:leading-[1.45] rtl:tracking-[-0.01em]"
             >
               {role.headline}
               <em className="text-v3-light not-italic ltr:italic">{role.accent}</em>

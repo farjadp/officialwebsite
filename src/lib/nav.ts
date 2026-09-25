@@ -117,6 +117,8 @@ type NavLabels = {
     profileNote: string
     cta: string
     ctaMobile: string
+    tagline: string
+    brand: string
     menu: string
     switchTo: string
     switchLabel: string
@@ -150,8 +152,10 @@ export const NAV: Record<Locale, NavLabels> = {
         registerNote: "Create a new account",
         profile: "Profile",
         profileNote: "Manage account & avatar",
-        cta: "Start a project ↗",
-        ctaMobile: "Let's Talk",
+        cta: "Book a call",
+        ctaMobile: "Book a call",
+        tagline: "AI · Mentorship · Coaching",
+        brand: "Farjad",
         menu: "Toggle menu",
         switchTo: "فارسی",
         switchLabel: "Persian",
@@ -183,8 +187,10 @@ export const NAV: Record<Locale, NavLabels> = {
         registerNote: "ایجاد حساب کاربری جدید",
         profile: "پروفایل",
         profileNote: "مدیریت حساب و آواتار",
-        cta: "شروع یک پروژه ↗",
-        ctaMobile: "گفت‌وگو کنیم",
+        cta: "رزرو جلسه",
+        ctaMobile: "رزرو جلسه",
+        tagline: "هوش مصنوعی · منتورشیپ · کوچینگ",
+        brand: "فرجاد",
         menu: "باز و بسته کردن منو",
         switchTo: "English",
         switchLabel: "English",
@@ -220,6 +226,8 @@ type FooterLabels = {
     privacy: string
     terms: string
     location: string
+    follow: string
+    localTime: string
 }
 
 export const FOOTER: Record<Locale, FooterLabels> = {
@@ -254,6 +262,8 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         privacy: "Privacy Policy",
         terms: "Terms of Service",
         location: "Newmarket, Ontario, Canada",
+        follow: "Follow the work",
+        localTime: "Toronto time",
     },
     fa: {
         manifesto:
@@ -286,5 +296,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         privacy: "سیاست حریم خصوصی",
         terms: "شرایط استفاده",
         location: "نیومارکت، انتاریو، کانادا",
+        follow: "دنبال کردن کارها",
+        localTime: "ساعت تورنتو",
     },
 }

@@ -10,7 +10,6 @@
 import Image from "next/image"
 import Link from "next/link"
 import { HOME_COPY, type Locale } from "./copy"
-import { instrumentSans, naskh, newsreader } from "./fonts"
 import {
   Arrow,
   CountUp,
@@ -27,11 +26,6 @@ export type HomePost = {
   excerpt: string | null
   readingTime: number | null
   categories: { name: string }[]
-}
-
-const LOCALE_TYPE: Record<Locale, string> = {
-  en: "[--v3-display:var(--font-newsreader)] [--v3-body:var(--font-instrument)]",
-  fa: "[--v3-display:var(--font-naskh)] [--v3-body:var(--font-dana)]",
 }
 
 function Beam({ className }: { className?: string }) {
@@ -51,13 +45,13 @@ export function HomeV3({ locale, posts = [] }: { locale: Locale; posts?: HomePos
     <div
       dir={dir}
       lang={locale}
-      className={`${newsreader.variable} ${instrumentSans.variable} ${naskh.variable} ${LOCALE_TYPE[locale]} bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink`}
+      className={`bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink`}
     >
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative isolate overflow-hidden">
         <Beam />
         <Spotlight className="-z-10" />
-        <div className="mx-auto grid max-w-[1600px] lg:min-h-[calc(100dvh-6rem)] lg:grid-cols-12">
+        <div className="mx-auto grid max-w-[1600px] lg:min-h-[calc(100dvh-5rem)] lg:grid-cols-12">
           <div className="flex flex-col justify-center gap-10 px-5 pb-14 pt-14 md:px-10 lg:col-span-6 lg:py-20 lg:pe-8 lg:ps-14">
             <p className="text-xs uppercase tracking-[0.14em] text-v3-mute rtl:text-sm rtl:normal-case rtl:tracking-normal">
               {t.eyebrow}

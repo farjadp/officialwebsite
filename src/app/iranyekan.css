@@ -1,0 +1,61 @@
+/* ─── IRANYekanX (FaNum) ────────────────────────────────────────────────
+   The site's Persian face since 25 Sep 2026, licensed by Farjad. The FaNum
+   cut draws Persian digits for every digit, so figures read naturally in
+   Persian text without converting them in the copy. ───────────────────── */
+
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 200;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-UltraLight.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 300;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-Light.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 400;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-Regular.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 500;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-Medium.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 600;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-DemiBold.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-Bold.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 800;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-ExtraBold.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: iranyekan;
+	font-style: normal;
+	font-weight: 900;
+	src: url('/fonts/iranyekan/IRANYekanXFaNum-Black.woff2') format('woff2');
+	font-display: swap;
+}

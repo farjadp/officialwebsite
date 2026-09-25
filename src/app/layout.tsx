@@ -13,6 +13,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 import { SITE_URL } from "@/lib/seo"
+import { instrumentSans, newsreader } from "@/components/home/v3/fonts"
 
 const danaFont = localFont({
   src: [
@@ -147,7 +148,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={dir}>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable, GeistMono.variable, danaFont.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable, GeistMono.variable, danaFont.variable, newsreader.variable, instrumentSans.variable)}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}

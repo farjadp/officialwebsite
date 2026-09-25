@@ -3,6 +3,7 @@
 @plugin "@tailwindcss/typography";
 @import "./dana.css";
 @import "./iransans.css";
+@import "./iranyekan.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -19,8 +20,8 @@
   --color-v3-soft: #cfc8bb;
   --color-v3-bone: #ede8df;
   --color-v3-light: #e8c48a;
-  --font-v3-display: var(--v3-display);
-  --font-v3-body: var(--v3-body);
+  --font-v3-display: var(--v3-display, var(--font-newsreader)), serif;
+  --font-v3-body: var(--v3-body, var(--font-instrument)), sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -204,9 +205,28 @@
   to { transform: scaleX(1); }
 }
 
-/* dana.css forces Dana on every RTL heading with !important; the v3 display
-   face is Naskh, so it wins here on specificity (two attributes/classes). */
-[dir="rtl"] .font-v3-display { font-family: var(--v3-display) !important; }
+/* In Persian both v3 voices are IRANYekanX: the display voice is its
+   light weight at size, the body its regular. */
+[dir="rtl"] {
+  --v3-display: iranyekan, iransans, Tahoma;
+  --v3-body: iranyekan, iransans, Tahoma;
+}
+
+/* The footer wordmark: dim letters with a band of light passing across. */
+@keyframes v3-sheen {
+  from { background-position: 120% 0; }
+  to { background-position: -20% 0; }
+}
+
+.v3-wordmark {
+  background-image: linear-gradient(100deg, #2b2825 0%, #2b2825 42%, #e8c48a 50%, #2b2825 58%, #2b2825 100%);
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: v3-sheen 10s ease-in-out infinite;
+}
 
 .v3-beam { animation: v3-beam 16s ease-in-out infinite; }
 [dir="rtl"] .v3-beam { animation-direction: reverse; }
@@ -218,7 +238,8 @@
 @media (prefers-reduced-motion: reduce) {
   .v3-beam,
   .v3-drift,
-  .v3-marquee {
+  .v3-marquee,
+  .v3-wordmark {
     animation: none;
   }
   .v3-fill {

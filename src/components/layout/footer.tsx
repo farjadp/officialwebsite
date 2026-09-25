@@ -1,193 +1,167 @@
 // ============================================================================
 // File Path: src/components/layout/footer.tsx
-// Version: 3.0.0 — The "Editorial" Footer, localised
-// Style: Dark Mode "Book Cover" style.
-// Why: Creates a strong visual anchor at the bottom.
-//      Prioritizes the Newsletter (The Inner Circle).
+// Version: 4.0.0 — 2026-09-25
+// Why: The site footer in the v3 "Light" language. It ends every page the
+//      way the portrait begins the home: warm dark, one light. A giant
+//      wordmark rises into view with light passing across it.
 //
-// Copy and hrefs come from @/lib/nav. Every link here used to be a hardcoded
-// English route with hardcoded English copy, so the Persian footer was an
-// English footer bolted onto a Persian page.
+//      The old footer had a newsletter form with no action and no endpoint
+//      behind it — typing an email did nothing. It is replaced here by the
+//      channels that do exist, until a real, consented signup is built.
+//
+// Copy and hrefs come from @/lib/nav, so the Persian footer is Persian.
 // ============================================================================
 
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import {
-    Send,
-    Instagram,
-    Youtube,
-    Linkedin,
-    MapPin,
-    Clock
-} from "lucide-react"
-import { FOOTER, ROUTES, hasRoute, localePath, type Locale } from "@/lib/nav"
+import { ArrowLeft, ArrowRight, Instagram, Linkedin, Send, Youtube } from "lucide-react"
+import { FOOTER, NAV, ROUTES, counterpartPath, hasRoute, localePath, type Locale } from "@/lib/nav"
+import { FooterWordmark, TorontoTime } from "./footer-motion"
+
+const SOCIALS = [
+    { href: "https://t.me/Heros_Journey", label: "Telegram · Hero's Journey", Icon: Send },
+    { href: "https://t.me/FarjadTalks", label: "Telegram · Farjad Talks", Icon: Send },
+    { href: "https://instagram.com/FarjadTalks", label: "Instagram", Icon: Instagram },
+    { href: "https://youtube.com/@FarjadTalks", label: "YouTube", Icon: Youtube },
+    { href: "https://www.linkedin.com/in/farjadpourmohammad/", label: "LinkedIn", Icon: Linkedin },
+]
+
+function FooterLink({ href, children, strong = false }: { href: string; children: React.ReactNode; strong?: boolean }) {
+    return (
+        <li>
+            <Link
+                href={href}
+                className={`group relative inline-flex min-h-9 items-center transition-colors duration-300 hover:text-v3-bone ${
+                    strong ? "text-v3-bone" : "text-v3-soft"
+                }`}
+            >
+                {children}
+                <span
+                    aria-hidden
+                    className="absolute inset-x-0 bottom-1 h-px origin-left scale-x-0 bg-v3-light transition-transform duration-500 group-hover:scale-x-100 rtl:origin-right"
+                />
+            </Link>
+        </li>
+    )
+}
 
 export function Footer({ locale = "en" }: { locale?: Locale }) {
     const t = FOOTER[locale]
+    const nav = NAV[locale]
     const href = (path: string) => localePath(locale, path)
+    const other: Locale = locale === "fa" ? "en" : "fa"
+    const Arrow = locale === "fa" ? ArrowLeft : ArrowRight
 
     return (
-        <footer className="bg-[#111827] text-stone-300 font-sans border-t border-[#1B4B43] relative overflow-hidden">
-
-            {/* Abstract Background Element (Subtle) */}
-            <div className="absolute top-0 end-0 w-[500px] h-[500px] bg-[#1B4B43] rounded-full blur-[150px] opacity-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-
-            <div className="max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-12 relative z-10">
-
-                {/* --- TOP SECTION: Newsletter & Brand --- */}
-                <div className="grid lg:grid-cols-2 gap-16 mb-20">
-
-                    {/* Brand Manifesto */}
-                    <div className="space-y-6">
-                        <Link href={href(ROUTES.home)} className="inline-flex items-center gap-4">
-                            <Image
-                                src="/images/logo-mark-light.png"
-                                alt=""
-                                width={571}
-                                height={556}
-                                className="h-14 w-auto shrink-0"
-                            />
-                            <span className="font-serif font-black text-3xl tracking-tighter text-white" dir="ltr">
-                                FARJAD<span className="text-[#D97706]">.</span>
-                            </span>
+        <footer className="relative isolate overflow-hidden border-t border-v3-line/70 bg-v3-ink font-v3-body text-v3-bone">
+            <div className="mx-auto max-w-[1600px] px-5 pt-20 md:px-10 lg:px-14 lg:pt-28">
+                {/* ── Brand and channels ───────────────────────────────── */}
+                <div className="grid gap-14 lg:grid-cols-12">
+                    <div className="flex flex-col gap-6 lg:col-span-5">
+                        <Link href={href(ROUTES.home)} className="inline-flex items-center gap-3 self-start">
+                            <Image src="/images/logo-mark-light.png" alt="" width={571} height={556} className="h-11 w-auto" />
+                            <span className="font-v3-display text-3xl rtl:text-2xl rtl:font-medium">{nav.brand}</span>
                         </Link>
-                        <p className="text-lg text-stone-400 leading-relaxed max-w-md font-light">
-                            {t.manifesto}
-                        </p>
-                        <div className="flex items-center gap-6 pt-2">
-                            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1B4B43]">
-                                <span className="w-2 h-2 bg-[#1B4B43] rounded-full animate-pulse" />
-                                {t.available}
-                            </div>
-                        </div>
+                        <p className="max-w-md text-lg leading-relaxed text-v3-soft rtl:leading-loose">{t.manifesto}</p>
+                        <Link
+                            href={href(ROUTES.booking)}
+                            className="group inline-flex items-center gap-3 self-start text-sm text-v3-bone"
+                        >
+                            <span className="relative flex h-2 w-2" aria-hidden>
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-v3-light opacity-60 motion-reduce:animate-none" />
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-v3-light" />
+                            </span>
+                            {t.available}
+                            <Arrow className="h-3.5 w-3.5 text-v3-light transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden />
+                        </Link>
                     </div>
 
-                    {/* Newsletter Box */}
-                    <div className="bg-white/5 border border-white/10 p-8 rounded-sm backdrop-blur-sm">
-                        <h3 className="font-serif text-2xl text-white mb-2">{t.newsletterTitle}</h3>
-                        <p className="text-sm text-stone-400 mb-6">
-                            {t.newsletterBody}
-                        </p>
-                        <form className="flex flex-col sm:flex-row gap-3">
-                            <Input
-                                placeholder={t.newsletterPlaceholder}
-                                dir="ltr"
-                                className="bg-white/10 border-white/10 text-white placeholder:text-stone-500 focus-visible:ring-[#1B4B43] h-12"
-                            />
-                            <Button className="bg-[#1B4B43] hover:bg-[#133832] text-white h-12 px-6 font-bold uppercase tracking-wider text-xs">
-                                {t.subscribe}
-                            </Button>
-                        </form>
+                    <div className="lg:col-span-6 lg:col-start-7">
+                        <p className="mb-3 text-sm text-v3-mute">{t.follow}</p>
+                        <ul className="border-t border-v3-line/70">
+                            {SOCIALS.map(({ href: url, label, Icon }) => (
+                                <li key={url} className="border-b border-v3-line/70">
+                                    <a
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        dir="ltr"
+                                        className="group flex min-h-14 items-center justify-between gap-4 py-3 text-v3-soft transition-colors duration-300 hover:text-v3-bone"
+                                    >
+                                        <span className="flex items-center gap-4">
+                                            <Icon className="h-4 w-4 text-v3-mute transition-colors group-hover:text-v3-light" aria-hidden />
+                                            <span className="text-lg transition-transform duration-500 group-hover:translate-x-2">{label}</span>
+                                        </span>
+                                        <ArrowRight
+                                            className="h-4 w-4 -rotate-45 text-v3-light opacity-0 transition-all duration-500 group-hover:rotate-0 group-hover:opacity-100"
+                                            aria-hidden
+                                        />
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
 
-                <Separator className="bg-white/10 mb-16" />
-
-                {/* --- MIDDLE SECTION: The Index (Links) --- */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-20">
-
-                    {/* Column 1 */}
-                    <div className="space-y-6">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">{t.colLibrary}</h4>
-                        <ul className="space-y-3 text-sm">
-                            {hasRoute("blog", locale) && (
-                                <li><Link href={href(ROUTES.blog)} className="hover:text-[#D97706] transition-colors">{t.allEssays}</Link></li>
-                            )}
-                            {hasRoute("bookClub", locale) && (
-                                <li><Link href={href(ROUTES.bookClub)} className="hover:text-[#D97706] transition-colors">{t.bookClub}</Link></li>
-                            )}
-                            {hasRoute("lab", locale) && (
-                                <li><Link href={href(ROUTES.lab)} className="hover:text-[#D97706] transition-colors">{t.lab}</Link></li>
-                            )}
-                            {hasRoute("labPerks", locale) && (
-                                <li><Link href={href(ROUTES.labPerks)} className="hover:text-[#D97706] transition-colors">{t.labPerks}</Link></li>
-                            )}
-                            <li><Link href={href(ROUTES.work)} className="hover:text-[#D97706] transition-colors">{t.work}</Link></li>
-                            {hasRoute("resume", locale) && (
-                                <li><Link href={href(ROUTES.resume)} className="hover:text-[#D97706] transition-colors">{t.resume}</Link></li>
-                            )}
-                            <li><Link href={href(ROUTES.about)} className="hover:text-[#D97706] transition-colors font-medium text-white">{t.startHere}</Link></li>
+                {/* ── Index ────────────────────────────────────────────── */}
+                <div className="mt-20 grid grid-cols-2 gap-10 border-t border-v3-line/70 pt-12 md:grid-cols-3">
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-sm text-v3-mute">{t.colLibrary}</h2>
+                        <ul className="flex flex-col">
+                            {hasRoute("blog", locale) && <FooterLink href={href(ROUTES.blog)}>{t.allEssays}</FooterLink>}
+                            {hasRoute("bookClub", locale) && <FooterLink href={href(ROUTES.bookClub)}>{t.bookClub}</FooterLink>}
+                            {hasRoute("lab", locale) && <FooterLink href={href(ROUTES.lab)}>{t.lab}</FooterLink>}
+                            {hasRoute("labPerks", locale) && <FooterLink href={href(ROUTES.labPerks)}>{t.labPerks}</FooterLink>}
+                            <FooterLink href={href(ROUTES.work)}>{t.work}</FooterLink>
+                            {hasRoute("resume", locale) && <FooterLink href={href(ROUTES.resume)}>{t.resume}</FooterLink>}
+                            <FooterLink href={href(ROUTES.about)} strong>{t.startHere}</FooterLink>
                         </ul>
                     </div>
-
-                    {/* Column 2 */}
-                    <div className="space-y-6">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">{t.colPractice}</h4>
-                        <ul className="space-y-3 text-sm">
-                            <li><Link href={href(ROUTES.services)} className="hover:text-[#D97706] transition-colors">{t.advisory}</Link></li>
-                            <li><Link href={href(ROUTES.portfolio)} className="hover:text-[#D97706] transition-colors">{t.portfolio}</Link></li>
-                            <li><Link href={href(ROUTES.startups)} className="hover:text-[#D97706] transition-colors">{t.startups}</Link></li>
-                            <li><Link href={href(ROUTES.stats)} className="hover:text-[#D97706] transition-colors">{t.stats}</Link></li>
-                            <li><Link href={href(ROUTES.about)} className="hover:text-[#D97706] transition-colors">{t.aboutFarjad}</Link></li>
-                            <li><Link href={href(ROUTES.contact)} className="hover:text-[#D97706] transition-colors">{t.contact}</Link></li>
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-sm text-v3-mute">{t.colPractice}</h2>
+                        <ul className="flex flex-col">
+                            <FooterLink href={href(ROUTES.services)}>{t.advisory}</FooterLink>
+                            <FooterLink href={href(ROUTES.portfolio)}>{t.portfolio}</FooterLink>
+                            <FooterLink href={href(ROUTES.startups)}>{t.startups}</FooterLink>
+                            <FooterLink href={href(ROUTES.stats)}>{t.stats}</FooterLink>
+                            <FooterLink href={href(ROUTES.about)}>{t.aboutFarjad}</FooterLink>
+                            <FooterLink href={href(ROUTES.contact)}>{t.contact}</FooterLink>
                         </ul>
                     </div>
-
-                    {/* Column 3 */}
-                    <div className="space-y-6">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">{t.colResources}</h4>
-                        <ul className="space-y-3 text-sm">
-                            <li><Link href={href(ROUTES.tools)} className="hover:text-[#D97706] transition-colors">{t.tools}</Link></li>
-                            <li><Link href={href(ROUTES.booking)} className="hover:text-[#D97706] transition-colors">{t.booking}</Link></li>
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-sm text-v3-mute">{t.colResources}</h2>
+                        <ul className="flex flex-col">
+                            <FooterLink href={href(ROUTES.tools)}>{t.tools}</FooterLink>
+                            <FooterLink href={href(ROUTES.booking)}>{t.booking}</FooterLink>
                         </ul>
-                    </div>
-
-                    {/* Column 4: Socials */}
-                    <div className="space-y-6">
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">{t.colConnect}</h4>
-                        <div className="flex flex-wrap gap-4">
-                            <a href="https://t.me/Heros_Journey" target="_blank" title="Hero's Journey" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
-                                <Send className="w-5 h-5" />
-                            </a>
-                            <a href="https://t.me/FarjadTalks" target="_blank" title="Farjad Talks" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
-                                <Send className="w-5 h-5" />
-                            </a>
-                            <a href="https://instagram.com/FarjadTalks" target="_blank" title="Instagram" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
-                                <Instagram className="w-5 h-5" />
-                            </a>
-                            <a href="https://youtube.com/@FarjadTalks" target="_blank" title="YouTube" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
-                                <Youtube className="w-5 h-5" />
-                            </a>
-                            <a href="https://www.linkedin.com/in/farjadpourmohammad/" target="_blank" title="LinkedIn" className="p-2 bg-white/5 rounded-full hover:bg-[#D97706] hover:text-white transition-all">
-                                <Linkedin className="w-5 h-5" />
-                            </a>
-                        </div>
                     </div>
                 </div>
+            </div>
 
-                {/* --- BOTTOM SECTION: Colophon --- */}
-                <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-stone-500 font-mono">
+            {/* ── Wordmark ─────────────────────────────────────────────── */}
+            <div className="mx-auto mt-16 max-w-[1600px] px-5 md:px-10 lg:px-14">
+                <FooterWordmark text={nav.brand} />
+            </div>
 
-                    <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center mb-4 md:mb-0">
-                        <span>© {new Date().getFullYear()} Farjad Pourmohammad</span>
-                        <div className="hidden md:block w-1 h-1 bg-stone-700 rounded-full" />
-                        <Link href={href(ROUTES.privacy)} className="hover:text-stone-300">{t.privacy}</Link>
-                        <Link href={href(ROUTES.terms)} className="hover:text-stone-300">{t.terms}</Link>
+            {/* ── Colophon ─────────────────────────────────────────────── */}
+            <div className="border-t border-v3-line/70">
+                <div className="mx-auto flex max-w-[1600px] flex-col gap-4 px-5 py-6 text-sm text-v3-mute md:flex-row md:items-center md:justify-between md:px-10 lg:px-14">
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                        <span dir="ltr">© {new Date().getFullYear()} Farjad</span>
+                        <Link href={href(ROUTES.privacy)} className="transition-colors hover:text-v3-bone">{t.privacy}</Link>
+                        <Link href={href(ROUTES.terms)} className="transition-colors hover:text-v3-bone">{t.terms}</Link>
                     </div>
-
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <MapPin className="w-3 h-3 text-[#1B4B43]" />
-                            <span>{t.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Clock className="w-3 h-3 text-[#1B4B43]" />
-                            <span dir="ltr">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Toronto' })} EST</span>
-                        </div>
-
-                        <div className="flex items-center gap-4 border-s border-white/10 ps-6 ms-2" dir="ltr">
-                            <a href="/" className={`flex items-center gap-2 text-xs font-bold font-sans ${locale === 'en' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
-                                <img src="/images/canada-flag.svg" alt="English" className={`w-5 h-5 rounded-sm ${locale === 'en' ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'}`} /> EN
-                            </a>
-                            <a href="/fa" className={`flex items-center gap-2 text-xs font-bold font-serif ${locale === 'fa' ? 'text-white' : 'text-stone-500 hover:text-white transition-colors'}`}>
-                                <img src="/images/lion-sun.svg" alt="Persian" className={`w-5 h-5 rounded-sm ${locale === 'fa' ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'}`} /> فا
-                            </a>
-                        </div>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                        <span>{t.location}</span>
+                        <TorontoTime label={t.localTime} />
+                        <a
+                            href={counterpartPath("/", other)}
+                            lang={other}
+                            className="text-v3-soft transition-colors hover:text-v3-light"
+                        >
+                            {nav.switchTo}
+                        </a>
                     </div>
-
                 </div>
             </div>
         </footer>
