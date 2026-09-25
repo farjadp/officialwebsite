@@ -1,6 +1,7 @@
 "use client";
 
-import { Question } from "@/data/business-model-score/config";
+import { BmsLocale, Question } from "@/data/business-model-score/config";
+import { getBmsUiStrings } from "@/data/business-model-score/ui";
 import { QuestionBlock, ScaleOptions } from "@/components/v3/tool-kit";
 
 interface QuestionCardProps {
@@ -8,20 +9,16 @@ interface QuestionCardProps {
     value: number | undefined;
     onChange: (value: number) => void;
     index: number;
+    locale?: BmsLocale;
 }
 
-const scaleOptions = [
-    { value: 1, label: "Not true at all" },
-    { value: 2, label: "Mostly not true" },
-    { value: 3, label: "Partly true" },
-    { value: 4, label: "Mostly true" },
-    { value: 5, label: "Completely true" },
-];
+export function QuestionCard({ question, value, onChange, index, locale = "en" }: QuestionCardProps) {
+    const ui = getBmsUiStrings(locale);
+    const scaleOptions = ui.scaleLabels.map((label, i) => ({ value: i + 1, label }));
 
-export function QuestionCard({ question, value, onChange, index }: QuestionCardProps) {
     return (
-        <QuestionBlock index={`${index + 1}.`} text={question.text}>
-            <ScaleOptions
+        <QuestionBlock locale={locale} index={`${index + 1}.`} text={question.text}>
+            <ScaleOptions locale={locale}
                 label={question.text}
                 value={value}
                 onChange={onChange}

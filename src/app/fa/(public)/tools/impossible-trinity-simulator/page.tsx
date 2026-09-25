@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { localeAlternates } from "@/lib/seo"
 import ImpossibleTrinitySimulator from "@/app/(public)/tools/impossible-trinity-simulator/simulator-client"
 
-// The simulator itself is the shared English client component. Only TRL has
-// a Persian config today; making the rest truly Persian is separate work.
+// The simulator is one shared client component for both locales: `locale`
+// picks its Persian strings and keeps its internal links under /fa.
 export const metadata: Metadata = {
     alternates: localeAlternates("/tools/impossible-trinity-simulator", "fa"),
     title: "شبیه‌ساز مثلث ناممکن | بده‌بستان‌هایی که راه فرار ندارند",

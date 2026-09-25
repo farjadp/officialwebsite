@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { withApiLogging } from "@/lib/api-logger";
 import { runStressTest, stressTestRequestSchema } from "@/lib/business-model-stress-test";
+import {
+    BmLocale,
+    MAX_STRESS_FACTORS,
+    MIN_STRESS_FACTORS,
+} from "@/data/business-model-stress-test/config";
+import { getBusinessModelContent } from "@/data/business-model-stress-test/logic";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -32,25 +38,29 @@ function isRateLimited(ip: string) {
 }
 
 async function postHandler(req: NextRequest) {
+    // Read the locale before validation so even the rejection speaks the visitor's language.
+    let locale: BmLocale = "en";
     try {
-        if (isRateLimited(getClientIP(req)))
-            return NextResponse.json(
-                { error: "You have run several stress tests recently. Please try again later." },
-                { status: 429 }
-            );
+        const raw = await req.json();
+        if (raw && typeof raw === "object" && (raw as { locale?: string }).locale === "fa")
+            locale = "fa";
+        const strings = getBusinessModelContent(locale).logic;
 
-        const body = stressTestRequestSchema.parse(await req.json());
+        if (isRateLimited(getClientIP(req)))
+            return NextResponse.json({ error: strings.errorRateLimited }, { status: 429 });
+
+        const body = stressTestRequestSchema.parse(raw);
         const report = await runStressTest(body);
         return NextResponse.json(report);
     } catch (error) {
+        const strings = getBusinessModelContent(locale).logic;
         if (error instanceof z.ZodError)
             return NextResponse.json(
-                { error: "Complete your business model and select 3-5 stress factors." },
+                { error: strings.errorIncomplete(MIN_STRESS_FACTORS, MAX_STRESS_FACTORS) },
                 { status: 400 }
             );
         console.error("[BM Stress Test Error]", error);
-        const message =
-            error instanceof Error ? error.message : "The stress test could not be completed.";
+        const message = error instanceof Error ? error.message : strings.errorGeneric;
         return NextResponse.json({ error: message }, { status: 400 });
     }
 }

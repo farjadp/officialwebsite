@@ -89,3 +89,101 @@ export const INVESTOR_TOTAL_QUESTIONS = investorCategories.reduce(
     (acc, cat) => acc + cat.questions.length,
     0
 );
+
+// ============================================================================
+// Locale plumbing. Mirrors src/data/trl-assessment: the English content above
+// stays the default, the Persian content lives in config.fa.ts with identical
+// ids, order and weights, and logic.ts picks between them.
+// ============================================================================
+
+export type InvestorLocale = "en" | "fa";
+
+/** Every string the scoring in logic.ts hands back, per locale. */
+export interface InvestorLogicStrings {
+    bands: {
+        notReady: { level: string; summary: string };
+        earlyPrep: { level: string; summary: string };
+        promising: { level: string; summary: string };
+        minorGaps: { level: string; summary: string };
+        stronglyReady: { level: string; summary: string };
+    };
+    strengthTitles: Record<string, string>;
+    strengthTitleDefault: string;
+    strengthDescription: string;
+    /** Wraps a category title into the "key investor concern" headline. */
+    weaknessTitle: (categoryTitle: string) => string;
+    weaknessDescriptions: Record<string, string>;
+    weaknessDefault: string;
+    recommendations: Record<string, string[]>;
+}
+
+export const investorLogicStringsEn: InvestorLogicStrings = {
+    bands: {
+        notReady: {
+            level: "Not Investor Ready",
+            summary: "Your startup currently lacks the foundational elements required to successfully pitch investors. Focus on building core business value first.",
+        },
+        earlyPrep: {
+            level: "Early Preparation Stage",
+            summary: "You are laying the groundwork, but crucial structural pieces are missing. Address your weakest areas before beginning outreach.",
+        },
+        promising: {
+            level: "Promising but Not Fundraising Ready",
+            summary: "Your startup shows promising signals for investors, but several areas still require strengthening before beginning an active fundraising process.",
+        },
+        minorGaps: {
+            level: "Investor Ready with Minor Gaps",
+            summary: "You are generally well-prepared for fundraising. Refining a few remaining gaps will significantly increase your chances of closing capital.",
+        },
+        stronglyReady: {
+            level: "Strongly Investor Ready",
+            summary: "Your startup is in an excellent position to raise funds. You have strong market, product, and traction signals with clear preparation.",
+        },
+    },
+    strengthTitles: {
+        "market-opportunity": "Strong early market understanding",
+        "product-solution": "Clear product differentiation and solution strength",
+        "traction-validation": "Demonstrable early traction and validation",
+        "team-capability": "Solid founding team capability and domain expertise",
+        "business-model": "Clear business model and scalable economics",
+        "fundraising-preparedness": "Excellent fundraising preparation and strategy",
+    },
+    strengthTitleDefault: "Strong performance area",
+    strengthDescription: "Evaluated as a core asset for fundraising.",
+    weaknessTitle: (title) => `${title} represents a key investor concern`,
+    weaknessDescriptions: {
+        "market-opportunity": "Ambiguity around the target market or competitive landscape makes it hard to justify venture-scale returns.",
+        "product-solution": "Lack of a validated, differentiated product raises concerns about long-term user adoption.",
+        "traction-validation": "Limited early traction or pilots makes it very difficult for investors to justify your valuation.",
+        "team-capability": "Gaps in the founding team’s skills or domain expertise increase perceived execution risk.",
+        "business-model": "Unclear revenue models or misaligned pricing logic could raise serious concerns about scalability and profitability.",
+        "fundraising-preparedness": "Lack of a cohesive pitch narrative, deck, or clear capital allocation plan signals unreadiness for the process.",
+    },
+    weaknessDefault: "Requires improvement to pass investor due diligence.",
+    recommendations: {
+        "market-opportunity": [
+            "Clearly define your Total Addressable Market (TAM), SAM, and SOM.",
+            "Refine your target customer segment to a highly specific, reachable audience.",
+        ],
+        "product-solution": [
+            "Build a functional MVP or interactive prototype if not already complete.",
+            "Strengthen product validation through rigorous usability testing and feedback loops.",
+        ],
+        "traction-validation": [
+            "Focus entirely on acquiring early users, customers, or LOIs before seeking capital.",
+            "Define metrics to prove demand (e.g., waitlist signups, pilot engagement, early MRR).",
+        ],
+        "team-capability": [
+            "Clearly map out founding team capabilities and identify critical skill gaps.",
+            "Bring on key advisors or strategic hires to cover missing domain expertise.",
+        ],
+        "business-model": [
+            "Clarify your pricing and revenue model based on real customer feedback.",
+            "Prepare basic financial projections and unit economics estimates (CAC vs LTV).",
+        ],
+        "fundraising-preparedness": [
+            "Build a stronger, tighter investor pitch narrative and review it with peers.",
+            "Research and build a targeted list of 50+ investors who fund your exact stage and industry.",
+        ],
+    },
+};

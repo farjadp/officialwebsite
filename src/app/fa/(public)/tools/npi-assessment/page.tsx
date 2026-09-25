@@ -3,8 +3,6 @@ import { NPIAssessmentTool } from "@/components/npi-assessment/tool";
 import { Metadata } from "next";
 import { ToolShell } from "@/components/v3/tool-kit";
 
-// The tool itself is the shared English component. Only TRL has a Persian
-// config today; making the rest truly Persian is separate, scheduled work.
 export const metadata: Metadata = {
     alternates: localeAlternates("/tools/npi-assessment", "fa"),
     title: "ارزیابی برند شخصی NPI",
@@ -14,7 +12,7 @@ export const metadata: Metadata = {
 export default function NPIAssessmentFaPage() {
     return (
         <ToolShell>
-            <NPIAssessmentTool />
+            <NPIAssessmentTool locale="fa" />
         </ToolShell>
     );
 }

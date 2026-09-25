@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { businessModelCategories, BMS_TOTAL_QUESTIONS } from "@/data/business-model-score/config";
-import { AssessmentAnswers, calculateBusinessModelScore, FinalResult } from "@/data/business-model-score/logic";
+import { BmsLocale, BMS_TOTAL_QUESTIONS } from "@/data/business-model-score/config";
+import { AssessmentAnswers, calculateBusinessModelScore, FinalResult, getBmsContent } from "@/data/business-model-score/logic";
+import { getBmsUiStrings } from "@/data/business-model-score/ui";
 import { QuestionCard } from "./question-card";
 import { ResultSummary } from "./result-summary";
 import { ToolButton, ToolField, ToolIntro, ToolPanel, ToolProgress } from "@/components/v3/tool-kit";
@@ -16,7 +17,12 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" });
 }
 
-export function BusinessModelScoreTool() {
+export function BusinessModelScoreTool({ locale = "en" }: { locale?: BmsLocale }) {
+    const content = getBmsContent(locale);
+    const ui = getBmsUiStrings(locale);
+    const isRtl = content.dir === "rtl";
+    const categories = content.categories;
+
     const [step, setStep] = useState<Step>("intro");
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [answers, setAnswers] = useState<AssessmentAnswers>({});
@@ -26,17 +32,20 @@ export function BusinessModelScoreTool() {
     const [name, setName] = useState("");
     const [skipLead, setSkipLead] = useState(false);
 
-    const currentCategory = businessModelCategories[currentCategoryIndex];
+    const currentCategory = categories[currentCategoryIndex];
     const answeredCount = Object.keys(answers).length;
     const progressPct = Math.round((answeredCount / BMS_TOTAL_QUESTIONS) * 100);
     const isCategoryComplete = currentCategory.questions.every((q) => answers[q.id] !== undefined);
+
+    const NextArrow = isRtl ? ArrowLeft : ArrowRight;
+    const PrevArrow = isRtl ? ArrowRight : ArrowLeft;
 
     const handleAnswer = (questionId: string, value: number) => {
         setAnswers((prev) => ({ ...prev, [questionId]: value }));
     };
 
     const handleNext = () => {
-        if (currentCategoryIndex < businessModelCategories.length - 1) {
+        if (currentCategoryIndex < categories.length - 1) {
             setCurrentCategoryIndex((prev) => prev + 1);
             scrollToTop();
         } else {
@@ -58,7 +67,7 @@ export function BusinessModelScoreTool() {
 
         await new Promise((resolve) => setTimeout(resolve, 1800));
 
-        const finalResult = calculateBusinessModelScore(answers);
+        const finalResult = calculateBusinessModelScore(answers, locale);
 
         fetch("/api/tool-usage", {
             method: "POST",
@@ -103,18 +112,14 @@ export function BusinessModelScoreTool() {
     if (step === "intro") {
         return (
             <ToolIntro
-                kicker="Diagnostic Tool"
-                title={<>Business Model<br />Strength Score</>}
-                lead="A structured diagnostic to evaluate whether your business model is logical, revenue-capable, scalable, and defensible. No hype. No generic advice."
-                meta="Free • No login required"
+                kicker={ui.kicker}
+                title={<>{ui.titleLine1}<br />{ui.titleLine2}</>}
+                lead={ui.lead}
+                meta={ui.meta}
                 action={
                     <>
                         <dl className="mb-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
-                            {[
-                                { label: "6 Categories", sub: "Covering all critical dimensions" },
-                                { label: "30 Questions", sub: "Calibrated for early-stage businesses" },
-                                { label: "4–6 Minutes", sub: "Full diagnostic in one session" },
-                            ].map((item) => (
+                            {ui.stats.map((item) => (
                                 <div key={item.label} className="flex flex-col gap-1 border-t border-v3-line pt-4">
                                     <dt className="font-v3-display text-xl text-v3-bone">{item.label}</dt>
                                     <dd className="text-sm leading-snug text-v3-mute">{item.sub}</dd>
@@ -122,7 +127,7 @@ export function BusinessModelScoreTool() {
                             ))}
                         </dl>
                         <ToolButton onClick={() => setStep("questions")} className="text-lg">
-                            Begin Evaluation
+                            {ui.startButton}
                             <Play className="h-4 w-4 rtl:-scale-x-100" fill="currentColor" aria-hidden />
                         </ToolButton>
                     </>
@@ -133,7 +138,7 @@ export function BusinessModelScoreTool() {
 
     // ── RESULT ─────────────────────────────────────────────────────────────────
     if (step === "result" && result) {
-        return <ResultSummary result={result} onReset={handleReset} />;
+        return <ResultSummary result={result} onReset={handleReset} locale={locale} />;
     }
 
     // ── LEAD CAPTURE ───────────────────────────────────────────────────────────
@@ -143,26 +148,26 @@ export function BusinessModelScoreTool() {
                 <div aria-hidden className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-v3-line bg-v3-ink">
                     <span className="text-2xl">📊</span>
                 </div>
-                <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">Your results are ready</h2>
+                <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">{ui.leadTitle}</h2>
                 <p className="mb-8 leading-relaxed text-v3-soft rtl:leading-loose">
-                    Leave your email to receive a copy of your diagnostic report. Entirely optional — you can skip directly to your results.
+                    {ui.leadBody}
                 </p>
 
                 <form onSubmit={(e) => handleCalculateResult(e, false)} className="flex flex-col gap-5">
                     <ToolField
-                        label="Name (optional)"
+                        label={ui.nameLabel}
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Your name"
+                        placeholder={ui.namePlaceholder}
                         autoComplete="name"
                     />
                     <ToolField
-                        label="Email"
+                        label={ui.emailLabel}
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="founder@company.com"
+                        placeholder={ui.emailPlaceholder}
                         autoComplete="email"
                         dir="ltr"
                     />
@@ -171,9 +176,9 @@ export function BusinessModelScoreTool() {
                         type="submit"
                         className="mt-2 w-full"
                         disabled={isCalculating || !email.trim()}
-                        loading={isCalculating}
+                        loading={isCalculating && !skipLead}
                     >
-                        {isCalculating ? "Calculating Score..." : "Get My Score"}
+                        {isCalculating && !skipLead ? ui.submitting : ui.submit}
                     </ToolButton>
 
                     <ToolButton
@@ -183,11 +188,11 @@ export function BusinessModelScoreTool() {
                         disabled={isCalculating}
                         loading={isCalculating && skipLead}
                     >
-                        {isCalculating && skipLead ? "Calculating..." : "Skip and view results directly →"}
+                        {isCalculating && skipLead ? ui.skipping : ui.skip}
                     </ToolButton>
                 </form>
 
-                <p className="mt-6 text-center text-xs text-v3-mute">No spam. No sales calls. Unsubscribe any time.</p>
+                <p className="mt-6 text-center text-xs text-v3-mute">{ui.privacyNote}</p>
             </ToolPanel>
         );
     }
@@ -196,9 +201,9 @@ export function BusinessModelScoreTool() {
     return (
         <div className="flex flex-col">
             <ToolProgress
-                label={`Section ${currentCategoryIndex + 1} / ${businessModelCategories.length}`}
+                label={ui.sectionLabel(currentCategoryIndex + 1, categories.length)}
                 percent={progressPct}
-                percentLabel={`${progressPct}% complete`}
+                percentLabel={ui.percentLabel(progressPct)}
                 title={currentCategory.title}
             />
 
@@ -211,6 +216,7 @@ export function BusinessModelScoreTool() {
                         question={q}
                         value={answers[q.id]}
                         onChange={(val) => handleAnswer(q.id, val)}
+                        locale={locale}
                     />
                 ))}
             </div>
@@ -222,14 +228,14 @@ export function BusinessModelScoreTool() {
                     onClick={handlePrevious}
                     disabled={currentCategoryIndex === 0}
                 >
-                    <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden /> Previous
+                    <PrevArrow className="h-4 w-4" aria-hidden /> {ui.previous}
                 </ToolButton>
                 <ToolButton
                     onClick={handleNext}
                     disabled={!isCategoryComplete}
                 >
-                    {currentCategoryIndex === businessModelCategories.length - 1 ? "Complete Evaluation" : "Next Section"}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
+                    {currentCategoryIndex === categories.length - 1 ? ui.complete : ui.nextSection}
+                    <NextArrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden />
                 </ToolButton>
             </div>
         </div>

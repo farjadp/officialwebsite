@@ -24,32 +24,25 @@ import {
     ToolShell,
 } from "@/components/v3/tool-kit";
 import {
+    BmLocale,
     MAX_STRESS_FACTORS,
     MIN_DESCRIBED_COMPONENTS,
     MIN_STRESS_FACTORS,
     PestlePerspective,
     StressFactor,
-    businessModelComponents,
     pestleOrder,
-    stressFactorLibrary,
 } from "@/data/business-model-stress-test/config";
-import type {
-    BusinessModelDescription,
-    StressTestReport,
+import { getBmUiStrings } from "@/data/business-model-stress-test/ui";
+import {
+    getBusinessModelContent,
+    type BusinessModelDescription,
+    type StressTestReport,
 } from "@/data/business-model-stress-test/logic";
 import { ResultSummary } from "./result-summary";
 
 type Step = "intro" | "model" | "factors" | "lead" | "result";
 
 const TOOL_ID = "business-model-stress-test";
-
-const loadingStages = [
-    "Reading your business model…",
-    "Mapping which components each uncertainty actually touches…",
-    "Colouring the heat map, outcome by outcome…",
-    "Looking for double-red and inconsistent patterns…",
-    "Writing the redesign actions…",
-];
 
 /** Scroll to the top; instant when the visitor prefers reduced motion. */
 function scrollToTop() {
@@ -68,7 +61,17 @@ const emptyCustom = {
     outcomeB: "",
 };
 
-export default function BusinessModelStressTestTool() {
+export default function BusinessModelStressTestTool({
+    locale = "en",
+}: {
+    locale?: BmLocale;
+} = {}) {
+    const ui = getBmUiStrings(locale);
+    const content = getBusinessModelContent(locale);
+    const businessModelComponents = content.components;
+    const stressFactorLibrary = content.factors;
+    const loadingStages = ui.loadingStages;
+
     const [step, setStep] = useState<Step>("intro");
     const [businessModel, setBusinessModel] = useState<BusinessModelDescription>({});
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -94,7 +97,7 @@ export default function BusinessModelStressTestTool() {
 
     const allFactors = useMemo(
         () => [...stressFactorLibrary, ...customFactors],
-        [customFactors]
+        [stressFactorLibrary, customFactors]
     );
     const selectedFactors = useMemo(
         () => selectedIds.map((id) => allFactors.find((factor) => factor.id === id)!).filter(Boolean),
@@ -160,10 +163,10 @@ export default function BusinessModelStressTestTool() {
             const response = await fetch(`/api/tools/${TOOL_ID}`, {
                 method: "POST",
                 headers: { "content-type": "application/json" },
-                body: JSON.stringify({ businessModel, factors: selectedFactors }),
+                body: JSON.stringify({ businessModel, factors: selectedFactors, locale }),
             });
             const data = await response.json();
-            if (!response.ok) throw new Error(data.error || "The stress test could not be completed.");
+            if (!response.ok) throw new Error(data.error || ui.genericError);
 
             setReport(data as StressTestReport);
             setStep("result");
@@ -191,9 +194,7 @@ export default function BusinessModelStressTestTool() {
                 }),
             }).catch(() => {});
         } catch (runError) {
-            setError(
-                runError instanceof Error ? runError.message : "The stress test could not be completed."
-            );
+            setError(runError instanceof Error ? runError.message : ui.genericError);
         } finally {
             setLoading(false);
         }
@@ -210,23 +211,23 @@ export default function BusinessModelStressTestTool() {
     }
 
     const stepItems = [
-        { id: "model", label: "1 · Business model" },
-        { id: "factors", label: "2 · Stress factors" },
-        { id: "lead", label: "3 · Run the test" },
+        { id: "model", label: ui.stepModel },
+        { id: "factors", label: ui.stepFactors },
+        { id: "lead", label: ui.stepRun },
     ];
     const stepIndex = stepItems.findIndex((item) => item.id === step);
 
     return (
         <ToolShell wide={step === "result"}>
             <Link
-                href="/tools"
+                href={ui.toolsHref}
                 className="group mb-6 inline-flex items-center gap-2 text-sm text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
             >
                 <ArrowLeft
                     aria-hidden
                     className="size-4 transition-transform group-hover:-translate-x-1 rtl:-scale-x-100 rtl:group-hover:translate-x-1"
                 />{" "}
-                Back to Tools Library
+                {ui.backToTools}
             </Link>
 
             {step === "intro" && (
@@ -234,22 +235,23 @@ export default function BusinessModelStressTestTool() {
                     <ToolIntro
                         kicker={
                             <span className="inline-flex items-center gap-2">
-                                <FlaskConical className="size-4" aria-hidden /> Scenario diagnostic
+                                <FlaskConical className="size-4" aria-hidden /> {ui.kicker}
                             </span>
                         }
                         title={
                             <>
-                                Would your business model <span className="text-v3-light">survive?</span>
+                                {ui.introTitleLead}{" "}
+                                <span className="text-v3-light">{ui.introTitleAccent}</span>
                             </>
                         }
-                        lead="Most business models are validated against today. This one puts yours against the futures that could break it — one component at a time — and shows you exactly where it snaps."
+                        lead={ui.introLead}
                         action={
                             <ToolButton onClick={() => setStep("model")}>
-                                Start the stress test{" "}
+                                {ui.startButton}{" "}
                                 <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                             </ToolButton>
                         }
-                        meta="Takes about 10 minutes to fill in · Free · No account needed"
+                        meta={ui.introMeta}
                     />
 
                     <StepIn delay={0.32} className="flex flex-col gap-8">
@@ -262,19 +264,12 @@ export default function BusinessModelStressTestTool() {
                                     <Layers className="size-5" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-v3-bone">Peer-reviewed method</p>
-                                    <p className="text-xs text-v3-mute">Haaker et al., Futures (2017)</p>
+                                    <p className="font-medium text-v3-bone">{ui.methodTitle}</p>
+                                    <p className="text-xs text-v3-mute">{ui.methodSource}</p>
                                 </div>
                             </div>
                             <ol className="grid gap-2 text-sm text-v3-soft sm:grid-cols-2">
-                                {[
-                                    "Describe your business model",
-                                    "Pick 3-5 uncertainties",
-                                    "Map what each one touches",
-                                    "Build the heat map",
-                                    "Read the patterns",
-                                    "Fix what breaks",
-                                ].map((label, index) => (
+                                {ui.sixSteps.map((label, index) => (
                                     <li
                                         key={label}
                                         className="flex items-center gap-3 rounded-xl border border-v3-line/60 px-3 py-2.5"
@@ -292,20 +287,7 @@ export default function BusinessModelStressTestTool() {
                         </div>
 
                         <div className="grid gap-4 md:grid-cols-3">
-                            {[
-                                {
-                                    title: "It tests components, not vibes",
-                                    body: "Your revenue streams, channels, key partners and cost structure are each judged separately. A model rarely fails everywhere at once — it fails at one joint.",
-                                },
-                                {
-                                    title: "Both extremes, every time",
-                                    body: "Each uncertainty is tested at both ends. When a component fails at both ends, no scenario saves you: that is a redesign you already owe yourself.",
-                                },
-                                {
-                                    title: "Impact, not prediction",
-                                    body: "The method deliberately ignores how likely a future is. It asks what happens to you if it arrives — which is the part you can act on.",
-                                },
-                            ].map((card) => (
+                            {ui.introCards.map((card) => (
                                 <div key={card.title} className="rounded-2xl border border-v3-line/80 p-6">
                                     <h2 className="font-medium text-v3-bone">{card.title}</h2>
                                     <div aria-hidden className="my-4 h-px w-8 bg-v3-light" />
@@ -339,17 +321,15 @@ export default function BusinessModelStressTestTool() {
                     />
                     <StepIn key={step} className="pt-10">
                         <h1 className="font-v3-display text-4xl font-light leading-tight md:text-5xl rtl:leading-snug">
-                            {step === "model" && "Describe the business model"}
-                            {step === "factors" && "Choose what to stress it with"}
-                            {step === "lead" && "Run the stress test"}
+                            {step === "model" && ui.modelTitle}
+                            {step === "factors" && ui.factorsTitle}
+                            {step === "lead" && ui.runTitle}
                         </h1>
                         <p className="mt-4 max-w-3xl leading-relaxed text-v3-soft rtl:leading-loose">
-                            {step === "model" &&
-                                "Be specific and honest — the test can only stress what you actually write down. Vague answers produce a vague heat map."}
+                            {step === "model" && ui.modelLead}
                             {step === "factors" &&
-                                `Pick the ${MIN_STRESS_FACTORS}-${MAX_STRESS_FACTORS} uncertainties with the highest impact on your model. Each one is tested at both extremes, because a future that only ever goes your way is not a test.`}
-                            {step === "lead" &&
-                                "Your heat map takes up to a minute to build. Tell us where to say it is ready."}
+                                ui.factorsLead(MIN_STRESS_FACTORS, MAX_STRESS_FACTORS)}
+                            {step === "lead" && ui.runLead}
                         </p>
                     </StepIn>
                 </>
@@ -358,10 +338,10 @@ export default function BusinessModelStressTestTool() {
             {step === "result" && report && (
                 <StepIn className="pb-10">
                     <p className="mb-4 inline-flex items-center gap-2 text-sm text-v3-light">
-                        <Sparkles className="size-4" aria-hidden /> Stress test complete
+                        <Sparkles className="size-4" aria-hidden /> {ui.resultKicker}
                     </p>
                     <h1 className="font-v3-display text-[clamp(2.5rem,6vw,4.5rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:leading-[1.4] rtl:tracking-normal">
-                        Where your model breaks
+                        {ui.resultTitle}
                     </h1>
                 </StepIn>
             )}
@@ -391,7 +371,7 @@ export default function BusinessModelStressTestTool() {
                                     >
                                         <span className="text-lg text-v3-bone">{component.name}</span>
                                         <span className="text-[11px] tracking-wider text-v3-mute uppercase">
-                                            {component.required ? "Required" : "Optional"}
+                                            {component.required ? ui.required : ui.optional}
                                         </span>
                                     </label>
                                     <p id={`${component.id}-hint`} className="text-sm text-v3-mute">
@@ -420,14 +400,14 @@ export default function BusinessModelStressTestTool() {
                         <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-v3-line bg-v3-raise/95 p-5 backdrop-blur-md">
                             <p className="text-sm text-v3-soft" aria-live="polite">
                                 <strong className="font-medium text-v3-light tabular-nums">
-                                    {describedCount}/{businessModelComponents.length}
+                                    {ui.describedCount(describedCount, businessModelComponents.length)}
                                 </strong>{" "}
-                                components described
+                                {ui.componentsDescribedLabel}
                                 {!modelReady && (
                                     <span className="block text-xs text-v3-mute">
                                         {missingRequired.length
-                                            ? `Still needed: ${missingRequired.map((item) => item.name.toLowerCase()).join(", ")}.`
-                                            : `Describe at least ${MIN_DESCRIBED_COMPONENTS} components to run a meaningful test.`}
+                                            ? ui.stillNeeded(missingRequired.map((item) => item.name))
+                                            : ui.describeAtLeast(MIN_DESCRIBED_COMPONENTS)}
                                     </span>
                                 )}
                             </p>
@@ -438,7 +418,7 @@ export default function BusinessModelStressTestTool() {
                                     scrollToTop();
                                 }}
                             >
-                                Choose stress factors{" "}
+                                {ui.chooseFactors}{" "}
                                 <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                             </ToolButton>
                         </div>
@@ -455,7 +435,7 @@ export default function BusinessModelStressTestTool() {
                             return (
                                 <StepIn key={perspective}>
                                     <h2 className="mb-4 text-xs tracking-widest text-v3-mute uppercase">
-                                        {perspective}
+                                        {content.perspectiveLabels[perspective]}
                                     </h2>
                                     <div className="grid gap-3 md:grid-cols-2">
                                         {factors.map((factor) => {
@@ -476,7 +456,7 @@ export default function BusinessModelStressTestTool() {
                                                         onClick={() => toggleFactor(factor.id)}
                                                         disabled={isFull}
                                                         aria-pressed={isSelected}
-                                                        aria-label={`Stress factor: ${factor.name}`}
+                                                        aria-label={ui.factorAria(factor.name)}
                                                         className="flex w-full cursor-pointer items-start gap-3 rounded-lg pe-7 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-4 focus-visible:ring-offset-v3-raise disabled:cursor-not-allowed"
                                                     >
                                                         <span
@@ -521,7 +501,7 @@ export default function BusinessModelStressTestTool() {
                                                         <button
                                                             type="button"
                                                             onClick={() => removeCustomFactor(factor.id)}
-                                                            aria-label={`Remove ${factor.name}`}
+                                                            aria-label={ui.removeFactorAria(factor.name)}
                                                             className="absolute end-4 top-4 cursor-pointer rounded text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                                                         >
                                                             <Trash2 className="size-4" aria-hidden />
@@ -543,12 +523,12 @@ export default function BusinessModelStressTestTool() {
                                 >
                                     <div className="flex items-center justify-between">
                                         <h2 className="font-v3-display text-xl font-light text-v3-bone">
-                                            Add your own uncertainty
+                                            {ui.addCustomTitle}
                                         </h2>
                                         <button
                                             type="button"
                                             onClick={() => setShowCustomForm(false)}
-                                            aria-label="Cancel"
+                                            aria-label={ui.cancel}
                                             className="cursor-pointer rounded text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                                         >
                                             <X className="size-4" aria-hidden />
@@ -564,13 +544,13 @@ export default function BusinessModelStressTestTool() {
                                                 }))
                                             }
                                             maxLength={120}
-                                            aria-label="What is uncertain? e.g. Our largest client's renewal policy"
-                                            placeholder="What is uncertain? e.g. Our largest client's renewal policy"
+                                            aria-label={ui.customNameLabel}
+                                            placeholder={ui.customNameLabel}
                                             className={`${fieldClass} h-12 text-sm`}
                                         />
                                         <select
                                             value={customDraft.perspective}
-                                            aria-label="Perspective"
+                                            aria-label={ui.perspectiveLabel}
                                             onChange={(event) =>
                                                 setCustomDraft((current) => ({
                                                     ...current,
@@ -581,7 +561,7 @@ export default function BusinessModelStressTestTool() {
                                         >
                                             {pestleOrder.map((perspective) => (
                                                 <option key={perspective} value={perspective}>
-                                                    {perspective}
+                                                    {content.perspectiveLabels[perspective]}
                                                 </option>
                                             ))}
                                         </select>
@@ -596,8 +576,8 @@ export default function BusinessModelStressTestTool() {
                                                 }))
                                             }
                                             maxLength={120}
-                                            aria-label="Extreme outcome 1 — e.g. They renew at current volume"
-                                            placeholder="Extreme outcome 1 — e.g. They renew at current volume"
+                                            aria-label={ui.customOutcomeALabel}
+                                            placeholder={ui.customOutcomeALabel}
                                             className={`${fieldClass} h-12 text-sm`}
                                         />
                                         <input
@@ -609,14 +589,14 @@ export default function BusinessModelStressTestTool() {
                                                 }))
                                             }
                                             maxLength={120}
-                                            aria-label="Extreme outcome 2 — e.g. They leave entirely"
-                                            placeholder="Extreme outcome 2 — e.g. They leave entirely"
+                                            aria-label={ui.customOutcomeBLabel}
+                                            placeholder={ui.customOutcomeBLabel}
                                             className={`${fieldClass} h-12 text-sm`}
                                         />
                                     </div>
                                     <div>
                                         <ToolButton type="submit" variant="secondary">
-                                            <Plus className="size-4" aria-hidden /> Add uncertainty
+                                            <Plus className="size-4" aria-hidden /> {ui.addUncertainty}
                                         </ToolButton>
                                     </div>
                                 </form>
@@ -627,25 +607,25 @@ export default function BusinessModelStressTestTool() {
                                 onClick={() => setShowCustomForm(true)}
                                 className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl border border-dashed border-v3-line px-5 py-3 text-sm text-v3-soft transition-colors hover:border-v3-light hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                             >
-                                <Plus className="size-4" aria-hidden /> Add an uncertainty specific to your business
+                                <Plus className="size-4" aria-hidden /> {ui.addCustomToggle}
                             </button>
                         )}
 
                         <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-v3-line bg-v3-raise/95 p-5 backdrop-blur-md">
                             <p className="text-sm text-v3-soft" aria-live="polite">
                                 <strong className="font-medium text-v3-light tabular-nums">
-                                    {selectedIds.length}/{MAX_STRESS_FACTORS}
+                                    {ui.selectedCount(selectedIds.length, MAX_STRESS_FACTORS)}
                                 </strong>{" "}
-                                selected
+                                {ui.selectedLabel}
                                 {!factorsReady && (
                                     <span className="block text-xs text-v3-mute">
-                                        Select at least {MIN_STRESS_FACTORS}.
+                                        {ui.selectAtLeast(MIN_STRESS_FACTORS)}
                                     </span>
                                 )}
                             </p>
                             <div className="flex items-center gap-3">
                                 <ToolButton variant="quiet" onClick={() => setStep("model")}>
-                                    Back
+                                    {ui.back}
                                 </ToolButton>
                                 <ToolButton
                                     disabled={!factorsReady}
@@ -654,7 +634,7 @@ export default function BusinessModelStressTestTool() {
                                         scrollToTop();
                                     }}
                                 >
-                                    Continue <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+                                    {ui.continue} <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                                 </ToolButton>
                             </div>
                         </div>
@@ -667,23 +647,23 @@ export default function BusinessModelStressTestTool() {
                             <form onSubmit={runTest} className="flex flex-col gap-5">
                                 <ToolField
                                     id="stress-name"
-                                    label="First name (optional)"
+                                    label={ui.nameLabel}
                                     type="text"
                                     value={name}
                                     onChange={(event) => setName(event.target.value)}
                                     disabled={loading}
-                                    placeholder="Sara"
+                                    placeholder={ui.namePlaceholder}
                                 />
                                 <ToolField
                                     id="stress-email"
-                                    label="Work email"
+                                    label={ui.emailLabel}
                                     type="email"
                                     dir="ltr"
                                     required
                                     value={email}
                                     onChange={(event) => setEmail(event.target.value)}
                                     disabled={loading}
-                                    placeholder="sara@company.com"
+                                    placeholder={ui.emailPlaceholder}
                                 />
 
                                 <ToolButton
@@ -693,10 +673,10 @@ export default function BusinessModelStressTestTool() {
                                     className="mt-2 w-full"
                                 >
                                     {loading ? (
-                                        "Building your heat map…"
+                                        ui.runningButton
                                     ) : (
                                         <>
-                                            Run the stress test{" "}
+                                            {ui.runButton}{" "}
                                             <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                                         </>
                                     )}
@@ -713,13 +693,13 @@ export default function BusinessModelStressTestTool() {
                                             <div className="absolute inset-y-0 start-0 w-2/3 animate-pulse bg-v3-light motion-reduce:animate-none" />
                                         </div>
                                         <p className="mt-3 text-xs text-v3-mute">
-                                            This usually takes 30-60 seconds. Please keep this tab open.
+                                            {ui.loadingNote}
                                         </p>
                                     </div>
                                 ) : (
                                     <div>
                                         <ToolButton variant="quiet" onClick={() => setStep("factors")} className="-ms-3">
-                                            Back to stress factors
+                                            {ui.backToFactors}
                                         </ToolButton>
                                     </div>
                                 )}
@@ -729,10 +709,10 @@ export default function BusinessModelStressTestTool() {
                         <StepIn delay={0.1}>
                             <aside className="rounded-3xl border border-v3-line/80 p-6 md:p-8">
                                 <h2 className="text-xs tracking-widest text-v3-mute uppercase">
-                                    What will be tested
+                                    {ui.whatWillBeTested}
                                 </h2>
                                 <p className="mt-3 font-v3-display text-2xl font-light text-v3-bone">
-                                    {describedCount} business model components
+                                    {ui.componentsToTest(describedCount)}
                                 </p>
                                 <ul className="mt-5 flex flex-col">
                                     {selectedFactors.map((factor) => (
@@ -748,15 +728,16 @@ export default function BusinessModelStressTestTool() {
                                     ))}
                                 </ul>
                                 <p className="mt-4 text-xs leading-relaxed text-v3-mute">
-                                    {describedCount * selectedFactors.length * 2} cells will be mapped and
-                                    coloured.
+                                    {ui.cellsToMap(describedCount * selectedFactors.length * 2)}
                                 </p>
                             </aside>
                         </StepIn>
                     </div>
                 )}
 
-                {step === "result" && report && <ResultSummary report={report} onReset={reset} />}
+                {step === "result" && report && (
+                    <ResultSummary report={report} onReset={reset} locale={locale} />
+                )}
             </div>
         </ToolShell>
     );

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { readinessCategories, TOTAL_QUESTIONS } from "@/data/startup-readiness/config";
-import { AssessmentAnswers, calculateReadinessScore, ReadinessResult } from "@/data/startup-readiness/logic";
+import { ReadinessLocale, TOTAL_QUESTIONS } from "@/data/startup-readiness/config";
+import { AssessmentAnswers, calculateReadinessScore, getReadinessCategories, ReadinessResult } from "@/data/startup-readiness/logic";
+import { getReadinessUiStrings } from "@/data/startup-readiness/ui";
 import { QuestionCard } from "./question-card";
 import { ResultSummary } from "./result-summary";
 import { ToolButton, ToolField, ToolIntro, ToolPanel, ToolProgress } from "@/components/v3/tool-kit";
@@ -14,7 +15,10 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 }
 
-export function StartupReadinessTool() {
+export function StartupReadinessTool({ locale = "en" }: { locale?: ReadinessLocale } = {}) {
+    const t = getReadinessUiStrings(locale);
+    const readinessCategories = getReadinessCategories(locale);
+
     const [step, setStep] = useState<"intro" | "questions" | "lead" | "result">("intro");
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [answers, setAnswers] = useState<AssessmentAnswers>({});
@@ -54,7 +58,7 @@ export function StartupReadinessTool() {
 
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        const finalResult = calculateReadinessScore(answers);
+        const finalResult = calculateReadinessScore(answers, locale);
 
         fetch("/api/tool-usage", {
             method: "POST",
@@ -101,56 +105,56 @@ export function StartupReadinessTool() {
     if (step === "intro") {
         return (
             <ToolIntro
-                title="Startup Readiness Assessment"
-                lead={<>Evaluate your startup idea across 6 critical dimensions. Find out instantly if you&apos;re ready to launch, raise money, or if you need to go back to the drawing board.</>}
+                title={t.introTitle}
+                lead={t.introLead}
                 action={
                     <ToolButton onClick={() => setStep("questions")}>
-                        Start Free Assessment
+                        {t.startButton}
                         <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
                     </ToolButton>
                 }
-                meta="Takes about 3-5 minutes • 30 Questions"
+                meta={t.durationLine}
             />
         );
     }
 
     if (step === "result" && result) {
-        return <ResultSummary result={result} onReset={handleReset} />;
+        return <ResultSummary result={result} onReset={handleReset} locale={locale} />;
     }
 
     if (step === "lead") {
         return (
             <ToolPanel className="mx-auto max-w-xl">
-                <h2 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">Analyzing your results...</h2>
+                <h2 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">{t.leadTitle}</h2>
                 <p className="mt-3 leading-relaxed text-v3-soft rtl:leading-loose">
-                    Your readiness score has been calculated. Enter your info below to see your detailed breakdown and custom action plan.
+                    {t.leadBody}
                 </p>
 
                 <form onSubmit={handleCalculateResult} className="mt-8 flex flex-col gap-5">
                     <ToolField
                         id="name"
-                        label="First Name (Optional)"
+                        label={t.nameLabel}
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Elon"
+                        placeholder={t.namePlaceholder}
                     />
                     <ToolField
                         id="email"
-                        label="Work Email"
+                        label={t.emailLabel}
                         type="email"
                         dir="ltr"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="elon@mars.com"
+                        placeholder={t.emailPlaceholder}
                     />
 
                     <ToolButton type="submit" className="mt-3 w-full" loading={isCalculating} disabled={!email}>
-                        {isCalculating ? "Generating Report..." : "Reveal My Score & Roadmap"}
+                        {isCalculating ? t.generating : t.submit}
                     </ToolButton>
                     <p className="text-center text-xs text-v3-mute">
-                        We respect your inbox. No spam, just value.
+                        {t.noSpam}
                     </p>
                 </form>
             </ToolPanel>
@@ -161,9 +165,9 @@ export function StartupReadinessTool() {
     return (
         <div>
             <ToolProgress
-                label={`Category ${currentCategoryIndex + 1} of ${readinessCategories.length}`}
+                label={t.categoryOf(currentCategoryIndex + 1, readinessCategories.length)}
                 percent={progressPercentage}
-                percentLabel={`${Math.round(progressPercentage)}% Completed`}
+                percentLabel={t.completed(Math.round(progressPercentage))}
                 title={currentCategory.title}
             />
 
@@ -176,6 +180,7 @@ export function StartupReadinessTool() {
                         question={q}
                         value={answers[q.id]}
                         onChange={(val) => handleAnswer(q.id, val)}
+                        locale={locale}
                     />
                 ))}
             </div>
@@ -184,11 +189,11 @@ export function StartupReadinessTool() {
             <div className="flex items-center justify-between gap-4 pt-8">
                 <ToolButton variant="quiet" onClick={handlePrevious} disabled={currentCategoryIndex === 0}>
                     <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
-                    Previous
+                    {t.previous}
                 </ToolButton>
 
                 <ToolButton onClick={handleNext} disabled={!isCurrentCategoryComplete()}>
-                    {currentCategoryIndex === readinessCategories.length - 1 ? "Finish Assessment" : "Next Category"}
+                    {currentCategoryIndex === readinessCategories.length - 1 ? t.finish : t.nextCategory}
                     <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
                 </ToolButton>
             </div>

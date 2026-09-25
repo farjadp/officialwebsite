@@ -1,3 +1,7 @@
+import { npiQuestionsFa } from './data.fa';
+
+export type NpiLocale = 'en' | 'fa';
+
 export type QuestionType = 'single' | 'multiple' | 'text';
 
 export interface QuestionDef {
@@ -181,3 +185,11 @@ export const npiQuestions: QuestionDef[] = [
     ]
   }
 ];
+
+/**
+ * Questions for a locale. Persian content lives in data.fa.ts with the same
+ * ids, order, types and selection limits.
+ */
+export function getNpiQuestions(locale: NpiLocale): QuestionDef[] {
+  return locale === 'fa' ? npiQuestionsFa : npiQuestions;
+}

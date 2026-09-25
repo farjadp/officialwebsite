@@ -1,12 +1,23 @@
 "use client"
 
+// ============================================================================
+// File Path: src/components/public/scorecard-widget.tsx
+// Why: The Business Autonomy Score, in the v3 "Light" look. It sits inside
+//      the dark article column (and on /scorecard), so it is built out of the
+//      v3 tool kit — the same field, button, panel and score ring the ten
+//      self-assessment tools use — instead of the old white slate cards.
+//
+//      The questions, the scoring, the /api/leads POST and the result tiers
+//      are the v2 widget's, carried over untouched. Only the look changed,
+//      plus one fix: a failed submit now tells the visitor instead of
+//      silently leaving the button idle.
+// Env / Identity: Client Component (framer-motion)
+// ============================================================================
+
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
+import { motion } from "framer-motion"
 import { ArrowRight, CheckCircle2, Factory, MonitorUp, Zap } from "lucide-react"
+import { ScoreRing, StepIn, ToolButton, ToolField, ToolPanel } from "@/components/v3/tool-kit"
 
 const quizData = {
     title: "The Business Autonomy Score",
@@ -96,21 +107,21 @@ const quizData = {
         {
             maxScore: 40,
             title: "The Operator",
-            icon: <Factory className="w-12 h-12 text-rose-500 mb-4 mx-auto" />,
+            icon: <Factory className="mx-auto mb-5 h-10 w-10 text-v3-light" strokeWidth={1.5} aria-hidden />,
             headline: "You are the bottleneck in your own business.",
             description: "Right now, your business runs on sheer brute force. You are relying on human memory, scattered spreadsheets, and manual data entry just to keep the lights on. This is why scaling feels impossible—you aren't scaling systems; you are just scaling stress. Before we can even talk about deploying AI, we need to stop the bleeding. It is time to digitize your operations and build actual infrastructure."
         },
         {
             maxScore: 75,
             title: "The Scaler",
-            icon: <MonitorUp className="w-12 h-12 text-amber-500 mb-4 mx-auto" />,
+            icon: <MonitorUp className="mx-auto mb-5 h-10 w-10 text-v3-light" strokeWidth={1.5} aria-hidden />,
             headline: "You have a foundation, but your systems are disconnected.",
             description: "You aren't starting from zero. You use modern tools, you have some SOPs in place, and you are actively trying to be efficient. But your tools aren't talking to each other. You have fragmented funnels, isolated software, and your team is still acting as the 'glue' between different systems. You don't need another SaaS subscription—you need orchestration. It's time to connect your infrastructure so it runs on its own."
         },
         {
             maxScore: 100,
             title: "The Optimizer",
-            icon: <Zap className="w-12 h-12 text-emerald-500 mb-4 mx-auto" />,
+            icon: <Zap className="mx-auto mb-5 h-10 w-10 text-v3-light" strokeWidth={1.5} aria-hidden />,
             headline: "Ready for True Autonomy.",
             description: "Your infrastructure is solid. You have removed the obvious manual bottlenecks, your team follows clear SOPs, and your data flows smoothly. You are the exact type of founder who will see massive ROI from AI Automation. It's time to stop using humans for repetitive tasks that a machine can do perfectly 24/7. We need to look at deploying custom AI agents to handle your customer support, complex data parsing, and high-level workflow orchestration."
         }
@@ -123,6 +134,7 @@ export function ScorecardWidget() {
     const [answers, setAnswers] = useState<number[]>([])
     const [email, setEmail] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState("")
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [finalResult, setFinalResult] = useState<any>(null)
 
@@ -143,6 +155,7 @@ export function ScorecardWidget() {
         if (!email) return
 
         setIsSubmitting(true)
+        setSubmitError("")
         const totalScore = calculateScore()
 
         try {
@@ -161,51 +174,51 @@ export function ScorecardWidget() {
             setFinalResult({ ...resultTier, score: totalScore })
         } catch (error) {
             console.error("Failed to submit score", error)
+            setSubmitError("Something went wrong. Please try again.")
         }
         setIsSubmitting(false)
     }
 
     if (!started) {
         return (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 border border-slate-200 rounded-2xl w-full my-8">
-                <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+            <div className="my-8 flex w-full flex-col items-center gap-5 rounded-2xl border border-v3-line/80 bg-v3-raise p-8 text-center transition-colors duration-500 hover:border-v3-light/50 md:p-10">
+                <span className="inline-flex rounded-full border border-v3-light/40 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-v3-light">
                     Diagnostic Tool
-                </div>
-                <h3 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 leading-tight mb-4">
+                </span>
+                <h3 className="font-v3-display text-2xl font-light leading-tight tracking-[-0.015em] text-v3-bone md:text-3xl rtl:leading-snug rtl:tracking-normal">
                     Is your business ready for AI?
                 </h3>
-                <p className="text-slate-600 mb-6 max-w-lg leading-relaxed text-sm md:text-base">
+                <p className="max-w-lg text-sm leading-relaxed text-v3-soft md:text-base rtl:leading-loose">
                     Take this 2-minute assessment to find out if your operations are built for massive scale, or if you are quietly losing capital to manual chaos.
                 </p>
-                <Button className="bg-[#1B4B43] hover:bg-[#123630] transition-colors shadow-sm" onClick={handleStart}>
-                    Start the Assessment <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
+                <ToolButton onClick={handleStart} className="py-4">
+                    Start the Assessment
+                    <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden />
+                </ToolButton>
             </div>
         )
     }
 
     if (finalResult) {
         return (
-            <div className="w-full my-8">
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                    <Card className="border-0 shadow-lg overflow-hidden bg-white">
-                        <div className="bg-[#1B4B43] p-6 text-center text-white">
-                            <h2 className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Your Autonomy Score</h2>
-                            <div className="text-5xl md:text-6xl font-black mb-1">{finalResult.score} <span className="text-xl font-normal opacity-50">/ 100</span></div>
-                            <p className="text-lg md:text-xl font-medium">Profile: {finalResult.title}</p>
-                        </div>
-                        <CardContent className="p-8 text-center flex flex-col items-center">
-                            {finalResult.icon}
-                            <h4 className="text-xl md:text-2xl font-bold text-slate-900 mb-3">{finalResult.headline}</h4>
-                            <p className="text-slate-600 leading-relax text-sm md:text-base mb-6 max-w-lg">
-                                {finalResult.description}
-                            </p>
-                            <Button className="w-full sm:w-auto bg-[#1B4B43] shadow-sm" onClick={() => window.location.href = '/contact'}>
-                                Schedule a Strategy Call
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+            <div className="my-8 w-full">
+                <ToolPanel className="flex flex-col items-center gap-6 text-center">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-v3-mute">Your Autonomy Score</p>
+                    <ScoreRing score={finalResult.score} max={100} label={`Profile: ${finalResult.title}`} />
+                    <div className="flex flex-col items-center">
+                        {finalResult.icon}
+                        <h4 className="font-v3-display text-xl font-light leading-tight text-v3-bone md:text-2xl">
+                            {finalResult.headline}
+                        </h4>
+                    </div>
+                    <p className="max-w-lg text-sm leading-relaxed text-v3-soft md:text-base rtl:leading-loose">
+                        {finalResult.description}
+                    </p>
+                    <ToolButton onClick={() => window.location.href = '/contact'} className="w-full py-4 sm:w-auto">
+                        Schedule a Strategy Call
+                        <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden />
+                    </ToolButton>
+                </ToolPanel>
             </div>
         )
     }
@@ -213,35 +226,34 @@ export function ScorecardWidget() {
     // Lead Capture Step
     if (currentStep === quizData.questions.length) {
         return (
-            <div className="w-full my-8">
-                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
-                    <Card className="border-0 shadow-lg overflow-hidden bg-white">
-                        <div className="bg-[#1B4B43] py-8 px-6 text-white text-center">
-                            <CheckCircle2 className="w-10 h-10 mx-auto mb-3 opacity-90" />
-                            <h3 className="text-xl md:text-2xl font-bold">Analysis Complete</h3>
-                            <p className="text-sm md:text-base opacity-80 mt-2">Where should we send your detailed technical blueprint?</p>
-                        </div>
-                        <CardContent className="p-6 md:p-8">
-                            <form onSubmit={handleSubmitEmail} className="space-y-4 max-w-sm mx-auto">
-                                <div className="space-y-2 text-left">
-                                    <label className="text-sm font-bold text-slate-700">Work Email Address</label>
-                                    <Input
-                                        type="email"
-                                        required
-                                        placeholder="founder@company.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="h-11 bg-slate-50 border-slate-200"
-                                    />
-                                </div>
-                                <Button type="submit" disabled={isSubmitting} className="w-full h-11 bg-[#1B4B43] shadow-sm">
-                                    {isSubmitting ? "Calculating Results..." : "Unlock My Score"}
-                                </Button>
-                                <p className="text-[10px] md:text-xs text-center text-slate-400 mt-4">We respect your privacy. No spam.</p>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+            <div className="my-8 w-full">
+                <ToolPanel className="flex flex-col gap-7">
+                    <div className="flex flex-col items-center gap-3 text-center">
+                        <CheckCircle2 className="h-9 w-9 text-v3-light" strokeWidth={1.5} aria-hidden />
+                        <h3 className="font-v3-display text-xl font-light leading-tight text-v3-bone md:text-2xl">
+                            Analysis Complete
+                        </h3>
+                        <p className="text-sm text-v3-soft md:text-base">
+                            Where should we send your detailed technical blueprint?
+                        </p>
+                    </div>
+                    <form onSubmit={handleSubmitEmail} className="mx-auto flex w-full max-w-sm flex-col gap-4">
+                        <ToolField
+                            label="Work Email Address"
+                            type="email"
+                            dir="ltr"
+                            required
+                            placeholder="founder@company.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            error={submitError || undefined}
+                        />
+                        <ToolButton type="submit" loading={isSubmitting} className="w-full py-4">
+                            {isSubmitting ? "Calculating Results..." : "Unlock My Score"}
+                        </ToolButton>
+                        <p className="text-center text-xs text-v3-mute">We respect your privacy. No spam.</p>
+                    </form>
+                </ToolPanel>
             </div>
         )
     }
@@ -250,40 +262,47 @@ export function ScorecardWidget() {
     const progress = ((currentStep) / quizData.questions.length) * 100
 
     return (
-        <div className="w-full bg-white border border-slate-200 rounded-2xl p-6 md:p-8 my-8 shadow-sm">
-            <div className="mb-8">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                    <span>Question {currentStep + 1} of {quizData.questions.length}</span>
-                    <span>{Math.round(progress)}% Completed</span>
+        <div className="my-8 w-full rounded-2xl border border-v3-line/80 bg-v3-raise p-6 md:p-8">
+            <div className="mb-8 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-4 text-xs uppercase tracking-[0.18em]">
+                    <span className="text-v3-mute">Question {currentStep + 1} of {quizData.questions.length}</span>
+                    <span className="tabular-nums text-v3-light">{Math.round(progress)}% Completed</span>
                 </div>
-                <Progress value={progress} className="h-1.5 bg-slate-100" />
+                <div
+                    className="relative h-px bg-v3-line"
+                    role="progressbar"
+                    aria-label="Assessment progress"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(progress)}
+                >
+                    <motion.div
+                        className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+                        initial={false}
+                        animate={{ scaleX: progress / 100 }}
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                </div>
             </div>
 
             <div className="relative">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentStep}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        <h4 className="text-xl md:text-2xl font-bold text-slate-900 mb-6 leading-snug">
+                <StepIn key={currentStep}>
+                        <h4 className="mb-6 font-v3-display text-xl font-light leading-snug text-v3-bone md:text-2xl">
                             {question.q}
                         </h4>
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-2.5">
                             {question.options.map((opt, idx) => (
                                 <button
                                     key={idx}
+                                    type="button"
                                     onClick={() => handleSelectOption(opt.score)}
-                                    className="text-left w-full p-4 md:p-5 rounded-xl border-2 border-slate-100 bg-slate-50/50 hover:border-[#1B4B43] hover:bg-emerald-50/30 transition-all font-medium text-sm md:text-base text-slate-700 shadow-sm"
+                                    className="flex min-h-14 w-full items-center rounded-xl border border-v3-line bg-v3-ink px-4 py-3.5 text-start text-sm leading-relaxed text-v3-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-v3-light/60 hover:text-v3-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light md:text-base"
                                 >
                                     {opt.text}
                                 </button>
                             ))}
                         </div>
-                    </motion.div>
-                </AnimatePresence>
+                </StepIn>
             </div>
         </div>
     )

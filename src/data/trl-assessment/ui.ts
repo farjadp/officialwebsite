@@ -1,6 +1,7 @@
 // UI strings for the TRL assessment components, per locale.
 
 import { TrlLocale } from "./config";
+import { localDigits } from "@/lib/digits";
 
 export interface TrlUiStrings {
     badge: string;
@@ -56,6 +57,8 @@ export interface TrlUiStrings {
     investorReadinessHref: string;
     contactHref: string;
 }
+
+const faDigits = (n: number | string) => localDigits(n, "fa")
 
 const en: TrlUiStrings = {
     badge: "Diagnostic Tool",
@@ -116,13 +119,13 @@ const fa: TrlUiStrings = {
     badge: "ابزار تشخیصی",
     introTitleLead: "فناوری شما واقعاً",
     introTitleAccent: "چقدر بالغ است؟",
-    introBody: "جایگاه فناوری‌تان را روی مقیاس ۱ تا ۹ ناسا پیدا کنید — همان مقیاسی که برنامه‌های نوآوری دولتی برای تصمیم‌گیری درباره‌ی تأمین مالی به‌کار می‌برند. به پرسش‌های مبتنی بر شواهد پاسخ دهید و TRL خود، شکاف‌ها تا سطح بعدی و بستر تأمین مالی مرحله‌تان را ببینید.",
+    introBody: "جایگاه فناوری‌تان را روی مقیاس ۱ تا ۹ ناسا پیدا کنید، همان مقیاسی که برنامه‌های نوآوری دولتی برای تصمیم‌گیری درباره‌ی تأمین مالی به‌کار می‌برند. به پرسش‌های مبتنی بر شواهد پاسخ دهید و TRL خود، شکاف‌ها تا سطح بعدی و بستر تأمین مالی مرحله‌تان را ببینید.",
     startButton: "شروع ارزیابی رایگان",
     durationLine: "حدود ۴ تا ۶ دقیقه • ۲۷ سنجه‌ی شواهد",
-    honestyNote: "صادقانه پاسخ دهید و فقط جایی «بله» بگویید که بتوانید شواهدش را به یک داور نشان دهید. TRL یک نردبان است — پله‌های پریده حساب نمی‌شوند.",
+    honestyNote: "صادقانه پاسخ دهید و فقط جایی «بله» بگویید که بتوانید شواهدش را به یک داور نشان دهید. TRL یک نردبان است؛ پله‌های پریده حساب نمی‌شوند.",
 
-    phaseOf: (c, t) => `فاز ${c} از ${t}`,
-    completed: (p) => `${p}٪ تکمیل‌شده`,
+    phaseOf: (c, t) => `فاز ${faDigits(c)} از ${faDigits(t)}`,
+    completed: (p) => `${faDigits(p)}٪ تکمیل‌شده`,
     previous: "قبلی",
     nextPhase: "فاز بعدی",
     finish: "پایان ارزیابی",
@@ -148,13 +151,13 @@ const fa: TrlUiStrings = {
     gapsTitle: (l) => `شکاف‌ها تا TRL ${l}`,
     gapsTitleDone: "شکافی باقی نمانده",
     gapsIntro: (n) => `برای رسیدن به «${n}» این شواهد هنوز ناقص یا غایب است:`,
-    gapsNone: "همه‌ی سنجه‌ها نزدیک‌اند — شواهد سطح‌های پایین‌تر را محکم کنید تا از گیت عبور کنید.",
+    gapsNone: "همه‌ی سنجه‌ها نزدیک‌اند؛ شواهد سطح‌های پایین‌تر را محکم کنید تا از گیت عبور کنید.",
     gapsDoneBody: "فناوری شما در بهره‌برداری اثبات شده است. ریسک‌های باقی‌مانده تجاری‌اند، نه فنی.",
     fundingTitle: "بستر تأمین مالی",
     nextStepsTitle: "گام‌های بعدی پیشنهادی",
     nextStepsSub: "سریع‌ترین راه بالا رفتن از نردبان، بستن شکاف‌های شواهد در سطحِ در حالِ کارتان است.",
     trlOnlyLead: "TRL فقط بلوغ فناوری را می‌سنجد.",
-    trlOnlyBody: "پژوهش‌های آمادگی استارتاپ نشان می‌دهند بلوغ فناوری، بازار و سرمایه مستقل از هم حرکت می‌کنند — دوتای دیگر را بسنجید با",
+    trlOnlyBody: "پژوهش‌های آمادگی استارتاپ نشان می‌دهند بلوغ فناوری، بازار و سرمایه مستقل از هم حرکت می‌کنند؛ دوتای دیگر را بسنجید با",
     trlOnlyStartupLink: "امتیاز آمادگی استارتاپ",
     trlOnlyInvestorLink: "امتیاز آمادگی جذب سرمایه",
     trlOnlyAnd: "و",
@@ -164,7 +167,7 @@ const fa: TrlUiStrings = {
     retake: "ارزیابی دوباره",
     startupReadinessHref: "/fa/tools/startup-readiness",
     investorReadinessHref: "/fa/tools/investor-readiness",
-    contactHref: "/contact",
+    contactHref: "/fa/contact",
 };
 
 export function getTrlUiStrings(locale: TrlLocale): TrlUiStrings {

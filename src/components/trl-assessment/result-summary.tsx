@@ -41,6 +41,7 @@ export function ResultSummary({ result, onReset, locale = "en" }: ResultSummaryP
             <StepIn className="flex flex-col items-center gap-6 pt-4 text-center">
                 <p className="text-sm text-v3-light">{ui.resultKicker}</p>
                 <ScoreRing
+                    locale={locale}
                     score={result.trl}
                     max={9}
                     label={<span dir="ltr">{result.trlLabel}</span>}
@@ -87,7 +88,7 @@ export function ResultSummary({ result, onReset, locale = "en" }: ResultSummaryP
                                             {localDigits(lvl, locale)}
                                         </span>
                                         <div className={`min-w-0 flex-1 ${lr.achieved || isCurrent ? "" : "opacity-70"}`}>
-                                            <Meter label={lr.name} value={lr.percentage} max={100} display={`${lr.percentage}%`} />
+                                            <Meter locale={locale} label={lr.name} value={lr.percentage} max={100} display={`${lr.percentage}%`} />
                                         </div>
                                     </li>
                                 );

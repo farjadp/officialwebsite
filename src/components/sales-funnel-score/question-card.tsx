@@ -1,6 +1,7 @@
 "use client";
 
-import { Question } from "@/data/sales-funnel-score/config";
+import { Question, SalesFunnelLocale } from "@/data/sales-funnel-score/config";
+import { getSalesFunnelUiStrings } from "@/data/sales-funnel-score/ui";
 import { QuestionBlock, ScaleOptions, type ScaleOption } from "@/components/v3/tool-kit";
 
 interface QuestionCardProps {
@@ -8,20 +9,21 @@ interface QuestionCardProps {
     value: number | undefined;
     onChange: (value: number) => void;
     index: number;
+    locale?: SalesFunnelLocale;
 }
 
-const scaleOptions: ScaleOption<number>[] = [
-    { value: 1, mark: 1, label: "Not true at all" },
-    { value: 2, mark: 2, label: "Mostly false" },
-    { value: 3, mark: 3, label: "Partly true" },
-    { value: 4, mark: 4, label: "Mostly true" },
-    { value: 5, mark: 5, label: "Completely true" },
-];
+export function QuestionCard({ question, value, onChange, index, locale = "en" }: QuestionCardProps) {
+    const ui = getSalesFunnelUiStrings(locale);
 
-export function QuestionCard({ question, value, onChange, index }: QuestionCardProps) {
+    const scaleOptions: ScaleOption<number>[] = ui.scaleLabels.map((label, i) => ({
+        value: i + 1,
+        mark: ui.num(i + 1),
+        label,
+    }));
+
     return (
-        <QuestionBlock index={`${index + 1}.`} text={question.text}>
-            <ScaleOptions options={scaleOptions} value={value} onChange={onChange} label={question.text} />
+        <QuestionBlock locale={locale} index={`${ui.num(index + 1)}.`} text={question.text}>
+            <ScaleOptions locale={locale} options={scaleOptions} value={value} onChange={onChange} label={question.text} />
         </QuestionBlock>
     );
 }

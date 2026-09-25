@@ -1,12 +1,16 @@
 "use client";
 
 import { FinalResult } from "@/data/investor-readiness/logic";
+import { InvestorLocale } from "@/data/investor-readiness/config";
+import { getInvestorUiStrings } from "@/data/investor-readiness/ui";
+import { localePath } from "@/lib/nav";
 import { Meter, ResultList, ScoreRing, StepIn, ToolButton } from "@/components/v3/tool-kit";
 import Link from "next/link";
 
 interface ResultSummaryProps {
     result: FinalResult;
     onReset: () => void;
+    locale?: InvestorLocale;
 }
 
 const LINK_BASE =
@@ -14,24 +18,26 @@ const LINK_BASE =
 const LINK_PRIMARY = `${LINK_BASE} bg-v3-bone font-semibold text-v3-ink hover:-translate-y-0.5 hover:bg-v3-light`;
 
 // One accent for every band: the level is told by its words, not by colour.
-export function ResultSummary({ result, onReset }: ResultSummaryProps) {
+export function ResultSummary({ result, onReset, locale = "en" }: ResultSummaryProps) {
+    const t = getInvestorUiStrings(locale);
     return (
         <div className="flex flex-col gap-12">
 
             {/* Header & Main Score */}
             <StepIn className="flex flex-col items-center gap-6 pt-4 text-center">
-                <p className="text-sm text-v3-light">Investor Readiness Score</p>
-                <ScoreRing score={result.totalScore} max={100} />
+                <p className="text-sm text-v3-light">{t.resultKicker}</p>
+                <ScoreRing locale={locale} score={result.totalScore} max={100} />
                 <h2 className="font-v3-display text-3xl font-light leading-tight text-v3-bone md:text-4xl rtl:leading-snug">{result.readinessLevel}</h2>
                 <p className="max-w-2xl text-lg leading-relaxed text-v3-soft rtl:leading-loose">{result.summarySentence}</p>
             </StepIn>
 
             {/* Category Breakdown */}
             <StepIn delay={0.1} className="flex flex-col gap-6 rounded-2xl border border-v3-line/80 p-7 md:p-8">
-                <h3 className="font-v3-display text-2xl font-light">Category Breakdown</h3>
+                <h3 className="font-v3-display text-2xl font-light">{t.breakdownTitle}</h3>
                 <div className="flex flex-col gap-6">
                     {result.categoryResults.map((cat) => (
                         <Meter
+                            locale={locale}
                             key={cat.categoryId}
                             label={cat.title}
                             value={cat.percentage}
@@ -45,12 +51,12 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
             {/* Strengths & Weaknesses */}
             <StepIn delay={0.15} className="grid grid-cols-1 gap-6">
                 <ResultList
-                    title="Investor Strength Signals"
+                    title={t.strengthsTitle}
                     tone="strength"
                     items={result.strengths.map((str) => ({ title: str.title }))}
                 />
                 <ResultList
-                    title="Key Investor Concerns"
+                    title={t.risksTitle}
                     tone="risk"
                     items={result.weaknesses.map((weak) => ({ title: weak.title, body: weak.description }))}
                 />
@@ -58,8 +64,8 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
 
             {/* Recommended Next Steps */}
             <StepIn delay={0.2} className="rounded-3xl border border-v3-line/80 bg-v3-raise p-7 md:p-10">
-                <h3 className="font-v3-display text-3xl font-light leading-tight rtl:leading-snug">Recommended Next Steps</h3>
-                <p className="mt-3 max-w-2xl leading-relaxed text-v3-soft rtl:leading-loose">Before pitching to investors or opening a round, focus on resolving these critical gaps to maximize your valuation and closing probability.</p>
+                <h3 className="font-v3-display text-3xl font-light leading-tight rtl:leading-snug">{t.nextStepsTitle}</h3>
+                <p className="mt-3 max-w-2xl leading-relaxed text-v3-soft rtl:leading-loose">{t.nextStepsSub}</p>
 
                 <ol className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {result.recommendations.map((rec, i) => (
@@ -73,15 +79,15 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
                 {/* CTA Section */}
                 <div className="mt-10 flex flex-col gap-6 border-t border-v3-line/80 pt-8 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h4 className="text-lg font-medium text-v3-bone">Schedule a Pitch Review</h4>
-                        <p className="mt-1 text-sm text-v3-mute">Get a professional audit of your deck and narrative before you raise.</p>
+                        <h4 className="text-lg font-medium text-v3-bone">{t.ctaTitle}</h4>
+                        <p className="mt-1 text-sm text-v3-mute">{t.ctaBody}</p>
                     </div>
                     <div className="flex w-full gap-3 sm:w-auto">
                         <ToolButton variant="secondary" className="flex-1 sm:flex-none" onClick={onReset}>
-                            Retake Assessment
+                            {t.retake}
                         </ToolButton>
-                        <Link href="/contact" className={LINK_PRIMARY}>
-                            Book Pitch Review
+                        <Link href={localePath(locale, "/contact")} className={LINK_PRIMARY}>
+                            {t.ctaButton}
                         </Link>
                     </div>
                 </div>

@@ -14,7 +14,8 @@ import {
     Scale,
     ShieldAlert,
 } from "lucide-react";
-import { METHOD_CITATION, METHOD_URL } from "@/data/business-model-stress-test/config";
+import { BmLocale, METHOD_URL } from "@/data/business-model-stress-test/config";
+import { getBmUiStrings } from "@/data/business-model-stress-test/ui";
 import {
     HeatMapPattern,
     StressTestReport,
@@ -44,13 +45,6 @@ const patternStyles: Record<
         badge: "border border-v3-line text-v3-soft",
         icon: CheckCircle2,
     },
-};
-
-const patternLabels: Record<HeatMapPattern["type"], string> = {
-    "double-red": "Double red",
-    "double-green": "Double green",
-    inconsistency: "Inconsistency",
-    "preferred-outcome": "Preferred outcome",
 };
 
 function SectionHeader({
@@ -86,46 +80,52 @@ const panel = "rounded-3xl border border-v3-line/80 bg-v3-raise p-7 md:p-10";
 export function ResultSummary({
     report,
     onReset,
+    locale = "en",
 }: {
     report: StressTestReport;
     onReset: () => void;
+    locale?: BmLocale;
 }) {
+    const ui = getBmUiStrings(locale);
     const { result, factors, cells, businessModel } = report;
     const componentIds = describedComponentIds(businessModel);
+    const patternLabels = ui.patternLabels;
 
     return (
         <div className="flex flex-col gap-8">
             <StepIn className={`${panel} shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)]`}>
                 <div className="grid items-center gap-10 md:grid-cols-[auto_1fr]">
-                    <ScoreRing score={result.robustnessIndex} />
+                    <ScoreRing locale={locale} score={result.robustnessIndex} />
                     <div className="flex flex-col items-start gap-4">
                         <div className="flex flex-wrap items-center gap-3">
                             <span className="rounded-full border border-v3-light/60 px-3 py-1 text-xs font-medium tracking-wider text-v3-light uppercase">
                                 {result.grade}
                             </span>
                             <span className="text-xs text-v3-mute">
-                                {new Date(report.generatedAt).toLocaleString()}
+                                {new Date(report.generatedAt).toLocaleString(
+                                    locale === "fa" ? "fa-IR" : "en-CA"
+                                )}
                             </span>
                         </div>
                         <h2 className="font-v3-display text-3xl font-light md:text-4xl rtl:leading-snug">
-                            Business model robustness
+                            {ui.robustnessTitle}
                         </h2>
                         <p className="max-w-2xl leading-relaxed text-v3-soft rtl:leading-loose">
                             {result.verdict}
                         </p>
                         <ToolButton variant="secondary" onClick={onReset} className="mt-2">
-                            <RefreshCw className="size-4" aria-hidden /> Test another model
+                            <RefreshCw className="size-4" aria-hidden /> {ui.testAnother}
                         </ToolButton>
                     </div>
                 </div>
 
                 <dl className="mt-10 grid gap-3 border-t border-v3-line/60 pt-8 sm:grid-cols-2 lg:grid-cols-4">
                     {[
-                        { label: "Showstoppers", value: result.counts.red, tone: "text-v3-light" },
-                        { label: "Viability warnings", value: result.counts.orange, tone: "text-v3-bone" },
-                        { label: "Holds up", value: result.counts.green, tone: "text-v3-bone" },
+                        { label: ui.statShowstoppers, value: result.counts.red, tone: "text-v3-light" },
+                        { label: ui.statWarnings, value: result.counts.orange, tone: "text-v3-bone" },
+                        { label: ui.statHoldsUp, value: result.counts.green, tone: "text-v3-bone" },
                         {
-                            label: "Assessed cells",
+                            label: ui.statAssessed,
                             value: `${result.assessedCells}/${result.totalCells}`,
                             tone: "text-v3-soft",
                         },
@@ -146,13 +146,18 @@ export function ResultSummary({
             <section className={panel}>
                 <SectionHeader
                     icon={<Grid3x3 className="size-5" />}
-                    step="Step 4"
-                    title="The heat map"
-                    lead="Every business model component you described, confronted with both extreme outcomes of each stress factor."
+                    step={ui.step4Label}
+                    title={ui.step4Title}
+                    lead={ui.step4Lead}
                 />
-                <HeatMap factors={factors} componentIds={componentIds} cells={cells} />
+                <HeatMap
+                    factors={factors}
+                    componentIds={componentIds}
+                    cells={cells}
+                    locale={locale}
+                />
                 <div className="mt-6">
-                    <HeatMapLegend />
+                    <HeatMapLegend locale={locale} />
                 </div>
             </section>
 
@@ -160,9 +165,9 @@ export function ResultSummary({
                 <section className={panel}>
                     <SectionHeader
                         icon={<Rows3 className="size-5" />}
-                        step="Step 5a"
-                        title="Which components are weak"
-                        lead="Each component accumulated across every future you tested."
+                        step={ui.step5aLabel}
+                        title={ui.componentsTitle}
+                        lead={ui.componentsLead}
                     />
                     <ul className="flex flex-col gap-6">
                         {[...result.componentSubViews]
@@ -170,14 +175,19 @@ export function ResultSummary({
                             .map((view) => (
                                 <li key={view.componentId} className="flex flex-col gap-2">
                                     <Meter
+                            locale={locale}
                                         label={view.name}
                                         value={view.assessed ? view.robustness : 0}
-                                        display={view.assessed ? `${view.robustness}/100` : "untouched"}
+                                        display={
+                                            view.assessed
+                                                ? ui.outOf100(view.robustness)
+                                                : ui.componentUntouched
+                                        }
                                     />
                                     <p className="text-xs text-v3-mute">
                                         {view.assessed
-                                            ? `${view.red} showstopper${view.red === 1 ? "" : "s"}, ${view.orange} warning${view.orange === 1 ? "" : "s"}, ${view.green} favourable`
-                                            : "Untested — no selected stress factor touches this component."}
+                                            ? ui.componentCounts(view.red, view.orange, view.green)
+                                            : ui.componentUntested}
                                     </p>
                                 </li>
                             ))}
@@ -187,9 +197,9 @@ export function ResultSummary({
                 <section className={panel}>
                     <SectionHeader
                         icon={<Columns3 className="size-5" />}
-                        step="Step 5a"
-                        title="Which futures hurt most"
-                        lead="Each outcome accumulated across your whole business model."
+                        step={ui.step5aLabel}
+                        title={ui.outcomesTitle}
+                        lead={ui.outcomesLead}
                     />
                     <ul className="flex flex-col gap-6">
                         {[...result.outcomeSubViews]
@@ -197,9 +207,14 @@ export function ResultSummary({
                             .map((view) => (
                                 <li key={`${view.factorId}-${view.outcomeId}`} className="flex flex-col gap-2">
                                     <Meter
+                            locale={locale}
                                         label={view.outcomeLabel}
                                         value={view.assessed ? view.robustness : 0}
-                                        display={view.assessed ? `${view.robustness}/100` : "no impact"}
+                                        display={
+                                            view.assessed
+                                                ? ui.outOf100(view.robustness)
+                                                : ui.outcomeNoImpact
+                                        }
                                     />
                                     <p className="text-xs text-v3-mute">{view.factorName}</p>
                                 </li>
@@ -212,9 +227,9 @@ export function ResultSummary({
                 <section className={panel}>
                     <SectionHeader
                         icon={<Scale className="size-5" />}
-                        step="Step 5b"
-                        title="Patterns in the map"
-                        lead="Colour patterns that say more than any single cell does."
+                        step={ui.step5bLabel}
+                        title={ui.patternsTitle}
+                        lead={ui.patternsLead}
                     />
                     <ul className="grid gap-4 md:grid-cols-2">
                         {result.patterns.map((pattern, index) => {
@@ -247,9 +262,9 @@ export function ResultSummary({
             <section className={`${panel} border-v3-light/30`}>
                 <SectionHeader
                     icon={<ListChecks className="size-5" />}
-                    step="Step 6"
-                    title="What to actually change"
-                    lead="Ordered by what breaks the model soonest."
+                    step={ui.step6Label}
+                    title={ui.actionsTitle}
+                    lead={ui.actionsLead}
                 />
                 <ol className="grid gap-3 md:grid-cols-2">
                     {result.actions.map((action, index) => (
@@ -275,49 +290,39 @@ export function ResultSummary({
             </section>
 
             <section className="rounded-3xl border border-v3-light/30 p-7 md:p-10">
-                <h3 className="font-v3-display text-3xl font-light rtl:leading-snug">
-                    Want a second pair of eyes on the redesign?
-                </h3>
+                <h3 className="font-v3-display text-3xl font-light rtl:leading-snug">{ui.ctaTitle}</h3>
                 <p className="mt-4 max-w-2xl leading-relaxed text-v3-soft rtl:leading-loose">
-                    The stress test tells you which components break. Deciding what to replace them with
-                    is the harder half, and it is the work I do with founders every week.
+                    {ui.ctaBody}
                 </p>
                 <Link
-                    href="/booking"
+                    href={ui.bookingHref}
                     className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-full bg-v3-bone px-7 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink"
                 >
-                    Book a working session <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+                    {ui.ctaButton} <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                 </Link>
             </section>
 
             <div className="flex flex-col gap-3 rounded-2xl border border-v3-line/60 p-6 text-xs leading-relaxed text-v3-mute rtl:leading-loose">
                 <p>
-                    <strong className="font-medium text-v3-soft">Method: </strong>
-                    {METHOD_CITATION}{" "}
+                    <strong className="font-medium text-v3-soft">{ui.methodLabel}</strong>
+                    <span dir="ltr">{ui.methodBodyPrefix}</span>{" "}
                     <a
                         href={METHOD_URL}
                         target="_blank"
                         rel="noreferrer"
                         className="text-v3-light underline-offset-4 hover:underline"
                     >
-                        Read the paper
+                        {ui.readPaper}
                     </a>{" "}
-                    (open access, CC BY 4.0). The six-step method, the four-colour scheme, the sub-views
-                    and the pattern analysis are the authors&apos;.
+                    {ui.methodBodySuffix}
                 </p>
                 <p>
-                    <strong className="font-medium text-v3-soft">What is ours: </strong>
-                    the paper&apos;s method is qualitative and produces no score. The robustness index above
-                    is our own quantification (holds up = 1, not viable = 0.5, not feasible = 0, averaged over
-                    the cells that were assessed) so results can be compared and tracked. The heat map and the
-                    reasoning behind each cell remain the real output.
+                    <strong className="font-medium text-v3-soft">{ui.oursLabel}</strong>
+                    {ui.oursBody}
                 </p>
                 <p>
-                    <strong className="font-medium text-v3-soft">Limits: </strong>
-                    the original method runs as a facilitated session with people who know the business and an
-                    outside domain expert. Here a model plays that role from your written description, so the
-                    result is only as good as that description and the factors you chose. It assesses impact,
-                    not likelihood. Treat it as a structured argument to challenge, not a verdict.
+                    <strong className="font-medium text-v3-soft">{ui.limitsLabel}</strong>
+                    {ui.limitsBody}
                 </p>
             </div>
         </div>

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function BusinessModelScorePage() {
     return (
         <ToolShell>
-            <BusinessModelScoreTool />
+            <BusinessModelScoreTool locale="fa" />
         </ToolShell>
     );
 }

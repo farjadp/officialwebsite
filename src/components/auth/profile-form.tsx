@@ -1,8 +1,18 @@
 "use client"
 
+// ============================================================================
+// File Path: src/components/auth/profile-form.tsx
+// Why: The portal's profile form in the v3 "Light" look: visible labels, a
+//      raised field ground, a light focus ring and 44px+ targets. Email,
+//      phone and other Latin values keep dir="ltr" so they read correctly
+//      on the Persian page. Restyle only — the server action, the field
+//      names, the validation attributes and the avatar rules are untouched.
+// Env / Identity: Client Component
+// ============================================================================
+
 import { useEffect, useRef, useState, useActionState } from "react"
 import Image from "next/image"
-import { Camera, Loader2, User } from "lucide-react"
+import { Camera, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { updateProfile, type ProfileFormState } from "@/app/actions/user"
 
@@ -60,9 +70,13 @@ const copy = {
     },
 }
 
+const FIELD =
+    "w-full rounded-xl border border-v3-line bg-v3-raise px-4 text-base text-v3-bone placeholder:text-v3-mute/70 transition-colors focus:border-v3-light/60 focus:outline-none focus:ring-2 focus:ring-v3-light/70"
+const LABEL = "text-sm font-medium text-v3-soft"
+const HINT = "text-xs text-v3-mute"
+
 export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
     const t = copy[locale]
-    const isRtl = locale === "fa"
 
     const [state, formAction, isPending] = useActionState<ProfileFormState | null, FormData>(updateProfile, null)
     const [preview, setPreview] = useState<string | null>(initialUser.image)
@@ -104,13 +118,14 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
         .toUpperCase()
 
     return (
-        <form action={formAction} className="space-y-6" dir={isRtl ? "rtl" : "ltr"}>
+        <form action={formAction} className="flex flex-col gap-6">
             {/* Avatar */}
-            <div className={`flex items-center gap-5 ${isRtl ? "flex-row-reverse" : ""}`}>
+            <div className="flex items-center gap-5">
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 ring-2 ring-white/10 transition-all hover:ring-indigo-500/50 focus-visible:outline-none focus-visible:ring-indigo-500"
+                    aria-label={t.upload}
+                    className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-v3-line bg-v3-ink transition-colors hover:border-v3-light/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                 >
                     {preview ? (
                         <Image
@@ -121,23 +136,23 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
                             sizes="80px"
                         />
                     ) : (
-                        <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-white">
+                        <span className="flex h-full w-full items-center justify-center font-v3-display text-2xl text-v3-light">
                             {initials}
                         </span>
                     )}
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Camera className="h-5 w-5 text-white" />
+                    <span className="absolute inset-0 flex items-center justify-center bg-v3-ink/70 opacity-0 transition-opacity group-hover:opacity-100">
+                        <Camera className="h-5 w-5 text-v3-light" aria-hidden />
                     </span>
                 </button>
-                <div className={`flex-1 ${isRtl ? "text-right" : ""}`}>
-                    <p className="text-sm font-medium text-white">{t.profilePhoto}</p>
-                    <p className="text-xs text-slate-500">{t.photoHint}</p>
+                <div className="flex flex-1 flex-col gap-1 text-start">
+                    <p className="text-sm font-medium text-v3-bone">{t.profilePhoto}</p>
+                    <p className={HINT}>{t.photoHint}</p>
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-iran-firouzeh hover:text-iran-firouzeh"
+                        className="mt-1 inline-flex min-h-11 items-center gap-2 self-start text-sm font-medium text-v3-light transition-colors hover:text-v3-bone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                     >
-                        <Camera className="h-3.5 w-3.5" /> {t.upload}
+                        <Camera className="h-4 w-4" aria-hidden /> {t.upload}
                     </button>
                 </div>
                 <input
@@ -151,28 +166,25 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
             </div>
 
             {/* Name */}
-            <div>
-                <label htmlFor="name" className={`block text-xs font-medium text-slate-400 tracking-wide uppercase mb-1.5 ${isRtl ? "text-right" : ""}`}>
+            <div className="flex flex-col gap-2 text-start">
+                <label htmlFor="name" className={LABEL}>
                     {t.fullName}
                 </label>
-                <div className="relative">
-                    <User className={`absolute top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600 ${isRtl ? "right-3.5" : "left-3.5"}`} />
-                    <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        defaultValue={initialUser.name || ""}
-                        required
-                        minLength={2}
-                        placeholder={t.namePlaceholder}
-                        className={`w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06] ${isRtl ? "pr-10 pl-4 text-right" : "pl-10 pr-4"}`}
-                    />
-                </div>
+                <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    defaultValue={initialUser.name || ""}
+                    required
+                    minLength={2}
+                    placeholder={t.namePlaceholder}
+                    className={`${FIELD} h-14`}
+                />
             </div>
 
             {/* Email (read-only) */}
-            <div>
-                <label htmlFor="email" className={`block text-xs font-medium text-slate-400 tracking-wide uppercase mb-1.5 ${isRtl ? "text-right" : ""}`}>
+            <div className="flex flex-col gap-2 text-start">
+                <label htmlFor="email" className={LABEL}>
                     {t.email}
                 </label>
                 <input
@@ -180,14 +192,15 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
                     type="email"
                     value={initialUser.email}
                     disabled
-                    className="w-full bg-white/[0.02] border border-white/8 rounded-xl text-slate-500 text-sm px-4 py-3 cursor-not-allowed"
+                    dir="ltr"
+                    className="h-14 w-full cursor-not-allowed rounded-xl border border-v3-line bg-v3-ink px-4 text-base text-v3-mute"
                 />
-                <p className={`text-xs text-slate-600 mt-1.5 ${isRtl ? "text-right" : ""}`}>{t.emailHint}</p>
+                <p className={HINT}>{t.emailHint}</p>
             </div>
 
             {/* Bio */}
-            <div>
-                <label htmlFor="bio" className={`block text-xs font-medium text-slate-400 tracking-wide uppercase mb-1.5 ${isRtl ? "text-right" : ""}`}>
+            <div className="flex flex-col gap-2 text-start">
+                <label htmlFor="bio" className={LABEL}>
                     {t.bio}
                 </label>
                 <textarea
@@ -197,14 +210,14 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
                     rows={3}
                     maxLength={500}
                     placeholder={t.bioPlaceholder}
-                    className={`w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm px-4 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06] resize-none ${isRtl ? "text-right" : ""}`}
+                    className={`${FIELD} resize-none py-3 leading-relaxed`}
                 />
-                <p className={`text-xs text-slate-600 mt-1.5 ${isRtl ? "text-right" : ""}`}>{t.bioHint}</p>
+                <p className={HINT}>{t.bioHint}</p>
             </div>
 
             {/* Phone */}
-            <div>
-                <label htmlFor="phone" className={`block text-xs font-medium text-slate-400 tracking-wide uppercase mb-1.5 ${isRtl ? "text-right" : ""}`}>
+            <div className="flex flex-col gap-2 text-start">
+                <label htmlFor="phone" className={LABEL}>
                     {t.phone}
                 </label>
                 <input
@@ -214,7 +227,8 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
                     defaultValue={initialUser.phone || ""}
                     maxLength={30}
                     placeholder={t.phonePlaceholder}
-                    className={`w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm px-4 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06] ${isRtl ? "text-right" : ""}`}
+                    dir="ltr"
+                    className={`${FIELD} h-14`}
                 />
             </div>
 
@@ -222,11 +236,11 @@ export function ProfileForm({ initialUser, locale = "en" }: ProfileFormProps) {
             <button
                 type="submit"
                 disabled={isPending}
-                className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-iran-lajvard disabled:opacity-60 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-v3-bone px-7 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-v3-line disabled:text-v3-mute"
             >
                 {isPending ? (
                     <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                         {t.saving}
                     </>
                 ) : (

@@ -464,3 +464,158 @@ export const METHOD_CITATION =
     "Haaker, T., Bouwman, H., Janssen, W., & De Reuver, M. (2017). Business model stress testing: A practical approach to test the robustness of a business model. Futures, 89, 14-25.";
 
 export const METHOD_URL = "https://doi.org/10.1016/j.futures.2017.04.003";
+
+// ============================================================================
+// Locale plumbing. Persian content lives in config.fa.ts with the same ids,
+// the same order and the same limits; only the strings differ.
+// ============================================================================
+
+export type BmLocale = "en" | "fa";
+
+/** Strings the scoring/pattern logic returns, per locale. Scoring itself never varies. */
+export interface BmLogicStrings {
+    gradeRobust: string;
+    gradeResilient: string;
+    gradeExposed: string;
+    gradeFragile: string;
+    gradeCritical: string;
+
+    verdictDoubleReds: (count: number) => string;
+    verdictRobust: string;
+    verdictResilient: string;
+    verdictExposed: string;
+    verdictFragile: string;
+    verdictCritical: string;
+
+    doubleRedTitle: (component: string, factor: string) => string;
+    doubleRedDetail: (component: string, reasoning: string) => string;
+    doubleGreenTitle: (component: string, factor: string) => string;
+    doubleGreenDetail: (reasoning: string) => string;
+    inconsistencyTitle: (factor: string) => string;
+    inconsistencyDetail: (
+        favouredByFirst: string[],
+        firstLabel: string,
+        favouredBySecond: string[],
+        secondLabel: string
+    ) => string;
+    preferredTitle: (betterLabel: string) => string;
+    preferredDetail: (
+        betterLabel: string,
+        betterScore: number,
+        worseLabel: string,
+        worseScore: number,
+        gap: number
+    ) => string;
+
+    actionRedesignTitle: (component: string) => string;
+    actionRedesignDetail: (patternDetail: string) => string;
+    actionStrengthenTitle: (component: string) => string;
+    actionStrengthenDetail: (
+        component: string,
+        robustness: number,
+        red: number,
+        orange: number
+    ) => string;
+    actionInconsistencyTitle: string;
+    actionWidenTitle: string;
+    actionWidenDetail: string;
+
+    /** Server-side strings: the grey-cell placeholder and the input errors. */
+    greyReasoning: string;
+    errorMissingRequired: (components: string[]) => string;
+    errorTooThin: (min: number) => string;
+    errorTooFewFactors: (min: number) => string;
+    errorNoCausalLink: string;
+    errorGeneric: string;
+    errorRateLimited: string;
+    errorIncomplete: (min: number, max: number) => string;
+}
+
+export interface BusinessModelContent {
+    components: BusinessModelComponent[];
+    factors: StressFactor[];
+    perspectiveLabels: Record<PestlePerspective, string>;
+    logic: BmLogicStrings;
+}
+
+const plural = (count: number, one: string, many: string) => (count === 1 ? one : many);
+
+export const businessModelLogicEn: BmLogicStrings = {
+    gradeRobust: "Robust",
+    gradeResilient: "Resilient",
+    gradeExposed: "Exposed",
+    gradeFragile: "Fragile",
+    gradeCritical: "Critical",
+
+    verdictDoubleReds: (count) =>
+        `${count} ${plural(count, "component", "components")} in your model ${plural(
+            count,
+            "fails",
+            "fail"
+        )} under both outcomes of a stress factor. That is a design problem, not a forecasting problem: no future scenario rescues it, so it has to be redesigned.`,
+    verdictRobust:
+        "The model held up across the futures you tested. Keep the reasoning behind each green cell — those assumptions are what you are actually betting on.",
+    verdictResilient:
+        "The model survives most of the tested futures with contained damage. The orange cells are where choices need revisiting before you scale.",
+    verdictExposed:
+        "Meaningful parts of the model stop working in plausible futures. This is the stage to run design alternatives, not to commit capital.",
+    verdictFragile:
+        "Most of the model depends on the environment staying roughly as it is today. Treat the red cells as the redesign backlog.",
+    verdictCritical:
+        "The model does not survive the futures you selected as plausible. Rework the weakest components before investing further in implementation.",
+
+    doubleRedTitle: (component, factor) => `${component} fails under both outcomes of "${factor}"`,
+    doubleRedDetail: (component, reasoning) =>
+        `Whichever way this uncertainty resolves, ${component.toLowerCase()} stops being feasible. This is not a risk to monitor — it is a redesign you already owe yourself. ${reasoning}`,
+    doubleGreenTitle: (component, factor) => `${component} holds under both outcomes of "${factor}"`,
+    doubleGreenDetail: (reasoning) =>
+        `This part of the model is robust to this uncertainty either way, so it is a safe anchor to build the redesign around. ${reasoning}`,
+    inconsistencyTitle: (factor) => `"${factor}" pulls your model in two directions`,
+    inconsistencyDetail: (favouredByFirst, firstLabel, favouredBySecond, secondLabel) =>
+        `${favouredByFirst.join(", ")} need "${firstLabel}", while ${favouredBySecond.join(
+            ", "
+        )} need "${secondLabel}". No future outcome leaves the model whole, which points to an internal inconsistency between these choices rather than to bad luck.`,
+    preferredTitle: (betterLabel) => `Your model is betting on "${betterLabel}"`,
+    preferredDetail: (betterLabel, betterScore, worseLabel, worseScore, gap) =>
+        `Across the components it touches, "${betterLabel}" scores ${betterScore}/100 while "${worseLabel}" scores ${worseScore}/100. That is a ${gap}-point dependency on one future. Either build a hedge for the unfavourable outcome, or act deliberately to make the favourable one more likely.`,
+
+    actionRedesignTitle: (component) => `Redesign now: ${component}`,
+    actionRedesignDetail: (patternDetail) =>
+        `${patternDetail} Define at least two alternative designs for this component and test which one survives both outcomes.`,
+    actionStrengthenTitle: (component) => `Strengthen ${component.toLowerCase()}`,
+    actionStrengthenDetail: (component, robustness, red, orange) =>
+        `${component} scores ${robustness}/100 across the futures you tested (${red} showstoppers, ${orange} viability warnings). Work through the reasoning in those cells and decide what would have to be true for this component to survive.`,
+    actionInconsistencyTitle: "Resolve the internal inconsistency",
+    actionWidenTitle: "Widen the stress test",
+    actionWidenDetail:
+        "No component failed under the factors you selected. Either the model is genuinely robust, or the factors chosen were too close to your comfort zone. Re-run with the uncertainties you were most tempted to skip.",
+
+    greyReasoning: "No causal relationship was identified between this outcome and this component.",
+    errorMissingRequired: (components) =>
+        `Describe your ${components.map((item) => item.toLowerCase()).join(", ")} before running the test.`,
+    errorTooThin: (min) =>
+        `Describe at least ${min} business model components — a thinner description cannot be stress tested meaningfully.`,
+    errorTooFewFactors: (min) => `Select at least ${min} distinct stress factors.`,
+    errorNoCausalLink:
+        "No causal link was found between your business model and the selected stress factors. Try factors that touch how you earn, deliver, or reach customers.",
+    errorGeneric: "The stress test could not be completed. Please try again.",
+    errorRateLimited: "You have run several stress tests recently. Please try again later.",
+    errorIncomplete: (min, max) =>
+        `Complete your business model and select ${min}-${max} stress factors.`,
+};
+
+export const perspectiveLabelsEn: Record<PestlePerspective, string> = {
+    Political: "Political",
+    Economic: "Economic",
+    Social: "Social",
+    Technological: "Technological",
+    Legal: "Legal",
+    Environmental: "Environmental",
+};
+
+export const businessModelContentEn: BusinessModelContent = {
+    components: businessModelComponents,
+    factors: stressFactorLibrary,
+    perspectiveLabels: perspectiveLabelsEn,
+    logic: businessModelLogicEn,
+};

@@ -13,7 +13,19 @@
 // tracked over time and compared between models; the heat map remains the primary output.
 // ============================================================================
 
-import { businessModelComponents, StressFactor } from "./config";
+import {
+    BmLocale,
+    BmLogicStrings,
+    BusinessModelContent,
+    StressFactor,
+    businessModelComponents,
+    businessModelContentEn,
+} from "./config";
+import { businessModelContentFa } from "./config.fa";
+
+export function getBusinessModelContent(locale: BmLocale): BusinessModelContent {
+    return locale === "fa" ? businessModelContentFa : businessModelContentEn;
+}
 
 export type ImpactColor = "red" | "orange" | "green" | "grey";
 
@@ -64,6 +76,8 @@ export type PatternType =
 /** Step 5b — patterns of colouring the paper tells you to look for. */
 export interface HeatMapPattern {
     type: PatternType;
+    /** The component the pattern is about, when it has one — used to title the action. */
+    subject?: string;
     title: string;
     detail: string;
     severity: "critical" | "warning" | "positive";
@@ -124,8 +138,8 @@ export function describedComponentIds(businessModel: BusinessModelDescription) {
         .map((component) => component.id);
 }
 
-function componentName(componentId: string) {
-    return businessModelComponents.find((item) => item.id === componentId)?.name ?? componentId;
+function componentNameIn(content: BusinessModelContent, componentId: string) {
+    return content.components.find((item) => item.id === componentId)?.name ?? componentId;
 }
 
 function cellAt(cells: HeatMapCell[], componentId: string, factorId: string, outcomeId: "a" | "b") {
@@ -142,9 +156,12 @@ function findPatterns(
     cells: HeatMapCell[],
     factors: StressFactor[],
     componentIds: string[],
-    outcomeSubViews: OutcomeSubView[]
+    outcomeSubViews: OutcomeSubView[],
+    content: BusinessModelContent
 ): HeatMapPattern[] {
     const patterns: HeatMapPattern[] = [];
+    const logic = content.logic;
+    const componentName = (id: string) => componentNameIn(content, id);
 
     for (const factor of factors) {
         for (const componentId of componentIds) {
@@ -156,17 +173,17 @@ function findPatterns(
                 patterns.push({
                     type: "double-red",
                     severity: "critical",
-                    title: `${componentName(componentId)} fails under both outcomes of "${factor.name}"`,
-                    detail: `Whichever way this uncertainty resolves, ${componentName(
-                        componentId
-                    ).toLowerCase()} stops being feasible. This is not a risk to monitor — it is a redesign you already owe yourself. ${first.reasoning}`,
+                    subject: componentName(componentId),
+                    title: logic.doubleRedTitle(componentName(componentId), factor.name),
+                    detail: logic.doubleRedDetail(componentName(componentId), first.reasoning),
                 });
             } else if (first.color === "green" && second.color === "green") {
                 patterns.push({
                     type: "double-green",
                     severity: "positive",
-                    title: `${componentName(componentId)} holds under both outcomes of "${factor.name}"`,
-                    detail: `This part of the model is robust to this uncertainty either way, so it is a safe anchor to build the redesign around. ${first.reasoning}`,
+                    subject: componentName(componentId),
+                    title: logic.doubleGreenTitle(componentName(componentId), factor.name),
+                    detail: logic.doubleGreenDetail(first.reasoning),
                 });
             }
         }
@@ -187,14 +204,13 @@ function findPatterns(
             patterns.push({
                 type: "inconsistency",
                 severity: "warning",
-                title: `"${factor.name}" pulls your model in two directions`,
-                detail: `${favouredByFirst
-                    .map(componentName)
-                    .join(", ")} need "${factor.outcomes[0].label}", while ${favouredBySecond
-                    .map(componentName)
-                    .join(", ")} need "${
+                title: logic.inconsistencyTitle(factor.name),
+                detail: logic.inconsistencyDetail(
+                    favouredByFirst.map(componentName),
+                    factor.outcomes[0].label,
+                    favouredBySecond.map(componentName),
                     factor.outcomes[1].label
-                }". No future outcome leaves the model whole, which points to an internal inconsistency between these choices rather than to bad luck.`,
+                ),
             });
         }
     }
@@ -223,8 +239,14 @@ function findPatterns(
         patterns.push({
             type: "preferred-outcome",
             severity: "warning",
-            title: `Your model is betting on "${better.outcomeLabel}"`,
-            detail: `Across the components it touches, "${better.outcomeLabel}" scores ${better.robustness}/100 while "${worse.outcomeLabel}" scores ${worse.robustness}/100. That is a ${gap}-point dependency on one future. Either build a hedge for the unfavourable outcome, or act deliberately to make the favourable one more likely.`,
+            title: logic.preferredTitle(better.outcomeLabel),
+            detail: logic.preferredDetail(
+                better.outcomeLabel,
+                better.robustness,
+                worse.outcomeLabel,
+                worse.robustness,
+                gap
+            ),
         });
     }
 
@@ -240,14 +262,15 @@ function findPatterns(
 /** Step 6 fallback — used only when AI-written recommendations are unavailable. */
 function fallbackActions(
     patterns: HeatMapPattern[],
-    componentSubViews: ComponentSubView[]
+    componentSubViews: ComponentSubView[],
+    logic: BmLogicStrings
 ): StressTestAction[] {
     const actions: StressTestAction[] = [];
 
     for (const pattern of patterns.filter((item) => item.type === "double-red").slice(0, 3)) {
         actions.push({
-            title: `Redesign now: ${pattern.title.split(" fails under")[0]}`,
-            detail: `${pattern.detail} Define at least two alternative designs for this component and test which one survives both outcomes.`,
+            title: logic.actionRedesignTitle(pattern.subject ?? pattern.title),
+            detail: logic.actionRedesignDetail(pattern.detail),
         });
     }
 
@@ -256,62 +279,80 @@ function fallbackActions(
         .slice(0, 3)) {
         if (actions.some((action) => action.title.includes(view.name))) continue;
         actions.push({
-            title: `Strengthen ${view.name.toLowerCase()}`,
-            detail: `${view.name} scores ${view.robustness}/100 across the futures you tested (${view.red} showstoppers, ${view.orange} viability warnings). Work through the reasoning in those cells and decide what would have to be true for this component to survive.`,
+            title: logic.actionStrengthenTitle(view.name),
+            detail: logic.actionStrengthenDetail(
+                view.name,
+                view.robustness,
+                view.red,
+                view.orange
+            ),
         });
     }
 
     for (const pattern of patterns.filter((item) => item.type === "inconsistency").slice(0, 2)) {
         actions.push({
-            title: "Resolve the internal inconsistency",
+            title: logic.actionInconsistencyTitle,
             detail: pattern.detail,
         });
     }
 
     if (!actions.length) {
         actions.push({
-            title: "Widen the stress test",
-            detail:
-                "No component failed under the factors you selected. Either the model is genuinely robust, or the factors chosen were too close to your comfort zone. Re-run with the uncertainties you were most tempted to skip.",
+            title: logic.actionWidenTitle,
+            detail: logic.actionWidenDetail,
         });
     }
 
     return actions.slice(0, 6);
 }
 
-function gradeFor(index: number, doubleReds: number) {
-    const base =
+type GradeKey = "robust" | "resilient" | "exposed" | "fragile" | "critical";
+
+function gradeFor(index: number, doubleReds: number): GradeKey {
+    const base: GradeKey =
         index >= 80
-            ? "Robust"
+            ? "robust"
             : index >= 65
-              ? "Resilient"
+              ? "resilient"
               : index >= 50
-                ? "Exposed"
+                ? "exposed"
                 : index >= 35
-                  ? "Fragile"
-                  : "Critical";
+                  ? "fragile"
+                  : "critical";
     // A component that fails under both outcomes of a factor cannot be called robust,
     // however well the rest of the matrix scores.
-    if (doubleReds > 0 && (base === "Robust" || base === "Resilient")) return "Exposed";
+    if (doubleReds > 0 && (base === "robust" || base === "resilient")) return "exposed";
     return base;
 }
 
-function verdictFor(grade: string, doubleReds: number) {
-    if (doubleReds > 0)
-        return `${doubleReds} component${doubleReds > 1 ? "s" : ""} in your model fail${
-            doubleReds > 1 ? "" : "s"
-        } under both outcomes of a stress factor. That is a design problem, not a forecasting problem: no future scenario rescues it, so it has to be redesigned.`;
+function gradeLabel(grade: GradeKey, logic: BmLogicStrings) {
     switch (grade) {
-        case "Robust":
-            return "The model held up across the futures you tested. Keep the reasoning behind each green cell — those assumptions are what you are actually betting on.";
-        case "Resilient":
-            return "The model survives most of the tested futures with contained damage. The orange cells are where choices need revisiting before you scale.";
-        case "Exposed":
-            return "Meaningful parts of the model stop working in plausible futures. This is the stage to run design alternatives, not to commit capital.";
-        case "Fragile":
-            return "Most of the model depends on the environment staying roughly as it is today. Treat the red cells as the redesign backlog.";
+        case "robust":
+            return logic.gradeRobust;
+        case "resilient":
+            return logic.gradeResilient;
+        case "exposed":
+            return logic.gradeExposed;
+        case "fragile":
+            return logic.gradeFragile;
         default:
-            return "The model does not survive the futures you selected as plausible. Rework the weakest components before investing further in implementation.";
+            return logic.gradeCritical;
+    }
+}
+
+function verdictFor(grade: GradeKey, doubleReds: number, logic: BmLogicStrings) {
+    if (doubleReds > 0) return logic.verdictDoubleReds(doubleReds);
+    switch (grade) {
+        case "robust":
+            return logic.verdictRobust;
+        case "resilient":
+            return logic.verdictResilient;
+        case "exposed":
+            return logic.verdictExposed;
+        case "fragile":
+            return logic.verdictFragile;
+        default:
+            return logic.verdictCritical;
     }
 }
 
@@ -319,13 +360,16 @@ export function analyzeHeatMap(
     cells: HeatMapCell[],
     factors: StressFactor[],
     businessModel: BusinessModelDescription,
-    aiActions: StressTestAction[] = []
+    aiActions: StressTestAction[] = [],
+    locale: BmLocale = "en"
 ): StressTestResult {
+    const content = getBusinessModelContent(locale);
+    const logic = content.logic;
     const componentIds = describedComponentIds(businessModel);
 
     const componentSubViews: ComponentSubView[] = componentIds.map((componentId) => {
         const stats = indexOf(cells.filter((cell) => cell.componentId === componentId));
-        return { componentId, name: componentName(componentId), ...stats };
+        return { componentId, name: componentNameIn(content, componentId), ...stats };
     });
 
     const outcomeSubViews: OutcomeSubView[] = factors.flatMap((factor) =>
@@ -343,7 +387,7 @@ export function analyzeHeatMap(
         })
     );
 
-    const patterns = findPatterns(cells, factors, componentIds, outcomeSubViews);
+    const patterns = findPatterns(cells, factors, componentIds, outcomeSubViews, content);
     const doubleReds = patterns.filter((pattern) => pattern.type === "double-red").length;
 
     const overall = indexOf(cells);
@@ -351,8 +395,8 @@ export function analyzeHeatMap(
 
     return {
         robustnessIndex: overall.robustness,
-        grade,
-        verdict: verdictFor(grade, doubleReds),
+        grade: gradeLabel(grade, logic),
+        verdict: verdictFor(grade, doubleReds, logic),
         assessedCells: overall.assessed,
         totalCells: componentIds.length * factors.length * 2,
         counts: {
@@ -364,6 +408,6 @@ export function analyzeHeatMap(
         componentSubViews,
         outcomeSubViews,
         patterns,
-        actions: aiActions.length ? aiActions : fallbackActions(patterns, componentSubViews),
+        actions: aiActions.length ? aiActions : fallbackActions(patterns, componentSubViews, logic),
     };
 }

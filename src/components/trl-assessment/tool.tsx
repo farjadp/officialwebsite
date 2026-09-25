@@ -251,8 +251,9 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
                         </StepIn>
                         <div>
                             {level.criteria.map((c, index) => (
-                                <QuestionBlock key={c.id} index={`${index + 1}.`} text={c.text}>
+                                <QuestionBlock key={c.id} locale={locale} index={`${index + 1}.`} text={c.text}>
                                     <ScaleOptions
+                                        locale={locale}
                                         options={answerOptions}
                                         value={answers[c.id]}
                                         onChange={(val) => handleAnswer(c.id, val)}

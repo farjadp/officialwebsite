@@ -28,8 +28,22 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react"
+import { localDigits } from "@/lib/digits"
+import type { Locale } from "@/lib/nav"
 
 const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1]
+
+/**
+ * Shape a number for the reading locale. Anything that is not a plain number
+ * or an all-digit string is passed through untouched, so a caller that has
+ * already localized its own text keeps control.
+ */
+function digits(value: ReactNode, locale: Locale): ReactNode {
+  if (locale !== "fa") return value
+  if (typeof value === "number") return localDigits(value, locale)
+  if (typeof value === "string" && /\d/.test(value)) return localDigits(value, locale)
+  return value
+}
 
 // ── Page frame ────────────────────────────────────────────────────────────
 
@@ -185,19 +199,21 @@ export function QuestionBlock({
   hint,
   children,
   id,
+  locale = "en",
 }: {
   index?: ReactNode
   text: ReactNode
   hint?: ReactNode
   children: ReactNode
   id?: string
+  locale?: Locale
 }) {
   const autoId = useId()
   const labelId = id ?? `${autoId}-q`
   return (
     <StepIn className="flex flex-col gap-5 border-b border-v3-line/60 py-8">
       <h3 id={labelId} className="text-lg leading-relaxed text-v3-bone md:text-xl rtl:leading-loose">
-        {index !== undefined && <span className="me-3 font-v3-display text-v3-mute">{index}</span>}
+        {index !== undefined && <span className="me-3 font-v3-display text-v3-mute">{digits(index, locale)}</span>}
         {text}
       </h3>
       {hint && <p className="-mt-2 text-sm text-v3-mute">{hint}</p>}
@@ -226,12 +242,14 @@ export function ScaleOptions<T extends string | number>({
   onChange,
   label,
   layout = "scale",
+  locale = "en",
 }: {
   options: ScaleOption<T>[]
   value: T | undefined
   onChange: (value: T) => void
   label: string
   layout?: "scale" | "list"
+  locale?: Locale
 }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([])
   const selectedIndex = options.findIndex((o) => o.value === value)
@@ -277,7 +295,7 @@ export function ScaleOptions<T extends string | number>({
             }`}
           >
             {o.mark !== undefined && (
-              <span className={`font-v3-display text-2xl leading-none ${selected ? "text-v3-light" : "text-v3-mute"}`}>{o.mark}</span>
+              <span className={`font-v3-display text-2xl leading-none ${selected ? "text-v3-light" : "text-v3-mute"}`}>{digits(o.mark, locale)}</span>
             )}
             <span className="flex flex-col gap-1">
               <span className="text-sm font-medium leading-snug">{o.label}</span>
@@ -349,13 +367,16 @@ export function ScoreRing({
   score,
   max = 100,
   label,
-  format = (n) => String(n),
+  locale = "en",
+  format,
 }: {
   score: number
   max?: number
   label?: ReactNode
+  locale?: Locale
   format?: (n: number) => string
 }) {
+  const shape = format ?? ((n: number) => localDigits(n, locale))
   const reduce = useReducedMotion()
   const [shown, setShown] = useState(reduce ? score : 0)
   const r = 46
@@ -391,10 +412,10 @@ export function ScoreRing({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
         <span className="font-v3-display text-6xl font-light tabular-nums" dir="ltr">
-          {format(shown)}
+          {shape(shown)}
         </span>
         <span className="text-sm text-v3-mute" dir="ltr">
-          / {format(max)}
+          / {shape(max)}
         </span>
         {label && <span className="mt-1 text-sm text-v3-soft">{label}</span>}
       </div>
@@ -408,12 +429,14 @@ export function Meter({
   value,
   max = 100,
   display,
+  locale = "en",
 }: {
   label: ReactNode
   value: number
   max?: number
   /** The text on the right, e.g. "12 / 20". Defaults to "value / max". */
   display?: ReactNode
+  locale?: Locale
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" })
@@ -424,7 +447,7 @@ export function Meter({
       <div className="flex items-end justify-between gap-4">
         <span className="text-v3-bone">{label}</span>
         <span className="shrink-0 text-sm tabular-nums text-v3-soft" dir="ltr">
-          {display ?? `${value} / ${max}`}
+          {display ?? `${localDigits(value, locale)} / ${localDigits(max, locale)}`}
         </span>
       </div>
       <div className="relative h-1 overflow-hidden rounded-full bg-v3-line">

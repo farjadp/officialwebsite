@@ -1,8 +1,23 @@
 "use client";
 
+// ============================================================================
+// File Path: src/components/sales-funnel-score/tool.tsx
+// Why: The Sales Funnel Health Score flow (intro → six stages of questions →
+//      optional lead step → result). Bilingual: every string comes from
+//      src/data/sales-funnel-score (config / config.fa / ui), the scoring and
+//      the two fetch calls are identical in both locales.
+// Env / Identity: Client Component
+// ============================================================================
+
 import { useState } from "react";
-import { salesFunnelCategories, SF_TOTAL_QUESTIONS } from "@/data/sales-funnel-score/config";
-import { AssessmentAnswers, calculateSalesFunnelScore, FinalResult } from "@/data/sales-funnel-score/logic";
+import { SalesFunnelLocale } from "@/data/sales-funnel-score/config";
+import {
+    AssessmentAnswers,
+    calculateSalesFunnelScore,
+    FinalResult,
+    getSalesFunnelContent,
+} from "@/data/sales-funnel-score/logic";
+import { getSalesFunnelUiStrings } from "@/data/sales-funnel-score/ui";
 import { QuestionCard } from "./question-card";
 import { ResultSummary } from "./result-summary";
 import { StepIn, ToolButton, ToolField, ToolIntro, ToolPanel, ToolProgress } from "@/components/v3/tool-kit";
@@ -16,7 +31,16 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" });
 }
 
-export function SalesFunnelScoreTool() {
+export function SalesFunnelScoreTool({ locale = "en" }: { locale?: SalesFunnelLocale }) {
+    const content = getSalesFunnelContent(locale);
+    const ui = getSalesFunnelUiStrings(locale);
+    const isRtl = content.dir === "rtl";
+    const categories = content.categories;
+    const totalQuestions = categories.reduce((acc, c) => acc + c.questions.length, 0);
+
+    const NextArrow = isRtl ? ArrowLeft : ArrowRight;
+    const PrevArrow = isRtl ? ArrowRight : ArrowLeft;
+
     const [step, setStep] = useState<Step>("intro");
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [answers, setAnswers] = useState<AssessmentAnswers>({});
@@ -26,9 +50,9 @@ export function SalesFunnelScoreTool() {
     const [name, setName] = useState("");
     const [skipLead, setSkipLead] = useState(false);
 
-    const currentCategory = salesFunnelCategories[currentCategoryIndex];
+    const currentCategory = categories[currentCategoryIndex];
     const answeredCount = Object.keys(answers).length;
-    const progressPct = Math.round((answeredCount / SF_TOTAL_QUESTIONS) * 100);
+    const progressPct = Math.round((answeredCount / totalQuestions) * 100);
     const isCategoryComplete = currentCategory.questions.every((q) => answers[q.id] !== undefined);
 
     const handleAnswer = (questionId: string, value: number) => {
@@ -36,7 +60,7 @@ export function SalesFunnelScoreTool() {
     };
 
     const handleNext = () => {
-        if (currentCategoryIndex < salesFunnelCategories.length - 1) {
+        if (currentCategoryIndex < categories.length - 1) {
             setCurrentCategoryIndex((prev) => prev + 1);
             scrollToTop();
         } else {
@@ -58,7 +82,7 @@ export function SalesFunnelScoreTool() {
 
         await new Promise((resolve) => setTimeout(resolve, 1800));
 
-        const finalResult = calculateSalesFunnelScore(answers);
+        const finalResult = calculateSalesFunnelScore(answers, locale);
 
         fetch("/api/tool-usage", {
             method: "POST",
@@ -103,17 +127,13 @@ export function SalesFunnelScoreTool() {
     if (step === "intro") {
         return (
             <ToolIntro
-                kicker="Sales Diagnostic Tool"
-                title={<>Sales Funnel<br /><span className="text-v3-light">Health Score</span></>}
-                lead="Find out exactly where your funnel is leaking revenue. Most businesses don't have a lead problem — they have a conversion problem. This diagnostic shows you which stage is costing you the most."
+                kicker={ui.kicker}
+                title={<>{ui.titleLead}<br /><span className="text-v3-light">{ui.titleAccent}</span></>}
+                lead={ui.lead}
                 action={
                     <div className="flex w-full flex-col items-start gap-10">
                         <dl className="grid w-full grid-cols-1 border-y border-v3-line/70 sm:grid-cols-3">
-                            {[
-                                { label: "6 Stages", sub: "From lead gen to closing" },
-                                { label: "30 Questions", sub: "Covering the full sales cycle" },
-                                { label: "4–5 Minutes", sub: "Instant funnel bottleneck report" },
-                            ].map((item) => (
+                            {ui.stats.map((item) => (
                                 <div
                                     key={item.label}
                                     className="flex flex-col gap-1 border-b border-v3-line/70 py-5 last:border-b-0 sm:border-b-0 sm:border-e sm:pe-6 sm:ps-6 sm:first:ps-0 sm:last:border-e-0"
@@ -124,19 +144,19 @@ export function SalesFunnelScoreTool() {
                             ))}
                         </dl>
                         <ToolButton onClick={() => setStep("questions")}>
-                            Diagnose My Funnel
+                            {ui.startButton}
                             <Play className="h-4 w-4 rtl:-scale-x-100" fill="currentColor" aria-hidden />
                         </ToolButton>
                     </div>
                 }
-                meta="Free • No login required"
+                meta={ui.meta}
             />
         );
     }
 
     // ── RESULT ─────────────────────────────────────────────────────────────────
     if (step === "result" && result) {
-        return <ResultSummary result={result} onReset={handleReset} />;
+        return <ResultSummary result={result} onReset={handleReset} locale={locale} />;
     }
 
     // ── LEAD CAPTURE ───────────────────────────────────────────────────────────
@@ -147,28 +167,28 @@ export function SalesFunnelScoreTool() {
                     <div className="mb-6 flex size-12 items-center justify-center rounded-full border border-v3-light/60 text-v3-light">
                         <TrendingUp className="h-5 w-5" aria-hidden />
                     </div>
-                    <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight rtl:leading-snug">Your funnel report is ready</h2>
+                    <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight rtl:leading-snug">{ui.leadTitle}</h2>
                     <p className="mb-8 leading-relaxed text-v3-soft rtl:leading-loose">
-                        Leave your email to receive a copy of your sales funnel diagnostic report. Completely optional — you can skip directly to your results.
+                        {ui.leadBody}
                     </p>
 
                     <form onSubmit={(e) => handleCalculateResult(e, false)} className="flex flex-col gap-5">
                         <ToolField
-                            label="Name (optional)"
+                            label={ui.nameLabel}
                             type="text"
                             autoComplete="name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="Your name"
+                            placeholder={ui.namePlaceholder}
                         />
                         <ToolField
-                            label="Email"
+                            label={ui.emailLabel}
                             type="email"
                             dir="ltr"
                             autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="you@company.com"
+                            placeholder={ui.emailPlaceholder}
                         />
 
                         <ToolButton
@@ -177,7 +197,7 @@ export function SalesFunnelScoreTool() {
                             loading={isCalculating && !skipLead}
                             disabled={isCalculating || !email.trim()}
                         >
-                            {isCalculating && !skipLead ? "Analyzing Funnel..." : "Get My Funnel Report"}
+                            {isCalculating && !skipLead ? ui.submitting : ui.submit}
                         </ToolButton>
 
                         <ToolButton
@@ -187,11 +207,11 @@ export function SalesFunnelScoreTool() {
                             loading={isCalculating && skipLead}
                             disabled={isCalculating}
                         >
-                            {isCalculating && skipLead ? "Calculating..." : "Skip and view results directly →"}
+                            {isCalculating && skipLead ? ui.skipping : ui.skip}
                         </ToolButton>
                     </form>
 
-                    <p className="mt-6 text-center text-xs text-v3-mute">No spam. No sales calls. Unsubscribe any time.</p>
+                    <p className="mt-6 text-center text-xs text-v3-mute">{ui.noSpam}</p>
                 </ToolPanel>
             </div>
         );
@@ -201,9 +221,9 @@ export function SalesFunnelScoreTool() {
     return (
         <div className="flex flex-col">
             <ToolProgress
-                label={<>Stage {currentCategoryIndex + 1} / {salesFunnelCategories.length}</>}
+                label={ui.stageLabel(currentCategoryIndex + 1, categories.length)}
                 percent={progressPct}
-                percentLabel={`${progressPct}% complete`}
+                percentLabel={ui.percentLabel(progressPct)}
                 title={currentCategory.title}
             />
 
@@ -215,17 +235,18 @@ export function SalesFunnelScoreTool() {
                         question={q}
                         value={answers[q.id]}
                         onChange={(val) => handleAnswer(q.id, val)}
+                        locale={locale}
                     />
                 ))}
             </StepIn>
 
             <div className="flex items-center justify-between gap-4 pt-8">
                 <ToolButton variant="quiet" onClick={handlePrevious} disabled={currentCategoryIndex === 0}>
-                    <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden /> Previous
+                    <PrevArrow className="h-4 w-4" aria-hidden /> {ui.previous}
                 </ToolButton>
                 <ToolButton onClick={handleNext} disabled={!isCategoryComplete}>
-                    {currentCategoryIndex === salesFunnelCategories.length - 1 ? "Complete Diagnostic" : "Next Stage"}
-                    <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
+                    {currentCategoryIndex === categories.length - 1 ? ui.complete : ui.nextStage}
+                    <NextArrow className="h-4 w-4" aria-hidden />
                 </ToolButton>
             </div>
         </div>

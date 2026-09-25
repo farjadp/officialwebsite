@@ -1,9 +1,21 @@
 'use client'
 
+// ============================================================================
+// File Path: src/components/public/article-sidebar.tsx
+// Why: The post's side column in the v3 "Light" look — a quiet table of
+//      contents on the warm charcoal ground rather than a stack of white
+//      cards. Hairline rules instead of borders, the active heading in the
+//      one light accent, everything else muted.
+//
+//      Behaviour is the v2 component's, untouched: the scroll listener that
+//      drives the reading percentage, the IntersectionObserver scroll-spy and
+//      the smooth scroll-to-heading. Only the look changed.
+// Env / Identity: Client Component (framer-motion)
+// ============================================================================
+
 import { useState, useEffect } from 'react'
-import { Zap } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
 import Link from 'next/link'
-import { ShareButtons } from '@/components/blog/share-buttons'
 
 export interface Heading {
     id: string
@@ -29,17 +41,22 @@ interface ArticleSidebarProps {
     realReadingTime: number
 }
 
+const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1]
+
+/** A small uppercase label above a block. */
+function Label({ children }: { children: React.ReactNode }) {
+    return <p className="text-[10px] uppercase tracking-[0.18em] text-v3-mute">{children}</p>
+}
+
 export function ArticleSidebar({
     headings,
     excerpt,
     targetAudience,
     difficulty,
-    tags,
     relatedService,
-    postTitle,
-    postSlug,
     realReadingTime,
 }: ArticleSidebarProps) {
+    const reduce = useReducedMotion()
     const [activeId, setActiveId] = useState('')
     const [readingProgress, setReadingProgress] = useState(0)
     const [minutesLeft, setMinutesLeft] = useState(realReadingTime)
@@ -88,96 +105,108 @@ export function ArticleSidebar({
     }
 
     return (
-        <div className="space-y-3">
+        <div className="v3-under-header sticky flex max-h-[calc(100vh-7rem)] flex-col gap-7 overflow-y-auto pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:w-0">
 
             {/* ── Reading Progress ──────────────────────────── */}
-            <div className="bg-white border border-stone-200 rounded-xl p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Reading</p>
-                    <span className="text-xs font-bold text-[#1B4B43]">{readingProgress}%</span>
+            <div className="flex flex-col gap-2.5">
+                <div className="flex items-center justify-between gap-3">
+                    <Label>Reading</Label>
+                    <span className="text-xs tabular-nums text-v3-light">{readingProgress}%</span>
                 </div>
-                <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-[#1B4B43] rounded-full transition-all duration-300 ease-out"
-                        style={{ width: `${readingProgress}%` }}
+                <div
+                    className="relative h-px bg-v3-line"
+                    role="progressbar"
+                    aria-label="Reading progress"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={readingProgress}
+                >
+                    <motion.div
+                        className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+                        initial={false}
+                        animate={{ scaleX: readingProgress / 100 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.5, ease: ARRIVE }}
                     />
                 </div>
-                <p className="text-[10px] text-stone-400">
+                <p className="text-[11px] text-v3-mute">
                     {readingProgress === 100 ? 'Done reading' : minutesLeft === 0 ? 'Almost done' : `~${minutesLeft} min left`}
                 </p>
             </div>
 
             {/* ── Table of Contents ─────────────────────────── */}
             {headings.length > 0 && (
-                <div className="bg-white border border-stone-200 rounded-xl p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">
-                        On this page
-                    </p>
-                    <nav className="space-y-0.5">
-                        {headings.map((h) => (
-                            <a
-                                key={h.id}
-                                href={`#${h.id}`}
-                                onClick={(e) => { e.preventDefault(); scrollTo(h.id) }}
-                                className={`block text-[12px] py-1 px-2 rounded-md leading-snug transition-all ${h.level === 3 ? 'ml-3' : ''
-                                    } ${activeId === h.id
-                                        ? 'text-[#1B4B43] font-semibold bg-[#1B4B43]/8'
-                                        : 'text-stone-400 hover:text-stone-700 hover:bg-stone-50'
+                <div className="flex flex-col gap-3 border-t border-v3-line/70 pt-6">
+                    <Label>On this page</Label>
+                    <nav aria-label="On this page" className="flex flex-col">
+                        {headings.map((h) => {
+                            const active = activeId === h.id
+                            return (
+                                <a
+                                    key={h.id}
+                                    href={`#${h.id}`}
+                                    aria-current={active ? 'true' : undefined}
+                                    onClick={(e) => { e.preventDefault(); scrollTo(h.id) }}
+                                    className={`block border-s py-2 text-[13px] leading-snug transition-colors duration-300 ${
+                                        h.level === 3 ? 'ps-7' : 'ps-4'
+                                    } ${
+                                        active
+                                            ? 'border-v3-light text-v3-light'
+                                            : 'border-v3-line/70 text-v3-mute hover:text-v3-bone'
                                     }`}
-                            >
-                                {h.text}
-                            </a>
-                        ))}
+                                >
+                                    {h.text}
+                                </a>
+                            )
+                        })}
                     </nav>
                 </div>
             )}
 
             {/* ── Before You Read ───────────────────────────── */}
-            <div className="bg-white border border-stone-200 rounded-xl p-4 space-y-3">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Before You Read</p>
+            <div className="flex flex-col gap-4 border-t border-v3-line/70 pt-6">
+                <Label>Before You Read</Label>
 
-                <div className="space-y-2.5">
-                    {excerpt && (
-                        <div>
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-stone-300 mb-1">Covers</p>
-                            <p className="text-[11px] text-stone-600 leading-relaxed">
-                                {excerpt.length > 90 ? excerpt.slice(0, 90) + '…' : excerpt}
-                            </p>
-                        </div>
-                    )}
-                    <div>
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-stone-300 mb-1">For</p>
-                        <p className="text-[11px] text-stone-600 leading-relaxed">{targetAudience}</p>
-                    </div>
-                    <div>
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-stone-300 mb-1">Level</p>
-                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${difficulty.color}`}>
-                            {difficulty.label}
-                        </span>
-                        <p className="text-[10px] text-stone-400 mt-1 leading-snug">{difficulty.description}</p>
-                    </div>
-                </div>
-
-                {relatedService && (
-                    <div className="pt-2 border-t border-stone-100 flex items-start gap-1.5">
-                        <Zap className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-stone-500 leading-relaxed">
-                            Related:{' '}
-                            <Link href={relatedService.href} className="font-bold text-[#1B4B43] hover:underline">
-                                {relatedService.title} →
-                            </Link>
+                {excerpt && (
+                    <div className="flex flex-col gap-1">
+                        <p className="text-[10px] uppercase tracking-[0.18em] text-v3-mute/70">Covers</p>
+                        <p className="text-xs leading-relaxed text-v3-soft">
+                            {excerpt.length > 90 ? excerpt.slice(0, 90) + '…' : excerpt}
                         </p>
                     </div>
                 )}
+
+                <div className="flex flex-col gap-1">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-v3-mute/70">For</p>
+                    <p className="text-xs leading-relaxed text-v3-soft">{targetAudience}</p>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-v3-mute/70">Level</p>
+                    <span className={`inline-flex w-fit rounded-full border px-2.5 py-1 text-[10px] ${difficulty.color}`}>
+                        {difficulty.label}
+                    </span>
+                    <p className="text-[11px] leading-snug text-v3-mute">{difficulty.description}</p>
+                </div>
+
+                {relatedService && (
+                    <p className="border-t border-v3-line/70 pt-4 text-[11px] leading-relaxed text-v3-mute">
+                        Related:{' '}
+                        <Link
+                            href={relatedService.href}
+                            className="text-v3-light underline decoration-v3-light/40 underline-offset-4 transition-colors hover:decoration-v3-light"
+                        >
+                            {relatedService.title}
+                        </Link>
+                    </p>
+                )}
             </div>
-
-
 
             {/* ── Back to top ───────────────────────────────── */}
             {readingProgress > 15 && (
                 <button
+                    type="button"
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="w-full text-[11px] text-stone-400 hover:text-[#1B4B43] font-medium py-1.5 transition-colors text-center rounded-lg hover:bg-stone-50"
+                    className="inline-flex min-h-11 w-full items-center justify-center border-t border-v3-line/70 text-[11px] text-v3-mute transition-colors duration-300 hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                 >
                     ↑ Back to top
                 </button>

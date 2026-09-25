@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { investorCategories, INVESTOR_TOTAL_QUESTIONS } from "@/data/investor-readiness/config";
-import { AssessmentAnswers, calculateInvestorScore, FinalResult } from "@/data/investor-readiness/logic";
+import { InvestorLocale, INVESTOR_TOTAL_QUESTIONS } from "@/data/investor-readiness/config";
+import { AssessmentAnswers, calculateInvestorScore, FinalResult, getInvestorCategories } from "@/data/investor-readiness/logic";
+import { getInvestorUiStrings } from "@/data/investor-readiness/ui";
 import { QuestionCard } from "./question-card";
 import { ResultSummary } from "./result-summary";
 import { ToolButton, ToolField, ToolIntro, ToolPanel, ToolProgress } from "@/components/v3/tool-kit";
@@ -14,7 +15,10 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 }
 
-export function InvestorReadinessTool() {
+export function InvestorReadinessTool({ locale = "en" }: { locale?: InvestorLocale } = {}) {
+    const t = getInvestorUiStrings(locale);
+    const investorCategories = getInvestorCategories(locale);
+
     const [step, setStep] = useState<"intro" | "questions" | "lead" | "result">("intro");
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [answers, setAnswers] = useState<AssessmentAnswers>({});
@@ -53,7 +57,7 @@ export function InvestorReadinessTool() {
 
         await new Promise((resolve) => setTimeout(resolve, 1800));
 
-        const finalResult = calculateInvestorScore(answers);
+        const finalResult = calculateInvestorScore(answers, locale);
 
         fetch("/api/tool-usage", {
             method: "POST",
@@ -100,56 +104,56 @@ export function InvestorReadinessTool() {
     if (step === "intro") {
         return (
             <ToolIntro
-                title="Investor Readiness Score"
-                lead="Evaluate how prepared your startup is to raise funding from angel investors or venture capital firms. Receive a professional diagnostic report measuring your fundability across 6 critical areas."
+                title={t.introTitle}
+                lead={t.introLead}
                 action={
                     <ToolButton onClick={() => setStep("questions")}>
-                        Begin Evaluation
+                        {t.startButton}
                         <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
                     </ToolButton>
                 }
-                meta="4–6 minutes • 30 Diagnostic Questions"
+                meta={t.durationLine}
             />
         );
     }
 
     if (step === "result" && result) {
-        return <ResultSummary result={result} onReset={handleReset} />;
+        return <ResultSummary result={result} onReset={handleReset} locale={locale} />;
     }
 
     if (step === "lead") {
         return (
             <ToolPanel className="mx-auto max-w-xl">
-                <h2 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">Generating Readiness Report...</h2>
+                <h2 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">{t.leadTitle}</h2>
                 <p className="mt-3 leading-relaxed text-v3-soft rtl:leading-loose">
-                    Your diagnostic score is ready. Enter your information below to unlock the full investor evaluation breakdown and recommended next steps.
+                    {t.leadBody}
                 </p>
 
                 <form onSubmit={handleCalculateResult} className="mt-8 flex flex-col gap-5">
                     <ToolField
                         id="name"
-                        label="Founder Name (Optional)"
+                        label={t.nameLabel}
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Full Name"
+                        placeholder={t.namePlaceholder}
                     />
                     <ToolField
                         id="email"
-                        label="Work Email"
+                        label={t.emailLabel}
                         type="email"
                         dir="ltr"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="founder@startup.com"
+                        placeholder={t.emailPlaceholder}
                     />
 
                     <ToolButton type="submit" className="mt-3 w-full" loading={isCalculating} disabled={!email}>
-                        {isCalculating ? "Finalizing Audit..." : "Reveal Investor Readiness Score"}
+                        {isCalculating ? t.generating : t.submit}
                     </ToolButton>
                     <p className="text-center text-xs text-v3-mute">
-                        Strictly Confidential & Secure
+                        {t.confidentialNote}
                     </p>
                 </form>
             </ToolPanel>
@@ -159,9 +163,9 @@ export function InvestorReadinessTool() {
     return (
         <div>
             <ToolProgress
-                label={`Section ${currentCategoryIndex + 1} / ${investorCategories.length}`}
+                label={t.sectionOf(currentCategoryIndex + 1, investorCategories.length)}
                 percent={progressPercentage}
-                percentLabel={`${Math.round(progressPercentage)}% Evaluated`}
+                percentLabel={t.evaluated(Math.round(progressPercentage))}
                 title={currentCategory.title}
             />
 
@@ -174,6 +178,7 @@ export function InvestorReadinessTool() {
                         question={q}
                         value={answers[q.id]}
                         onChange={(val) => handleAnswer(q.id, val)}
+                        locale={locale}
                     />
                 ))}
             </div>
@@ -182,11 +187,11 @@ export function InvestorReadinessTool() {
             <div className="flex items-center justify-between gap-4 pt-8">
                 <ToolButton variant="quiet" onClick={handlePrevious} disabled={currentCategoryIndex === 0}>
                     <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
-                    Previous
+                    {t.previous}
                 </ToolButton>
 
                 <ToolButton onClick={handleNext} disabled={!isCurrentCategoryComplete()}>
-                    {currentCategoryIndex === investorCategories.length - 1 ? "Complete Evaluation" : "Next Section"}
+                    {currentCategoryIndex === investorCategories.length - 1 ? t.finish : t.nextSection}
                     <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
                 </ToolButton>
             </div>

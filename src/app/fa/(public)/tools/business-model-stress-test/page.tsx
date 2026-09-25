@@ -2,8 +2,6 @@ import { localeAlternates } from "@/lib/seo"
 import type { Metadata } from "next";
 import BusinessModelStressTestTool from "@/components/business-model-stress-test/tool";
 
-// The tool itself is the shared English component. Only TRL has a Persian
-// config today; making the rest truly Persian is separate, scheduled work.
 export const metadata: Metadata = {
     alternates: localeAlternates("/tools/business-model-stress-test", "fa"),
     title: "تست فشار مدل کسب‌وکار",
@@ -12,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function BusinessModelStressTestFaPage() {
-    return <BusinessModelStressTestTool />;
+    return <BusinessModelStressTestTool locale="fa" />;
 }

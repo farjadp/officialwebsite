@@ -1,3 +1,11 @@
+// ============================================================================
+// File Path: src/app/(public)/register/page.tsx
+// Why: The sign-up page in v3 "Light": warm charcoal ground, a quiet beam on
+//      the aside, the form on the other side. Restyle only — the metadata,
+//      the NOINDEX robots rule and the Suspense boundary are untouched.
+// ============================================================================
+
+import { Beam } from "@/components/v3/kit"
 import { localeAlternates, NOINDEX } from "@/lib/seo"
 import { Suspense } from "react"
 import { RegisterForm } from "./register-form"
@@ -11,36 +19,30 @@ export const metadata = {
 
 export default function RegisterPage() {
     return (
-        <div className="min-h-screen flex bg-[#030712]">
+        <div className="flex min-h-screen overflow-x-clip bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink">
             {/* Left panel */}
-            <div className="hidden lg:flex w-1/2 relative overflow-hidden flex-col items-start justify-end p-16">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-[#0f0c29] to-[#030712]" />
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-600/10 rounded-full blur-3xl" />
-                <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-                <div className="relative z-10 mb-8">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium mb-6">
-                        <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+            <div className="relative hidden w-1/2 flex-col items-start justify-end overflow-hidden border-e border-v3-line/70 p-16 lg:flex">
+                <Beam />
+                <div className="relative z-10 flex flex-col gap-6">
+                    <span className="inline-flex w-fit items-center gap-2 rounded-full border border-v3-line px-3 py-1.5 text-[13px] text-v3-soft">
+                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" />
                         farjadp.info
-                    </div>
-                    <h2 className="text-4xl font-bold text-white leading-tight mb-4">
+                    </span>
+                    <h2 className="font-v3-display text-4xl font-light leading-[1.05] tracking-[-0.015em] md:text-5xl rtl:leading-[1.4] rtl:tracking-normal">
                         Start your<br />journey here.
                     </h2>
-                    <p className="text-slate-400 text-base leading-relaxed max-w-xs">
+                    <p className="max-w-sm text-lg leading-relaxed text-v3-soft rtl:leading-loose">
                         Create a free account to explore all content, tools, and resources available on the platform.
                     </p>
                 </div>
             </div>
 
             {/* Right form panel */}
-            <div className="flex-1 flex items-center justify-center px-6 py-16 relative">
-                <div className="absolute inset-0 lg:hidden">
-                    <div className="absolute top-0 right-0 w-72 h-72 bg-violet-700/15 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-700/10 rounded-full blur-3xl" />
-                </div>
+            <div className="relative flex flex-1 items-center justify-center overflow-hidden px-5 py-20 md:px-10">
+                <Beam className="lg:hidden" />
                 <div className="relative z-10 w-full max-w-sm">
-                    <div className="mb-8 lg:hidden text-center">
-                        <span className="text-xl font-bold text-white">farjadp.info</span>
+                    <div className="mb-10 text-center lg:hidden">
+                        <span className="font-v3-display text-xl font-light text-v3-bone">farjadp.info</span>
                     </div>
                     <Suspense>
                         <RegisterForm />

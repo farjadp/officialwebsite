@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AIAdoptionScorePage() {
     return (
         <ToolShell>
-            <AIAdoptionScoreTool />
+            <AIAdoptionScoreTool locale="fa" />
         </ToolShell>
     );
 }

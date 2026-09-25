@@ -2,43 +2,46 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { StressFactor, businessModelComponents } from "@/data/business-model-stress-test/config";
-import { HeatMapCell, ImpactColor } from "@/data/business-model-stress-test/logic";
+import { BmLocale, StressFactor } from "@/data/business-model-stress-test/config";
+import { BmUiStrings, getBmUiStrings } from "@/data/business-model-stress-test/ui";
+import {
+    HeatMapCell,
+    ImpactColor,
+    getBusinessModelContent,
+} from "@/data/business-model-stress-test/logic";
 
 // Intensity is carried by the single accent's opacity (the more severe the
 // impact, the brighter the cell) plus the label written in every cell, so
 // the map never depends on telling hues apart.
-const colorStyles: Record<ImpactColor, { cell: string; swatch: string; label: string; meaning: string }> =
-    {
-        red: {
-            cell: "bg-v3-light/80 text-v3-ink hover:bg-v3-light/90",
-            swatch: "bg-v3-light/80",
-            label: "Not feasible",
-            meaning: "The component can no longer be implemented — a potential showstopper.",
-        },
+type ColorStyle = { cell: string; swatch: string; label: string; meaning: string };
+
+const colorClasses: Record<ImpactColor, { cell: string; swatch: string }> = {
+    red: { cell: "bg-v3-light/80 text-v3-ink hover:bg-v3-light/90", swatch: "bg-v3-light/80" },
+    orange: { cell: "bg-v3-light/50 text-v3-ink hover:bg-v3-light/60", swatch: "bg-v3-light/50" },
+    green: { cell: "bg-v3-light/15 text-v3-bone hover:bg-v3-light/25", swatch: "bg-v3-light/15" },
+    grey: {
+        cell: "border border-dashed border-v3-line bg-transparent text-v3-mute hover:border-v3-mute",
+        swatch: "border border-dashed border-v3-mute",
+    },
+};
+
+function colorStylesFor(ui: BmUiStrings): Record<ImpactColor, ColorStyle> {
+    return {
+        red: { ...colorClasses.red, label: ui.severityRed, meaning: ui.severityRedMeaning },
         orange: {
-            cell: "bg-v3-light/50 text-v3-ink hover:bg-v3-light/60",
-            swatch: "bg-v3-light/50",
-            label: "Not viable",
-            meaning: "It can still be done, but the choices behind it no longer pay off.",
+            ...colorClasses.orange,
+            label: ui.severityOrange,
+            meaning: ui.severityOrangeMeaning,
         },
-        green: {
-            cell: "bg-v3-light/15 text-v3-bone hover:bg-v3-light/25",
-            swatch: "bg-v3-light/15",
-            label: "Holds up",
-            meaning: "Affected, but not negatively — it may even get stronger.",
-        },
-        grey: {
-            cell: "border border-dashed border-v3-line bg-transparent text-v3-mute hover:border-v3-mute",
-            swatch: "border border-dashed border-v3-mute",
-            label: "No impact",
-            meaning: "No causal relationship between this outcome and this component.",
-        },
+        green: { ...colorClasses.green, label: ui.severityGreen, meaning: ui.severityGreenMeaning },
+        grey: { ...colorClasses.grey, label: ui.severityGrey, meaning: ui.severityGreyMeaning },
     };
+}
 
 const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-export function HeatMapLegend() {
+export function HeatMapLegend({ locale = "en" }: { locale?: BmLocale }) {
+    const colorStyles = colorStylesFor(getBmUiStrings(locale));
     return (
         <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {(Object.keys(colorStyles) as ImpactColor[]).map((color) => (
@@ -60,9 +63,13 @@ interface HeatMapProps {
     factors: StressFactor[];
     componentIds: string[];
     cells: HeatMapCell[];
+    locale?: BmLocale;
 }
 
-export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
+export function HeatMap({ factors, componentIds, cells, locale = "en" }: HeatMapProps) {
+    const ui = getBmUiStrings(locale);
+    const content = getBusinessModelContent(locale);
+    const colorStyles = colorStylesFor(ui);
     const [selected, setSelected] = useState<HeatMapCell | null>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
     const inView = useInView(wrapRef, { once: true, margin: "0px 0px -10% 0px" });
@@ -70,7 +77,7 @@ export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
     const columns = factors.reduce((total, factor) => total + factor.outcomes.length, 0);
 
     const componentName = (id: string) =>
-        businessModelComponents.find((item) => item.id === id)?.name ?? id;
+        content.components.find((item) => item.id === id)?.name ?? id;
     const cellAt = (componentId: string, factorId: string, outcomeId: "a" | "b") =>
         cells.find(
             (cell) =>
@@ -96,7 +103,7 @@ export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
                                 rowSpan={2}
                                 className="sticky start-0 z-10 w-48 border-b border-v3-line bg-v3-raise p-4 text-start align-bottom text-xs font-medium tracking-wider text-v3-mute uppercase"
                             >
-                                Business model
+                                {ui.heatMapColumnHeader}
                             </th>
                             {factors.map((factor) => (
                                 <th
@@ -106,7 +113,7 @@ export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
                                 >
                                     {factor.name}
                                     <span className="mt-0.5 block text-[10px] font-normal tracking-wider text-v3-mute uppercase">
-                                        {factor.perspective}
+                                        {content.perspectiveLabels[factor.perspective]}
                                     </span>
                                 </th>
                             ))}
@@ -158,7 +165,12 @@ export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
                                                         type="button"
                                                         onClick={() => setSelected(isSelected ? null : cell)}
                                                         aria-pressed={isSelected}
-                                                        aria-label={`${componentName(componentId)} under ${factor.name}, ${outcome.label}: ${colorStyles[cell.color].label}`}
+                                                        aria-label={ui.cellAria(
+                                                            componentName(componentId),
+                                                            factor.name,
+                                                            outcome.label,
+                                                            colorStyles[cell.color].label
+                                                        )}
                                                         initial={reduce ? false : { opacity: 0, scale: 0.85 }}
                                                         animate={
                                                             reduce || inView
@@ -203,7 +215,7 @@ export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
                             <span className="text-sm font-medium text-v3-bone">
                                 {componentName(selected.componentId)}
                             </span>
-                            <span className="text-sm text-v3-mute">under</span>
+                            <span className="text-sm text-v3-mute">{ui.under}</span>
                             <span className="text-sm text-v3-soft">
                                 {selectedFactor.name} → {selectedOutcome.label}
                             </span>
@@ -213,10 +225,7 @@ export function HeatMap({ factors, componentIds, cells }: HeatMapProps) {
                         </p>
                     </div>
                 ) : (
-                    <p className="text-sm text-v3-mute">
-                        Select any square to read why it was coloured that way. The reasoning behind each
-                        cell — not the colour itself — is what the redesign is built on.
-                    </p>
+                    <p className="text-sm text-v3-mute">{ui.reasoningPlaceholder}</p>
                 )}
             </div>
         </div>

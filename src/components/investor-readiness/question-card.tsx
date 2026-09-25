@@ -1,6 +1,7 @@
 "use client";
 
-import { Question } from "@/data/investor-readiness/config";
+import { InvestorLocale, Question } from "@/data/investor-readiness/config";
+import { getInvestorUiStrings } from "@/data/investor-readiness/ui";
 import { QuestionBlock, ScaleOptions } from "@/components/v3/tool-kit";
 
 interface QuestionCardProps {
@@ -8,20 +9,18 @@ interface QuestionCardProps {
     value: number | undefined;
     onChange: (value: number) => void;
     index: number;
+    locale?: InvestorLocale;
 }
 
-const scaleOptions = [
-    { value: 1, label: "Not at all true" },
-    { value: 2, label: "Mostly false" },
-    { value: 3, label: "Partially true" },
-    { value: 4, label: "Mostly true" },
-    { value: 5, label: "Completely true" },
-];
+export function QuestionCard({ question, value, onChange, index, locale = "en" }: QuestionCardProps) {
+    const scaleOptions = getInvestorUiStrings(locale).scaleLabels.map((label, i) => ({
+        value: i + 1,
+        label,
+    }));
 
-export function QuestionCard({ question, value, onChange, index }: QuestionCardProps) {
     return (
-        <QuestionBlock index={`${index + 1}.`} text={question.text}>
-            <ScaleOptions
+        <QuestionBlock locale={locale} index={`${index + 1}.`} text={question.text}>
+            <ScaleOptions locale={locale}
                 label={question.text}
                 value={value}
                 onChange={onChange}

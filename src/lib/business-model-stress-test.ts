@@ -9,12 +9,12 @@
 import OpenAI from "openai";
 import { z } from "zod";
 import {
+    BmLocale,
     MAX_STRESS_FACTORS,
     MIN_DESCRIBED_COMPONENTS,
     MIN_STRESS_FACTORS,
     StressFactor,
     businessModelComponents,
-    stressFactorLibrary,
 } from "@/data/business-model-stress-test/config";
 import {
     BusinessModelDescription,
@@ -25,6 +25,7 @@ import {
     StressTestResult,
     analyzeHeatMap,
     describedComponentIds,
+    getBusinessModelContent,
 } from "@/data/business-model-stress-test/logic";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
@@ -61,6 +62,7 @@ const factorSchema = z.object({
 export const stressTestRequestSchema = z.object({
     businessModel: z.record(z.string(), z.string().trim().max(MAX_COMPONENT_CHARS)),
     factors: z.array(factorSchema).min(MIN_STRESS_FACTORS).max(MAX_STRESS_FACTORS),
+    locale: z.enum(["en", "fa"]).default("en"),
 });
 
 export type StressTestRequest = z.infer<typeof stressTestRequestSchema>;
@@ -69,37 +71,45 @@ export type StressTestRequest = z.infer<typeof stressTestRequestSchema>;
  * Library factors are re-read from the server-side definition so a tampered client
  * cannot rewrite what an outcome means; only custom factors are taken from the request.
  */
-function resolveFactors(requested: StressTestRequest["factors"]): StressFactor[] {
+function resolveFactors(
+    requested: StressTestRequest["factors"],
+    locale: BmLocale
+): StressFactor[] {
+    const library = getBusinessModelContent(locale).factors;
     const seen = new Set<string>();
     const resolved: StressFactor[] = [];
     for (const factor of requested) {
         if (seen.has(factor.id)) continue;
         seen.add(factor.id);
-        const known = stressFactorLibrary.find((item) => item.id === factor.id);
+        const known = library.find((item) => item.id === factor.id);
         resolved.push(known ?? { ...factor, custom: true });
     }
     if (resolved.length < MIN_STRESS_FACTORS)
-        throw new Error(`Select at least ${MIN_STRESS_FACTORS} distinct stress factors.`);
+        throw new Error(
+            getBusinessModelContent(locale).logic.errorTooFewFactors(MIN_STRESS_FACTORS)
+        );
     return resolved;
 }
 
-function sanitizeBusinessModel(input: Record<string, string>): BusinessModelDescription {
+function sanitizeBusinessModel(
+    input: Record<string, string>,
+    locale: BmLocale
+): BusinessModelDescription {
+    const content = getBusinessModelContent(locale);
     const model: BusinessModelDescription = {};
     for (const component of businessModelComponents) {
         const value = (input[component.id] || "").trim().slice(0, MAX_COMPONENT_CHARS);
         if (value) model[component.id] = value;
     }
-    const missingRequired = businessModelComponents.filter(
+    const missingRequired = content.components.filter(
         (component) => component.required && !model[component.id]
     );
     if (missingRequired.length)
         throw new Error(
-            `Describe your ${missingRequired.map((item) => item.name.toLowerCase()).join(", ")} before running the test.`
+            content.logic.errorMissingRequired(missingRequired.map((item) => item.name))
         );
     if (Object.keys(model).length < MIN_DESCRIBED_COMPONENTS)
-        throw new Error(
-            `Describe at least ${MIN_DESCRIBED_COMPONENTS} business model components — a thinner description cannot be stress tested meaningfully.`
-        );
+        throw new Error(content.logic.errorTooThin(MIN_DESCRIBED_COMPONENTS));
     return model;
 }
 
@@ -172,11 +182,16 @@ const heatMapResponseSchema = z.object({
         .default([]),
 });
 
-function describeInput(businessModel: BusinessModelDescription, factors: StressFactor[]) {
+function describeInput(
+    businessModel: BusinessModelDescription,
+    factors: StressFactor[],
+    locale: BmLocale = "en"
+) {
+    const content = getBusinessModelContent(locale);
     const componentIds = describedComponentIds(businessModel);
     const modelText = componentIds
         .map((id) => {
-            const component = businessModelComponents.find((item) => item.id === id)!;
+            const component = content.components.find((item) => item.id === id)!;
             return `- ${component.id} (${component.name}): ${businessModel[id]}`;
         })
         .join("\n");
@@ -189,17 +204,25 @@ function describeInput(businessModel: BusinessModelDescription, factors: StressF
     return { componentIds, modelText, factorText };
 }
 
+/** The reasoning is shown verbatim to the visitor, so it must be in their language. */
+const LANGUAGE_RULE: Record<BmLocale, string> = {
+    en: "Write every string you output in English.",
+    fa: "Write every string you output in formal but human Persian (Farsi). Use «گیومه» for quotes, Persian digits, and correct نیم‌فاصله. Do not use English words where a common Persian term exists, and never mix English sentences into the Persian text.",
+};
+
 async function buildHeatMap(
     businessModel: BusinessModelDescription,
-    factors: StressFactor[]
+    factors: StressFactor[],
+    locale: BmLocale
 ): Promise<HeatMapCell[]> {
-    const { componentIds, modelText, factorText } = describeInput(businessModel, factors);
+    const content = getBusinessModelContent(locale);
+    const { componentIds, modelText, factorText } = describeInput(businessModel, factors, locale);
 
     const completion = await openai.chat.completions.create({
         model: MODEL,
         temperature: 0.3,
         messages: [
-            { role: "system", content: HEATMAP_SYSTEM },
+            { role: "system", content: `${HEATMAP_SYSTEM}\n\nLANGUAGE: ${LANGUAGE_RULE[locale]}` },
             {
                 role: "user",
                 content: `BUSINESS MODEL COMPONENTS (these componentIds are the only ones you may use):\n${modelText}\n\nSTRESS FACTORS (these factorIds are the only ones you may use):\n${factorText}\n\nMap and colour every stress factor outcome against this business model.`,
@@ -211,7 +234,7 @@ async function buildHeatMap(
     const parsed = heatMapResponseSchema.safeParse(
         JSON.parse(completion.choices[0]?.message?.content || "{}")
     );
-    if (!parsed.success) throw new Error("The stress test could not be completed. Please try again.");
+    if (!parsed.success) throw new Error(content.logic.errorGeneric);
 
     // Start from a fully grey grid: anything the model did not causally relate stays grey.
     const cells: HeatMapCell[] = [];
@@ -238,18 +261,14 @@ async function buildHeatMap(
                     factorId: factor.id,
                     outcomeId: outcome.id,
                     color: hit?.color ?? "grey",
-                    reasoning:
-                        hit?.reasoning ||
-                        "No causal relationship was identified between this outcome and this component.",
+                    reasoning: hit?.reasoning || content.logic.greyReasoning,
                 });
             }
         }
     }
 
     if (!cells.some((cell) => cell.color !== "grey"))
-        throw new Error(
-            "No causal link was found between your business model and the selected stress factors. Try factors that touch how you earn, deliver, or reach customers."
-        );
+        throw new Error(content.logic.errorNoCausalLink);
 
     return cells;
 }
@@ -311,14 +330,15 @@ async function buildActions(
     businessModel: BusinessModelDescription,
     factors: StressFactor[],
     cells: HeatMapCell[],
-    result: StressTestResult
+    result: StressTestResult,
+    locale: BmLocale
 ): Promise<StressTestAction[]> {
-    const { modelText } = describeInput(businessModel, factors);
+    const { modelText } = describeInput(businessModel, factors, locale);
     const completion = await openai.chat.completions.create({
         model: MODEL,
         temperature: 0.5,
         messages: [
-            { role: "system", content: ACTIONS_SYSTEM },
+            { role: "system", content: `${ACTIONS_SYSTEM}\n\nLANGUAGE: ${LANGUAGE_RULE[locale]}` },
             {
                 role: "user",
                 content: `BUSINESS MODEL:\n${modelText}\n\nSTRESS TEST RESULT:\n${summarizeForActions(result, cells, factors)}`,
@@ -340,17 +360,18 @@ async function buildActions(
 // ─── Orchestration ───────────────────────────────────────────────────────────
 
 export async function runStressTest(request: StressTestRequest): Promise<StressTestReport> {
-    const businessModel = sanitizeBusinessModel(request.businessModel);
-    const factors = resolveFactors(request.factors);
+    const locale = request.locale ?? "en";
+    const businessModel = sanitizeBusinessModel(request.businessModel, locale);
+    const factors = resolveFactors(request.factors, locale);
 
-    const cells = await buildHeatMap(businessModel, factors);
-    const draft = analyzeHeatMap(cells, factors, businessModel);
+    const cells = await buildHeatMap(businessModel, factors, locale);
+    const draft = analyzeHeatMap(cells, factors, businessModel, [], locale);
 
     // Step 6 is written from the completed analysis. If it fails, the deterministic
     // recommendations already in `draft` stand in rather than failing the whole run.
     let actions: StressTestAction[] = [];
     try {
-        actions = await buildActions(businessModel, factors, cells, draft);
+        actions = await buildActions(businessModel, factors, cells, draft, locale);
     } catch (error) {
         console.error("[BM Stress Test] action generation failed", error);
     }
@@ -360,6 +381,8 @@ export async function runStressTest(request: StressTestRequest): Promise<StressT
         factors,
         businessModel,
         cells,
-        result: actions.length ? analyzeHeatMap(cells, factors, businessModel, actions) : draft,
+        result: actions.length
+            ? analyzeHeatMap(cells, factors, businessModel, actions, locale)
+            : draft,
     };
 }

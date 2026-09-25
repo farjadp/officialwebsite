@@ -1,6 +1,15 @@
 "use client"
 
-import { useState } from "react"
+// ============================================================================
+// File Path: src/components/auth/change-password-form.tsx
+// Why: The portal's change-password form in the v3 "Light" look: labelled
+//      fields on the raised ground, a light focus ring, inline errors tied
+//      to their input, and 44px+ targets. Restyle only — the schema, the
+//      validation messages and the changePassword() call are untouched.
+// Env / Identity: Client Component
+// ============================================================================
+
+import { useId, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -52,9 +61,13 @@ interface ChangePasswordFormProps {
     userEmail: string
 }
 
+const INPUT_BASE =
+    "h-14 w-full rounded-xl border bg-v3-raise px-4 text-base text-v3-bone placeholder:text-v3-mute/70 transition-colors focus:outline-none focus:ring-2 focus:ring-v3-light/70"
+
 export function ChangePasswordForm({ locale, userEmail }: ChangePasswordFormProps) {
     const t = content[locale]
     const [isPending, setIsPending] = useState(false)
+    const ids = useId()
 
     // Override zod error messages for Persian if needed
     const schema = z.object({
@@ -93,50 +106,50 @@ export function ChangePasswordForm({ locale, userEmail }: ChangePasswordFormProp
         }
     }
 
+    const fields = [
+        { key: "oldPassword", label: t.oldPassword, error: errors.oldPassword?.message, autoComplete: "current-password" },
+        { key: "newPassword", label: t.newPassword, error: errors.newPassword?.message, autoComplete: "new-password" },
+        { key: "confirmPassword", label: t.confirmPassword, error: errors.confirmPassword?.message, autoComplete: "new-password" },
+    ] as const
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" dir={locale === "fa" ? "rtl" : "ltr"}>
-            <div className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">{t.oldPassword}</label>
-                    <input
-                        type="password"
-                        {...register("oldPassword")}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-iran-lajvard/50 focus:border-iran-lajvard transition-all"
-                        dir="ltr"
-                    />
-                    {errors.oldPassword && <p className="text-red-400 text-xs mt-1.5">{errors.oldPassword.message}</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">{t.newPassword}</label>
-                    <input
-                        type="password"
-                        {...register("newPassword")}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-iran-lajvard/50 focus:border-iran-lajvard transition-all"
-                        dir="ltr"
-                    />
-                    {errors.newPassword && <p className="text-red-400 text-xs mt-1.5">{errors.newPassword.message}</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">{t.confirmPassword}</label>
-                    <input
-                        type="password"
-                        {...register("confirmPassword")}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-iran-lajvard/50 focus:border-iran-lajvard transition-all"
-                        dir="ltr"
-                    />
-                    {errors.confirmPassword && <p className="text-red-400 text-xs mt-1.5">{errors.confirmPassword.message}</p>}
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
+                {fields.map(({ key, label, error, autoComplete }) => {
+                    const inputId = `${ids}-${key}`
+                    const errId = `${inputId}-err`
+                    return (
+                        <div key={key} className="flex flex-col gap-2 text-start">
+                            <label htmlFor={inputId} className="text-sm font-medium text-v3-soft">
+                                {label}
+                            </label>
+                            <input
+                                id={inputId}
+                                type="password"
+                                autoComplete={autoComplete}
+                                {...register(key)}
+                                aria-invalid={error ? true : undefined}
+                                aria-describedby={error ? errId : undefined}
+                                className={`${INPUT_BASE} ${error ? "border-v3-light" : "border-v3-line focus:border-v3-light/60"}`}
+                                dir="ltr"
+                            />
+                            {error && (
+                                <p id={errId} className="text-sm text-v3-light">
+                                    {error}
+                                </p>
+                            )}
+                        </div>
+                    )
+                })}
             </div>
 
-            <div className="pt-2 flex justify-end">
+            <div className="flex justify-end pt-1">
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="flex items-center gap-2 bg-iran-lajvard hover:bg-iran-lajvard/80 text-white px-5 py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-v3-bone px-7 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-v3-line disabled:text-v3-mute"
                 >
-                    {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <KeyRound className="h-4 w-4" aria-hidden />}
                     {t.save}
                 </button>
             </div>

@@ -1,37 +1,44 @@
 "use client";
 
+import { AiLocale } from "@/data/ai-adoption-score/config";
 import { FinalResult } from "@/data/ai-adoption-score/logic";
+import { getAiUiStrings } from "@/data/ai-adoption-score/ui";
 import { Meter, ResultList, ScoreRing, StepIn, ToolButton } from "@/components/v3/tool-kit";
-import { ArrowRight, Copy, Check, AlertTriangle } from "lucide-react";
+import { localePath } from "@/lib/nav";
+import { ArrowRight, ArrowLeft, Copy, Check, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 interface ResultSummaryProps {
     result: FinalResult;
     onReset: () => void;
+    locale?: AiLocale;
 }
 
-export function ResultSummary({ result, onReset }: ResultSummaryProps) {
+export function ResultSummary({ result, onReset, locale = "en" }: ResultSummaryProps) {
+    const ui = getAiUiStrings(locale);
+    const isRtl = locale === "fa";
+    const CtaArrow = isRtl ? ArrowLeft : ArrowRight;
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
         const text = [
-            `AI Adoption Readiness Score: ${result.totalScore}/100`,
-            `Readiness Level: ${result.readinessLevel}`,
+            ui.copyScoreLine(result.totalScore),
+            ui.copyLevelLine(result.readinessLevel),
             "",
             result.summarySentence,
             "",
             ...(result.foundationWarning ? [`⚠ ${result.foundationWarning}`, ""] : []),
-            "— Category Scores —",
+            ui.copyCategoriesHeading,
             ...result.categoryResults.map((c) => `${c.title}: ${c.score}/${c.maxScore}`),
             "",
-            "— Critical Gaps —",
+            ui.copyGapsHeading,
             ...result.weaknesses.map((w) => `• ${w.title}`),
             "",
-            "— Where AI Can Help First —",
+            ui.copyOpportunitiesHeading,
             ...result.aiOpportunityAreas.map((a) => `• ${a.title}`),
             "",
-            "— Recommended Next Steps —",
+            ui.copyNextStepsHeading,
             ...result.recommendations.map((r, i) => `${i + 1}. ${r}`),
         ].join("\n");
 
@@ -46,8 +53,8 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
 
             {/* ── Headline Score ──────────────────────────────────────────────── */}
             <StepIn className="flex flex-col items-center gap-6 pt-4 text-center">
-                <p className="text-sm text-v3-light">AI Adoption Readiness Score</p>
-                <ScoreRing score={result.totalScore} max={100} />
+                <p className="text-sm text-v3-light">{ui.resultKicker}</p>
+                <ScoreRing locale={locale} score={result.totalScore} max={100} />
                 <h2 className="font-v3-display text-3xl font-light leading-tight text-v3-bone md:text-4xl rtl:leading-snug">
                     {result.readinessLevel}
                 </h2>
@@ -64,22 +71,22 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
 
             {/* ── Readiness Breakdown ─────────────────────────────────────────── */}
             <section className="flex flex-col gap-6 rounded-2xl border border-v3-line/80 bg-v3-raise p-7 md:p-8">
-                <h3 className="font-v3-display text-2xl font-light">Readiness Breakdown</h3>
+                <h3 className="font-v3-display text-2xl font-light">{ui.breakdownTitle}</h3>
                 <div className="flex flex-col gap-6">
                     {result.categoryResults.map((cat) => (
-                        <Meter key={cat.categoryId} label={cat.title} value={cat.score} max={cat.maxScore} />
+                        <Meter locale={locale} key={cat.categoryId} label={cat.title} value={cat.score} max={cat.maxScore} />
                     ))}
                 </div>
             </section>
 
             {/* ── Strengths + Gaps ────────────────────────────────────────────── */}
             <ResultList
-                title="What Is Working"
+                title={ui.strengthsTitle}
                 tone="strength"
                 items={result.strengths.map((s) => ({ title: s.title, body: s.description }))}
             />
             <ResultList
-                title="Critical Gaps"
+                title={ui.gapsTitle}
                 tone="risk"
                 items={result.weaknesses.map((w) => ({ title: w.title, body: w.description }))}
             />
@@ -87,8 +94,8 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
             {/* ── Where AI Can Help First ──────────────────────────────────── */}
             <section className="flex flex-col gap-6 rounded-2xl border border-v3-line/80 p-7 md:p-8">
                 <div className="flex flex-col gap-1">
-                    <h3 className="font-v3-display text-2xl font-light">Where AI Can Likely Help First</h3>
-                    <span className="text-sm text-v3-mute">— based on your readiness signals</span>
+                    <h3 className="font-v3-display text-2xl font-light">{ui.opportunitiesTitle}</h3>
+                    <span className="text-sm text-v3-mute">{ui.opportunitiesNote}</span>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {result.aiOpportunityAreas.map((area, i) => (
@@ -103,8 +110,8 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
             {/* ── Recommended Next Steps ──────────────────────────────────────── */}
             <section className="flex flex-col gap-8 rounded-3xl border border-v3-line/80 bg-v3-raise p-7 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)] md:p-10">
                 <div className="flex flex-col gap-2">
-                    <h3 className="font-v3-display text-3xl font-light leading-tight rtl:leading-snug">Recommended Next Steps</h3>
-                    <p className="max-w-xl leading-relaxed text-v3-soft rtl:leading-loose">Before investing in AI tools or implementation, address these specific gaps to maximize your return and reduce execution risk.</p>
+                    <h3 className="font-v3-display text-3xl font-light leading-tight rtl:leading-snug">{ui.nextStepsTitle}</h3>
+                    <p className="max-w-xl leading-relaxed text-v3-soft rtl:leading-loose">{ui.nextStepsBody}</p>
                 </div>
 
                 <ol className="flex flex-col">
@@ -119,23 +126,23 @@ export function ResultSummary({ result, onReset }: ResultSummaryProps) {
                 {/* CTA */}
                 <div className="flex flex-col gap-6 border-t border-v3-line pt-8">
                     <div className="flex flex-col gap-1">
-                        <h4 className="text-lg font-medium text-v3-bone">Need an AI readiness review?</h4>
-                        <p className="text-sm text-v3-mute">Get a tailored AI strategy session based on your specific gaps and business context.</p>
+                        <h4 className="text-lg font-medium text-v3-bone">{ui.ctaTitle}</h4>
+                        <p className="text-sm text-v3-mute">{ui.ctaBody}</p>
                     </div>
                     <div className="flex flex-wrap gap-3">
                         <ToolButton variant="secondary" onClick={onReset}>
-                            Retake Assessment
+                            {ui.retake}
                         </ToolButton>
                         <ToolButton variant="secondary" onClick={handleCopy} aria-live="polite">
                             {copied ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
-                            {copied ? "Copied" : "Copy Results"}
+                            {copied ? ui.copied : ui.copy}
                         </ToolButton>
                         <Link
-                            href="/booking"
+                            href={localePath(locale, "/booking")}
                             className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-v3-bone px-7 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink"
                         >
-                            Book AI Strategy Session
-                            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
+                            {ui.ctaButton}
+                            <CtaArrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden />
                         </Link>
                     </div>
                 </div>

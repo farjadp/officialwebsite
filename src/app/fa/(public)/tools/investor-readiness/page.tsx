@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function InvestorReadinessPage() {
     return (
         <ToolShell>
-            <InvestorReadinessTool />
+            <InvestorReadinessTool locale="fa" />
         </ToolShell>
     );
 }

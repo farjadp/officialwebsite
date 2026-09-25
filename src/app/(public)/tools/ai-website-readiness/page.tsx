@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function AiWebsiteReadinessPage() {
   return (
     <ToolShell wide>
-      <AiWebsiteReadinessTool />
+      <AiWebsiteReadinessTool locale="en" />
     </ToolShell>
   );
 }

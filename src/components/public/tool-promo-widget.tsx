@@ -1,8 +1,20 @@
 "use client"
 
+// ============================================================================
+// File Path: src/components/public/tool-promo-widget.tsx
+// Why: The "one free tool" card under an article, in the v3 "Light" look — a
+//      v3 card on the warm charcoal ground with one accent, instead of the
+//      old white slab with its green gradients, amber ping and shimmer.
+//
+//      The tool list and the random pick on mount are the v2 widget's,
+//      untouched. Only the look changed.
+// Env / Identity: Client Component (framer-motion)
+// ============================================================================
+
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowRight, Bot, TrendingUp, BarChart2, Briefcase, Rocket, Sparkles } from "lucide-react"
+import { ArrowRight, Bot, TrendingUp, BarChart2, Briefcase, Rocket } from "lucide-react"
+import { Reveal } from "@/components/v3/motion"
 
 // Hardcoded tools from tools/page.tsx
 const AVAILABLE_TOOLS = [
@@ -51,7 +63,6 @@ const AVAILABLE_TOOLS = [
 export function ToolPromoWidget() {
     const [mounted, setMounted] = useState(false)
     const [toolIndex, setToolIndex] = useState(0)
-    const [isHovered, setIsHovered] = useState(false)
 
     useEffect(() => {
         setMounted(true)
@@ -65,60 +76,42 @@ export function ToolPromoWidget() {
     const Icon = tool.icon
 
     return (
-        <div 
-            className="group relative w-full overflow-hidden rounded-2xl border border-stone-200 bg-white transition-all duration-500 hover:border-[#D97706] hover:shadow-2xl hover:shadow-[#D97706]/10"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            {/* Background Glow Effect - highly premium & dynamic */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#0F3F35] to-[#1a5b4e] opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-10" />
-            
-            {/* Dark Accent corner */}
-            <div className="absolute -right-16 -top-16 z-0 h-40 w-40 rounded-full bg-[#0F3F35]/5 transition-transform duration-700 ease-out group-hover:scale-[2.5]" />
-            <div className="absolute -bottom-8 -left-8 z-0 h-32 w-32 rounded-full bg-[#D97706]/5 transition-transform duration-700 ease-out group-hover:scale-150" />
+        <Reveal>
+            <div className="group flex w-full flex-col items-start justify-between gap-8 rounded-2xl border border-v3-line/80 bg-v3-raise p-8 text-start transition-all duration-500 hover:-translate-y-1 hover:border-v3-light/60 md:flex-row md:items-center md:p-10">
 
-            <div className="relative z-10 p-8 sm:p-10 flex flex-col md:flex-row gap-8 items-center md:items-start justify-between">
-                
                 {/* Left side: Icon & Text */}
-                <div className="flex-1 flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
-                    {/* Icon Box with animated ping */}
-                    <div className="relative shrink-0">
-                        <div className="absolute inset-0 rounded-2xl bg-[#D97706]/20 animate-ping opacity-75" />
-                        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0F3F35] to-[#15342d] text-[#FDFBF7] shadow-lg shadow-[#0F3F35]/20 ring-1 ring-white/10 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
-                            <Icon className="h-7 w-7" strokeWidth={1.5} />
-                        </div>
+                <div className="flex flex-1 flex-col items-start gap-6 md:flex-row">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-v3-light/40 text-v3-light transition-transform duration-500 group-hover:-translate-y-0.5">
+                        <Icon className="h-6 w-6" strokeWidth={1.5} aria-hidden />
                     </div>
 
-                    <div className="space-y-3">
-                        <div className="inline-flex items-center gap-1.5 rounded-full bg-[#D97706]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#D97706] ring-1 ring-[#D97706]/20">
-                            <Sparkles className="h-3 w-3" />
+                    <div className="flex flex-col gap-3">
+                        <span className="inline-flex w-fit rounded-full border border-v3-light/40 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-v3-light">
                             Free Builder Tool
-                        </div>
-                        
-                        <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#0F3F35] leading-title tracking-tight">
+                        </span>
+
+                        <h3 className="font-v3-display text-2xl font-light leading-tight tracking-[-0.015em] text-v3-bone md:text-3xl rtl:leading-snug rtl:tracking-normal">
                             {tool.name}
                         </h3>
-                        
-                        <p className="max-w-xl text-[15px] leading-relaxed text-stone-600 font-medium">
+
+                        <p className="max-w-xl text-[15px] leading-relaxed text-v3-soft rtl:leading-loose">
                             {tool.desc}
                         </p>
                     </div>
                 </div>
 
                 {/* Right side: Action Button */}
-                <div className="shrink-0 pt-2 w-full md:w-auto flex justify-center md:justify-end">
+                <div className="w-full shrink-0 md:w-auto">
                     <Link
                         href={tool.href}
-                        className="group/btn relative inline-flex h-12 w-full md:w-auto items-center justify-center gap-2 overflow-hidden rounded-xl bg-[#0F3F35] px-8 text-sm font-bold text-white shadow-lg shadow-[#0F3F35]/20 transition-all hover:bg-[#15342d] hover:shadow-xl hover:shadow-[#0F3F35]/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F3F35]"
+                        className="inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full bg-v3-bone px-8 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink md:w-auto"
                     >
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 group-hover/btn:translate-x-full" />
-                        <span className="relative z-10">{tool.action}</span>
-                        <ArrowRight className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                        {tool.action}
+                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" aria-hidden />
                     </Link>
                 </div>
 
             </div>
-        </div>
+        </Reveal>
     )
 }

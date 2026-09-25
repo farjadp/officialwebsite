@@ -1,5 +1,12 @@
 import { isIP } from "node:net";
 import { resolve4, resolve6 } from "node:dns/promises";
+import {
+  getScannerStrings,
+  type AiReadinessLocale,
+  type ScannerStrings,
+} from "@/data/ai-website-readiness/scanner-strings";
+
+export type { AiReadinessLocale };
 
 export type CheckStatus = "passing" | "attention" | "missing" | "info" | "na";
 
@@ -86,35 +93,37 @@ function isPrivateIp(address: string) {
   );
 }
 
-async function assertPublicUrl(url: URL) {
-  if (!["http:", "https:"].includes(url.protocol))
-    throw new Error("Only HTTP and HTTPS URLs can be scanned.");
-  if (url.username || url.password)
-    throw new Error("URLs containing credentials are not supported.");
-  if (url.port && !["80", "443"].includes(url.port))
-    throw new Error("Only standard web ports can be scanned.");
+async function assertPublicUrl(url: URL, s: ScannerStrings) {
+  if (!["http:", "https:"].includes(url.protocol)) throw new Error(s.errors.onlyHttp);
+  if (url.username || url.password) throw new Error(s.errors.credentials);
+  if (url.port && !["80", "443"].includes(url.port)) throw new Error(s.errors.ports);
   const hostname = url.hostname.toLowerCase();
   if (hostname === "localhost" || hostname.endsWith(".local") || hostname.endsWith(".internal"))
-    throw new Error("Local and private websites cannot be scanned.");
+    throw new Error(s.errors.privateHost);
   const literal = isIP(hostname)
     ? [hostname]
     : [
         ...(await resolve4(hostname).catch(() => [])),
         ...(await resolve6(hostname).catch(() => [])),
       ];
-  if (!literal.length) throw new Error("The website hostname could not be resolved.");
-  if (literal.some(isPrivateIp)) throw new Error("Local and private websites cannot be scanned.");
+  if (!literal.length) throw new Error(s.errors.unresolved);
+  if (literal.some(isPrivateIp)) throw new Error(s.errors.privateHost);
 }
 
-function normalizeUrl(input: string) {
+function normalizeUrl(input: string, s: ScannerStrings) {
   const trimmed = input.trim();
-  if (!trimmed) throw new Error("Enter a website URL.");
+  if (!trimmed) throw new Error(s.errors.emptyUrl);
   return new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`);
 }
 
-async function safeFetch(input: URL, init: RequestInit = {}, redirects = 0): Promise<FetchResult> {
-  if (redirects > 4) throw new Error("The website redirected too many times.");
-  await assertPublicUrl(input);
+async function safeFetch(
+  input: URL,
+  s: ScannerStrings,
+  init: RequestInit = {},
+  redirects = 0
+): Promise<FetchResult> {
+  if (redirects > 4) throw new Error(s.errors.tooManyRedirects);
+  await assertPublicUrl(input, s);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10_000);
   try {
@@ -131,15 +140,13 @@ async function safeFetch(input: URL, init: RequestInit = {}, redirects = 0): Pro
     });
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get("location");
-      if (!location) throw new Error("The website returned an invalid redirect.");
-      return safeFetch(new URL(location, input), init, redirects + 1);
+      if (!location) throw new Error(s.errors.invalidRedirect);
+      return safeFetch(new URL(location, input), s, init, redirects + 1);
     }
     const declaredLength = Number(response.headers.get("content-length") || 0);
-    if (declaredLength > MAX_BYTES)
-      throw new Error("The website response is too large to scan safely.");
+    if (declaredLength > MAX_BYTES) throw new Error(s.errors.tooLarge);
     const buffer = await response.arrayBuffer();
-    if (buffer.byteLength > MAX_BYTES)
-      throw new Error("The website response is too large to scan safely.");
+    if (buffer.byteLength > MAX_BYTES) throw new Error(s.errors.tooLarge);
     return {
       url: response.url || input.toString(),
       status: response.status,
@@ -148,16 +155,16 @@ async function safeFetch(input: URL, init: RequestInit = {}, redirects = 0): Pro
     };
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError")
-      throw new Error("The website took too long to respond.");
+      throw new Error(s.errors.timeout);
     throw error;
   } finally {
     clearTimeout(timer);
   }
 }
 
-async function tryFetch(url: URL, init?: RequestInit) {
+async function tryFetch(url: URL, s: ScannerStrings, init?: RequestInit) {
   try {
-    return await safeFetch(url, init);
+    return await safeFetch(url, s, init);
   } catch {
     return null;
   }
@@ -311,27 +318,46 @@ function sitemapLinks(xml: string) {
   );
 }
 
-export async function analyzeWebsite(input: string): Promise<WebsiteReadinessReport> {
-  const requestedUrl = normalizeUrl(input);
-  const homepage = await safeFetch(requestedUrl);
-  if (!homepage.contentType.includes("text/html"))
-    throw new Error("The URL did not return an HTML page.");
+/** Score band, locale-independent. Kept separate so logs stay comparable. */
+export type GradeKey = "excellent" | "strong" | "developing" | "needsWork" | "highRisk";
+
+export function gradeKeyFor(score: number): GradeKey {
+  return score >= 90
+    ? "excellent"
+    : score >= 75
+      ? "strong"
+      : score >= 60
+        ? "developing"
+        : score >= 40
+          ? "needsWork"
+          : "highRisk";
+}
+
+export async function analyzeWebsite(
+  input: string,
+  locale: AiReadinessLocale = "en"
+): Promise<WebsiteReadinessReport> {
+  const t = getScannerStrings(locale);
+  const c = t.checks;
+  const requestedUrl = normalizeUrl(input, t);
+  const homepage = await safeFetch(requestedUrl, t);
+  if (!homepage.contentType.includes("text/html")) throw new Error(t.errors.notHtml);
   const finalUrl = new URL(homepage.url);
   const origin = finalUrl.origin;
   const html = homepage.text;
   const text = stripHtml(html);
   const robotsUrl = new URL("/robots.txt", origin);
-  const robots = await tryFetch(robotsUrl);
+  const robots = await tryFetch(robotsUrl, t);
   const robotsOk = !!robots && robots.status === 200 && /user-agent\s*:/i.test(robots.text);
   const declaredSitemap = robots?.text.match(/^\s*sitemap:\s*(\S+)/im)?.[1];
 
   const [botPage, llms, llmsFull, agents, ucp, catalog] = await Promise.all([
-    tryFetch(finalUrl, { headers: { "user-agent": "GPTBot/1.0" } }),
-    tryFetch(new URL("/llms.txt", origin)),
-    tryFetch(new URL("/llms-full.txt", origin)),
-    tryFetch(new URL("/agents.md", origin)),
-    tryFetch(new URL("/.well-known/ucp", origin)),
-    tryFetch(new URL("/ai-catalog.json", origin)),
+    tryFetch(finalUrl, t, { headers: { "user-agent": "GPTBot/1.0" } }),
+    tryFetch(new URL("/llms.txt", origin), t),
+    tryFetch(new URL("/llms-full.txt", origin), t),
+    tryFetch(new URL("/agents.md", origin), t),
+    tryFetch(new URL("/.well-known/ucp", origin), t),
+    tryFetch(new URL("/ai-catalog.json", origin), t),
   ]);
 
   let sitemapUrl: URL | null = null;
@@ -343,7 +369,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   ].filter(Boolean) as string[]) {
     try {
       const candidateUrl = new URL(candidate, origin);
-      const result = await tryFetch(candidateUrl);
+      const result = await tryFetch(candidateUrl, t);
       if (result?.status === 200 && /<(urlset|sitemapindex)\b/i.test(result.text)) {
         sitemapUrl = candidateUrl;
         sitemapResponse = result;
@@ -359,7 +385,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
     const childResults = await Promise.all(
       children.map((url) => {
         try {
-          return tryFetch(new URL(url, origin));
+          return tryFetch(new URL(url, origin), t);
         } catch {
           return null;
         }
@@ -371,7 +397,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   const sampleResults = await Promise.all(
     sampleEntries.map((entry) => {
       try {
-        return tryFetch(new URL(entry.loc));
+        return tryFetch(new URL(entry.loc), t);
       } catch {
         return null;
       }
@@ -426,7 +452,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   let ogImageResult: FetchResult | null = null;
   if (ogImage) {
     try {
-      ogImageResult = await tryFetch(new URL(ogImage, finalUrl));
+      ogImageResult = await tryFetch(new URL(ogImage, finalUrl), t);
     } catch {
       /* invalid image URL */
     }
@@ -473,192 +499,183 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   const hasGoogleBusiness =
     /https?:\/\/(?:www\.)?(?:google\.[^/]+\/maps|maps\.app\.goo\.gl|goo\.gl\/maps)/i.test(html);
 
+  const crawlersAllowed =
+    robotsOk && ["OAI-SearchBot", "PerplexityBot"].every((agent) => robotsAllows(robots!.text, agent));
+  const botParity =
+    botPage?.status === 200 &&
+    Math.abs(botPage.text.length - html.length) / Math.max(html.length, 1) < 0.05;
+  const challenged = /captcha|cf-chl-|challenge-platform|verify you are human/i.test(html);
+  const twitterCard = getMeta(html, "twitter:card");
+  const hasServiceSchema = schemaTypes.some((type) =>
+    ["Service", "Product", "FAQPage"].includes(type)
+  );
+  const socialImageOk =
+    ogImageResult?.status === 200 && ogImageResult.contentType.startsWith("image/");
+  const extendedAgentNames = [
+    llmsFull?.status === 200 && "llms-full.txt",
+    agents?.status === 200 && "agents.md",
+  ].filter(Boolean) as string[];
+  const machineContactOk = !!(business && business.address && (business.telephone || business.email));
+
   const accessChecks = [
     check(
       "1.1",
-      "Homepage availability",
+      c.homepage.title,
       homepage.status === 200
-        ? `The homepage responded HTTP 200 over ${finalUrl.protocol === "https:" ? "HTTPS" : "HTTP"}.`
-        : `The homepage responded HTTP ${homepage.status}.`,
+        ? c.homepage.ok(finalUrl.protocol === "https:")
+        : c.homepage.bad(homepage.status),
       homepage.status === 200 && finalUrl.protocol === "https:" ? "passing" : "attention",
-      "Serve the canonical homepage over HTTPS with a 200 response."
+      c.homepage.rec
     , true, "critical"),
     check(
       "1.2",
-      "robots.txt",
-      robotsOk
-        ? "robots.txt is present and contains valid User-agent directives."
-        : "robots.txt is missing or does not contain a valid User-agent directive.",
+      c.robots.title,
+      robotsOk ? c.robots.ok : c.robots.bad,
       robotsOk ? "passing" : "missing",
-      "Publish a plain-text /robots.txt file with explicit crawler rules."
+      c.robots.rec
     , true, "important"),
     check(
       "1.3",
-      "AI crawler access",
-      robotsOk &&
-        ["OAI-SearchBot", "PerplexityBot"].every((agent) => robotsAllows(robots!.text, agent))
-        ? "OpenAI and Perplexity search crawlers are allowed by robots.txt."
-        : "One or more AI search crawlers are not allowed by robots.txt.",
-      robotsOk &&
-        ["OAI-SearchBot", "PerplexityBot"].every((agent) => robotsAllows(robots!.text, agent))
-        ? "passing"
-        : "attention",
-      "Allow OAI-SearchBot and PerplexityBot unless your publishing policy requires blocking them."
+      c.crawlerAccess.title,
+      crawlersAllowed ? c.crawlerAccess.ok : c.crawlerAccess.bad,
+      crawlersAllowed ? "passing" : "attention",
+      c.crawlerAccess.rec
     , true, "critical"),
     check(
       "1.4",
-      "Bot/visitor parity",
-      botPage?.status === 200 &&
-        Math.abs(botPage.text.length - html.length) / Math.max(html.length, 1) < 0.05
-        ? `GPTBot received substantially the same HTML as a normal visitor (${botPage.text.length.toLocaleString()} vs. ${html.length.toLocaleString()} characters).`
-        : "GPTBot did not receive substantially the same HTML as a normal visitor.",
-      botPage?.status === 200 &&
-        Math.abs(botPage.text.length - html.length) / Math.max(html.length, 1) < 0.05
-        ? "passing"
-        : "attention",
-      "Avoid serving AI crawlers an error, challenge, or materially different page."
+      c.parity.title,
+      botParity ? c.parity.ok(botPage!.text.length, html.length) : c.parity.bad,
+      botParity ? "passing" : "attention",
+      c.parity.rec
     , true, "critical"),
     check(
       "1.5",
-      "XML sitemap",
+      c.sitemap.title,
       sitemapResponse
-        ? `Sitemap found at ${sitemapUrl?.toString()} (${sitemapEntries.length.toLocaleString()} discovered URLs).`
-        : "No valid XML sitemap was found.",
+        ? c.sitemap.ok(sitemapUrl?.toString() ?? "", sitemapEntries.length)
+        : c.sitemap.bad,
       sitemapResponse ? "passing" : "missing",
-      "Publish a sitemap.xml and declare it in robots.txt."
+      c.sitemap.rec
     , true, "important"),
     check(
       "1.6",
-      "Sitemap URL health",
+      c.sitemapHealth.title,
       sampleEntries.length
-        ? `${healthySamples}/${sampleEntries.length} sampled sitemap URLs returned HTTP 200 without noindex.`
-        : "No sitemap URLs were available to sample.",
+        ? c.sitemapHealth.ok(healthySamples, sampleEntries.length)
+        : c.sitemapHealth.none,
       sampleEntries.length && healthySamples === sampleEntries.length
         ? "passing"
         : sampleEntries.length
           ? "attention"
           : "na",
-      "Remove broken or noindex URLs from the sitemap."
+      c.sitemapHealth.rec
     , true, "important"),
     check(
       "1.7",
-      "Sitemap freshness",
+      c.sitemapFreshness.title,
       sitemapEntries.length
-        ? `lastmod is present on ${sitemapEntries.filter((entry) => entry.lastmod).length}/${sitemapEntries.length} discovered entries.`
-        : "No sitemap entries were available to inspect.",
+        ? c.sitemapFreshness.ok(
+            sitemapEntries.filter((entry) => entry.lastmod).length,
+            sitemapEntries.length
+          )
+        : c.sitemapFreshness.none,
       sitemapEntries.length && sitemapEntries.every((entry) => entry.lastmod)
         ? "passing"
         : sitemapEntries.length
           ? "attention"
           : "na",
-      "Add accurate lastmod values to sitemap entries."
+      c.sitemapFreshness.rec
     , true, "minor"),
     check(
       "1.8",
-      "Challenge-free access",
-      /captcha|cf-chl-|challenge-platform|verify you are human/i.test(html)
-        ? "A challenge or CAPTCHA page may be blocking the homepage."
-        : "No challenge or CAPTCHA page was detected on the homepage.",
-      /captcha|cf-chl-|challenge-platform|verify you are human/i.test(html)
-        ? "attention"
-        : "passing",
-      "Let legitimate crawlers access public content without interactive challenges."
+      c.challenge.title,
+      challenged ? c.challenge.blocked : c.challenge.clear,
+      challenged ? "attention" : "passing",
+      c.challenge.rec
     , true, "critical"),
   ];
 
   const metadataChecks = [
     check(
       "2.1",
-      "Title and description",
+      c.titleDescription.title,
       title && description
-        ? "The homepage has both a title and meta description."
-        : `Missing ${[!title && "title", !description && "meta description"].filter(Boolean).join(" and ")}.`,
+        ? c.titleDescription.ok
+        : c.titleDescription.bad(!title, !description),
       title && description ? "passing" : "missing",
-      "Add a unique, descriptive title and meta description."
+      c.titleDescription.rec
     , true, "important"),
     check(
       "2.2",
-      "Canonical URL",
-      canonical ? `Canonical URL is set to ${canonical}.` : "The homepage has no canonical URL.",
+      c.canonical.title,
+      canonical ? c.canonical.ok(canonical) : c.canonical.bad,
       canonical && hasSameOrigin(canonical, finalUrl)
         ? "passing"
         : canonical
           ? "attention"
           : "missing",
-      "Add a self-referencing canonical URL on the homepage."
+      c.canonical.rec
     , true, "critical"),
     check(
       "2.3",
-      "Open Graph metadata",
-      missingOg.length
-        ? `Missing Open Graph fields: ${missingOg.join(", ")}.`
-        : "All four core Open Graph tags are present.",
+      c.openGraph.title,
+      missingOg.length ? c.openGraph.bad(missingOg) : c.openGraph.ok,
       missingOg.length ? "attention" : "passing",
-      "Add og:title, og:description, og:image, and og:url to the raw HTML."
+      c.openGraph.rec
     , true, "important"),
     check(
       "2.4",
-      "Social image",
-      ogImageResult?.status === 200 && ogImageResult.contentType.startsWith("image/")
-        ? `og:image loads successfully (${ogImageResult.contentType.split(";")[0]}).`
+      c.socialImage.title,
+      socialImageOk
+        ? c.socialImage.ok(ogImageResult!.contentType.split(";")[0])
         : ogImage
-          ? "The configured og:image did not return a valid image."
-          : "No og:image was found.",
-      ogImageResult?.status === 200 && ogImageResult.contentType.startsWith("image/")
-        ? "passing"
-        : "attention",
-      "Use an absolute, crawlable 1200×630 social image URL."
+          ? c.socialImage.invalid
+          : c.socialImage.none,
+      socialImageOk ? "passing" : "attention",
+      c.socialImage.rec
     , true, "minor"),
     check(
       "2.5",
-      "Twitter card",
-      getMeta(html, "twitter:card")
-        ? `twitter:card is present (${getMeta(html, "twitter:card")}).`
-        : "twitter:card is not present.",
-      getMeta(html, "twitter:card") ? "info" : "attention",
-      "Add twitter:card for richer link previews.",
+      c.twitterCard.title,
+      twitterCard ? c.twitterCard.ok(twitterCard) : c.twitterCard.none,
+      twitterCard ? "info" : "attention",
+      c.twitterCard.rec,
       false
     , "minor"),
     check(
       "2.6",
-      "Business structured data",
+      c.businessSchema.title,
       business
         ? businessMissing.length
-          ? `A business node was found but is missing: ${businessMissing.join(", ")}.`
-          : "A complete business/organization JSON-LD node was found."
-        : "No business or organization JSON-LD node was found.",
+          ? c.businessSchema.incomplete(businessMissing)
+          : c.businessSchema.ok
+        : c.businessSchema.none,
       business && !businessMissing.length ? "passing" : business ? "attention" : "missing",
-      "Add Organization or LocalBusiness JSON-LD with name, URL, address, and telephone."
+      c.businessSchema.rec
     , true, "important"),
     check(
       "2.7",
-      "Service and product schema",
-      schemaTypes.some((type) => ["Service", "Product", "FAQPage"].includes(type))
-        ? "Service, Product, or FAQPage schema was found."
-        : "No Service, Product, or FAQPage schema was found.",
-      schemaTypes.some((type) => ["Service", "Product", "FAQPage"].includes(type))
-        ? "info"
-        : "attention",
-      "Add schema only for services, products, and FAQs that are visible on the page.",
+      c.serviceSchema.title,
+      hasServiceSchema ? c.serviceSchema.ok : c.serviceSchema.none,
+      hasServiceSchema ? "info" : "attention",
+      c.serviceSchema.rec,
       false
     , "minor"),
     check(
       "2.8",
-      "Language annotations",
-      htmlLang
-        ? `html lang="${htmlLang}" is set${hreflang ? " and hreflang annotations are present" : ""}.`
-        : "The html lang attribute is missing.",
+      c.language.title,
+      htmlLang ? c.language.ok(htmlLang, hreflang) : c.language.none,
       htmlLang ? "passing" : "missing",
-      "Set html lang and add hreflang links for alternate language versions."
+      c.language.rec
     , true, "important"),
     check(
       "2.9",
-      "Canonical consistency across pages",
+      c.canonicalConsistency.title,
       !sampleCanonicals.length
-        ? "No sampled page declared a canonical URL, so consistency could not be checked."
+        ? c.canonicalConsistency.none
         : collapsedToOne
-          ? `All ${sampleCanonicals.length} sampled pages declare the same canonical URL (${[...distinctCanonicals][0]}) and none points at itself. Those pages are telling search engines not to index them.`
-          : `${selfReferencing}/${sampleCanonicals.length} sampled pages canonicalise to themselves.`,
+          ? c.canonicalConsistency.collapsed(sampleCanonicals.length, [...distinctCanonicals][0])
+          : c.canonicalConsistency.ratio(selfReferencing, sampleCanonicals.length),
       !sampleCanonicals.length
         ? "na"
         : collapsedToOne
@@ -666,7 +683,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
           : selfReferencing === sampleCanonicals.length
             ? "passing"
             : "attention",
-      "Every page needs its own self-referencing canonical. A canonical set in a shared root layout is inherited by every page, which makes the whole site claim to be one URL.",
+      c.canonicalConsistency.rec,
       sampleCanonicals.length > 0,
       "critical"
     ),
@@ -675,67 +692,57 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   const agentChecks = [
     check(
       "3.1",
-      "llms.txt",
-      llms?.status === 200
-        ? "llms.txt is available at the site root."
-        : "llms.txt is missing from the site root.",
+      c.llms.title,
+      llms?.status === 200 ? c.llms.ok : c.llms.none,
       llms?.status === 200 ? "passing" : "missing",
-      "Publish /llms.txt with a concise description and links to authoritative pages."
+      c.llms.rec
     , true, "minor"),
     check(
       "3.2",
-      "Extended agent files",
-      llmsFull?.status === 200 || agents?.status === 200
-        ? `${[llmsFull?.status === 200 && "llms-full.txt", agents?.status === 200 && "agents.md"].filter(Boolean).join(" and ")} found.`
-        : "llms-full.txt and agents.md are both missing (informational).",
-      llmsFull?.status === 200 || agents?.status === 200 ? "info" : "attention",
-      "Consider an extended machine-readable guide for complex sites.",
+      c.extendedAgentFiles.title,
+      extendedAgentNames.length
+        ? c.extendedAgentFiles.ok(extendedAgentNames)
+        : c.extendedAgentFiles.none,
+      extendedAgentNames.length ? "info" : "attention",
+      c.extendedAgentFiles.rec,
       false
     , "minor"),
     check(
       "3.3",
-      "Server-readable content",
-      text.length >= 300
-        ? `${text.length.toLocaleString()} characters of visible text were found in the initial HTML.`
-        : `Only ${text.length.toLocaleString()} characters of visible text were found in the initial HTML.`,
+      c.serverReadable.title,
+      text.length >= 300 ? c.serverReadable.ok(text.length) : c.serverReadable.thin(text.length),
       text.length >= 300 ? "passing" : "attention",
-      "Render the core page copy in HTML instead of requiring JavaScript."
+      c.serverReadable.rec
     , true, "critical"),
     check(
       "3.4",
-      "Primary heading",
-      h1s.length
-        ? `A clear H1 was found: “${h1s[0].slice(0, 120)}”.`
-        : "The H1 heading is missing from the homepage.",
+      c.heading.title,
+      h1s.length ? c.heading.ok(h1s[0].slice(0, 120)) : c.heading.none,
       h1s.length ? "passing" : "missing",
-      "Add one descriptive H1 that states the page's primary topic."
+      c.heading.rec
     , true, "important"),
     check(
       "3.5",
-      "Machine-readable contact details",
-      business && business.address && (business.telephone || business.email)
-        ? "Address and contact details are present in structured data."
-        : "Some contact details are missing from machine-readable structured data.",
-      business && business.address && (business.telephone || business.email)
-        ? "passing"
-        : "attention",
-      "Include address plus telephone or email in your business JSON-LD."
+      c.machineContact.title,
+      machineContactOk ? c.machineContact.ok : c.machineContact.partial,
+      machineContactOk ? "passing" : "attention",
+      c.machineContact.rec
     , true, "minor"),
     check(
       "3.6",
-      "Signal-to-markup ratio",
-      `Visible text is ${textRatio.toFixed(1)}% of the homepage HTML.`,
+      c.signalRatio.title,
+      c.signalRatio.detail(textRatio),
       textRatio >= 10 ? "passing" : "attention",
-      "Reduce boilerplate markup and ship more useful text in the initial HTML."
+      c.signalRatio.rec
     , true, "important"),
     check(
       "3.7",
-      "Agent commerce endpoints",
+      c.agentCommerce.title,
       ucp?.status === 200 || catalog?.status === 200
-        ? "An agent commerce/catalog endpoint was found."
-        : "/.well-known/ucp and ai-catalog.json are both missing (informational).",
+        ? c.agentCommerce.ok
+        : c.agentCommerce.none,
       ucp?.status === 200 || catalog?.status === 200 ? "info" : "attention",
-      "For transactional sites, consider publishing a structured agent-facing catalog.",
+      c.agentCommerce.rec,
       false
     , "minor"),
   ];
@@ -743,76 +750,66 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   const contentChecks = [
     check(
       "4.1",
-      "Clear business description",
+      c.businessDescription.title,
       description.length >= 40
-        ? `The meta description gives machines a concise summary: “${description.slice(0, 180)}”.`
-        : "No sufficiently clear one-sentence business description was found.",
+        ? c.businessDescription.ok(description.slice(0, 180))
+        : c.businessDescription.none,
       description.length >= 40 ? "passing" : "attention",
-      "State who you help, what you provide, and where you operate in one plain sentence."
+      c.businessDescription.rec
     , true, "important"),
     check(
       "4.2",
-      "Question-led answers",
-      hasFaq
-        ? "Question-form headings or FAQ schema were found."
-        : "No question-form headings or FAQ-style answer content was found.",
+      c.questionLed.title,
+      hasFaq ? c.questionLed.ok : c.questionLed.none,
       hasFaq ? "passing" : "attention",
-      "Add concise answers under real customer questions; avoid thin or invented FAQs."
+      c.questionLed.rec
     , true, "important"),
     check(
       "4.3",
-      "Concrete pricing",
-      hasPrice
-        ? "At least one concrete price was found in the visible text."
-        : "No concrete price was found in the visible text.",
+      c.pricing.title,
+      hasPrice ? c.pricing.ok : c.pricing.none,
       hasPrice ? "passing" : "attention",
-      "Where relevant, publish prices, ranges, or a clear explanation of how pricing is calculated."
+      c.pricing.rec
     , true, "minor"),
     check(
       "4.4",
-      "Content freshness",
-      newestYear === null
-        ? "No explicit year was found, so freshness is difficult to verify."
-        : `The newest explicit year found in the page text is ${newestYear}.`,
+      c.freshness.title,
+      newestYear === null ? c.freshness.none : c.freshness.ok(newestYear),
       newestYear === null || newestYear < currentYear - 1 ? "attention" : "passing",
-      "Show clear publish/update dates and review time-sensitive claims regularly."
+      c.freshness.rec
     , true, "minor"),
     check(
       "4.5",
-      "Content concreteness",
+      c.concreteness.title,
       concreteSignals >= 3
-        ? `${concreteSignals} concrete numeric facts or quantified claims were detected.`
-        : `Only ${concreteSignals} concrete numeric facts or quantified claims were detected.`,
+        ? c.concreteness.ok(concreteSignals)
+        : c.concreteness.weak(concreteSignals),
       concreteSignals >= 3 ? "passing" : "attention",
-      "Replace vague adjectives with evidence: numbers, dates, locations, examples, and named outcomes."
+      c.concreteness.rec
     , true, "important"),
   ];
 
   const visibilityChecks = [
     check(
       "5.1",
-      "Entity identification",
-      businessName
-        ? `The site identifies the entity as “${businessName}” in structured metadata.`
-        : "The company could not be identified reliably from structured metadata.",
+      c.entity.title,
+      businessName ? c.entity.ok(businessName) : c.entity.none,
       businessName ? "info" : "na",
-      "Add a consistent organization name in JSON-LD and og:site_name.",
+      c.entity.rec,
       false
     , "minor"),
     check(
       "5.2",
-      "Google Business Profile",
-      hasGoogleBusiness
-        ? "A Google Maps or Business Profile link was found."
-        : "No Google Business Profile link or map embed was found on the homepage.",
+      c.googleBusiness.title,
+      hasGoogleBusiness ? c.googleBusiness.ok : c.googleBusiness.none,
       hasGoogleBusiness ? "info" : "attention",
-      "If the business serves a location, link its verified Google Business Profile.",
+      c.googleBusiness.rec,
       false
     , "minor"),
     check(
       "5.3",
-      "External AI recall",
-      "Brand recall and category recommendation require independent search-provider probes and are not included in this technical scan.",
+      c.externalRecall.title,
+      c.externalRecall.detail,
       "na",
       undefined,
       false
@@ -820,26 +817,26 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   ];
 
   const categories: ReadinessCategory[] = [
-    { id: "access", name: "Access", score: scoreChecks(accessChecks), checks: accessChecks },
+    { id: "access", name: t.categories.access, score: scoreChecks(accessChecks), checks: accessChecks },
     {
       id: "metadata",
-      name: "Metadata",
+      name: t.categories.metadata,
       score: scoreChecks(metadataChecks),
       checks: metadataChecks,
     },
     {
       id: "agent-readiness",
-      name: "Agent readiness",
+      name: t.categories.agent,
       score: scoreChecks(agentChecks),
       checks: agentChecks,
     },
     {
       id: "content-citability",
-      name: "Content citability",
+      name: t.categories.content,
       score: scoreChecks(contentChecks),
       checks: contentChecks,
     },
-    { id: "ai-visibility", name: "AI visibility", score: null, checks: visibilityChecks },
+    { id: "ai-visibility", name: t.categories.visibility, score: null, checks: visibilityChecks },
   ];
   const scoredCategories = categories.filter((category) => category.score !== null);
   const allChecks = categories.flatMap((category) => category.checks);
@@ -861,16 +858,7 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
   const overallScore = criticalFailures.length
     ? Math.min(rawScore, CRITICAL_FAILURE_SCORE_CAP)
     : rawScore;
-  const grade =
-    overallScore >= 90
-      ? "Excellent"
-      : overallScore >= 75
-        ? "Strong"
-        : overallScore >= 60
-          ? "Developing"
-          : overallScore >= 40
-            ? "Needs work"
-            : "High risk";
+  const grade = t.grades[gradeKeyFor(overallScore)];
   const attentionCount = categories
     .flatMap((category) => category.checks)
     .filter((item) => item.scored && ["attention", "missing"].includes(item.status)).length;
@@ -882,12 +870,14 @@ export async function analyzeWebsite(input: string): Promise<WebsiteReadinessRep
     overallScore,
     grade,
     summary: criticalFailures.length
-      ? `${criticalFailures.length} critical ${criticalFailures.length === 1 ? "check is" : "checks are"} failing (${criticalFailures
-          .map((item) => item.title)
-          .join(", ")}). The score is capped at ${CRITICAL_FAILURE_SCORE_CAP} until ${criticalFailures.length === 1 ? "it is" : "they are"} fixed — start there, the rest can wait.`
+      ? t.summary.critical(
+          criticalFailures.length,
+          criticalFailures.map((item) => item.title),
+          CRITICAL_FAILURE_SCORE_CAP
+        )
       : attentionCount
-        ? `${attentionCount} scored checks need attention. Start with missing access and agent-readiness signals, then improve content clarity.`
-        : "The site passes all scored technical and content checks in this scan.",
+        ? t.summary.attention(attentionCount)
+        : t.summary.clean,
     categories,
   };
 }

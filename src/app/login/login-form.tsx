@@ -1,13 +1,25 @@
 "use client"
 
+// ============================================================================
+// File Path: src/app/login/login-form.tsx
+// Why: The sign-in form in v3 "Light" — the kit's labelled fields and button,
+//      a calm staggered reveal. Restyle only: the schema, the NextAuth call,
+//      the error handling and the redirect are exactly as they were.
+// Env / Identity: Client Component
+// ============================================================================
+
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { CircleAlert, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { StepIn, ToolButton, ToolField } from "@/components/v3/tool-kit"
+import { localePath } from "@/lib/nav"
+
+const LOCALE = "en" as const
 
 const formSchema = z.object({
     email: z.string().email("Please enter a valid email."),
@@ -50,72 +62,91 @@ export function LoginForm() {
     return (
         <div className="w-full max-w-sm">
             {/* Title */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-                <p className="text-slate-500 text-sm mt-1">Sign in to your account to continue.</p>
-            </div>
+            <StepIn className="mb-8 flex flex-col gap-2">
+                <h1 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">Welcome back</h1>
+                <p className="text-sm text-v3-mute">Sign in to your account to continue.</p>
+            </StepIn>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                 {/* Email */}
-                <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1.5 tracking-wide uppercase">Email</label>
-                    <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
-                        <input
-                            {...register("email")}
-                            type="email"
-                            autoComplete="email"
-                            autoFocus
-                            placeholder="you@example.com"
-                            className="w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm pl-10 pr-4 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06]"
-                        />
-                    </div>
-                    {errors.email && <p className="text-red-400 text-xs mt-1.5">{errors.email.message}</p>}
-                </div>
+                <StepIn delay={0.08}>
+                    <ToolField
+                        label="Email"
+                        type="email"
+                        autoComplete="email"
+                        autoFocus
+                        placeholder="you@example.com"
+                        error={errors.email?.message}
+                        {...register("email")}
+                    />
+                </StepIn>
 
                 {/* Password */}
-                <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-xs font-medium text-slate-400 tracking-wide uppercase">Password</label>
-                        <Link href="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">Forgot password?</Link>
+                <StepIn delay={0.16}>
+                    <div className="flex flex-col gap-2 text-start">
+                        <div className="flex items-center justify-between gap-3">
+                            <label htmlFor="login-password" className="text-sm font-medium text-v3-soft">Password</label>
+                            <Link
+                                href={localePath(LOCALE, "/forgot-password")}
+                                className="text-sm text-v3-mute underline decoration-v3-line underline-offset-4 transition-colors hover:text-v3-light hover:decoration-v3-light"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
+                        <div className="relative">
+                            <input
+                                id="login-password"
+                                {...register("password")}
+                                type={showPw ? "text" : "password"}
+                                autoComplete="current-password"
+                                placeholder="••••••••"
+                                aria-invalid={errors.password ? true : undefined}
+                                aria-describedby={errors.password ? "login-password-err" : undefined}
+                                className={`h-14 w-full rounded-xl border bg-v3-raise px-4 pe-14 text-base text-v3-bone caret-v3-light placeholder:text-v3-mute/70 transition-colors focus:outline-none focus:ring-2 focus:ring-v3-light/70 ${errors.password ? "border-v3-light" : "border-v3-line focus:border-v3-light/60"}`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPw(p => !p)}
+                                aria-pressed={showPw}
+                                className="absolute inset-y-0 end-0 flex w-14 items-center justify-center rounded-e-xl text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
+                            >
+                                {showPw ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
+                                <span className="sr-only">{showPw ? "Hide password" : "Show password"}</span>
+                            </button>
+                        </div>
+                        {errors.password && (
+                            <p id="login-password-err" className="text-sm text-v3-light">{errors.password.message}</p>
+                        )}
                     </div>
-                    <div className="relative">
-                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
-                        <input
-                            {...register("password")}
-                            type={showPw ? "text" : "password"}
-                            autoComplete="current-password"
-                            placeholder="••••••••"
-                            className="w-full bg-white/[0.04] border border-white/8 rounded-xl text-white placeholder:text-slate-700 text-sm pl-10 pr-10 py-3 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition-all hover:bg-white/[0.06]"
-                        />
-                        <button type="button" onClick={() => setShowPw(p => !p)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
-                            {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                    </div>
-                    {errors.password && <p className="text-red-400 text-xs mt-1.5">{errors.password.message}</p>}
-                </div>
+                </StepIn>
 
                 {/* Error */}
                 {error && (
-                    <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm">
+                    <p role="alert" className="flex items-start gap-2 rounded-xl border border-v3-light/50 bg-v3-light/10 px-4 py-3 text-sm text-v3-light">
+                        <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
                         {error}
-                    </div>
+                    </p>
                 )}
 
                 {/* Submit */}
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full mt-2 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.3)]"
-                >
-                    {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" />Signing in...</> : "Sign In"}
-                </button>
+                <StepIn delay={0.24}>
+                    <ToolButton type="submit" loading={isLoading} className="w-full">
+                        {isLoading ? "Signing in..." : "Sign In"}
+                    </ToolButton>
+                </StepIn>
             </form>
 
-            <p className="text-center text-slate-600 text-sm mt-6">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Create one</Link>
-            </p>
+            <StepIn delay={0.32}>
+                <p className="mt-8 text-center text-sm text-v3-mute">
+                    Don&apos;t have an account?{" "}
+                    <Link
+                        href={localePath(LOCALE, "/register")}
+                        className="text-v3-bone underline decoration-v3-line underline-offset-4 transition-colors hover:text-v3-light hover:decoration-v3-light"
+                    >
+                        Create one
+                    </Link>
+                </p>
+            </StepIn>
         </div>
     )
 }

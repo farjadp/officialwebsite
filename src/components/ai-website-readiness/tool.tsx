@@ -3,9 +3,11 @@
 // ============================================================================
 // File Path: src/components/ai-website-readiness/tool.tsx
 // Why: The AI website readiness audit in the v3 "Light" look. The scan
-//      request, the response handling, usage tracking and every string are
-//      unchanged. Check status is told by icon shape and its label with the
-//      single accent — never by red/amber/green.
+//      request, the response handling and usage tracking are unchanged; every
+//      string now comes from src/data/ai-website-readiness/ui.ts per locale,
+//      and the findings themselves are written by the scanner in the locale
+//      this component asks for. Check status is told by icon shape and its
+//      label with the single accent — never by red/amber/green.
 // Env / Identity: Client Component (rendered inside ToolShell by the page)
 // ============================================================================
 
@@ -28,40 +30,38 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { CheckStatus, WebsiteReadinessReport } from "@/lib/ai-website-readiness";
+import type { AiReadinessLocale } from "@/data/ai-website-readiness/scanner-strings";
+import { getAiReadinessUiStrings } from "@/data/ai-website-readiness/ui";
+import { localePath } from "@/lib/nav";
 import { ScoreRing, StepIn, ToolButton, ToolField } from "@/components/v3/tool-kit";
 
 // Filled light = passing; outlined light = needs work (icon tells which);
 // outlined line = informational. Shape and words carry the meaning.
 const statusConfig: Record<
   CheckStatus,
-  { label: string; icon: typeof Check; className: string; iconClass: string }
+  { icon: typeof Check; className: string; iconClass: string }
 > = {
   passing: {
-    label: "Passing",
     icon: Check,
     className: "border-v3-light/60 text-v3-light",
     iconClass: "bg-v3-light text-v3-ink shadow-[0_0_12px_rgba(232,196,138,0.5)]",
   },
   attention: {
-    label: "Needs attention",
     icon: CircleAlert,
     className: "border-v3-light/60 text-v3-bone",
     iconClass: "border border-v3-light text-v3-light",
   },
   missing: {
-    label: "Missing",
     icon: AlertCircle,
     className: "border-v3-bone/60 bg-v3-bone/5 text-v3-bone",
     iconClass: "border border-dashed border-v3-light text-v3-light",
   },
   info: {
-    label: "For your info",
     icon: Info,
     className: "border-v3-line text-v3-soft",
     iconClass: "border border-v3-line text-v3-soft",
   },
   na: {
-    label: "N/A",
     icon: CircleMinus,
     className: "border-v3-line text-v3-mute",
     iconClass: "border border-v3-line text-v3-mute",
@@ -72,7 +72,12 @@ function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export default function AiWebsiteReadinessTool() {
+export default function AiWebsiteReadinessTool({
+  locale = "en",
+}: {
+  locale?: AiReadinessLocale;
+}) {
+  const ui = getAiReadinessUiStrings(locale);
   const [url, setUrl] = useState("");
   const [report, setReport] = useState<WebsiteReadinessReport | null>(null);
   const [error, setError] = useState("");
@@ -86,10 +91,10 @@ export default function AiWebsiteReadinessTool() {
       const response = await fetch("/api/tools/ai-website-readiness", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, locale }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "The scan could not be completed.");
+      if (!response.ok) throw new Error(data.error || ui.genericError);
       setReport(data);
       fetch("/api/tool-usage", {
         method: "POST",
@@ -102,7 +107,7 @@ export default function AiWebsiteReadinessTool() {
           ?.scrollIntoView({ behavior: prefersReducedMotion() ? "instant" : "smooth", block: "start" })
       );
     } catch (scanError) {
-      setError(scanError instanceof Error ? scanError.message : "The scan could not be completed.");
+      setError(scanError instanceof Error ? scanError.message : ui.genericError);
     } finally {
       setLoading(false);
     }
@@ -116,15 +121,15 @@ export default function AiWebsiteReadinessTool() {
       .slice(0, 5) || [];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" dir={ui.dir}>
       <section className="flex flex-col">
         <StepIn>
           <Link
-            href="/tools"
+            href={localePath(locale, "/tools")}
             className="group mb-12 inline-flex items-center gap-2 text-sm text-v3-mute transition-colors hover:text-v3-light"
           >
-            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden /> Back to
-            Tools Library
+            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
+            {ui.backToTools}
           </Link>
         </StepIn>
 
@@ -132,18 +137,18 @@ export default function AiWebsiteReadinessTool() {
           <div className="flex flex-col gap-6">
             <StepIn>
               <p className="inline-flex items-center gap-2 text-sm text-v3-light">
-                <Bot className="size-4" aria-hidden /> Live website diagnostic
+                <Bot className="size-4" aria-hidden /> {ui.kicker}
               </p>
             </StepIn>
             <StepIn delay={0.08}>
               <h1 className="max-w-4xl font-v3-display text-[clamp(2.5rem,6vw,4.5rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:leading-[1.4] rtl:tracking-normal">
-                Is your website ready <em className="text-v3-light not-italic ltr:italic">for AI?</em>
+                {ui.introTitleLead}{" "}
+                <em className="text-v3-light not-italic ltr:italic">{ui.introTitleAccent}</em>
               </h1>
             </StepIn>
             <StepIn delay={0.16}>
               <p className="max-w-2xl text-lg leading-relaxed text-v3-soft md:text-xl">
-                See whether AI crawlers can access, understand, and cite your website—and get a
-                prioritized plan to improve it.
+                {ui.introBody}
               </p>
             </StepIn>
           </div>
@@ -153,12 +158,12 @@ export default function AiWebsiteReadinessTool() {
                 <ShieldCheck className="size-5" aria-hidden />
               </div>
               <div>
-                <p className="font-medium text-v3-bone">28-point audit</p>
-                <p className="text-xs text-v3-mute">Technical + content signals</p>
+                <p className="font-medium text-v3-bone">{ui.auditCardTitle}</p>
+                <p className="text-xs text-v3-mute">{ui.auditCardSub}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs text-v3-soft">
-              {["Crawler access", "Metadata", "Agent files", "Citability"].map((label) => (
+              {ui.auditCardPoints.map((label) => (
                 <div key={label} className="flex items-center gap-2 rounded-lg border border-v3-line/70 px-3 py-2">
                   <Check className="size-3.5 text-v3-light" aria-hidden />
                   {label}
@@ -176,12 +181,12 @@ export default function AiWebsiteReadinessTool() {
             <div className="min-w-0 flex-1">
               <ToolField
                 id="website-url"
-                label="Website URL"
+                label={ui.urlLabel}
                 type="text"
                 inputMode="url"
                 autoComplete="url"
                 dir="ltr"
-                placeholder="yourwebsite.com"
+                placeholder={ui.urlPlaceholder}
                 value={url}
                 onChange={(event) => setUrl(event.target.value)}
                 disabled={loading}
@@ -195,17 +200,17 @@ export default function AiWebsiteReadinessTool() {
               className="h-14 w-full md:w-auto"
             >
               {loading ? (
-                "Scanning website…"
+                ui.submitting
               ) : (
                 <>
-                  Run free audit <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />
+                  {ui.submit} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />
                 </>
               )}
             </ToolButton>
           </form>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-2 text-xs text-v3-mute">
-            <span>No signup required. Public pages only.</span>
-            <span>Usually takes 10–30 seconds.</span>
+            <span>{ui.formNoteLeft}</span>
+            <span>{ui.formNoteRight}</span>
           </div>
         </StepIn>
         {error && (
@@ -227,10 +232,8 @@ export default function AiWebsiteReadinessTool() {
                 <FileSearch className="size-6 text-v3-light motion-safe:animate-pulse" aria-hidden />
               </div>
               <div>
-                <p className="font-medium text-v3-bone">Reading public website signals</p>
-                <p className="mt-1 text-sm text-v3-mute">
-                  Checking the homepage, robots rules, sitemap, metadata, and agent files…
-                </p>
+                <p className="font-medium text-v3-bone">{ui.loadingTitle}</p>
+                <p className="mt-1 text-sm text-v3-mute">{ui.loadingBody}</p>
               </div>
             </div>
             <div className="mt-7 h-px overflow-hidden bg-v3-line">
@@ -252,10 +255,10 @@ export default function AiWebsiteReadinessTool() {
                       {report.grade}
                     </span>
                     <span className="text-xs text-v3-mute">
-                      Scanned {new Date(report.scannedAt).toLocaleString()}
+                      {ui.scannedAt(new Date(report.scannedAt).toLocaleString(ui.dateLocale))}
                     </span>
                   </div>
-                  <h2 className="font-v3-display text-3xl font-light md:text-4xl">AI readiness report</h2>
+                  <h2 className="font-v3-display text-3xl font-light md:text-4xl">{ui.reportTitle}</h2>
                   <a
                     href={report.finalUrl}
                     target="_blank"
@@ -276,7 +279,7 @@ export default function AiWebsiteReadinessTool() {
                     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "instant" : "smooth" });
                   }}
                 >
-                  <RefreshCw className="size-4" aria-hidden /> Scan another site
+                  <RefreshCw className="size-4" aria-hidden /> {ui.scanAnother}
                 </ToolButton>
               </div>
               <div className="mt-9 grid gap-3 border-t border-v3-line/70 pt-7 sm:grid-cols-2 lg:grid-cols-5">
@@ -290,7 +293,7 @@ export default function AiWebsiteReadinessTool() {
                     <p className="mt-2 font-v3-display text-3xl font-light tabular-nums text-v3-bone" dir="ltr">
                       {category.score === null ? "—" : category.score}
                       <span className="font-v3-body text-xs text-v3-mute">
-                        {category.score === null ? " Not scored" : "/100"}
+                        {category.score === null ? ` ${ui.notScored}` : "/100"}
                       </span>
                     </p>
                   </a>
@@ -305,8 +308,8 @@ export default function AiWebsiteReadinessTool() {
                     <Sparkles className="size-5" aria-hidden />
                   </div>
                   <div>
-                    <h2 className="font-v3-display text-2xl font-light">Your highest-impact fixes</h2>
-                    <p className="text-sm text-v3-soft">Work through these first.</p>
+                    <h2 className="font-v3-display text-2xl font-light">{ui.prioritiesTitle}</h2>
+                    <p className="text-sm text-v3-soft">{ui.prioritiesSub}</p>
                   </div>
                 </div>
                 <ol className="grid gap-3 md:grid-cols-2">
@@ -334,11 +337,11 @@ export default function AiWebsiteReadinessTool() {
                 <div className="flex items-center justify-between gap-4 border-b border-v3-line/80 bg-v3-raise px-6 py-5 md:px-8">
                   <div>
                     <h2 className="font-v3-display text-2xl font-light">{category.name}</h2>
-                    <p className="mt-1 text-xs text-v3-mute">{category.checks.length} signals checked</p>
+                    <p className="mt-1 text-xs text-v3-mute">{ui.signalsChecked(category.checks.length)}</p>
                   </div>
                   <div className="text-end">
                     <p className="font-v3-display text-2xl font-light tabular-nums text-v3-bone" dir="ltr">
-                      {category.score === null ? "Not scored" : `${category.score}/100`}
+                      {category.score === null ? ui.notScored : ui.outOf100(category.score)}
                     </p>
                   </div>
                 </div>
@@ -359,7 +362,7 @@ export default function AiWebsiteReadinessTool() {
                               <span className="text-xs tabular-nums text-v3-mute">{item.id}</span>
                               <h3 className="font-medium text-v3-bone">{item.title}</h3>
                               <span className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${config.className}`}>
-                                {config.label}
+                                {ui.statusLabels[item.status]}
                               </span>
                             </div>
                             <p className="mt-2 text-sm leading-relaxed text-v3-soft">{item.detail}</p>
@@ -368,7 +371,7 @@ export default function AiWebsiteReadinessTool() {
                         </summary>
                         {item.recommendation && (
                           <div className="ms-11 mt-4 rounded-xl border-s border-v3-light/50 bg-v3-raise p-4 text-sm leading-relaxed text-v3-soft">
-                            <strong className="font-medium text-v3-bone">How to improve: </strong>
+                            <strong className="font-medium text-v3-bone">{ui.howToImprove}</strong>
                             {item.recommendation}
                           </div>
                         )}
@@ -380,9 +383,7 @@ export default function AiWebsiteReadinessTool() {
             ))}
 
             <div className="rounded-2xl border border-v3-line/80 p-5 text-xs leading-relaxed text-v3-mute">
-              This report is a point-in-time technical diagnostic, not a guarantee of ranking or
-              inclusion in AI answers. AI visibility also depends on reputation, independent
-              citations, source quality, and the policies of each model or search provider.
+              {ui.disclaimer}
             </div>
           </div>
         </section>

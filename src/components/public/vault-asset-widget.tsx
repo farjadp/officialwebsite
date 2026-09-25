@@ -1,3 +1,10 @@
+// ============================================================================
+// File Path: src/components/public/vault-asset-widget.tsx
+// Why: Loads a Vault asset by id and hands it to the interactive checklist,
+//      which carries the v3 "Light" look. No markup of its own.
+// Env / Identity: React Server Component
+// ============================================================================
+
 import { prisma } from "@/lib/prisma"
 import { InteractiveChecklist } from "./interactive-checklist"
 

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { npiQuestions, QuestionDef } from '@/lib/npi/data';
+import { getNpiQuestions, NpiLocale, QuestionDef } from '@/lib/npi/data';
+import { getNpiUiStrings, NpiAction, NpiUiStrings } from '@/lib/npi/ui';
 import { submitNPIPlanLead } from '@/actions/npi-assessment';
 import { Check, Download } from 'lucide-react';
 import {
@@ -21,15 +22,14 @@ import {
 // --- Schema ---
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
-const leadSchema = z.object({
-  name: z.string().min(2, 'Name is required'),
-  email: z.string().email('Invalid email address'),
-  role: z.string().optional(),
-  agreed: z.boolean(),
-});
-type LeadFormValues = z.infer<typeof leadSchema>;
-
-const PROGRESS_LABELS = ['Intro', 'Narrative', 'Presence', 'Impact', 'Plan'];
+const makeLeadSchema = (ui: NpiUiStrings) =>
+  z.object({
+    name: z.string().min(2, ui.nameRequired),
+    email: z.string().email(ui.emailInvalid),
+    role: z.string().optional(),
+    agreed: z.boolean(),
+  });
+type LeadFormValues = z.infer<ReturnType<typeof makeLeadSchema>>;
 
 /** Back to the top of the tool; instant when the visitor prefers reduced motion. */
 function scrollToTop() {
@@ -117,7 +117,11 @@ function Pillar({ heading, children }: { heading: string; children: React.ReactN
   );
 }
 
-export function NPIAssessmentTool() {
+export function NPIAssessmentTool({ locale = 'en' }: { locale?: NpiLocale }) {
+  const ui = getNpiUiStrings(locale);
+  const questions = useMemo(() => getNpiQuestions(locale), [locale]);
+  const leadSchema = useMemo(() => makeLeadSchema(ui), [ui]);
+
   const [step, setStep] = useState<Step>(1);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -179,10 +183,10 @@ export function NPIAssessmentTool() {
         setStep(6);
         scrollToTop();
       } else {
-        alert("Failed to save. Please try again.");
+        alert(ui.saveFailed);
       }
     } catch (e) {
-      alert("Error submitting. Please check your connection.");
+      alert(ui.submitError);
     } finally {
       setIsSubmitting(false);
     }
@@ -201,7 +205,7 @@ export function NPIAssessmentTool() {
         text={q.question}
         hint={
           q.type === 'multiple' && q.maxSelections ? (
-            <span aria-live="polite">(Choose up to {q.maxSelections}. Selected: {Array.isArray(ans) ? ans.length : 0}/{q.maxSelections})</span>
+            <span aria-live="polite">{ui.choiceHint(q.maxSelections, Array.isArray(ans) ? ans.length : 0)}</span>
           ) : undefined
         }
       >
@@ -248,31 +252,27 @@ export function NPIAssessmentTool() {
           <ToolIntro
             kicker={
               <span className="flex flex-wrap gap-2">
-                <span className="rounded-full border border-v3-light/60 px-4 py-1.5">N · Narrative</span>
-                <span className="rounded-full border border-v3-light/60 px-4 py-1.5">P · Presence</span>
-                <span className="rounded-full border border-v3-light/60 px-4 py-1.5">I · Impact</span>
+                {ui.pillarBadges.map((badge) => (
+                  <span key={badge} className="rounded-full border border-v3-light/60 px-4 py-1.5">{badge}</span>
+                ))}
               </span>
             }
-            title="Build Your Personal Brand Plan in 5 Minutes"
-            lead="Answer 12 questions. Get a free personalized NPI plan — your narrative, your presence system, and your impact targets — in an Excel file you can use starting today."
+            title={ui.introTitle}
+            lead={ui.introLead}
             action={
               <div className="flex w-full flex-col items-start gap-10">
                 <ul className="flex w-full flex-col border-y border-v3-line/70">
-                  {[
-                    { mark: 'N', name: 'Narrative', rest: 'your brand statement, audience, and core themes' },
-                    { mark: 'P', name: 'Presence', rest: 'your weekly visibility system based on your reality' },
-                    { mark: 'I', name: 'Impact', rest: 'the metrics that actually matter for your goal' },
-                  ].map((row) => (
+                  {ui.introRows.map((row) => (
                     <li key={row.mark} className="flex items-baseline gap-5 border-b border-v3-line/70 py-4 last:border-b-0">
                       <span aria-hidden className="w-5 shrink-0 font-v3-display text-2xl leading-none text-v3-light">{row.mark}</span>
-                      <span className="leading-relaxed text-v3-soft rtl:leading-loose"><strong className="font-medium text-v3-bone">{row.name}</strong> — {row.rest}</span>
+                      <span className="leading-relaxed text-v3-soft rtl:leading-loose"><strong className="font-medium text-v3-bone">{row.name}</strong>{ui.introRowSeparator}{row.rest}</span>
                     </li>
                   ))}
                 </ul>
-                <ToolButton onClick={nextStep}>Start Building My Plan →</ToolButton>
+                <ToolButton onClick={nextStep}>{ui.introButton}</ToolButton>
               </div>
             }
-            meta="Used by consultants, founders, and professionals in Canada"
+            meta={ui.introMeta}
           />
         );
 
@@ -280,27 +280,14 @@ export function NPIAssessmentTool() {
       case 3:
       case 4: {
         const stepName = step === 2 ? 'narrative' : step === 3 ? 'presence' : 'impact';
-        const questionsForStep = npiQuestions.filter(q => q.step === stepName);
-
-        let badgeLabel = 'N · Narrative';
-        let subtitle = 'Define what you stand for';
-        let desc = 'These 4 questions build your brand statement and core themes.';
-
-        if (step === 3) {
-          badgeLabel = 'P · Presence';
-          subtitle = 'How you show up consistently';
-          desc = 'These answers build your personal presence system.';
-        } else if (step === 4) {
-          badgeLabel = 'I · Impact';
-          subtitle = 'Define the results that matter';
-          desc = 'These answers determine what you should measure — and what success actually looks like.';
-        }
+        const questionsForStep = questions.filter(q => q.step === stepName);
+        const copy = ui.steps[step - 2];
 
         return (
           <div className="flex flex-col pt-10">
-            <p className="mb-3 text-sm text-v3-light">{badgeLabel}</p>
-            <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight md:text-4xl rtl:leading-snug">{subtitle}</h2>
-            <p className="text-v3-soft">{desc}</p>
+            <p className="mb-3 text-sm text-v3-light">{copy.badge}</p>
+            <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight md:text-4xl rtl:leading-snug">{copy.subtitle}</h2>
+            <p className="text-v3-soft">{copy.desc}</p>
 
             <div className="flex flex-col">
               {questionsForStep.map(renderQuestion)}
@@ -313,37 +300,37 @@ export function NPIAssessmentTool() {
         return (
           <div className="pt-10">
             <ToolPanel>
-              <p className="mb-3 text-sm text-v3-light">Get Your Plan</p>
+              <p className="mb-3 text-sm text-v3-light">{ui.leadKicker}</p>
               <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight rtl:leading-snug">
-                Your personalized NPI plan is ready.
+                {ui.leadTitle}
               </h2>
               <p className="mb-8 leading-relaxed text-v3-soft rtl:leading-loose">
-                Enter your name and email to access your free Excel plan. You will also receive a copy by email.
+                {ui.leadBody}
               </p>
 
               <form id="lead-form" onSubmit={handleSubmit(onSubmitLead)} className="flex flex-col gap-5">
                 <ToolField
-                  label="Full Name *"
+                  label={ui.nameLabel}
                   autoComplete="name"
-                  placeholder="Your full name"
+                  placeholder={ui.namePlaceholder}
                   error={errors.name?.message}
                   {...register("name")}
                 />
 
                 <ToolField
-                  label="Email Address *"
+                  label={ui.emailLabel}
                   type="email"
                   dir="ltr"
                   autoComplete="email"
-                  placeholder="your@email.com"
+                  placeholder={ui.emailPlaceholder}
                   error={errors.email?.message}
                   {...register("email")}
                 />
 
                 <ToolField
-                  label={<>Your Current Role <em className="font-normal text-v3-mute">(optional)</em></>}
+                  label={<>{ui.roleLabel}<em className="font-normal text-v3-mute">{ui.roleOptional}</em></>}
                   autoComplete="organization-title"
-                  placeholder="e.g. Founder, Consultant"
+                  placeholder={ui.rolePlaceholder}
                   {...register("role")}
                 />
 
@@ -358,7 +345,7 @@ export function NPIAssessmentTool() {
                     className="mt-0.5 size-5 shrink-0 cursor-pointer accent-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                   />
                   <span className="text-sm leading-snug text-v3-soft rtl:leading-relaxed">
-                    I agree to receive occasional insights and updates from Farjad Pourmohammad. No spam. Unsubscribe anytime.
+                    {ui.consent}
                   </span>
                 </label>
               </form>
@@ -373,61 +360,36 @@ export function NPIAssessmentTool() {
 
         // The name is collected by the lead form, not stored in `answers`.
         const leadName = (getValues('name') || '').trim();
-        const firstName = leadName ? leadName.split(' ')[0] : 'Your';
-        const knownForHtml = (ansArr('q3').slice(0,2) || []).join(' and ').toLowerCase();
-        const brandStatement = `"I help ${ans('q1') || '...'} ${ans('q2').toLowerCase().replace(/^they /, '')} through ${knownForHtml}."`;
+        const firstName = leadName ? leadName.split(' ')[0] : ui.planFallbackName;
+        const knownForList = ansArr('q3').slice(0, 2).join(ui.knownForJoiner);
+        const knownForHtml = locale === 'en' ? knownForList.toLowerCase() : knownForList;
+        const problem = locale === 'en' ? ans('q2').toLowerCase().replace(/^they /, '') : ans('q2');
+        const brandStatement = ui.brandStatement(ans('q1'), problem, knownForHtml);
 
-        const rhythmMap: Record<string, string> = {
-          'Every day': 'Post daily: rotate short post → story → insight → engagement → repeat.',
-          '3–4 times per week (recommended)': 'Week structure: 2 short posts + 1 long-form + 5 meaningful comments.',
-          '1–2 times per week': '1 strong post per week + 3–5 thoughtful comments on relevant content.',
-          'A few times per month': '2 posts per month minimum + consistent engagement in your community.'
-        };
-        const rhythm = rhythmMap[ans('q6')] || ans('q6') || '';
+        const rhythm = ui.rhythmMap[ans('q6')] || ans('q6') || '';
+        // The "which platform" challenge needs the visitor's first platform, so it
+        // is built at render time rather than stored in the static map.
+        const platformChallenge = getNpiQuestions(locale).find(q => q.id === 'q12')?.options?.[4] ?? '';
+        const metrics = ui.metricsMap[ans('q9')] || ui.metricsFallback;
 
-        const metricsMap: Record<string, string[]> = {
-          'Get more consulting or freelance clients': ['Qualified inbound DMs / week', 'Discovery calls booked / month', 'Referrals received / month'],
-          'Attract investors or partnerships': ['Investor intro conversations / month', 'Partnership meetings / month', 'Warm introductions through content'],
-          'Get speaking invitations': ['Speaking invitations / month', 'Event applications submitted', 'Podcast / guest appearances'],
-          'Build a community or audience': ['Newsletter subscribers (qualified)', 'Engaged comments per post', 'Community members who DM you'],
-          'Find a better job or career opportunity': ['Recruiter / hiring manager outreach', 'Profile views increase', 'Job referrals from network'],
-          'Launch and sell a product or service': ['Content-to-purchase conversions', 'Waitlist signups', 'DMs about your offer'],
-          'Become a recognized thought leader': ['Media mentions / month', 'Invitation to contribute / publish', 'Peer recognition signals']
-        };
-        const metrics = metricsMap[ans('q9')] || ['Inbound opportunities / month', 'Content engagement quality', 'Network growth (qualified)'];
-
-        type Action = { title: string; desc: string };
+        type Action = NpiAction;
         const generateActions = () => {
           const acts: Action[] = [];
 
-          const challenges: Record<string, Action> = {
-            'I do not know what to say or stand for': { title: 'Use your brand statement as your LinkedIn headline.', desc: " The statement in your plan above — put it on your profile today. Not tomorrow. Today." },
-            'I do not show up consistently enough': { title: 'Commit to one post this week — just one.', desc: " Forget streaks and consistency goals for now. Publish one strong thing. Build the habit from there." },
-            'I get attention but no real results': { title: 'Add a clear call to action to your next 3 posts.', desc: " End each post with one sentence that invites a specific response: a DM, a comment, a booking." },
-            'I do not have time': { title: 'Block 45 minutes every Sunday for your NPI review.', desc: " That is all you need. Plan the week's content in 20 minutes. Update your tracker in 15. Reflect in 10." },
-            'I do not know which platform to focus on': { title: 'Pick one platform and commit to it for 60 days.', desc: ` Based on your answers, start with ${(ansArr('q5')[0] || 'LinkedIn')}. Master one before adding another.` },
-            'I am starting from zero': { title: 'Start by documenting, not creating.', desc: " Share what you are learning and doing. You do not need expertise to start — you need honesty." }
-          };
-          if (challenges[ans('q12')]) acts.push(challenges[ans('q12')]);
-
-          const goals: Record<string, Action> = {
-            'Get more consulting or freelance clients': { title: 'Reach out to 3 warm contacts this week.', desc: " No pitch. Just a genuine check-in or share something relevant to them. Relationship before transaction." },
-            'Attract investors or partnerships': { title: 'Write one post about a real problem you are solving.', desc: " Not your solution — the problem. Investors and partners lean in when they recognize the pain." },
-            'Get speaking invitations': { title: 'Comment thoughtfully on 5 event organizer or host posts this week.', desc: " Be visible in the right spaces before you ask to be on stage." },
-            'Build a community or audience': { title: 'Reply to every comment you get for the next 30 days.', desc: " Community is built in the replies, not in the posts." },
-          };
-          if (goals[ans('q9')]) acts.push(goals[ans('q9')]);
-
-          const consistencies: Record<string, Action> = {
-            'Very consistent — I posted regularly': { title: 'Your next step is quality over quantity.', desc: " You show up — good. Now ask: does each piece of content tie directly to one of your 5 themes?" },
-            'Inconsistent — I started and stopped': { title: 'Lower the bar to make consistency possible.', desc: " A system you keep for 9 months beats a sprint that lasts 9 days. Cut your target in half if needed." },
-            'Not active — I am starting now': { title: 'Publish your first post this week.', desc: " Share your brand statement from this plan as a LinkedIn post. Say who you help and why it matters. That is post one." },
-          };
-          if (consistencies[ans('q8')]) acts.push(consistencies[ans('q8')]);
-
-          if (acts.length < 3) {
-            acts.push({ title: 'Open your NPI Excel plan and fill in your Pipeline sheet.', desc: " List every warm contact you have. Then identify the top 3 people."});
+          const challenge = ui.challengeActions[ans('q12')];
+          if (challenge) {
+            acts.push(challenge);
+          } else if (ans('q12') && ans('q12') === platformChallenge) {
+            acts.push(ui.platformAction(ansArr('q5')[0] || ui.defaultPlatform));
           }
+
+          const goal = ui.goalActions[ans('q9')];
+          if (goal) acts.push(goal);
+
+          const consistency = ui.consistencyActions[ans('q8')];
+          if (consistency) acts.push(consistency);
+
+          if (acts.length < 3) acts.push(ui.fallbackAction);
           return acts.slice(0, 3);
         };
         const actions = generateActions();
@@ -435,44 +397,44 @@ export function NPIAssessmentTool() {
         return (
           <div className="flex w-full flex-col gap-6 py-8 md:py-12">
             <div className="flex flex-col gap-3 border-b border-v3-line pb-10 text-center">
-              <p className="text-sm text-v3-light">Your NPI Plan</p>
-              <h1 className="font-v3-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] rtl:leading-[1.4]">{firstName}&apos;s Personal Brand Plan</h1>
-              <p className="text-sm text-v3-mute">Built with the NPI Framework · {new Date().toLocaleDateString('en-CA', {year:'numeric',month:'long',day:'numeric'})}</p>
+              <p className="text-sm text-v3-light">{ui.planKicker}</p>
+              <h1 className="font-v3-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] rtl:leading-[1.4]">{ui.planHeading(firstName)}</h1>
+              <p className="text-sm text-v3-mute">{ui.planBuiltWith}{new Date().toLocaleDateString(ui.dateLocale, {year:'numeric',month:'long',day:'numeric'})}</p>
             </div>
 
             {/* Narrative */}
-            <Pillar heading="N · NARRATIVE — What you stand for">
+            <Pillar heading={ui.narrativeHeading}>
               <blockquote className="mb-4 border-s-2 border-v3-light ps-5 font-v3-display text-xl font-light italic leading-relaxed text-v3-bone rtl:not-italic rtl:leading-loose">
                 {brandStatement}
               </blockquote>
               <dl>
-                <Row label="Target Audience">{ans('q1')}</Row>
-                <Row label="Known For"><Tags items={ansArr('q3')} /></Row>
-                <Row label="Core Themes"><Tags items={ansArr('q4')} /></Row>
+                <Row label={ui.rowAudience}>{ans('q1')}</Row>
+                <Row label={ui.rowKnownFor}><Tags items={ansArr('q3')} /></Row>
+                <Row label={ui.rowThemes}><Tags items={ansArr('q4')} /></Row>
               </dl>
             </Pillar>
 
             {/* Presence */}
-            <Pillar heading="P · PRESENCE — How you show up">
+            <Pillar heading={ui.presenceHeading}>
               <dl>
-                <Row label="Main Platforms"><Tags items={ansArr('q5')} /></Row>
-                <Row label="Frequency">{ans('q6')}</Row>
-                <Row label="Formats"><Tags items={ansArr('q7')} /></Row>
-                <Row label="Weekly Rhythm">{rhythm}</Row>
+                <Row label={ui.rowPlatforms}><Tags items={ansArr('q5')} /></Row>
+                <Row label={ui.rowFrequency}>{ans('q6')}</Row>
+                <Row label={ui.rowFormats}><Tags items={ansArr('q7')} /></Row>
+                <Row label={ui.rowRhythm}>{rhythm}</Row>
               </dl>
             </Pillar>
 
             {/* Impact */}
-            <Pillar heading="I · IMPACT — What you measure">
+            <Pillar heading={ui.impactHeading}>
               <dl>
-                <Row label="Primary Goal">{ans('q9')}</Row>
-                <Row label="90-Day Target">{ans('q10')}</Row>
-                <Row label="Key Metrics"><Tags items={metrics} /></Row>
+                <Row label={ui.rowGoal}>{ans('q9')}</Row>
+                <Row label={ui.rowTarget}>{ans('q10')}</Row>
+                <Row label={ui.rowMetrics}><Tags items={metrics} /></Row>
               </dl>
             </Pillar>
 
             {/* Actions */}
-            <Pillar heading="⚡ YOUR NEXT 3 ACTIONS — Start this week">
+            <Pillar heading={ui.actionsHeading}>
               <ol className="flex flex-col">
                 {actions.map((ac, i) => (
                   <li key={i} className="flex items-start gap-5 border-b border-v3-line/60 py-4 last:border-b-0">
@@ -488,8 +450,8 @@ export function NPIAssessmentTool() {
 
             {/* Download Output */}
             <ToolPanel className="mt-4 text-center">
-              <h3 className="mb-3 font-v3-display text-2xl font-light">📥 Download Your Personalized NPI Excel Plan</h3>
-              <p className="mx-auto mb-6 max-w-xl leading-relaxed text-v3-soft rtl:leading-loose">Get your complete NPI operating system — Narrative, Weekly Tracker, Impact Log, and Pipeline — pre-filled with your answers.</p>
+              <h3 className="mb-3 font-v3-display text-2xl font-light">{ui.downloadHeading}</h3>
+              <p className="mx-auto mb-6 max-w-xl leading-relaxed text-v3-soft rtl:leading-loose">{ui.downloadBody}</p>
 
               {downloadUrl && (
                 <a
@@ -498,14 +460,14 @@ export function NPIAssessmentTool() {
                   className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-v3-bone px-7 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-raise"
                 >
                   <Download className="h-4 w-4" aria-hidden />
-                  Download My NPI Plan (.xlsx)
+                  {ui.downloadButton}
                 </a>
               )}
             </ToolPanel>
 
             <div className="mt-4 border-t border-v3-line pt-6 text-center text-sm leading-relaxed text-v3-mute">
-              Built on the NPI Framework by <strong className="font-medium text-v3-soft">Farjad Pourmohammad</strong> — Business Consultant, Toronto<br/>
-              <a href="https://farjadp.info" target="_blank" rel="noopener" className="font-medium text-v3-light underline-offset-4 hover:underline">farjadp.info</a> · Book a free strategy session
+              {ui.footerLead}<strong className="font-medium text-v3-soft">{ui.footerName}</strong>{ui.footerRole}<br/>
+              <a href="https://farjadp.info" target="_blank" rel="noopener" className="font-medium text-v3-light underline-offset-4 hover:underline" dir="ltr">farjadp.info</a>{ui.footerCta}
             </div>
           </div>
         );
@@ -519,7 +481,7 @@ export function NPIAssessmentTool() {
         <ToolProgress
           label={
             <ol className="flex flex-wrap gap-x-4 gap-y-1">
-              {PROGRESS_LABELS.map((l, i) => (
+              {ui.progressLabels.map((l, i) => (
                 <li
                   key={l}
                   aria-current={i + 1 === step ? 'step' : undefined}
@@ -542,16 +504,16 @@ export function NPIAssessmentTool() {
       {step > 1 && step < 6 && (
         <div className="flex items-center gap-3 pt-10">
           <ToolButton variant="quiet" onClick={prevStep}>
-            ← Back
+            {ui.back}
           </ToolButton>
 
           {step < 5 ? (
             <ToolButton className="flex-1" onClick={nextStep} disabled={!isStepValid()}>
-              {step === 4 ? 'Almost Done →' : 'Next →'}
+              {step === 4 ? ui.almostDone : ui.next}
             </ToolButton>
           ) : (
             <ToolButton className="flex-1" onClick={handleSubmit(onSubmitLead)} loading={isSubmitting}>
-              {isSubmitting ? 'Building your plan...' : 'Get My Free NPI Plan →'}
+              {isSubmitting ? ui.submitCtaLoading : ui.submitCta}
             </ToolButton>
           )}
         </div>

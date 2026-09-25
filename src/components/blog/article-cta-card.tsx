@@ -1,7 +1,18 @@
-import React from "react"
+// ============================================================================
+// File Path: src/components/blog/article-cta-card.tsx
+// Why: The closing invitation under an article, in the v3 "Light" look — a
+//      v3 card on the warm charcoal ground with one accent, instead of the
+//      old near-black slab with its green and amber glows.
+//
+//      The copy is the v2 card's, verbatim in both languages. Internal links
+//      go through localePath so the Persian card never leaks to /booking.
+// Env / Identity: React Server Component
+// ============================================================================
+
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Calendar, Linkedin, ArrowRight } from "lucide-react"
+import { Calendar, Linkedin, ArrowLeft, ArrowRight } from "lucide-react"
+import { localePath } from "@/lib/nav"
+import { Reveal } from "@/components/v3/motion"
 
 interface ArticleCtaCardProps {
     locale?: "en" | "fa"
@@ -30,56 +41,49 @@ export function ArticleCtaCard({ locale = "en" }: ArticleCtaCardProps) {
     }
 
     const dict = isFa ? content.fa : content.en
+    const Arrow = isFa ? ArrowLeft : ArrowRight
 
     return (
-        <div 
-            className="my-16 bg-[#111827] text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-stone-800 relative overflow-hidden text-left"
-            dir={isFa ? "rtl" : "ltr"}
-        >
-            {/* Ambient Background Glows */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-[#1B4B43] rounded-full blur-[100px] opacity-20 pointer-events-none translate-x-1/3 -translate-y-1/3" />
-            <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#D97706] rounded-full blur-[80px] opacity-10 pointer-events-none -translate-x-1/3 translate-y-1/3" />
-
-            <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
-                <div className={`space-y-4 max-w-xl ${isFa ? "text-right" : "text-left"}`}>
-                    <span className="inline-block px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/5 border border-white/10 rounded-full text-[#D97706]">
+        <Reveal className="my-16">
+            <div
+                dir={isFa ? "rtl" : "ltr"}
+                className="flex flex-col items-start justify-between gap-8 rounded-2xl border border-v3-line/80 bg-v3-raise p-8 text-start transition-all duration-500 hover:-translate-y-1 hover:border-v3-light/60 md:flex-row md:items-center md:p-12"
+            >
+                <div className="flex max-w-xl flex-col gap-4">
+                    <span className="inline-flex w-fit rounded-full border border-v3-light/40 px-3.5 py-1 text-[10px] uppercase tracking-[0.18em] text-v3-light">
                         {dict.badge}
                     </span>
-                    <h3 className="font-serif text-3xl md:text-4xl font-bold leading-tight tracking-tight">
+                    <h3 className="font-v3-display text-3xl font-light leading-tight tracking-[-0.015em] text-v3-bone md:text-4xl rtl:leading-snug rtl:tracking-normal">
                         {dict.headline}
                     </h3>
-                    <p className="text-stone-400 text-base md:text-lg leading-relaxed font-light">
+                    <p className="text-base leading-relaxed text-v3-soft md:text-lg rtl:leading-loose">
                         {dict.description}
                     </p>
-                    <p className="text-xs text-stone-500 font-mono tracking-wider pt-2">
+                    <p className="pt-2 text-xs tracking-wider text-v3-mute">
                         {dict.footerText}
                     </p>
                 </div>
 
-                <div className="flex flex-col gap-3.5 w-full md:w-auto shrink-0">
-                    <Link href={isFa ? "/fa/booking" : "/booking"} className="w-full">
-                        <Button className="w-full bg-[#1B4B43] hover:bg-[#133832] text-white h-14 px-8 text-base font-semibold rounded-2xl shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            {dict.bookBtn}
-                            {!isFa && <ArrowRight className="w-4 h-4" />}
-                        </Button>
-                    </Link>
-                    <a 
-                        href="https://www.linkedin.com/in/farjadpourmohammad/" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="w-full"
+                <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto">
+                    <Link
+                        href={localePath(locale, "/booking")}
+                        className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-v3-bone px-8 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink"
                     >
-                        <Button 
-                            variant="outline" 
-                            className="w-full border-stone-800 text-stone-300 hover:text-white hover:bg-white/5 h-14 px-8 text-base font-semibold rounded-2xl transition-all flex items-center justify-center gap-2"
-                        >
-                            <Linkedin className="w-4 h-4 text-[#0A66C2]" />
-                            {dict.linkedinBtn}
-                        </Button>
+                        <Calendar className="h-4 w-4" aria-hidden />
+                        {dict.bookBtn}
+                        <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden />
+                    </Link>
+                    <a
+                        href="https://www.linkedin.com/in/farjadpourmohammad/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full border border-v3-bone/60 px-8 font-medium text-v3-bone transition-all duration-300 hover:-translate-y-0.5 hover:border-v3-light hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink"
+                    >
+                        <Linkedin className="h-4 w-4" aria-hidden />
+                        {dict.linkedinBtn}
                     </a>
                 </div>
             </div>
-        </div>
+        </Reveal>
     )
 }

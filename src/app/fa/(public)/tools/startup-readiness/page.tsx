@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function StartupReadinessPage() {
     return (
         <ToolShell>
-            <StartupReadinessTool />
+            <StartupReadinessTool locale="fa" />
         </ToolShell>
     );
 }
