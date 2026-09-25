@@ -18,7 +18,7 @@ import {
   Reveal,
   RoleSwitcher,
   Spotlight,
-} from "./motion"
+} from "@/components/v3/motion"
 
 export type HomePost = {
   slug: string

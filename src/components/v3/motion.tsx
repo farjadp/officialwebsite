@@ -1,8 +1,8 @@
 "use client"
 
 // ============================================================================
-// File Path: src/components/home/v3/motion.tsx
-// Why: The client leaves of the v3 home. The page stays a server component
+// File Path: src/components/v3/motion.tsx
+// Why: The v3 motion primitives, shared by the home and every v3 page. Pages stay server components
 //      so every word is in the HTML; only these pieces run in the browser.
 //      All of them respect prefers-reduced-motion and render their final,
 //      readable state on the server.
@@ -22,7 +22,7 @@ import {
 } from "framer-motion"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import type { Locale, Role } from "./copy"
+import type { Locale, Role } from "@/components/home/v3/copy"
 
 const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const ROTATE_MS = 6000
@@ -266,18 +266,22 @@ export function Reveal({
   children,
   className,
   delay = 0,
+  immediate = false,
 }: {
   children: ReactNode
   className?: string
   delay?: number
+  /** Animate on mount instead of on scroll — for content at the top of a page. */
+  immediate?: boolean
 }) {
   const reduce = useReducedMotion()
   return (
     <motion.div
       className={className}
       initial={reduce ? false : { opacity: 0, y: 26 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+      {...(immediate
+        ? { animate: { opacity: 1, y: 0 } }
+        : { whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "0px 0px -12% 0px" } })}
       transition={{ duration: 0.75, delay, ease: ARRIVE }}
     >
       {children}
