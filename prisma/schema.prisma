@@ -86,6 +86,12 @@ model Post {
   series      Series? @relation(fields: [seriesId], references: [id])
   seriesOrder Int? // Order within the series
 
+  // ─── Content engine (CONTENT_ENGINE.md) ───────────────────────────────────
+  locale             String  @default("en") // "en" | "fa"
+  translationGroupId String? // pairs the en/fa versions of one article
+  embedding          Float[] @default([]) // text-embedding-3-small, for the duplicate guard
+  contentJobId       String? // provenance: which ContentJob produced this
+
   // Relations
   categories Category[]
   tags       Tag[]
@@ -93,6 +99,9 @@ model Post {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([locale, status])
+  @@index([translationGroupId])
 }
 
 model Category {
@@ -910,4 +919,97 @@ model DmarcRecord {
 
   @@index([reportId])
   @@index([sourceIp])
+}
+
+// ============================================================================
+// Content Engine
+// Why: a cron-driven pipeline that turns external trend signals into bilingual,
+//      reviewed, illustrated articles. Spec: CONTENT_ENGINE.md
+// State lives here because one cron tick performs exactly one transition — a
+// Vercel function cannot hold the whole chain.
+// No Postgres enums: kinds and states are TEXT with the union in a comment,
+// following PerkOffer, so a new state is a code change rather than production
+// DDL.
+// ============================================================================
+
+model ContentSource {
+  id    String  @id @default(cuid())
+  kind  String // "RSS" | "HN" | "REDDIT" | "URL" | "PDF"
+  label String // "Medium · AI", "Lenny's Newsletter"
+  url   String? // null only for PDF
+
+  fileUrl String? // blob URL, PDF only
+  weight  Int     @default(1) // multiplies a signal's score
+  enabled Boolean @default(true)
+
+  // URL and PDF sources are reference material for briefs. They never produce
+  // trend signals — a document does not trend.
+  isReference Boolean @default(false)
+
+  lastFetchedAt DateTime?
+  lastError     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  signals ContentSignal[]
+
+  @@index([kind, enabled])
+}
+
+model ContentSignal {
+  id       String        @id @default(cuid())
+  sourceId String
+  source   ContentSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  // sha256 of the URL with tracking parameters stripped: the same story from
+  // two feeds collapses to one row.
+  fingerprint String @unique
+
+  title       String
+  url         String
+  summary     String?
+  author      String?
+  publishedAt DateTime?
+  engagement  Int       @default(0) // upvotes, comments, claps where available
+  score       Float     @default(0)
+  clusterKey  String? // signals sharing a theme share this
+  used        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  @@index([used, score])
+  @@index([clusterKey])
+}
+
+model ContentJob {
+  id String @id @default(cuid())
+
+  // SCOUTED BRIEFED DRAFTED SEO_PASS REVIEW REVISING
+  // FA_DRAFT FA_REVIEW ART READY PUBLISHED NEEDS_HUMAN FAILED
+  state String @default("SCOUTED")
+
+  signalIds String[] @default([]) // the cluster this job came from
+  brief     Json?
+
+  enPostId String?
+  faPostId String?
+
+  iteration   Int  @default(0) // review loop counter
+  attempts    Int  @default(0) // transport failures on the current state
+  seoScore    Int?
+  reviewScore Int?
+  faScore     Int?
+  costCents   Int  @default(0)
+
+  // Append-only: { at, state, agent, model, tokens, ms, note }
+  trace Json @default("[]")
+
+  error String?
+
+  // 5-minute lease, so overlapping cron invocations are harmless.
+  lockedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([state, lockedAt])
 }
