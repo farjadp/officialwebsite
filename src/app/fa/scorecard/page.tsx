@@ -3,8 +3,8 @@
 // Why: The standalone Business Autonomy Score page. Page chrome in the v3
 //      "Light" look so the widget is no longer a card floating on cream.
 //
-//      NOTE: ScorecardWidget itself is English-only — the quiz copy has no
-//      Persian translation, so this route renders English inside /fa.
+//      The widget reads Persian here: the copy lives in src/data/scorecard,
+//      the scoring does not change with the locale.
 // Env / Identity: React Server Component
 // ============================================================================
 
@@ -24,7 +24,7 @@ export default function ScorecardPage() {
                     className="v3-beam pointer-events-none absolute -top-1/4 start-0 -z-10 h-[160%] w-72 bg-linear-to-r from-transparent via-v3-light/[0.06] to-transparent"
                 />
                 <div className="w-full max-w-3xl">
-                    <ScorecardWidget />
+                    <ScorecardWidget locale="fa" />
                 </div>
             </div>
         </V3Page>

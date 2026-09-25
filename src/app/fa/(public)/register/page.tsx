@@ -13,8 +13,8 @@ import { RegisterForm } from "./register-form"
 export const metadata = {
     robots: NOINDEX,
     alternates: localeAlternates("/register", "fa"),
-    title: "Create Account | farjadp.info",
-    description: "Sign up for a new account.",
+    title: "ایجاد حساب کاربری",
+    description: "ثبت‌نام و ساخت حساب کاربری جدید.",
 }
 
 export default function RegisterPage() {
@@ -29,10 +29,10 @@ export default function RegisterPage() {
                         farjadp.info
                     </span>
                     <h2 className="font-v3-display text-4xl font-light leading-[1.05] tracking-[-0.015em] md:text-5xl rtl:leading-[1.4] rtl:tracking-normal">
-                        Start your<br />journey here.
+                        سفرتان را<br />از اینجا شروع کنید.
                     </h2>
                     <p className="max-w-sm text-lg leading-relaxed text-v3-soft rtl:leading-loose">
-                        Create a free account to explore all content, tools, and resources available on the platform.
+                        برای دسترسی به همه‌ی محتوا، ابزارها و منابع این پلتفرم یک حساب کاربری رایگان بسازید.
                     </p>
                 </div>
             </div>

@@ -13,7 +13,7 @@ import { RegisterForm } from "./register-form"
 export const metadata = {
     robots: NOINDEX,
     alternates: localeAlternates("/register", "en"),
-    title: "Create Account | farjadp.info",
+    title: "Create Account",
     description: "Sign up for a new account.",
 }
 

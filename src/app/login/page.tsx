@@ -13,7 +13,7 @@ import { LoginForm } from "./login-form"
 export const metadata = {
     robots: NOINDEX,
     alternates: localeAlternates("/login", "en"),
-    title: "Sign In | farjadp.info",
+    title: "Sign In",
 }
 
 export default function LoginPage() {

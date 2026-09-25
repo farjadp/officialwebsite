@@ -22,8 +22,8 @@ import { localePath } from "@/lib/nav"
 const LOCALE = "fa" as const
 
 const formSchema = z.object({
-    email: z.string().email("Please enter a valid email."),
-    password: z.string().min(1, "Password is required."),
+    email: z.string().email("یک ایمیل معتبر وارد کنید."),
+    password: z.string().min(1, "رمز عبور را وارد کنید."),
 })
 
 export function LoginForm() {
@@ -47,13 +47,13 @@ export function LoginForm() {
                 password: values.password,
             })
             if (res?.error) {
-                setError("Incorrect email or password. Please try again.")
+                setError("ایمیل یا رمز عبور درست نیست. دوباره تلاش کنید.")
             } else {
-                router.push("/admin")
+                router.push("/fa/profile")
                 router.refresh()
             }
         } catch {
-            setError("Connection error. Please try again.")
+            setError("خطا در ارتباط. دوباره تلاش کنید.")
         } finally {
             setIsLoading(false)
         }
@@ -63,15 +63,15 @@ export function LoginForm() {
         <div className="w-full max-w-sm">
             {/* Title */}
             <StepIn className="mb-8 flex flex-col gap-2">
-                <h1 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">Welcome back</h1>
-                <p className="text-sm text-v3-mute">Sign in to your account to continue.</p>
+                <h1 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">دوباره خوش آمدید</h1>
+                <p className="text-sm text-v3-mute">برای ادامه وارد حساب کاربری‌تان شوید.</p>
             </StepIn>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                 {/* Email */}
                 <StepIn delay={0.08}>
                     <ToolField
-                        label="Email"
+                        label="ایمیل"
                         type="email"
                         dir="ltr"
                         autoComplete="email"
@@ -85,15 +85,7 @@ export function LoginForm() {
                 {/* Password */}
                 <StepIn delay={0.16}>
                     <div className="flex flex-col gap-2 text-start">
-                        <div className="flex items-center justify-between gap-3">
-                            <label htmlFor="login-password" className="text-sm font-medium text-v3-soft">Password</label>
-                            <Link
-                                href={localePath(LOCALE, "/forgot-password")}
-                                className="text-sm text-v3-mute underline decoration-v3-line underline-offset-4 transition-colors hover:text-v3-light hover:decoration-v3-light"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
+                        <label htmlFor="login-password" className="text-sm font-medium text-v3-soft">رمز عبور</label>
                         <div className="relative">
                             <input
                                 id="login-password"
@@ -113,7 +105,7 @@ export function LoginForm() {
                                 className="absolute inset-y-0 end-0 flex w-14 items-center justify-center rounded-e-xl text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                             >
                                 {showPw ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
-                                <span className="sr-only">{showPw ? "Hide password" : "Show password"}</span>
+                                <span className="sr-only">{showPw ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}</span>
                             </button>
                         </div>
                         {errors.password && (
@@ -133,19 +125,19 @@ export function LoginForm() {
                 {/* Submit */}
                 <StepIn delay={0.24}>
                     <ToolButton type="submit" loading={isLoading} className="w-full">
-                        {isLoading ? "Signing in..." : "Sign In"}
+                        {isLoading ? "در حال ورود…" : "ورود"}
                     </ToolButton>
                 </StepIn>
             </form>
 
             <StepIn delay={0.32}>
                 <p className="mt-8 text-center text-sm text-v3-mute">
-                    Don&apos;t have an account?{" "}
+                    حساب کاربری ندارید؟{" "}
                     <Link
                         href={localePath(LOCALE, "/register")}
                         className="text-v3-bone underline decoration-v3-line underline-offset-4 transition-colors hover:text-v3-light hover:decoration-v3-light"
                     >
-                        Create one
+                        ایجاد حساب
                     </Link>
                 </p>
             </StepIn>

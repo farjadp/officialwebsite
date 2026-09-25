@@ -84,15 +84,7 @@ export function LoginForm() {
                 {/* Password */}
                 <StepIn delay={0.16}>
                     <div className="flex flex-col gap-2 text-start">
-                        <div className="flex items-center justify-between gap-3">
-                            <label htmlFor="login-password" className="text-sm font-medium text-v3-soft">Password</label>
-                            <Link
-                                href={localePath(LOCALE, "/forgot-password")}
-                                className="text-sm text-v3-mute underline decoration-v3-line underline-offset-4 transition-colors hover:text-v3-light hover:decoration-v3-light"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
+                        <label htmlFor="login-password" className="text-sm font-medium text-v3-soft">Password</label>
                         <div className="relative">
                             <input
                                 id="login-password"

@@ -4,9 +4,9 @@
 //      for both locales so they cannot drift apart. The words are the v2
 //      pages' own, carried over as they were; the entries still come from
 //      each route's own data.ts. Only the look changed.
-//      Note: the v2 Persian page carried the English interface copy (hero,
-//      labels) — only "Visit" and "Case Study" were translated. That is kept
-//      as found; translating it is a content decision, not a restyle.
+//      The interface copy is per-locale (COPY below): hero, field labels,
+//      category names and the visibility chip. `category` and `visibility`
+//      stay English in both data files because they are keys, not copy.
 //      All panels are now rendered on the server (v2 rendered only the active
 //      one on the client); ./portfolio-tabs just toggles which is visible.
 // Env / Identity: React Server Component; client leaves in ./portfolio-tabs
@@ -43,6 +43,8 @@ type Copy = {
   source: string
   visit: string
   caseStudy: string
+  categories: Record<PortfolioCategory, string>
+  visibility: Record<"Public" | "Private", string>
 }
 
 const COPY: Record<Locale, Copy> = {
@@ -58,19 +60,31 @@ const COPY: Record<Locale, Copy> = {
     source: "Source",
     visit: "Visit",
     caseStudy: "Case Study",
+    categories: {
+      "My Startups": "My Startups",
+      "Companies & Ventures": "Companies & Ventures",
+      "GitHub Projects": "GitHub Projects",
+    },
+    visibility: { Public: "Public", Private: "Private" },
   },
   fa: {
-    kicker: "Systems & Outcomes",
-    title: "Selected Works &",
-    accent: "Honest Execution",
-    lead: "A curated archive of companies launched, systems architected, and technical projects shipped. Zero fluff.",
-    role: "Role:",
-    context: "The Context",
-    contribution: "Contribution",
-    outcome: "Outcome",
-    source: "Source",
+    kicker: "سامانه‌ها و نتیجه‌ها",
+    title: "کارهای منتخب و",
+    accent: "اجرای صادقانه",
+    lead: "آرشیوی گزیده از شرکت‌هایی که راه افتادند، سامانه‌هایی که معماری شدند و پروژه‌های فنی‌ای که به سرانجام رسیدند. بدون حرف اضافه.",
+    role: "نقش:",
+    context: "زمینه",
+    contribution: "مشارکت",
+    outcome: "نتیجه",
+    source: "کد منبع",
     visit: "مشاهده",
     caseStudy: "بررسی موردی",
+    categories: {
+      "My Startups": "استارتاپ‌های من",
+      "Companies & Ventures": "شرکت‌ها و کسب‌وکارها",
+      "GitHub Projects": "پروژه‌های GitHub",
+    },
+    visibility: { Public: "عمومی", Private: "خصوصی" },
   },
 }
 
@@ -123,7 +137,7 @@ export function PortfolioIndex({ locale }: { locale: Locale }) {
           <CategoryIcon category={category} className="h-6 w-6 text-v3-light" />
         </span>
         <Headline as="h2" size="section" className="md:text-5xl">
-          {category}
+          {t.categories[category]}
         </Headline>
       </div>
 
@@ -143,7 +157,7 @@ export function PortfolioIndex({ locale }: { locale: Locale }) {
                   className="group relative grid grid-cols-[4.5rem_1fr] gap-6 py-8 md:grid-cols-[7.5rem_1fr] md:gap-10"
                 >
                   <span className="text-sm tabular-nums text-v3-mute md:font-v3-display md:text-lg">
-                    <span dir="ltr">{s.years}</span>
+                    <span dir={locale === "fa" ? undefined : "ltr"}>{s.years}</span>
                   </span>
                   <span
                     aria-hidden
@@ -206,7 +220,7 @@ export function PortfolioIndex({ locale }: { locale: Locale }) {
                     {item.visibility && (
                       <Chip className={`shrink-0 gap-1.5 ${item.visibility === "Private" ? "text-v3-mute" : ""}`}>
                         {item.visibility === "Private" && <Lock className="h-3 w-3" aria-hidden />}
-                        {item.visibility}
+                        {t.visibility[item.visibility]}
                       </Chip>
                     )}
                   </div>
@@ -280,7 +294,7 @@ export function PortfolioIndex({ locale }: { locale: Locale }) {
     <V3Page>
       <PageHero kicker={t.kicker} title={t.title} accent={t.accent} lead={t.lead} />
       <div className="mx-auto w-full max-w-[1600px] px-5 py-16 md:px-10 md:py-20 lg:px-14">
-        <PortfolioTabs labels={shown} panels={panels} />
+        <PortfolioTabs labels={shown.map((c) => t.categories[c])} panels={panels} />
       </div>
     </V3Page>
   )

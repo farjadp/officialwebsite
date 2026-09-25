@@ -1,7 +1,11 @@
 // ============================================================================
 // Hardware Source: data.ts
-// Version: 3.0.0 — 2026-03-07
-// Why: Static content payload provider for unified portfolio
+// Version: 3.1.0 — 2026-09-25
+// Why: Static content payload provider for unified portfolio (Persian locale).
+//      The prose is Persian; `category`, `status` and `visibility` stay English
+//      because they are keys, not copy — their labels live per-locale in
+//      components/v3/pages/portfolio.tsx. ids, order and structure match
+//      src/app/(public)/portfolio/data.ts exactly.
 // Env / Identity: TypeScript Module
 // ============================================================================
 
@@ -31,7 +35,7 @@ export type PortfolioItem = {
     visibility?: "Public" | "Private";
     tags?: string[];
     yearRange?: string;
-    
+
     // Case Study Specifics
     diagnosis?: string;
     proposedStrategy?: string[];
@@ -42,102 +46,102 @@ export type PortfolioItem = {
 export const FOUNDER_JOURNEY = [
     {
         name: "North Road AI",
-        role: "Founder",
-        years: "2024 — Present",
+        role: "بنیان‌گذار",
+        years: "۲۰۲۴ تاکنون",
         status: "Active",
-        statusLabel: "CURRENT STARTUP",
+        statusLabel: "استارتاپ فعلی",
         description: [
-            "North Road AI is a venture focused on building AI-powered systems that help founders make clearer strategic decisions and operate their startups more effectively.",
-            "The idea emerged from years of working with early-stage startups and seeing the same structural problems repeat: unclear priorities, scattered information, weak decision frameworks, and founders overwhelmed by operational complexity.",
-            "The project focuses on developing practical tools that help founders clarify strategic direction, structure complex decisions, analyze markets, manage operations, and reduce cognitive overload in early-stage teams."
+            "North Road AI کسب‌وکاری است که سامانه‌های مبتنی بر هوش مصنوعی می‌سازد تا بنیان‌گذاران تصمیم‌های استراتژیک روشن‌تری بگیرند و استارتاپشان را بهتر اداره کنند.",
+            "ایده از سال‌ها کار با استارتاپ‌های مرحله‌ی اولیه بیرون آمد؛ جایی که یک الگوی ساختاری مدام تکرار می‌شد: اولویت‌های مبهم، اطلاعات پراکنده، چارچوب‌های ضعیف تصمیم‌گیری و بنیان‌گذارانی که زیر بار پیچیدگی عملیات خم شده بودند.",
+            "تمرکز پروژه روی ابزارهای کاربردی است: روشن کردن جهت استراتژیک، ساختار دادن به تصمیم‌های پیچیده، تحلیل بازار، اداره‌ی عملیات و کم کردن بار ذهنی تیم‌های مرحله‌ی اولیه."
         ]
     },
     {
         name: "AI Cardia",
-        role: "Founder",
-        years: "2025 — Present",
+        role: "بنیان‌گذار",
+        years: "۲۰۲۵ تاکنون",
         status: "Building",
-        statusLabel: "IN PROGRESS (HIRING CO-FOUNDER)",
+        statusLabel: "در حال ساخت (جذب هم‌بنیان‌گذار)",
         description: [
-            "AI Cardia is a health technology concept focused on using artificial intelligence to improve early detection and monitoring of cardiovascular conditions.",
-            "The project explores how data analysis, machine learning, and medical insight can help build tools for more proactive and preventative healthcare."
+            "AI Cardia یک ایده‌ی فناوری سلامت است که از هوش مصنوعی برای تشخیص زودهنگام و پایش بیماری‌های قلبی‌عروقی استفاده می‌کند.",
+            "پروژه بررسی می‌کند که تحلیل داده، یادگیری ماشین و دانش پزشکی چطور می‌توانند به ساخت ابزارهایی برای مراقبت پیشگیرانه و فعال کمک کنند."
         ]
     },
     {
         name: "Rootopia",
-        role: "Founder",
-        years: "2025",
+        role: "بنیان‌گذار",
+        years: "۲۰۲۵",
         status: "Dead",
-        statusLabel: "DEAD — MARKET RESEARCH PHASE",
+        statusLabel: "بسته‌شده، فاز تحقیق بازار",
         description: [
-            "Rootopia is a startup focused on vertical farming and sustainable agriculture, aiming to produce pesticide-free leafy greens using controlled indoor farming systems.",
-            "The venture explores how AI, controlled environments, and modern agricultural technology can support local food production for urban markets."
+            "Rootopia استارتاپی در حوزه‌ی کشاورزی عمودی و کشاورزی پایدار است؛ با هدف تولید سبزی‌های برگی بدون سم در سامانه‌های کشت سرپوشیده‌ی کنترل‌شده.",
+            "این کسب‌وکار بررسی می‌کند که هوش مصنوعی، محیط‌های کنترل‌شده و فناوری نوین کشاورزی چطور می‌توانند از تولید غذای محلی برای بازارهای شهری پشتیبانی کنند."
         ]
     },
     {
         name: "ColonyNova",
-        role: "Founder",
-        years: "2024",
+        role: "بنیان‌گذار",
+        years: "۲۰۲۴",
         status: "Dead",
-        statusLabel: "DEAD — POST MVP PHASE",
+        statusLabel: "بسته‌شده، پس از MVP",
         description: [
-            "ColonyNova is an ongoing venture exploring new models of startup incubation, collaboration, and innovation ecosystems.",
-            "The project focuses on how founders, researchers, and technologists can collaborate in structured environments to build new ventures and experimental ideas."
+            "ColonyNova کسب‌وکاری در جریان است که مدل‌های تازه‌ای از شتاب‌دهی استارتاپ، همکاری و زیست‌بوم‌های نوآوری را بررسی می‌کند.",
+            "تمرکز پروژه روی این است که بنیان‌گذاران، پژوهشگران و فناوران چطور می‌توانند در محیط‌های ساختارمند برای ساخت کسب‌وکارهای تازه و ایده‌های آزمایشی با هم کار کنند."
         ]
     },
     {
         name: "ArtOkids",
-        role: "Founder",
-        years: "2022 — 2023",
+        role: "بنیان‌گذار",
+        years: "۲۰۲۲ تا ۲۰۲۳",
         status: "Dead",
-        statusLabel: "DEAD — MARKET RESEARCH PHASE",
+        statusLabel: "بسته‌شده، فاز تحقیق بازار",
         description: [
-            "ArtOkids was a creative platform designed to connect children, creativity, and digital learning environments. The idea was to provide artistic and educational tools that could help young learners develop imagination and creative thinking.",
-            "This venture explored the intersection of education, creativity, and digital platforms."
+            "ArtOkids پلتفرمی خلاقانه بود برای پیوند دادن کودکان، خلاقیت و محیط‌های یادگیری دیجیتال. ایده این بود که ابزارهای هنری و آموزشی در اختیار کودکان قرار بگیرد تا تخیل و تفکر خلاقشان رشد کند.",
+            "این کسب‌وکار تقاطع آموزش، خلاقیت و پلتفرم‌های دیجیتال را کاوید."
         ]
     },
     {
         name: "Bleesta",
-        role: "Founder",
-        years: "Previous",
+        role: "بنیان‌گذار",
+        years: "پیش‌تر",
         status: "Done",
-        statusLabel: "CONCLUDED",
+        statusLabel: "پایان‌یافته",
         description: [
-            "Bleesta was developed as a digital platform concept focused on modern online services and platform-based interactions. The project explored scalable digital product structures and user-centric platform design.",
-            "Bleesta was part of a broader effort to experiment with new product ideas and digital ecosystems."
+            "Bleesta به‌عنوان ایده‌ی یک پلتفرم دیجیتال برای خدمات آنلاین امروزی و تعامل‌های پلتفرمی ساخته شد. پروژه ساختارهای مقیاس‌پذیر محصول دیجیتال و طراحی پلتفرم کاربرمحور را بررسی کرد.",
+            "Bleesta بخشی از تلاشی گسترده‌تر برای آزمودن ایده‌های تازه‌ی محصول و زیست‌بوم‌های دیجیتال بود."
         ]
     },
     {
         name: "Arch North Land",
-        role: "Founder",
-        years: "Previous",
+        role: "بنیان‌گذار",
+        years: "پیش‌تر",
         status: "Done",
-        statusLabel: "CONCLUDED",
+        statusLabel: "پایان‌یافته",
         description: [
-            "Arch North Land was designed as a project exploring the relationship between architecture, urban development, and modern digital platforms.",
-            "The concept focused on combining architectural thinking with new business models for land development and urban design services."
+            "Arch North Land پروژه‌ای بود برای بررسی نسبت میان معماری، توسعه‌ی شهری و پلتفرم‌های دیجیتال امروزی.",
+            "ایده روی ترکیب تفکر معمارانه با مدل‌های تازه‌ی کسب‌وکار برای خدمات توسعه‌ی زمین و طراحی شهری تمرکز داشت."
         ]
     },
     {
         name: "2bHiTech",
-        role: "Founder",
-        years: "Previous",
+        role: "بنیان‌گذار",
+        years: "پیش‌تر",
         status: "Done",
-        statusLabel: "CONCLUDED",
+        statusLabel: "پایان‌یافته",
         description: [
-            "2bHiTech was an early technology initiative focused on building digital tools and platforms during the growth of the online ecosystem. The project involved experimentation with software development, digital infrastructure, and early-stage internet services.",
-            "It served as an early exploration of how technology companies are structured and operated."
+            "2bHiTech یک اقدام فناورانه‌ی اولیه بود برای ساخت ابزارها و پلتفرم‌های دیجیتال در دوره‌ی رشد زیست‌بوم آنلاین. کار شامل تجربه‌ی توسعه‌ی نرم‌افزار، زیرساخت دیجیتال و خدمات اینترنتی مرحله‌ی اولیه بود.",
+            "این پروژه کاوشی زودهنگام در ساختار و اداره‌ی شرکت‌های فناوری بود."
         ]
     },
     {
         name: "OrganicHub",
-        role: "Founder",
-        years: "Previous",
+        role: "بنیان‌گذار",
+        years: "پیش‌تر",
         status: "Acquired",
-        statusLabel: "ACQUIRED — SOLD TO INVESTOR",
+        statusLabel: "واگذارشده، فروش به سرمایه‌گذار",
         description: [
-            "OrganicHub was conceived as a platform focused on sustainable food systems and healthier agricultural supply chains. The goal was to explore how local production and smarter distribution could make organic products more accessible.",
-            "The project helped me explore the intersection between food systems, technology, and community-driven marketplaces."
+            "OrganicHub پلتفرمی بود با تمرکز بر سامانه‌های غذایی پایدار و زنجیره‌های تأمین کشاورزی سالم‌تر. هدف این بود که بررسی شود تولید محلی و توزیع هوشمندتر چطور می‌تواند محصولات ارگانیک را در دسترس‌تر کند.",
+            "این پروژه به من کمک کرد تقاطع سامانه‌های غذایی، فناوری و بازارگاه‌های جامعه‌محور را بشناسم."
         ]
     }
 ];
@@ -148,281 +152,281 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
         id: "ashavid",
         title: "AshaVid",
         category: "Companies & Ventures",
-        role: "Founder & CSO",
-        summary: "A strategic mentoring platform dedicated to immigrant founders scaling operations in Canada.",
+        role: "بنیان‌گذار و مدیر ارشد استراتژی",
+        summary: "پلتفرم منتورشیپ استراتژیک برای بنیان‌گذاران مهاجری که کسب‌وکارشان را در کانادا بزرگ می‌کنند.",
         visibility: "Public",
-        contribution: "Developed the core business thesis, GTM strategy, and structured founder mentorship frameworks to intercept immigrant founders before they fall prey to predatory visa consultants.",
-        outcome: "Created a profitable consulting and digital platform supporting early stage SUV companies in Toronto.",
-        tags: ["Business Strategy", "SUV Focus", "Digital Transformation"],
+        contribution: "تز اصلی کسب‌وکار، استراتژی GTM و چارچوب‌های ساختارمند منتورشیپ بنیان‌گذاران را ساختم تا بنیان‌گذاران مهاجر پیش از افتادن در دام مشاوران سودجوی مهاجرت، جای درست را پیدا کنند.",
+        outcome: "یک مجموعه‌ی مشاوره و پلتفرم دیجیتال سودده که از شرکت‌های SUV در مراحل اولیه‌ی تورنتو پشتیبانی می‌کند.",
+        tags: ["استراتژی کسب‌وکار", "تمرکز بر SUV", "تحول دیجیتال"],
         link: "https://ashavid.com"
     },
     {
         id: "dpf",
         title: "Developer Persian Front (DPF)",
         category: "Companies & Ventures",
-        role: "Founder & Director",
-        summary: "An educational platform bridging the gap between theoretical learning and practical engineering for Persian-speaking developers.",
+        role: "بنیان‌گذار و مدیر",
+        summary: "پلتفرمی آموزشی برای پر کردن فاصله‌ی میان آموزش تئوری و مهندسی عملی، ویژه‌ی توسعه‌دهندگان فارسی‌زبان.",
         visibility: "Public",
-        problem: "University curricula consistently failed to produce industry-ready developers in the Middle East.",
-        contribution: "Designed and scaled the curriculum, developed the platform architecture, and grew a community of software engineers.",
-        outcome: "Successfully trained over 3,000 developers, many of whom are now mid-to-senior engineers across international tech hubs.",
-        tags: ["EdTech", "Community Scaling", "React"],
+        problem: "برنامه‌ی درسی دانشگاه‌ها در خاورمیانه پیوسته ناتوان از تربیت توسعه‌دهنده‌ی آماده‌ی صنعت بود.",
+        contribution: "برنامه‌ی آموزشی را طراحی و بزرگ کردم، معماری پلتفرم را ساختم و جامعه‌ای از مهندسان نرم‌افزار را پروراندم.",
+        outcome: "بیش از ۳٬۰۰۰ توسعه‌دهنده آموزش دیدند و بسیاری از آن‌ها امروز مهندس میان‌رده تا ارشد در قطب‌های فناوری جهان هستند.",
+        tags: ["آموزش دیجیتال", "رشد جامعه", "React"],
     },
     {
         id: "hofin",
         title: "HoFin",
         category: "Companies & Ventures",
-        role: "Co-Founder",
-        summary: "A fintech initiative creating standardized infrastructure for digital transactions.",
+        role: "هم‌بنیان‌گذار",
+        summary: "طرحی فین‌تکی برای ساخت زیرساخت استاندارد تراکنش‌های دیجیتال.",
         visibility: "Private",
-        contribution: "Architected the initial MVP payment orchestration layer and designed the security protocols.",
-        outcome: "Proved initial concept viability and secured pilot partnerships before transitioning out.",
-        tags: ["FinTech", "Payment Gateway", "Node.js"],
+        contribution: "لایه‌ی نخست هماهنگ‌سازی پرداخت را در MVP معماری کردم و پروتکل‌های امنیتی آن را طراحی کردم.",
+        outcome: "امکان‌پذیری ایده‌ی اولیه اثبات شد و پیش از کناره‌گیری من، چند همکاری آزمایشی نهایی شد.",
+        tags: ["فین‌تک", "درگاه پرداخت", "Node.js"],
     },
     {
         id: "abr-arvan",
-        title: "National Cloud Infrastructure",
+        title: "زیرساخت ابری ملی",
         category: "Companies & Ventures",
-        role: "CTO",
-        summary: "The first government-backed cloud computing infrastructure initiative in Iran.",
+        role: "مدیر ارشد فنی",
+        summary: "نخستین طرح زیرساخت رایانش ابری با پشتیبانی دولت در ایران.",
         visibility: "Private",
-        problem: "The country lacked sovereign cloud computing capabilities, relying completely on external vulnerable networks.",
-        contribution: "Led a massive engineering division to design scalable object storage, distributed compute nodes, and a secure hypervisor layer from scratch.",
-        outcome: "Successfully deployed the foundational network handling millions of requests daily, significantly reducing latency for domestic applications.",
-        tags: ["Cloud Architecture", "Distributed Systems", "Go", "Kubernetes"],
+        problem: "کشور توان رایانش ابری مستقل نداشت و به‌طور کامل به شبکه‌های بیرونی و آسیب‌پذیر تکیه می‌کرد.",
+        contribution: "یک بخش مهندسی بزرگ را هدایت کردم تا ذخیره‌سازی شیئی مقیاس‌پذیر، گره‌های محاسباتی توزیع‌شده و یک لایه‌ی هایپروایزر امن را از صفر طراحی کند.",
+        outcome: "شبکه‌ی پایه راه‌اندازی شد، روزانه میلیون‌ها درخواست را پاسخ می‌داد و تأخیر اپلیکیشن‌های داخلی را به‌طور محسوسی کم کرد.",
+        tags: ["معماری ابری", "سامانه‌های توزیع‌شده", "Go", "Kubernetes"],
     },
     {
         id: "raf",
-        title: "RAF Advertising Agency",
+        title: "آژانس تبلیغاتی RAF",
         category: "Companies & Ventures",
-        role: "Art Director",
-        summary: "A highly prominent digital and creative agency producing national-level campaigns.",
+        role: "مدیر هنری",
+        summary: "آژانسی شناخته‌شده در حوزه‌ی دیجیتال و خلاقیت که کمپین‌هایی در مقیاس ملی تولید می‌کرد.",
         visibility: "Public",
-        contribution: "Transitioned traditional advertising frameworks into performance-driven digital funnels, integrating UI/UX principles directly into ad creative.",
-        outcome: "Increased user retention across dozens of client digital assets and modernized the agency's creative delivery pipeline.",
-        tags: ["Creative Direction", "UI/UX", "Digital Strategy"],
+        contribution: "چارچوب‌های تبلیغات سنتی را به قیف‌های دیجیتال نتیجه‌محور تبدیل کردم و اصول UI/UX را مستقیم وارد خلق آگهی کردم.",
+        outcome: "نگه‌داشت کاربر در ده‌ها دارایی دیجیتال مشتریان بالا رفت و چرخه‌ی تحویل خلاقانه‌ی آژانس نو شد.",
+        tags: ["مدیریت خلاقیت", "UI/UX", "استراتژی دیجیتال"],
     },
     {
         id: "ministry-industry",
-        title: "Ministry of Industry & Minerals",
+        title: "وزارت صنعت و معادن",
         category: "Companies & Ventures",
-        role: "Technical Consultant",
-        summary: "Digital transformation for legacy governmental logistics networks.",
+        role: "مشاور فنی",
+        summary: "تحول دیجیتال شبکه‌های لجستیک قدیمی دولتی.",
         visibility: "Private",
-        contribution: "Audited decades-old paper trails and monolithic IBM mainframe architectures to propose modern, agile microservices.",
-        outcome: "Drastically reduced the supply-chain reporting cycle from weeks to hours.",
-        tags: ["Enterprise Architecture", "Consulting", "Legacy Modernization"],
+        contribution: "مسیرهای کاغذی چنددهه‌ای و معماری یکپارچه‌ی مِین‌فریم‌های IBM را ممیزی کردم و به‌جای آن‌ها میکروسرویس‌های امروزی و چابک پیشنهاد دادم.",
+        outcome: "چرخه‌ی گزارش‌گیری زنجیره‌ی تأمین از چند هفته به چند ساعت رسید.",
+        tags: ["معماری سازمانی", "مشاوره", "نوسازی سامانه‌های قدیمی"],
     },
     {
         id: "visaroads",
         title: "VisaRoads",
         category: "Companies & Ventures",
-        role: "Startup Mentor",
-        summary: "A specialized agency processing and mentoring tech founders through the Canadian Startup Visa program.",
+        role: "منتور استارتاپ",
+        summary: "مجموعه‌ای تخصصی که پرونده‌ی بنیان‌گذاران فناوری را در برنامه‌ی استارتاپ ویزای کانادا پیش می‌برد و به آن‌ها منتورشیپ می‌دهد.",
         visibility: "Public",
-        problem: "Founders were arriving with strong technical skills but zero understanding of North American go-to-market strategies or investor expectations.",
-        contribution: "Developed the curriculum for Pitch Deck creation, product-market-fit validation, and North American business structuring.",
-        outcome: "Successfully mentored dozens of founding teams, raising their approval odds and preparing them for real revenue generation post-landing.",
-        tags: ["Mentorship", "GTM Strategy", "Pitching"],
+        problem: "بنیان‌گذاران با مهارت فنی قوی می‌آمدند، اما هیچ درکی از استراتژی ورود به بازار آمریکای شمالی و انتظارهای سرمایه‌گذار نداشتند.",
+        contribution: "برنامه‌ی آموزشی ساخت pitch deck، اعتبارسنجی تناسب محصول و بازار و ساختاردهی کسب‌وکار در آمریکای شمالی را تدوین کردم.",
+        outcome: "ده‌ها تیم بنیان‌گذار منتور شدند، شانس تأیید پرونده‌شان بالا رفت و برای درآمدزایی واقعی پس از ورود آماده شدند.",
+        tags: ["منتورشیپ", "استراتژی GTM", "ارائه به سرمایه‌گذار"],
         link: "https://visaroads.com"
     },
     {
         id: "vania-it",
         title: "VaniaIT",
         category: "Companies & Ventures",
-        role: "Enterprise Solution - Develop and programming",
-        summary: "Enterprise solution provider where I developed and programmed numerous prominent portals for large-scale Iranian corporations (2010 - 2015).",
+        role: "راهکار سازمانی، توسعه و برنامه‌نویسی",
+        summary: "ارائه‌دهنده‌ی راهکارهای سازمانی؛ جایی که پورتال‌های شاخص متعددی را برای شرکت‌های بزرگ ایرانی توسعه دادم و برنامه‌نویسی کردم (۲۰۱۰ تا ۲۰۱۵).",
         visibility: "Public",
-        contribution: "Architected and programmed enterprise-grade web solutions and portals, laying the digital foundation for major corporate entities.",
-        tags: ["Enterprise Software", "Web Portals", "Software Engineering"],
+        contribution: "راهکارها و پورتال‌های وب در سطح سازمانی را معماری و برنامه‌نویسی کردم و پایه‌ی دیجیتال چند نهاد بزرگ را گذاشتم.",
+        tags: ["نرم‌افزار سازمانی", "پورتال وب", "مهندسی نرم‌افزار"],
     },
     {
         id: "herestate",
         title: "HereState",
         category: "Companies & Ventures",
         role: "مشاور استراتژیک",
-        summary: "یک case study مشاوره‌ای درباره کمک به یک تیم پراپ‌تک برای بازتعریف ورود به بازار، شفاف‌سازی positioning و هم‌راستا کردن ambition محصول با یک مسیر GTM معتبر.",
+        summary: "مطالعه‌ی موردی یک مشاوره درباره‌ی کمک به یک تیم پراپ‌تک برای بازتعریف ورود به بازار، روشن کردن جایگاه‌یابی و هم‌راستا کردن بلندپروازی محصول با یک مسیر GTM معتبر.",
         visibility: "Public",
         yearRange: "2026",
-        problem: "یک تیم فنیِ قوی در پراپ‌تک کانادا در حال ساخت یک پلتفرم بلندپروازانه‌ی املاک مبتنی بر AI بود، اما گلوگاه اصلی آن‌ها خودِ محصول نبود؛ ابهام در منطق go-to-market بود.",
-        diagnosis: "محصول خیلی زود شبیه یک بازی B2C دیده می‌شد، در حالی‌که مسیر قوی‌تر، ورود trust-led از جنس B2B یا B2B2C بود؛ همراه با روایت pitch دقیق‌تر، اولویت‌بندی بهتر و منطق distribution روشن‌تر.",
-        outcome: "شفافیت استراتژیک در مورد market entry ایجاد شد، جهت GTM بازتعریف شد و pitch، پیام و استراتژی دیجیتال با واقعیت کسب‌وکار هم‌راستا شدند.",
+        problem: "یک تیم فنیِ قوی در پراپ‌تک کانادا در حال ساخت یک پلتفرم بلندپروازانه‌ی املاک مبتنی بر هوش مصنوعی بود، اما گلوگاه اصلی آن‌ها خودِ محصول نبود؛ ابهام در منطق ورود به بازار بود.",
+        diagnosis: "محصول خیلی زود شبیه یک بازی B2C دیده می‌شد، در حالی‌که مسیر قوی‌تر، ورود اعتمادمحور از جنس B2B یا B2B2C بود؛ همراه با روایت دقیق‌تر در ارائه، اولویت‌بندی بهتر و منطق روشن‌تر توزیع.",
+        outcome: "شفافیت استراتژیک در مورد ورود به بازار ایجاد شد، جهت GTM بازتعریف شد و ارائه، پیام و استراتژی دیجیتال با واقعیت کسب‌وکار هم‌راستا شدند.",
         proposedStrategy: [
-            "تغییر از broad B2C thinking به یک ورودی B2B / B2B2C.",
-            "ساختن بر پایه‌ی کانال‌های trust-based به‌جای فعالیت محتوایی عمومی.",
-            "بازنویسی روایت market-entry تا pitch، message و distribution از یک thesis واحد پشتیبانی کنند."
+            "تغییر از نگاه گسترده‌ی B2C به یک نقطه‌ی ورود B2B یا B2B2C.",
+            "ساختن بر پایه‌ی کانال‌های اعتمادمحور به‌جای فعالیت محتوایی عمومی.",
+            "بازنویسی روایت ورود به بازار تا ارائه، پیام و توزیع همگی از یک تز واحد پشتیبانی کنند."
         ],
         executionSteps: [
             {
-                title: "شفاف‌سازی wedge اولیه",
-                description: "تعریف اولین کانال معتبر، محدود کردن positioning و توقف اشتباه گرفتن visibility با strategy."
+                title: "روشن کردن نقطه‌ی ورود اولیه",
+                description: "تعریف نخستین کانال معتبر، محدود کردن جایگاه‌یابی و پایان دادن به اشتباه گرفتن دیده‌شدن با استراتژی."
             },
             {
                 title: "بازسازی روایت",
-                description: "بازچینش deck و داستان استراتژیک بر محور trust، منطق کانال و توالی تجاری."
+                description: "بازچینش دک و داستان استراتژیک بر محور اعتماد، منطق کانال و توالی تجاری."
             },
             {
-                title: "فعال‌سازی outreach مبتنی بر trust",
-                description: "استفاده از روایت جدید برای outreach B2B، گفت‌وگو با partnerها و جهت‌گیری دیجیتال منضبط‌تر."
+                title: "فعال‌سازی ارتباط‌گیری اعتمادمحور",
+                description: "استفاده از روایت تازه برای ارتباط‌گیری B2B، گفت‌وگو با شریک‌ها و جهت‌گیری دیجیتال منضبط‌تر."
             }
         ],
         lessons: [
             "محصول قوی به‌تنهایی کافی نیست اگر منطق ورود به بازار ضعیف باشد.",
-            "business plan جای clarity در GTM را نمی‌گیرد.",
-            "بازارهای trust-heavy به کانال‌های trust-heavy نیاز دارند."
+            "طرح کسب‌وکار جای شفافیت در GTM را نمی‌گیرد.",
+            "بازارهایی که بر اعتماد بنا شده‌اند، به کانال‌های اعتمادمحور نیاز دارند."
         ],
-        tags: ["PropTech", "GTM Strategy", "Strategic Diagnosis", "Pitch Narrative", "B2B"],
+        tags: ["پراپ‌تک", "استراتژی GTM", "تشخیص استراتژیک", "روایت ارائه", "B2B"],
     },
     // --- CATEGORY: GITHUB PROJECTS ---
     {
         id: "officialwebsite",
-        title: "Farjad Personal Website",
+        title: "وب‌سایت شخصی فرجاد",
         category: "GitHub Projects",
-        role: "Product Owner / Builder",
-        summary: "Personal editorial platform and portfolio designed to present essays, services, and selected work.",
-        problem: "Need a premium, ultra-fast platform to host my essays, projects, and portfolio with rich aesthetics.",
+        role: "مالک محصول و سازنده",
+        summary: "پلتفرم تحریریه و نمونه‌کار شخصی برای ارائه‌ی یادداشت‌ها، خدمات و کارهای منتخب.",
+        problem: "به بستری سریع و درجه‌یک نیاز داشتم تا یادداشت‌ها، پروژه‌ها و نمونه‌کارهایم را با ظاهری درخور منتشر کنم.",
         techStack: ["TypeScript", "Next.js", "React", "Tailwind"],
         github: "https://github.com/farjadp/officialwebsite",
         visibility: "Public",
-        tags: ["Architecture", "Frontend"]
+        tags: ["معماری", "فرانت‌اند"]
     },
     {
         id: "course-creation-agent",
-        title: "Course Creation Agent",
+        title: "ایجنت ساخت دوره‌ی آموزشی",
         category: "GitHub Projects",
-        role: "Technical Project",
-        summary: "Multi-agent content system using Google ADK and A2A protocol.",
+        role: "پروژه‌ی فنی",
+        summary: "سامانه‌ی تولید محتوای چندایجنتی با Google ADK و پروتکل A2A.",
         techStack: ["Python", "Google ADK", "LLMs"],
         github: "https://github.com/farjadp/course-creation-agent",
         visibility: "Public",
-        tags: ["Multi-Agent", "AI"]
+        tags: ["چندایجنتی", "هوش مصنوعی"]
     },
     {
         id: "nabzx",
         title: "NabzX",
         category: "GitHub Projects",
-        role: "Technical Project",
-        summary: "Research-first discourse analysis system using behavioral signals and interaction structure.",
+        role: "پروژه‌ی فنی",
+        summary: "سامانه‌ی تحلیل گفتمان با رویکرد پژوهش‌محور، بر پایه‌ی سیگنال‌های رفتاری و ساختار تعامل.",
         techStack: ["TypeScript", "Data Pipelines"],
         github: "https://github.com/farjadp/nabzx",
         visibility: "Public",
-        tags: ["Data Engineering", "Analysis"]
+        tags: ["مهندسی داده", "تحلیل"]
     },
     {
         id: "visachee",
         title: "VisaChee",
         category: "GitHub Projects",
-        role: "Builder",
-        summary: "Prototype immigration assessment bot.",
+        role: "سازنده",
+        summary: "نمونه‌ی اولیه‌ی رباتی برای ارزیابی پرونده‌ی مهاجرت.",
         techStack: ["Python", "Telegram API"],
         github: "https://github.com/farjadp/VisaChee",
         visibility: "Public",
-        tags: ["Prototyping", "Automation"]
+        tags: ["نمونه‌سازی", "خودکارسازی"]
     },
     {
         id: "startupstoryscale",
         title: "Startup Story Scale",
         category: "GitHub Projects",
-        role: "Builder",
-        summary: "PR-readiness and timeline estimation concept for startups.",
+        role: "سازنده",
+        summary: "ایده‌ای برای سنجش آمادگی روابط عمومی و برآورد زمان‌بندی در استارتاپ‌ها.",
         techStack: ["TypeScript", "Algorithms"],
         github: "https://github.com/farjadp/startupstoryscale",
         visibility: "Private",
-        tags: ["Tooling", "PR"]
+        tags: ["ابزارسازی", "روابط عمومی"]
     },
     {
         id: "nft-ship",
-        title: "NFTsShip Protocol",
+        title: "پروتکل NFTsShip",
         category: "GitHub Projects",
-        role: "Core Contributor",
-        summary: "An early-stage exploration into standardized NFT deployment smart contracts.",
+        role: "مشارکت‌کننده‌ی اصلی",
+        summary: "کاوشی در مراحل اولیه برای استانداردسازی قراردادهای هوشمند انتشار NFT.",
         visibility: "Public",
-        contribution: "Wrote the Solidity token standard overrides and built the React-based minting interface MVP.",
+        contribution: "بازنویسی‌های استاندارد توکن را با Solidity نوشتم و MVP رابط mint را با React ساختم.",
         tags: ["Web3", "Solidity", "React", "DApp"],
         github: "https://github.com/farjadp/nfts-ship"
     },
     {
         id: "parscalendar",
-        title: "Pars Calendar iOS App",
+        title: "Pars Calendar، اپلیکیشن iOS",
         category: "GitHub Projects",
-        role: "Builder & Architect",
-        summary: "A native iOS application bringing historical Iranian calendar systems (Jalali, Zoroastrian) to modern devices.",
+        role: "سازنده و معمار",
+        summary: "اپلیکیشن بومی iOS که تقویم‌های تاریخی ایران (جلالی و زرتشتی) را به دستگاه‌های امروزی می‌آورد.",
         visibility: "Public",
-        problem: "Existing Persian calendars were ad-laden, clunky, or inaccurate regarding ancient Zoroastrian feast days.",
-        contribution: "Built an offline-first SwiftUI application with precise astronomical calculation algorithms for leap years.",
-        outcome: "Created a pure, ad-free utility providing deep cultural value with modern UX.",
-        tags: ["SwiftUI", "iOS", "Algorithms"],
+        problem: "تقویم‌های فارسی موجود پر از تبلیغات، بدساخت یا درباره‌ی جشن‌های کهن زرتشتی نادرست بودند.",
+        contribution: "یک اپلیکیشن SwiftUI با اولویت کار آفلاین ساختم، با الگوریتم‌های دقیق محاسبات نجومی برای سال‌های کبیسه.",
+        outcome: "ابزاری تمیز و بدون تبلیغات که ارزش فرهنگی عمیقی را با تجربه‌ی کاربری امروزی ارائه می‌کند.",
+        tags: ["SwiftUI", "iOS", "الگوریتم"],
         github: "https://github.com/farjadp/parscalendar"
     },
     {
         id: "imedica",
-        title: "iMedica Patient Dashboard",
+        title: "داشبورد بیماران iMedica",
         category: "GitHub Projects",
-        role: "Lead UI Developer",
-        summary: "A high-security dashboard interface for clinic patient management.",
+        role: "توسعه‌دهنده‌ی ارشد رابط کاربری",
+        summary: "رابط داشبوردی با امنیت بالا برای مدیریت بیماران کلینیک.",
         visibility: "Private",
-        contribution: "Developed the Next.js frontend, focusing strictly on HIPAA-compliant data masking patterns on the client-side.",
-        tags: ["Next.js", "Healthcare", "TailwindCSS"],
+        contribution: "فرانت‌اند Next.js را توسعه دادم، با تمرکز کامل بر الگوهای پوشاندن داده در سمت کلاینت مطابق HIPAA.",
+        tags: ["Next.js", "سلامت", "TailwindCSS"],
     },
     {
         id: "preventix",
-        title: "Preventix Mobile MVP",
+        title: "MVP موبایل Preventix",
         category: "GitHub Projects",
-        role: "Mobile Architect",
-        summary: "A preventative health monitoring MVP designed for cross-platform deployment.",
+        role: "معمار موبایل",
+        summary: "نمونه‌ی اولیه‌ی پایش سلامت پیشگیرانه، طراحی‌شده برای انتشار چندسکویی.",
         visibility: "Private",
-        contribution: "Set up the React Native scaffolding and built the core biometric data visualization charts using D3.js.",
-        tags: ["React Native", "D3.js", "HealthTech"],
+        contribution: "اسکلت React Native را برپا کردم و نمودارهای اصلی نمایش داده‌های زیستی را با D3.js ساختم.",
+        tags: ["React Native", "D3.js", "فناوری سلامت"],
     },
     {
         id: "searchnestlab",
-        title: "SearchNestLab SEO Toolkit",
+        title: "جعبه‌ابزار سئوی SearchNestLab",
         category: "GitHub Projects",
-        role: "Full-Stack Builder",
-        summary: "An internal collection of scripts designed to automate rigorous SEO audits for agency clients.",
+        role: "سازنده‌ی فول‌استک",
+        summary: "مجموعه‌ای داخلی از اسکریپت‌ها برای خودکار کردن ممیزی‌های دقیق سئو برای مشتریان آژانس.",
         visibility: "Public",
-        contribution: "Wrote Python scrapers to aggregate Lighthouse scores and identify orphaned pages across large sitemaps.",
-        tags: ["Python", "SEO", "Automation"],
+        contribution: "اسکرپرهای Python نوشتم تا نمره‌های Lighthouse را جمع کند و صفحه‌های یتیم را در نقشه‌های سایت بزرگ پیدا کند.",
+        tags: ["Python", "سئو", "خودکارسازی"],
         github: "https://github.com/farjadp/searchnestlab"
     },
     {
         id: "nextjs-boilerplate",
-        title: "Enterprise Next.js Boilerplate",
+        title: "بویلرپلیت سازمانی Next.js",
         category: "GitHub Projects",
-        role: "Creator",
-        summary: "A battle-tested starting point for large-scale Next.js applications.",
+        role: "پدیدآورنده",
+        summary: "نقطه‌ی شروعی آزموده برای اپلیکیشن‌های بزرگ Next.js.",
         visibility: "Public",
-        contribution: "Assembled strict ESLint rules, Prettier configs, Husky hooks, and a modular Tailwind architecture into one template.",
-        tags: ["Next.js", "Tooling", "Architecture"],
+        contribution: "قواعد سخت‌گیرانه‌ی ESLint، پیکربندی Prettier، هوک‌های Husky و یک معماری ماژولار Tailwind را در یک قالب جمع کردم.",
+        tags: ["Next.js", "ابزارسازی", "معماری"],
         github: "https://github.com/farjadp/nextjs-boilerplate"
     },
     {
         id: "react-native-auth",
-        title: "React Native Deep Linking Auth",
+        title: "احراز هویت با Deep Link در React Native",
         category: "GitHub Projects",
-        role: "Researcher",
-        summary: "An experimental repo testing complex state persistence during OAuth deep link flows in iOS.",
+        role: "پژوهشگر",
+        summary: "مخزنی آزمایشی برای سنجش ماندگاری پیچیده‌ی وضعیت در جریان‌های deep link مربوط به OAuth در iOS.",
         visibility: "Public",
-        tags: ["React Native", "OAuth", "Security"],
+        tags: ["React Native", "OAuth", "امنیت"],
         github: "https://github.com/farjadp/react-native-auth"
     },
     {
         id: "agentic-ai-scraper",
-        title: "Agentic AI Scraper",
+        title: "اسکرپر مبتنی بر ایجنت هوش مصنوعی",
         category: "GitHub Projects",
-        role: "Creator",
-        summary: "A Python-based headless browser agent capable of navigating shadow DOMs and logging behind auth walls.",
+        role: "پدیدآورنده",
+        summary: "ایجنت مرورگر بدون‌رابط با Python که می‌تواند در shadow DOM حرکت کند و پشت دیوارهای ورود، داده ثبت کند.",
         visibility: "Private",
-        tags: ["Python", "Playwright", "AI Agents"],
+        tags: ["Python", "Playwright", "ایجنت هوش مصنوعی"],
     },
     {
         id: "svelte-portfolio",
-        title: "Minimalist Svelte Portfolio",
+        title: "نمونه‌کار مینیمال Svelte",
         category: "GitHub Projects",
-        role: "Designer & Developer",
-        summary: "Experimenting with SvelteKit's performance by building a zero-JS feeling static portfolio generator.",
+        role: "طراح و توسعه‌دهنده",
+        summary: "آزمودن کارایی SvelteKit با ساخت یک تولیدکننده‌ی نمونه‌کار ایستا که حس بدون‌جاوااسکریپت می‌دهد.",
         visibility: "Public",
-        tags: ["SvelteKit", "Performance", "UI Design"],
+        tags: ["SvelteKit", "کارایی", "طراحی رابط"],
         github: "https://github.com/farjadp/svelte-portfolio"
     }
 ];

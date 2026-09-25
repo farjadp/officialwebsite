@@ -13,7 +13,7 @@ import { LoginForm } from "./login-form"
 export const metadata = {
     robots: NOINDEX,
     alternates: localeAlternates("/login", "fa"),
-    title: "Sign In | farjadp.info",
+    title: "ورود",
 }
 
 export default function LoginPage() {
@@ -28,10 +28,10 @@ export default function LoginPage() {
                         farjadp.info
                     </span>
                     <h2 className="font-v3-display text-4xl font-light leading-[1.05] tracking-[-0.015em] md:text-5xl rtl:leading-[1.4] rtl:tracking-normal">
-                        Welcome back<br />to your space.
+                        دوباره خوش آمدید<br />به فضای خودتان.
                     </h2>
                     <p className="max-w-sm text-lg leading-relaxed text-v3-soft rtl:leading-loose">
-                        Sign in to access your personal dashboard, manage content, and track everything in one place.
+                        برای دسترسی به داشبورد شخصی، مدیریت محتوا و پیگیری همه‌چیز در یک جا وارد شوید.
                     </p>
                 </div>
             </div>

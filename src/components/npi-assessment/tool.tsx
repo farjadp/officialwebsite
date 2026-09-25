@@ -27,7 +27,7 @@ const makeLeadSchema = (ui: NpiUiStrings) =>
     name: z.string().min(2, ui.nameRequired),
     email: z.string().email(ui.emailInvalid),
     role: z.string().optional(),
-    agreed: z.boolean(),
+    agreed: z.boolean().refine((v) => v === true, { message: ui.consentRequired }),
   });
 type LeadFormValues = z.infer<ReturnType<typeof makeLeadSchema>>;
 
@@ -129,7 +129,7 @@ export function NPIAssessmentTool({ locale = 'en' }: { locale?: NpiLocale }) {
 
   const { register, handleSubmit, getValues, formState: { errors } } = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { agreed: true }
+    defaultValues: { agreed: false }
   });
 
   const nextStep = () => {
@@ -334,20 +334,31 @@ export function NPIAssessmentTool({ locale = 'en' }: { locale?: NpiLocale }) {
                   {...register("role")}
                 />
 
-                <label
-                  htmlFor="agreed"
-                  className="mt-2 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-v3-line bg-v3-ink/40 p-4"
-                >
-                  <input
-                    type="checkbox"
-                    id="agreed"
-                    {...register("agreed")}
-                    className="mt-0.5 size-5 shrink-0 cursor-pointer accent-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
-                  />
-                  <span className="text-sm leading-snug text-v3-soft rtl:leading-relaxed">
-                    {ui.consent}
-                  </span>
-                </label>
+                <div className="mt-2 flex flex-col gap-2">
+                  <label
+                    htmlFor="agreed"
+                    className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border bg-v3-ink/40 p-4 ${
+                      errors.agreed ? "border-v3-light" : "border-v3-line"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      id="agreed"
+                      aria-invalid={errors.agreed ? true : undefined}
+                      aria-describedby={errors.agreed ? "agreed-error" : undefined}
+                      {...register("agreed")}
+                      className="mt-0.5 size-5 shrink-0 cursor-pointer accent-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
+                    />
+                    <span className="text-sm leading-snug text-v3-soft rtl:leading-relaxed">
+                      {ui.consent}
+                    </span>
+                  </label>
+                  {errors.agreed && (
+                    <p id="agreed-error" className="text-sm text-v3-light">
+                      {errors.agreed.message}
+                    </p>
+                  )}
+                </div>
               </form>
             </ToolPanel>
           </div>

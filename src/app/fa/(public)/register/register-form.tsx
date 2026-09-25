@@ -23,9 +23,9 @@ import { localePath } from "@/lib/nav"
 const LOCALE = "fa" as const
 
 const schema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters."),
-    email: z.string().email("Please enter a valid email address."),
-    password: z.string().min(8, "Password must be at least 8 characters."),
+    name: z.string().min(2, "نام باید دست‌کم ۲ نویسه باشد."),
+    email: z.string().email("یک نشانی ایمیل معتبر وارد کنید."),
+    password: z.string().min(8, "رمز عبور باید دست‌کم ۸ نویسه باشد."),
 })
 
 type Values = z.infer<typeof schema>
@@ -47,13 +47,13 @@ export function RegisterForm() {
         setError(null)
         try {
             const result = await registerUser(data)
-            if (!result.success) { setError(result.error || "Registration failed."); return }
+            if (!result.success) { setError(result.error || "ثبت‌نام انجام نشد."); return }
 
             setSuccess(true)
             // Auto sign-in
             const res = await signIn("credentials", { redirect: false, email: data.email, password: data.password })
-            if (!res?.error) { router.push("/profile"); router.refresh() }
-        } catch { setError("An unexpected error occurred. Please try again.") }
+            if (!res?.error) { router.push("/fa/profile"); router.refresh() }
+        } catch { setError("خطایی پیش‌بینی‌نشده رخ داد. دوباره تلاش کنید.") }
         finally { setIsPending(false) }
     }
 
@@ -63,8 +63,8 @@ export function RegisterForm() {
                 <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-v3-light/50 bg-v3-light/10">
                     <Check className="h-7 w-7 text-v3-light" aria-hidden />
                 </span>
-                <h2 className="font-v3-display text-2xl font-light text-v3-bone">Account created!</h2>
-                <p className="text-sm text-v3-soft">A verification email has been sent. Redirecting...</p>
+                <h2 className="font-v3-display text-2xl font-light text-v3-bone">حساب کاربری ساخته شد!</h2>
+                <p className="text-sm text-v3-soft">ایمیل تأیید فرستاده شد. در حال انتقال…</p>
             </StepIn>
         )
     }
@@ -72,16 +72,16 @@ export function RegisterForm() {
     return (
         <div className="w-full max-w-sm">
             <StepIn className="mb-8 flex flex-col gap-2">
-                <h1 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">Create account</h1>
-                <p className="text-sm text-v3-mute">Join and get access to all features.</p>
+                <h1 className="font-v3-display text-3xl font-light leading-tight text-v3-bone rtl:leading-snug">ایجاد حساب کاربری</h1>
+                <p className="text-sm text-v3-mute">عضو شوید و به همه‌ی امکانات دسترسی داشته باشید.</p>
             </StepIn>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                 <StepIn delay={0.08}>
                     <ToolField
-                        label="Full Name"
+                        label="نام و نام خانوادگی"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="مریم رضایی"
                         autoComplete="name"
                         error={errors.name?.message}
                         {...register("name")}
@@ -90,7 +90,7 @@ export function RegisterForm() {
 
                 <StepIn delay={0.16}>
                     <ToolField
-                        label="Email"
+                        label="ایمیل"
                         type="email"
                         dir="ltr"
                         placeholder="you@example.com"
@@ -102,14 +102,14 @@ export function RegisterForm() {
 
                 <StepIn delay={0.24}>
                     <div className="flex flex-col gap-2 text-start">
-                        <label htmlFor="register-password" className="text-sm font-medium text-v3-soft">Password</label>
+                        <label htmlFor="register-password" className="text-sm font-medium text-v3-soft">رمز عبور</label>
                         <div className="relative">
                             <input
                                 id="register-password"
                                 {...register("password")}
                                 type={showPw ? "text" : "password"}
                                 dir="ltr"
-                                placeholder="Min. 8 characters"
+                                placeholder="حداقل ۸ نویسه"
                                 autoComplete="new-password"
                                 aria-invalid={errors.password ? true : undefined}
                                 aria-describedby={errors.password ? "register-password-err" : undefined}
@@ -122,7 +122,7 @@ export function RegisterForm() {
                                 className="absolute inset-y-0 end-0 flex w-14 items-center justify-center rounded-e-xl text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                             >
                                 {showPw ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
-                                <span className="sr-only">{showPw ? "Hide password" : "Show password"}</span>
+                                <span className="sr-only">{showPw ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}</span>
                             </button>
                         </div>
                         {errors.password && (
@@ -140,19 +140,19 @@ export function RegisterForm() {
 
                 <StepIn delay={0.32}>
                     <ToolButton type="submit" loading={isPending} className="w-full">
-                        {isPending ? "Creating account..." : "Create Account"}
+                        {isPending ? "در حال ساخت حساب…" : "ایجاد حساب"}
                     </ToolButton>
                 </StepIn>
             </form>
 
             <StepIn delay={0.4}>
                 <p className="mt-8 text-center text-sm text-v3-mute">
-                    Already have an account?{" "}
+                    حساب کاربری دارید؟{" "}
                     <Link
                         href={localePath(LOCALE, "/login")}
                         className="text-v3-bone underline decoration-v3-line underline-offset-4 transition-colors hover:text-v3-light hover:decoration-v3-light"
                     >
-                        Sign in
+                        ورود
                     </Link>
                 </p>
             </StepIn>

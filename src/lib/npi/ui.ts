@@ -47,6 +47,7 @@ export interface NpiUiStrings {
   roleOptional: string;
   rolePlaceholder: string;
   consent: string;
+  consentRequired: string;
 
   // validation / errors
   nameRequired: string;
@@ -155,6 +156,7 @@ const en: NpiUiStrings = {
   rolePlaceholder: "e.g. Founder, Consultant",
   consent:
     "I agree to receive occasional insights and updates from Farjad Pourmohammad. No spam. Unsubscribe anytime.",
+  consentRequired: "Please tick the box so we can send you the plan.",
 
   nameRequired: "Name is required",
   emailInvalid: "Invalid email address",
@@ -187,10 +189,10 @@ const en: NpiUiStrings = {
   rowMetrics: "Key Metrics",
 
   rhythmMap: {
-    "Every day": "Post daily: rotate short post → story → insight → engagement → repeat.",
+    "Every day (aggressive mode)": "Post daily: rotate short post → story → insight → engagement → repeat.",
     "3–4 times per week (recommended)": "Week structure: 2 short posts + 1 long-form + 5 meaningful comments.",
-    "1–2 times per week": "1 strong post per week + 3–5 thoughtful comments on relevant content.",
-    "A few times per month": "2 posts per month minimum + consistent engagement in your community.",
+    "1–2 times per week (sustainable)": "1 strong post per week + 3–5 thoughtful comments on relevant content.",
+    "A few times per month (starter)": "2 posts per month minimum + consistent engagement in your community.",
   },
   metricsMap: {
     "Get more consulting or freelance clients": [
@@ -368,6 +370,7 @@ const fa: NpiUiStrings = {
   rolePlaceholder: "مثال: بنیان‌گذار، مشاور",
   consent:
     "موافقم که هرازگاهی نکته‌ها و به‌روزرسانی‌های فرجاد را دریافت کنم. بدون اسپم. هر زمان خواستید لغو اشتراک کنید.",
+  consentRequired: "برای اینکه برنامه را برایتان بفرستیم، این گزینه را تأیید کنید.",
 
   nameRequired: "وارد کردن نام لازم است",
   emailInvalid: "نشانی ایمیل معتبر نیست",
