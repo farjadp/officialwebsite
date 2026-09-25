@@ -19,6 +19,8 @@ import {
     type Outcome,
 } from "./states"
 import { loadContentSettings, readBoolean, readNumber } from "./settings"
+import { briefHandler } from "./brief"
+import { ProviderKeyMissing } from "./provider"
 
 /** How long a claimed job may sit before another tick may take it over. */
 const LEASE_MS = 5 * 60 * 1000
@@ -51,10 +53,26 @@ export class NotImplemented extends Error {
     }
 }
 
+/** What one model call cost, as `complete()` reports it. */
+export type CallRecord = {
+    agent: string
+    model: string
+    inputTokens: number
+    outputTokens: number
+    costCents: number
+    ms: number
+}
+
 export type HandlerContext = {
     settings: Record<string, string>
     /** Record work as it happens, so a crash still leaves evidence. */
     trace: (entry: Omit<TraceEntry, "at" | "state">) => Promise<void>
+    /**
+     * Add a model call's cost to the job and trace it. Called straight after
+     * each call rather than at the end of the handler, so money spent before a
+     * later failure is still counted against the monthly budget.
+     */
+    charge: (call: CallRecord, note?: string) => Promise<void>
 }
 
 export type Handler = (job: ContentJob, ctx: HandlerContext) => Promise<Outcome>
@@ -65,7 +83,7 @@ export type Handler = (job: ContentJob, ctx: HandlerContext) => Promise<Outcome>
  * rather than pretending to have done the work.
  */
 export const HANDLERS: Partial<Record<JobState, Handler>> = {
-    // SCOUTED   → brief.ts        (task 4)
+    SCOUTED: briefHandler,
     // BRIEFED   → writer.ts       (task 5)
     // DRAFTED   → seo-audit.ts    (task 5)
     // SEO_PASS  → review.ts       (task 5)
@@ -94,7 +112,11 @@ export async function claimJob(now = new Date()): Promise<ContentJob | null> {
             state: { notIn: ["PUBLISHED", "NEEDS_HUMAN", "FAILED"] },
             OR: [{ lockedAt: null }, { lockedAt: { lt: staleBefore } }],
         },
-        orderBy: { createdAt: "asc" },
+        // Least recently touched first, not oldest first. A job parked on a
+        // missing key is touched every time it is tried, so it drops to the
+        // back of the queue instead of being picked again by every tick while
+        // runnable jobs behind it starve.
+        orderBy: { updatedAt: "asc" },
         take: 5,
         select: { id: true, lockedAt: true },
     })
@@ -168,12 +190,48 @@ export async function tick(now = new Date()): Promise<TickResult> {
         outcome = { kind: "error" }
     } else {
         try {
+            const trace: HandlerContext["trace"] = (entry) =>
+                appendTrace(job.id, { ...entry, at: new Date().toISOString(), state: from })
             outcome = await handler(job, {
                 settings,
-                trace: (entry) => appendTrace(job.id, { ...entry, at: new Date().toISOString(), state: from }),
+                trace,
+                charge: async (call, note) => {
+                    await prisma.contentJob.update({
+                        where: { id: job.id },
+                        data: { costCents: { increment: call.costCents } },
+                    })
+                    await trace({
+                        agent: call.agent,
+                        model: call.model,
+                        tokens: call.inputTokens + call.outputTokens,
+                        costCents: call.costCents,
+                        ms: call.ms,
+                        note,
+                    })
+                },
             })
         } catch (error) {
             failure = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
+
+            // A missing key is configuration, not a fault in this job. Counting
+            // it as an attempt would kill every queued job on the day the key
+            // is absent, and they would stay dead after it is added. Park the
+            // job instead: no attempt spent, no state change, one trace line.
+            if (error instanceof ProviderKeyMissing) {
+                const firstTime = job.error !== failure
+                await prisma.contentJob.update({
+                    where: { id: job.id },
+                    data: { error: failure, lockedAt: null },
+                })
+                if (firstTime) {
+                    await appendTrace(job.id, {
+                        at: new Date().toISOString(),
+                        state: from,
+                        note: `waiting: ${failure}`,
+                    })
+                }
+                return { jobId: job.id, from, note: `blocked: ${failure}` }
+            }
 
             // A transport blip should cost a retry, not the article. Only once
             // the attempts are spent does the failure become the job's outcome.

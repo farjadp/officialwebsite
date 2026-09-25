@@ -325,7 +325,30 @@ unused signal cluster plus reference material and produces:
 }
 ```
 
-**Duplicate guard.** Before a brief is accepted, embed its angle with
+**Built 25 Sep 2026, with three corrections to this section's first draft:**
+
+1. **Categories come from the `Category` table, not a string.** The older writer
+   (`api/ai/generate-post`) offers a hardcoded tree — "Insights", "AI &
+   Automation", "Founder Infrastructure"… — that shares **not one name** with the
+   real table ("Business", "Technology", "Immigration"…). The admin form matches
+   generated names against real rows, so every AI-generated post has silently
+   lost its category. `taxonomy.ts` reads the tree from the database, and a
+   category that is not a real row is a model error that costs a retry, never a
+   post filed nowhere.
+2. **The fact table is rebuilt from what the site publishes** (`brand.ts`). The
+   site standardised on **22+ years** on 21 Sep; the three older prompts
+   (`generate-post`, `content-waterfall`, `social-publisher`) still say
+   **17+**. "3,000+ online meetings" and "$70K raised personally" appear in the
+   old `VERIFIED_BIO` and nowhere on the public site, so they are left out until
+   Farjad confirms them — a fact table must not be the first place a claim is
+   made.
+3. **The duplicate guard has two layers.** A lexical check (content-word
+   overlap ≥ 0.6 against every post title) always runs — free, no key, and it
+   catches the common case of the same headline reworded. The semantic check
+   below runs on top when a key and embedded posts exist. The guard therefore
+   protects the blog even on the day the embedding key is missing.
+
+**Duplicate guard (semantic layer).** Before a brief is accepted, embed its angle with
 `text-embedding-3-small` and compare against every existing `Post.embedding`
 (≈100 rows — cosine similarity in JS, no pgvector needed). Above 0.88 the
 cluster is marked used and skipped, with the near-duplicate slug recorded in the
