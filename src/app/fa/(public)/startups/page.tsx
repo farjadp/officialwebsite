@@ -16,7 +16,7 @@ import { StartupsIndex } from "@/components/v3/pages/startups"
 export const metadata: Metadata = {
     alternates: localeAlternates("/startups", "fa"),
     title: "استارتاپ‌های منتورشده",
-    description: "کارنامه‌ای از بیش از ۲۵ استارتاپی که به آن‌ها منتورشیپ، مشاوره و کمک به رشد داده‌ام.",
+    description: "کارنامه‌ای از بیش از ۵۰ تیم استارتاپی که به آن‌ها منتورشیپ، مشاوره و کمک به رشد داده‌ام.",
 };
 
 // --- DATA: NOW FETCHED DYNAMICALLY FROM DATABASE ---

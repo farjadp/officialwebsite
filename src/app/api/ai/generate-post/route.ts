@@ -11,17 +11,24 @@ import { withApiLogging } from "@/lib/api-logger";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "dummy_key_for_build" });
 
 // ─── Farjad's Verified Bio & Facts ────────────────────────────────────────────
+// Figures given by Farjad directly, 25 Sep 2026. The single source of truth is
+// src/lib/content/brand.ts — the content engine's fact table. Keep the two in
+// step; this copy exists because this route predates it.
+// Two figures were REMOVED rather than updated: "$70K+ raised personally" and
+// "3,000+ online meetings" appear on no page of the site and Farjad did not
+// confirm them, so a fact table must not be the first place they are asserted.
 const VERIFIED_BIO = {
-    yearsInTech: "17+",
+    yearsInTech: "22+",
     roles: ["Software Engineer", "CTO", "Startup Founder", "Product Strategist"],
     education: ["MSc in Software Engineering", "PhD in Anthropology"],
     certifications: ["ISO 27001 Lead Auditor"],
     background: "Immigrant founder who built companies in Iran and navigated the Canadian startup ecosystem.",
     metrics: {
-        startupsMentored: "25+",
-        fundsRaisedForOthers: "$3M+",
-        fundsRaisedPersonally: "$70K+ (under extreme constraints in Iran)",
-        onlineMeetings: "3,000+ (90% Google Meet)"
+        teamsMentored: "more than 50 startup teams over the past seven years",
+        fundingRaisedForTeams: "nearly $5M",
+        serviceGrantsForTeams: "nearly $5M more in in-kind service grants (a SEPARATE figure — never add it to the funding)",
+        accelerators: "about 20, worked with B2B: preparing teams and introducing them",
+        ownStartups: "about 10 founded; 3 were sold, the rest failed"
     }
 };
 
@@ -105,12 +112,12 @@ SEO OPTIMIZATION RULES:
 GEO (Generative Engine Optimization) RULES:
 - Use clear, declarative statements that AI can quote directly
 - Structure content as CLAIMS WITH EVIDENCE
-- Include STATISTICS and SPECIFIC NUMBERS ("In 3,000+ mentorship calls, I found...")
+- Include STATISTICS and SPECIFIC NUMBERS, but ONLY ones from the verified bio above ("Across 50+ teams, I found...")
 - Use ENTITY REFERENCES: mention industry frameworks and connect your opinion to them
 - Create QUOTABLE SENTENCES: at least 3 standalone, bold-worthy sentences per article
 - Structured Summary at end: a "Key Takeaways" bullet-point section
 - Name the concept: give original claims a NAME ("The Founder's Dependency Loop", etc.)
-- Use "According to my experience working with 25+ startups..." framing
+- Use "According to my experience mentoring 50+ startup teams..." framing
 `,
     AEO: `
 AEO (Answer Engine Optimization) RULES:

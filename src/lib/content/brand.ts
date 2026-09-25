@@ -51,6 +51,15 @@ export const FACTS = {
         claimFa: "نزدیک به ۵ میلیون دلار دیگر هم گرنت خدماتی برای همین تیم‌ها گرفته است",
         source: FARJAD_25_SEP,
     },
+    // The combined figure is allowed because the site already makes it: the Lab
+    // page has claimed "over $10M in micro-funding" in both locales all along,
+    // and it equals the two figures above. What is NOT allowed is calling it
+    // investment funding — half of it is service grants.
+    combined: {
+        claim: "about $10M secured for those teams in total, counting funding and in-kind service grants together",
+        claimFa: "در کل حدود ۱۰ میلیون دلار برای همین تیم‌ها، با شمردن سرمایه و گرنت خدماتی با هم",
+        source: `${FARJAD_25_SEP}; also the Lab page, both locales`,
+    },
     accelerators: {
         claim:
             "has worked B2B with about 20 accelerators: preparing startup teams and introducing them to those programmes",
@@ -123,8 +132,10 @@ Voice:
 Figures:
 - Use the conservative number and do not round up: "more than 50 teams", not
   "100 teams"; "nearly $5M", not "$5M+".
-- Funding raised and service grants are separate figures. Never add them into
-  one combined total — no total was ever stated.
+- Funding raised and service grants are two figures of about $5M each. The
+  combined total of about $10M may be used, but ONLY when the wording says it
+  covers funding AND service grants. Presenting it as investment funding alone
+  overstates half of it, and is the one thing to get right about this number.
 
 Never:
 - Invent a number, a client, a company name, a result or a quote.

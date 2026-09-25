@@ -14,7 +14,7 @@ import { StartupsIndex } from "@/components/v3/pages/startups"
 export const metadata: Metadata = {
     alternates: localeAlternates("/startups", "en"),
     title: "Mentored Startups",
-    description: "A portfolio of the 25+ startups I have mentored, advised, and helped scale.",
+    description: "A portfolio of the 50+ startup teams I have mentored, advised, and helped scale.",
 };
 
 // --- DATA: NOW FETCHED DYNAMICALLY FROM DATABASE ---

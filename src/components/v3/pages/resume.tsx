@@ -82,7 +82,7 @@ const COPY: Record<Locale, Copy> = {
     },
     about: [
       "With 22+ years of experience, my career has evolved from foundational IT roles to leading organizations as Founder, CTO & CSO. I hold dual Masters in Software Engineering and Anthropology — a rare combination that shapes how I build systems and lead people.",
-      "I've mentored 25+ startups, co-founded 4 companies across Iran and Canada, and helped raise $3M+ for teams I believed in. I build with clarity, systems, and brutal honesty.",
+      "Over the past seven years I have mentored more than 50 startup teams, helped them raise nearly $5M in funding and nearly $5M more in in-kind service grants, and worked B2B with around 20 accelerators — preparing teams and placing them in those programmes. I have founded about 10 startups of my own: three were sold, the rest failed. Most of what I teach comes from the ones that failed. I build with clarity, systems, and brutal honesty.",
     ],
     skills: [
       "Problem Solving",
@@ -304,7 +304,7 @@ const COPY: Record<Locale, Copy> = {
     },
     about: [
       "با بیش از ۲۲ سال تجربه، مسیرم از نقش‌های پایه‌ی فناوری اطلاعات تا رهبری سازمان‌ها به‌عنوان بنیان‌گذار، مدیر ارشد فنی و مدیر ارشد استراتژی رسیده است. دو کارشناسی ارشد دارم، مهندسی نرم‌افزار و انسان‌شناسی؛ ترکیبی کمیاب که شکل سیستم‌سازی و رهبری کردنم را تعیین می‌کند.",
-      "بیش از ۲۵ استارتاپ را منتور کرده‌ام، در ایران و کانادا ۴ شرکت هم‌بنیان‌گذاری کرده‌ام و به تیم‌هایی که به آن‌ها باور داشتم کمک کرده‌ام بیش از ۳ میلیون دلار جذب کنند. با شفافیت، سیستم و صداقت بی‌تعارف می‌سازم.",
+      "در هفت سال گذشته بیش از ۵۰ تیم استارتاپی را منتور کرده‌ام، به آن‌ها در جذب نزدیک به ۵ میلیون دلار سرمایه و نزدیک به ۵ میلیون دلار گرنت خدماتی کمک کرده‌ام، و به‌صورت B2B با حدود ۲۰ شتاب‌دهنده کار کرده‌ام؛ تیم‌ها را آماده کرده‌ام و به این برنامه‌ها معرفی. خودم حدود ۱۰ استارتاپ راه انداخته‌ام: سه تا فروخته شد و بقیه شکست خورد. بیشتر آنچه آموزش می‌دهم از همان شکست‌خورده‌ها می‌آید. با شفافیت، سیستم و صداقت بی‌تعارف می‌سازم.",
     ],
     skills: [
       "حل مسئله",

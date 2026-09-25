@@ -4,8 +4,16 @@
 //      English and Persian homes cannot drift apart structurally. Facts are
 //      the ones the site already publishes (resume, about/data.ts, the lab
 //      page, the Persian home's ledger); nothing is claimed here first.
-//      Figures follow the 21 Sep standardisation: 22+ years, 25 startups,
-//      $3M raised.
+//      Figures come from Farjad directly, 25 Sep 2026: 22+ years, 50+ startup
+//      teams mentored over seven years, nearly $5M in funding raised for those
+//      teams and nearly $5M more in in-kind service grants.
+//      The money counter shows the COMBINED $10M and says so in its label —
+//      "funding and grants". That matches the Lab page, which has been claiming
+//      "over $10M in micro-funding" in both locales all along, and it must never
+//      be relabelled as investment funding alone, which would overstate half of
+//      it. The single source of truth is src/lib/content/brand.ts.
+//      This replaces the 21 Sep figures (25 startups, $3M), which understated
+//      him and contradicted his own Lab page.
 // ============================================================================
 
 export type Locale = "en" | "fa"
@@ -61,7 +69,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
         headline: "From a raw idea to a company ",
         accent: "people pay.",
         body: "Customer discovery, lean validation and honest feedback, week by week, from someone who has built companies and lost one.",
-        proof: ["25 startups mentored", "VisaRoads mentor", "Treefrog accelerator"],
+        proof: ["50+ teams mentored", "VisaRoads mentor", "Treefrog accelerator"],
         cta: { label: "See the Founder Lab", href: "/lab" },
         secondary: { label: "Startup readiness score", href: "/tools/startup-readiness" },
       },
@@ -90,8 +98,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     ],
     facts: [
       { value: 22, suffix: "+", label: "years in technology" },
-      { value: 25, suffix: "", label: "startups mentored" },
-      { value: 3, prefix: "$", suffix: "M", label: "raised by the teams" },
+      { value: 50, suffix: "+", label: "startup teams mentored" },
+      { value: 10, prefix: "$", suffix: "M", label: "funding and grants for the teams" },
     ],
     start: {
       title: "Start small.",
@@ -151,7 +159,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
         headline: "از یک ایده‌ی خام تا شرکتی که ",
         accent: "مشتری پولش را می‌دهد.",
         body: "کشف مشتری، اعتبارسنجی ناب و بازخورد بی‌تعارف، هفته به هفته، با کسی که شرکت ساخته و یکی را هم از دست داده است.",
-        proof: ["۲۵ استارتاپ منتورشده", "منتور VisaRoads", "برنامه‌ی شتاب‌دهی Treefrog"],
+        proof: ["۵۰+ تیم منتورشده", "منتور VisaRoads", "برنامه‌ی شتاب‌دهی Treefrog"],
         cta: { label: "آشنایی با آزمایشگاه بنیان‌گذار", href: "/fa/lab" },
         secondary: { label: "سنجش آمادگی استارتاپ", href: "/fa/tools/startup-readiness" },
       },
@@ -180,8 +188,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     ],
     facts: [
       { value: 22, suffix: "+", label: "سال در فناوری" },
-      { value: 25, suffix: "", label: "استارتاپ منتورشده" },
-      { value: 3, suffix: "", label: "میلیون دلار جذب‌شده توسط تیم‌ها" },
+      { value: 50, suffix: "+", label: "تیم استارتاپی منتورشده" },
+      { value: 10, suffix: "", label: "میلیون دلار سرمایه و گرنت برای تیم‌ها" },
     ],
     start: {
       title: "از کار کوچک شروع کنید.",

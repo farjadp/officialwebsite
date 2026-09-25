@@ -39,12 +39,25 @@ describe("FACTS", () => {
         }
     })
 
-    it("never adds funding and service grants into one figure", () => {
-        // Nearly $5M raised and nearly $5M in grants were given as two figures.
-        // "$10M" was never stated, and must not appear as if it had been.
-        const everything = [...facts.map(([, f]) => f.claim + " " + f.claimFa), VOICE].join(" ")
-        expect(everything).not.toMatch(/\$ ?10 ?M|10 million|۱۰ میلیون/i)
-        expect(VOICE).toMatch(/Never add them into\s+one/i)
+    it("never states the combined $10M without naming the service grants", () => {
+        // This test asserted the opposite until 25 Sep 2026: that "$10M" must
+        // never appear at all, because Farjad gave two ~$5M figures and no
+        // total. Then the Lab page turned out to have been claiming "over $10M
+        // in micro-funding" in both locales all along, which equals the two.
+        // The combined figure is therefore allowed — and the real risk is the
+        // labelling, since half of it is service grants, not investment.
+        for (const [key, fact] of facts) {
+            for (const line of [fact.claim, fact.claimFa]) {
+                if (/\$ ?10 ?M|10 million|۱۰ میلیون/i.test(line)) {
+                    expect(line, `${key} states $10M without naming grants`).toMatch(/grant|گرنت/i)
+                }
+            }
+        }
+    })
+
+    it("warns the writer not to present the combined figure as investment alone", () => {
+        expect(VOICE).toMatch(/service grants/i)
+        expect(VOICE).toMatch(/overstates/i)
     })
 
     it("keeps the conservative figure first", () => {
