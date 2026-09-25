@@ -22,6 +22,11 @@
 - File header comments follow the existing convention in `src/app/api/cron/email/route.ts` (`Hardware Source / Version / Why / Env`).
 - Cron routes authorise exactly as `src/app/api/cron/email/route.ts` does: bearer `CRON_SECRET`, dev-permissive when the secret is unset.
 - Persian copy rules come from the `persian-writing` and `humanizer` skills. Import their rules; do not re-derive them.
+- **Never run `prisma migrate dev` / `migrate deploy`.** This repo's migration
+  history is divergent from the live database, and `DATABASE_URL` is production —
+  there is no dev database. Hand-written idempotent SQL applied with
+  `prisma db execute` over `DATABASE_URL_UNPOOLED`, and only with Farjad's
+  go-ahead. Full procedure in Task 2, Step 2.
 - Commit after every task. Small, focused commits.
 - `docs/` plans and `CONTENT_ENGINE.md` are updated in the same commit as any change that contradicts them.
 
@@ -143,10 +148,33 @@ were absent rather than failing the whole script.
 Including the `Post` additions (`locale`, `translationGroupId`, `embedding`,
 `contentJobId`) and their indexes.
 
-- [ ] **Step 2: Generate the migration**
+- [ ] **Step 2: Write the migration by hand — never `prisma migrate`**
 
-`npx prisma migrate dev --name add_content_engine`. Check the SQL backfills
-`locale = 'en'` for existing posts — every current post is English.
+<!-- Corrected 25 Sep 2026: the first draft of this plan said to run
+     `prisma migrate dev`. That would have been destructive. -->
+
+**This repo's Prisma migration history is divergent from the live database.**
+`prisma migrate dev` and `prisma migrate deploy` must never be run here — either
+would try to reconcile that history against production. There is also no
+separate development database: `DATABASE_URL` points at the production Neon
+branch, so any DDL is production DDL and needs Farjad's explicit go-ahead before
+it runs.
+
+The procedure that works in this repo:
+
+1. Write idempotent, transactional SQL by hand at
+   `prisma/migrations/20260925_add_content_engine/migration.sql` —
+   `CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`,
+   `CREATE INDEX IF NOT EXISTS`, wrapped in `BEGIN`/`COMMIT`, so a re-run is a
+   no-op rather than an error.
+2. Apply it with the **unpooled** connection, which is the one that accepts DDL:
+   `DATABASE_URL="$DATABASE_URL_UNPOOLED" npx prisma db execute --file prisma/migrations/20260925_add_content_engine/migration.sql`
+3. `npx prisma generate`.
+4. Verify with a read: the new tables exist, `Post.locale` defaults to `'en'`,
+   and every existing row carries `'en'`.
+
+`Post.locale` must be added as `NOT NULL DEFAULT 'en'` so existing English posts
+are backfilled by the default rather than by a separate UPDATE.
 
 - [ ] **Step 3: Write the failing transition-table test**
 
