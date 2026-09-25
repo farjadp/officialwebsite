@@ -14,7 +14,8 @@ import { HomeV3 } from "@/components/home/v3/home-v3"
 
 export const metadata: Metadata = {
   alternates: localeAlternates("/", "fa"),
-  title: "فرجاد | استراتژیست هوش مصنوعی، منتور استارتاپ و کوچ کسب‌وکار",
+  // absolute: the layout template would otherwise append "| Farjad" twice.
+  title: { absolute: "فرجاد | استراتژیست هوش مصنوعی، منتور استارتاپ و کوچ کسب‌وکار" },
   description:
     "استراتژی هوش مصنوعی که ارزش واقعی می‌سازد، منتورشیپ استارتاپ از ایده تا اولین مشتری، و کوچینگ آرام و رک برای بنیان‌گذاران. ۲۲+ سال ساختن شرکت در ایران و کانادا.",
 }

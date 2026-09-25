@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Book a Strategy Call | 30-Minute Consultation",
   description: "Book a 30-minute strategy call with Farjad. Diagnose your core problem and decide on next steps. Session fee goes directly to charity.",
   openGraph: {
-    title: "Book a Strategy Call | Farjad .P",
+    title: "Book a Strategy Call | Farjad",
     description: "Diagnose your core problem in 30 minutes. Session fee goes to charity.",
     images: ["/images/og-default.png"],
   },

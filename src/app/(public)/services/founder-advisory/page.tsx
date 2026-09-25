@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Founder Advisory | Strategic Mentorship for Early-Stage Founders",
   description: "1:1 strategic advisory for early-stage founders. Accountability, decision clarity, and structured thinking to help you build with less chaos.",
   openGraph: {
-    title: "Founder Advisory | Farjad .P",
+    title: "Founder Advisory | Farjad",
     description: "1:1 strategic advisory for early-stage founders. Accountability, decision clarity, and structured thinking.",
     images: ["/images/og-default.png"],
   },

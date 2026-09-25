@@ -14,7 +14,8 @@ import { HomeV3, type HomePost } from "@/components/home/v3/home-v3"
 
 export const metadata: Metadata = {
   alternates: localeAlternates("/", "en"),
-  title: "Farjad | AI Strategist, Startup Mentor & Business Coach",
+  // absolute: the layout template would otherwise append "| Farjad" twice.
+  title: { absolute: "Farjad | AI Strategist, Startup Mentor & Business Coach" },
   description:
     "AI strategy that earns its place, startup mentorship from idea to paying customers, and calm, direct coaching for founders. 22+ years building companies in Iran and Canada.",
 }

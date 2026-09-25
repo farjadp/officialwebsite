@@ -33,7 +33,7 @@ const COPY = {
     diagnosticBody:
       "Instant triage, readiness scan, and next-step recommendations. We find out if we are a match.",
     bookCall: "Book Strategy Call",
-    name: "Farjad P.",
+    name: "Farjad",
     tagline: "عاشق وطن، مشتاق به استارتاپ",
     bio: "An immigrant founder, patriot, and deeply passionate about building startups that survive reality.",
     online: "Online",
@@ -53,7 +53,7 @@ const COPY = {
     diagnosticBody:
       "تشخیص سریع، بررسی آمادگی و پیشنهاد قدم بعدی. معلوم می‌شود به درد هم می‌خوریم یا نه.",
     bookCall: "رزرو جلسه‌ی استراتژی",
-    name: "فرجاد پورمحمد",
+    name: "فرجاد",
     tagline: "عاشق وطن، مشتاق به استارتاپ",
     bio: "یک بنیان‌گذار مهاجر که به ساختن استارتاپ‌هایی که در واقعیت دوام می‌آورند دل بسته است.",
     online: "آنلاین",

@@ -266,7 +266,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         },
         "publisher": {
             "@type": "Organization",
-            "name": "Farjad .P",
+            "name": "Farjad",
             "logo": {
                 "@type": "ImageObject",
                 "url": `${SITE_URL}/images/og-default.png`
@@ -520,7 +520,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             </div>
                             <div className="space-y-2 flex-1">
                                 <div>
-                                    <p className="font-bold text-[#111827]">Farjad .P</p>
+                                    <p className="font-bold text-[#111827]">Farjad</p>
                                     <p className="text-xs text-stone-400 mt-0.5">Startup Advisor · Product Strategist · Former CTO</p>
                                 </div>
                                 <p className="text-sm text-stone-600 leading-relaxed">

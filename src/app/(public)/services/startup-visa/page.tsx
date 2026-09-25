@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description:
     "Strategic advisory for entrepreneurs pursuing Canada's Startup Visa. Build a real, qualifying business — not just a visa application.",
   openGraph: {
-    title: "Startup Visa Advisory | Farjad .P",
+    title: "Startup Visa Advisory | Farjad",
     description: "Strategic advisory for entrepreneurs pursuing Canada's Startup Visa. Build a real, qualifying business.",
     images: ["/images/og-default.png"],
   },

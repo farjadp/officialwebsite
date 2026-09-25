@@ -77,7 +77,7 @@ const COPY: Record<Locale, Copy> = {
       basedValue: "Toronto / Newmarket, CA",
     },
     stats: {
-      years: { to: 15, suffix: "+", label: "Years Building Systems" },
+      years: { to: 22, suffix: "+", label: "Years Building Systems" },
       items: [
         { value: "AshaVid", label: "Founder & CSO" },
         { value: "DPF & HoFin", label: "Founder / Co-Founder" },
@@ -179,7 +179,7 @@ const COPY: Record<Locale, Copy> = {
       basedValue: "نیومارکت / تورنتو، کانادا",
     },
     stats: {
-      years: { to: 15, suffix: "+", label: "سال سیستم‌سازی" },
+      years: { to: 22, suffix: "+", label: "سال سیستم‌سازی" },
       items: [
         { value: "AshaVid", label: "بنیان‌گذار و مدیر ارشد استراتژی" },
         { value: "DPF & HoFin", label: "بنیان‌گذار و هم‌بنیان‌گذار" },
@@ -203,7 +203,7 @@ const COPY: Record<Locale, Copy> = {
       dont: {
         title: "کاری که نمی‌کنم",
         items: [
-          "روابط عمومی «تضمینی» نمی‌فروشم.",
+          "اقامت دائم «تضمینی» نمی‌فروشم.",
           "عدد و رشد ساختگی نمی‌سازم.",
           "با کسی که دنبال میان‌بر یا شرکت روی کاغذ است کار نمی‌کنم.",
         ],

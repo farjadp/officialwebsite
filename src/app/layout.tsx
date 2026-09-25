@@ -42,8 +42,8 @@ const danaFont = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    template: "%s | Farjad .P",
-    default: "Farjad .P — Startup Advisor & Systems Architect",
+    template: "%s | Farjad",
+    default: "Farjad — AI Strategist, Startup Mentor & Business Coach",
   },
   description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
   // NOTE: deliberately NO `alternates` here — neither canonical nor languages.
@@ -57,21 +57,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    siteName: "Farjad .P",
-    title: "Farjad .P — Startup Advisor & Systems Architect",
+    siteName: "Farjad",
+    title: "Farjad — AI Strategist, Startup Mentor & Business Coach",
     description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
     images: [
       {
         url: "/images/og-default.png",
         width: 1200,
         height: 630,
-        alt: "Farjad .P — Startup Advisor & Systems Architect",
+        alt: "Farjad — AI Strategist, Startup Mentor & Business Coach",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Farjad .P — Startup Advisor & Systems Architect",
+    title: "Farjad — AI Strategist, Startup Mentor & Business Coach",
     description: "I help early-stage founders launch products and SMEs replace manual chaos with AI & digital systems.",
     images: ["/images/og-default.png"],
   },
@@ -94,7 +94,7 @@ export default async function RootLayout({
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Farjad .P",
+    "name": "Farjad",
     "url": SITE_URL,
     "potentialAction": {
       "@type": "SearchAction",
