@@ -13,6 +13,7 @@
 import type { ContentSource } from "@prisma/client"
 import { XMLParser } from "fast-xml-parser"
 import { extractText } from "unpdf"
+import { safeFetch } from "./safe-url"
 
 export const SOURCE_KINDS = ["RSS", "HN", "REDDIT", "URL", "PDF"] as const
 export type SourceKind = (typeof SOURCE_KINDS)[number]
@@ -50,10 +51,11 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
  * into a live one; a second failure is a real failure and is reported.
  */
 async function get(url: string, accept: string, retryOn429 = true): Promise<Response> {
-    const response = await fetch(url, {
+    // Every address here came from an admin-entered row; safeFetch refuses
+    // private and local hosts on the first request and on every redirect.
+    const response = await safeFetch(url, {
         headers: { "user-agent": USER_AGENT, accept },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        redirect: "follow",
     })
 
     if (response.status === 429 && retryOn429) {

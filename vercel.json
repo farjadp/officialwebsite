@@ -8,10 +8,6 @@
     {
       "path": "/api/cron/content-scout",
       "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/content",
-      "schedule": "*/15 * * * *"
     }
   ]
 }
