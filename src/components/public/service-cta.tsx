@@ -1,13 +1,27 @@
-import React from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Copy, Navigation, MessageCircle, Bot, Zap, ArrowRight, UserCircle2, Mail, Link as LinkIcon, Instagram, Youtube, Linkedin, MoveUpRight } from "lucide-react";
-import { localePath, type Locale } from "@/lib/nav";
+// ============================================================================
+// File Path: src/components/public/service-cta.tsx
+// Version: 3.0.0 — 2026-09-25
+// Why: The closing block on every service page in BOTH locales, in the v3
+//      "Light" look: a beam, one headline with its accent in the light, the
+//      booking action, and the direct channels. Export name and props are
+//      unchanged so every service page keeps importing it as before.
+//
+//      History: this block used to be English-only with a hardcoded
+//      href="/booking", so the primary call to action on the Persian service
+//      pages dropped the visitor back into the English site.
+//      v3 fixes: every channel is now a real, named link (the tiles used to
+//      be empty overlay anchors and the social icons had no accessible name),
+//      external links open with rel="noopener noreferrer", and the email
+//      address is no longer truncated. The third-party avatar image
+//      (ui-avatars.com) was decorative and is gone.
+// Env / Identity: React Server Component
+// ============================================================================
 
-// This block is the closing CTA on every service page in BOTH locales. It used
-// to be English-only with a hardcoded href="/booking", so the primary call to
-// action on the Persian service pages was an English panel that dropped the
-// visitor back into the English site.
+import type { ReactNode } from "react"
+import { Instagram, Link as LinkIcon, Linkedin, Mail, MessageCircle, MoveUpRight, Navigation, Youtube } from "lucide-react"
+import { localePath, type Locale } from "@/lib/nav"
+import { Beam, Headline, Reveal, V3Button } from "@/components/v3/kit"
+
 const COPY = {
   en: {
     headingLead: "Ready to build something that",
@@ -49,174 +63,160 @@ const COPY = {
     ashavidNote: "نوآوری و سیستم",
     northroadNote: "سرمایه‌گذاری خطرپذیر",
   },
-} as const;
+} as const
+
+const SOCIALS = [
+  { href: "https://t.me/FarjadTalks", label: "Telegram", icon: Navigation },
+  { href: "https://instagram.com/FarjadTalks", label: "Instagram", icon: Instagram },
+  { href: "https://youtube.com/@FarjadTalks", label: "YouTube", icon: Youtube },
+  { href: "https://www.linkedin.com/in/farjadpourmohammad/", label: "LinkedIn", icon: Linkedin },
+] as const
+
+function Channel({
+  href,
+  icon,
+  title,
+  note,
+  external = true,
+}: {
+  href: string
+  icon: ReactNode
+  title: string
+  note: ReactNode
+  external?: boolean
+}) {
+  return (
+    <a
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="group flex min-h-16 items-center justify-between gap-4 rounded-xl border border-v3-line/80 p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-v3-light/60 hover:bg-v3-ink"
+    >
+      <span className="flex min-w-0 items-center gap-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-v3-line text-v3-soft transition-colors duration-300 group-hover:border-v3-light/60 group-hover:text-v3-light">
+          {icon}
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="text-sm font-medium text-v3-bone">{title}</span>
+          <span className="truncate text-xs text-v3-mute">{note}</span>
+        </span>
+      </span>
+      <MoveUpRight
+        aria-hidden
+        className="h-4 w-4 shrink-0 text-v3-mute transition-all duration-300 group-hover:text-v3-light rtl:-scale-x-100"
+      />
+    </a>
+  )
+}
 
 export function ServiceCta({ locale = "en" }: { locale?: Locale }) {
-  const t = COPY[locale];
+  const t = COPY[locale]
+
   return (
-    <section className="py-24 bg-[#111827] px-6 text-white relative overflow-hidden font-sans">
-      {/* Abstract Glows */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-[#1B4B43] rounded-full blur-[140px] opacity-40 pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#D97706] rounded-full blur-[160px] opacity-10 pointer-events-none" />
+    <section className="relative isolate overflow-hidden border-t border-v3-line/70 bg-v3-ink font-v3-body text-v3-bone">
+      <Beam className="[animation-delay:-4s]" />
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-14 px-5 py-24 md:px-10 lg:px-14 lg:py-36">
+        {/* ── Statement ─────────────────────────────────────────────── */}
+        <Reveal className="flex flex-col gap-6">
+          <Headline size="section" className="max-w-5xl md:text-7xl">
+            {t.headingLead}{" "}
+            <em className="text-v3-light not-italic ltr:italic">{t.headingAccent}</em> {t.headingTail}
+          </Headline>
+          <p className="max-w-2xl text-lg leading-relaxed text-v3-soft md:text-xl rtl:leading-loose">{t.sub}</p>
+        </Reveal>
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        
-        {/* Title Area */}
-        <div className="text-center mb-16 space-y-6">
-          <h2 className="font-serif text-5xl md:text-6xl text-white tracking-tight leading-tight">
-            {t.headingLead} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D97706] to-yellow-200">
-              {t.headingAccent}
-            </span> {t.headingTail}
-          </h2>
-          <p className="text-stone-400 text-lg md:text-xl font-light">
-            {t.sub}
-          </p>
-        </div>
-
-        {/* Bento Grid Container */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-1 md:gap-px bg-stone-800/40 border border-stone-800 rounded-2xl overflow-hidden shadow-2xl">
-          
-          {/* LEFT PANEL: Assistant / Booking */}
-          <div className="lg:col-span-5 bg-[#171717] p-8 md:p-10 flex flex-col justify-between relative group hover:bg-[#1a1a1a] transition-colors">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#D97706]/20 text-[#FBBF24] border border-[#D97706]/30 rounded-full text-[10px] font-bold tracking-widest uppercase mb-8">
-                <Zap className="w-3 h-3 fill-current" />
-                {t.availableNow}
+        <div className="grid gap-5 lg:grid-cols-12">
+          {/* ── Booking ─────────────────────────────────────────────── */}
+          <Reveal delay={0.08} className="lg:col-span-5">
+            <div className="relative flex h-full flex-col justify-between gap-12 rounded-2xl border border-v3-light/50 bg-v3-raise p-7 shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)] md:p-10">
+              <div className="flex flex-col gap-5">
+                <span className="inline-flex items-center gap-2 self-start rounded-full border border-v3-light/50 px-3 py-1.5 text-[13px] text-v3-light">
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" />
+                  {t.availableNow}
+                </span>
+                <Headline as="h3" size="card">
+                  {t.diagnosticTitle}
+                </Headline>
+                <p className="leading-relaxed text-v3-soft rtl:leading-loose">{t.diagnosticBody}</p>
               </div>
-              
-              <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-3">
-                {t.diagnosticTitle}
-              </h3>
-              <p className="text-stone-400 text-sm md:text-base leading-relaxed font-light pe-4">
-                {t.diagnosticBody}
-              </p>
+              <V3Button href={localePath(locale, "/booking")} locale={locale} className="justify-between self-stretch sm:self-start">
+                {t.bookCall}
+              </V3Button>
             </div>
-            
-            <Link href={localePath(locale, "/booking")} className="mt-12 w-full block">
-              <Button className="w-full h-14 bg-gradient-to-br from-[#D97706] to-[#B45309] hover:from-[#F59E0B] hover:to-[#D97706] text-white font-bold text-base rounded-xl flex justify-between items-center px-6 shadow-lg shadow-[#D97706]/20 transition-all hover:scale-[1.02]">
-                <div className="flex items-center gap-2">
-                  <UserCircle2 className="w-5 h-5" />
-                  {t.bookCall}
-                </div>
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
+          </Reveal>
 
-          {/* RIGHT PANEL: Direct Chat / Social */}
-          <div className="lg:col-span-7 bg-[#171717] p-8 md:p-10 flex flex-col justify-between">
-            <div>
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-8">
-                <div>
-                  <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-3">
+          {/* ── Direct channels ─────────────────────────────────────── */}
+          <Reveal delay={0.16} className="lg:col-span-7">
+            <div className="flex h-full flex-col gap-8 rounded-2xl border border-v3-line/80 p-7 md:p-10">
+              <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-start">
+                <div className="flex flex-col gap-3">
+                  <Headline as="h3" size="card">
                     {t.name}
-                  </h3>
-                  <p className="text-stone-400 text-sm md:text-base font-light leading-relaxed">
-                    <span className="text-[#34D399] tracking-widest font-medium uppercase text-xs">{t.tagline}</span><br />
-                    {t.bio}
+                  </Headline>
+                  <p lang="fa" dir="rtl" className="text-sm text-v3-light">
+                    {t.tagline}
                   </p>
+                  <p className="max-w-md leading-relaxed text-v3-soft rtl:leading-loose">{t.bio}</p>
                 </div>
-                
-                {/* Online Indicator */}
-                <div className="flex items-center bg-stone-900/50 border border-stone-800 rounded-lg p-2 gap-3 shrink-0">
-                  <div className="flex -space-x-2">
-                    <img src="https://ui-avatars.com/api/?name=Farjad&background=1B4B43&color=fff&bold=true" alt="Farjad" className="w-8 h-8 rounded-full border-2 border-[#171717]" />
-                  </div>
-                  <div className="text-[10px] leading-tight pe-2">
-                    <span className="text-white font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse relative top-px" />
-                      {t.online}
-                    </span>
-                    <span className="text-stone-400">{t.readyToTalk}</span>
-                  </div>
+                <div className="flex shrink-0 items-center gap-3 self-start rounded-xl border border-v3-line/80 px-4 py-2.5">
+                  <span aria-hidden className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-v3-light/60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-v3-light" />
+                  </span>
+                  <span className="flex flex-col text-xs leading-tight">
+                    <span className="font-semibold text-v3-bone">{t.online}</span>
+                    <span className="text-v3-mute">{t.readyToTalk}</span>
+                  </span>
                 </div>
               </div>
 
-              {/* Social Ecosystem Links */}
-              <div className="flex flex-wrap gap-2 mb-10">
-                <Link href={"https://t.me/FarjadTalks"} target="_blank" className="flex items-center justify-center w-10 h-10 rounded-lg bg-stone-800/50 hover:bg-[#229ED9]/20 text-stone-400 hover:text-[#229ED9] transition-colors group">
-                  <Navigation className="w-5 h-5 -rotate-45 ms-[-2px] mt-[2px] fill-current group-hover:scale-110 transition-transform" />
-                </Link>
-                <Link href={"https://instagram.com/FarjadTalks"} target="_blank" className="flex items-center justify-center w-10 h-10 rounded-lg bg-stone-800/50 hover:bg-[#E1306C]/20 text-stone-400 hover:text-[#E1306C] transition-colors group">
-                  <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                </Link>
-                <Link href={"https://youtube.com/@FarjadTalks"} target="_blank" className="flex items-center justify-center w-10 h-10 rounded-lg bg-stone-800/50 hover:bg-[#FF0000]/20 text-stone-400 hover:text-[#FF0000] transition-colors group">
-                  <Youtube className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                </Link>
-                <Link href={"https://www.linkedin.com/in/farjadpourmohammad/"} target="_blank" className="flex items-center justify-center w-10 h-10 rounded-lg bg-stone-800/50 hover:bg-[#0A66C2]/20 text-stone-400 hover:text-[#0A66C2] transition-colors group">
-                  <Linkedin className="w-5 h-5 group-hover:scale-110 transition-transform fill-current" />
-                </Link>
+              <ul className="flex flex-wrap gap-2">
+                {SOCIALS.map(({ href, label, icon: Icon }) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      title={label}
+                      className="flex h-11 w-11 items-center justify-center rounded-lg border border-v3-line/80 text-v3-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-v3-light/60 hover:text-v3-light"
+                    >
+                      <Icon aria-hidden className="h-5 w-5" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto grid gap-3 sm:grid-cols-2">
+                <Channel
+                  href="https://wa.me/14376611674"
+                  icon={<MessageCircle aria-hidden className="h-5 w-5" />}
+                  title={t.whatsapp}
+                  note={<span dir="ltr">+1 (437) 661-1674</span>}
+                />
+                <Channel
+                  href="mailto:farjad@ashavid.ca"
+                  external={false}
+                  icon={<Mail aria-hidden className="h-5 w-5" />}
+                  title={t.directEmail}
+                  note={<span dir="ltr">farjad@ashavid.ca</span>}
+                />
+                <Channel
+                  href="https://www.AshaVid.ca"
+                  icon={<LinkIcon aria-hidden className="h-4 w-4" />}
+                  title="AshaVid"
+                  note={t.ashavidNote}
+                />
+                <Channel
+                  href="https://www.NorthRoad.vc"
+                  icon={<LinkIcon aria-hidden className="h-4 w-4" />}
+                  title="NorthRoad VC"
+                  note={t.northroadNote}
+                />
               </div>
             </div>
-
-            {/* Direct Contact & Websites */}
-            <div className="grid sm:grid-cols-2 gap-3">
-              {/* WhatsApp */}
-              <div className="group relative flex items-center justify-between p-4 bg-stone-900/40 border border-stone-800/60 rounded-xl hover:bg-green-950/20 hover:border-green-800/50 transition-all cursor-pointer">
-                <Link href={"https://wa.me/14376611674"} target="_blank" className="absolute inset-0 z-10" />
-                <div className="flex items-center gap-4 relative z-0">
-                  <div className="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center shrink-0">
-                    <MessageCircle className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">{t.whatsapp}</p>
-                    <p className="text-stone-500 text-xs" dir="ltr">+1 (437) 661-1674</p>
-                  </div>
-                </div>
-                <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-[#25D366] transition-colors relative z-20" />
-              </div>
-
-              {/* Email */}
-              <div className="group relative flex items-center justify-between p-4 bg-stone-900/40 border border-stone-800/60 rounded-xl hover:bg-stone-800/80 hover:border-stone-700 transition-all cursor-pointer">
-                <Link href={"mailto:farjad@ashavid.ca"} className="absolute inset-0 z-10" />
-                <div className="flex items-center gap-4 relative z-0">
-                  <div className="w-10 h-10 rounded-full bg-stone-800 text-stone-300 flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">{t.directEmail}</p>
-                    <p className="text-stone-500 text-xs truncate max-w-[120px]">farjad@ashavid.ca</p>
-                  </div>
-                </div>
-                <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-white transition-colors relative z-20" />
-              </div>
-
-              {/* AshaVid */}
-              <div className="group relative flex items-center justify-between p-4 bg-stone-900/40 border border-stone-800/60 rounded-xl hover:bg-[#1B4B43]/20 hover:border-[#1B4B43]/50 transition-all cursor-pointer">
-                <Link href={"https://www.AshaVid.ca"} target="_blank" className="absolute inset-0 z-10" />
-                <div className="flex items-center gap-4 relative z-0">
-                  <div className="w-10 h-10 rounded-full bg-[#1B4B43]/20 text-[#34D399] flex items-center justify-center shrink-0">
-                    <LinkIcon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">AshaVid</p>
-                    <p className="text-stone-500 text-xs">{t.ashavidNote}</p>
-                  </div>
-                </div>
-                <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-[#34D399] transition-colors relative z-20" />
-              </div>
-
-              {/* NorthRoad VC */}
-              <div className="group relative flex items-center justify-between p-4 bg-stone-900/40 border border-stone-800/60 rounded-xl hover:bg-[#D97706]/10 hover:border-[#D97706]/40 transition-all cursor-pointer">
-                <Link href={"https://www.NorthRoad.vc"} target="_blank" className="absolute inset-0 z-10" />
-                <div className="flex items-center gap-4 relative z-0">
-                  <div className="w-10 h-10 rounded-full bg-[#D97706]/20 text-[#D97706] flex items-center justify-center shrink-0">
-                    <LinkIcon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">NorthRoad VC</p>
-                    <p className="text-stone-500 text-xs">{t.northroadNote}</p>
-                  </div>
-                </div>
-                <MoveUpRight className="w-4 h-4 text-stone-600 group-hover:text-[#D97706] transition-colors relative z-20" />
-              </div>
-
-            </div>
-            
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
-  );
+  )
 }
