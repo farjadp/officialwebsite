@@ -9,12 +9,20 @@ import {
     Check,
     FlaskConical,
     Layers,
-    LoaderCircle,
     Plus,
     Sparkles,
     Trash2,
     X,
 } from "lucide-react";
+import {
+    StepIn,
+    ToolButton,
+    ToolField,
+    ToolIntro,
+    ToolPanel,
+    ToolProgress,
+    ToolShell,
+} from "@/components/v3/tool-kit";
 import {
     MAX_STRESS_FACTORS,
     MIN_DESCRIBED_COMPONENTS,
@@ -42,6 +50,15 @@ const loadingStages = [
     "Looking for double-red and inconsistent patterns…",
     "Writing the redesign actions…",
 ];
+
+/** Scroll to the top; instant when the visitor prefers reduced motion. */
+function scrollToTop() {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" });
+}
+
+const fieldClass =
+    "w-full rounded-xl border border-v3-line bg-v3-raise px-4 text-base text-v3-bone placeholder:text-v3-mute/70 transition-colors focus:border-v3-light/60 focus:outline-none focus:ring-2 focus:ring-v3-light/70";
 
 const emptyCustom = {
     name: "",
@@ -150,7 +167,7 @@ export default function BusinessModelStressTestTool() {
 
             setReport(data as StressTestReport);
             setStep("result");
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            scrollToTop();
 
             const score = (data as StressTestReport).result.robustnessIndex;
             fetch("/api/tool-usage", {
@@ -189,46 +206,67 @@ export default function BusinessModelStressTestTool() {
         setCustomFactors([]);
         setReport(null);
         setError("");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTop();
     }
 
-    return (
-        <main className="min-h-screen bg-[#FDFBF7] pb-24 text-[#1C1917] selection:bg-[#0F3F35] selection:text-white">
-            <section className="mx-auto max-w-6xl px-6 pt-28 pb-10 md:px-12 md:pt-36">
-                <Link
-                    href="/tools"
-                    className="group mb-10 inline-flex items-center gap-2 text-sm font-medium text-stone-500 transition-colors hover:text-[#0F3F35]"
-                >
-                    <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" /> Back to
-                    Tools Library
-                </Link>
+    const stepItems = [
+        { id: "model", label: "1 · Business model" },
+        { id: "factors", label: "2 · Stress factors" },
+        { id: "lead", label: "3 · Run the test" },
+    ];
+    const stepIndex = stepItems.findIndex((item) => item.id === step);
 
-                {step === "intro" && (
-                    <div className="grid items-end gap-10 lg:grid-cols-[1fr_380px]">
-                        <div>
-                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#D97706]/30 bg-[#D97706]/5 px-3 py-1 text-xs font-bold tracking-widest text-[#D97706] uppercase">
-                                <FlaskConical className="size-3.5" /> Scenario diagnostic
-                            </div>
-                            <h1 className="max-w-4xl font-serif text-5xl leading-[1.05] text-[#0F3F35] md:text-7xl">
-                                Would your business model <span className="text-[#D97706]">survive?</span>
-                            </h1>
-                            <p className="mt-6 max-w-2xl text-lg leading-relaxed font-medium text-stone-600 md:text-xl">
-                                Most business models are validated against today. This one puts yours against
-                                the futures that could break it — one component at a time — and shows you
-                                exactly where it snaps.
-                            </p>
-                        </div>
-                        <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-[0_18px_50px_-30px_rgba(15,63,53,0.35)]">
-                            <div className="mb-5 flex items-center gap-3">
-                                <div className="grid size-10 place-items-center rounded-xl bg-[#0F3F35] text-white">
+    return (
+        <ToolShell wide={step === "result"}>
+            <Link
+                href="/tools"
+                className="group mb-6 inline-flex items-center gap-2 text-sm text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
+            >
+                <ArrowLeft
+                    aria-hidden
+                    className="size-4 transition-transform group-hover:-translate-x-1 rtl:-scale-x-100 rtl:group-hover:translate-x-1"
+                />{" "}
+                Back to Tools Library
+            </Link>
+
+            {step === "intro" && (
+                <>
+                    <ToolIntro
+                        kicker={
+                            <span className="inline-flex items-center gap-2">
+                                <FlaskConical className="size-4" aria-hidden /> Scenario diagnostic
+                            </span>
+                        }
+                        title={
+                            <>
+                                Would your business model <span className="text-v3-light">survive?</span>
+                            </>
+                        }
+                        lead="Most business models are validated against today. This one puts yours against the futures that could break it — one component at a time — and shows you exactly where it snaps."
+                        action={
+                            <ToolButton onClick={() => setStep("model")}>
+                                Start the stress test{" "}
+                                <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+                            </ToolButton>
+                        }
+                        meta="Takes about 10 minutes to fill in · Free · No account needed"
+                    />
+
+                    <StepIn delay={0.32} className="flex flex-col gap-8">
+                        <div className="rounded-3xl border border-v3-line/80 bg-v3-raise p-7">
+                            <div className="mb-6 flex items-center gap-3">
+                                <div
+                                    aria-hidden
+                                    className="grid size-10 place-items-center rounded-xl border border-v3-line text-v3-light"
+                                >
                                     <Layers className="size-5" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-[#0F3F35]">Peer-reviewed method</p>
-                                    <p className="text-xs text-stone-500">Haaker et al., Futures (2017)</p>
+                                    <p className="font-medium text-v3-bone">Peer-reviewed method</p>
+                                    <p className="text-xs text-v3-mute">Haaker et al., Futures (2017)</p>
                                 </div>
                             </div>
-                            <ol className="space-y-2 text-xs font-medium text-stone-600">
+                            <ol className="grid gap-2 text-sm text-v3-soft sm:grid-cols-2">
                                 {[
                                     "Describe your business model",
                                     "Pick 3-5 uncertainties",
@@ -237,8 +275,14 @@ export default function BusinessModelStressTestTool() {
                                     "Read the patterns",
                                     "Fix what breaks",
                                 ].map((label, index) => (
-                                    <li key={label} className="flex items-center gap-2 rounded-lg bg-stone-50 px-3 py-2">
-                                        <span className="grid size-5 shrink-0 place-items-center rounded-full bg-[#0F3F35] font-mono text-[10px] text-white">
+                                    <li
+                                        key={label}
+                                        className="flex items-center gap-3 rounded-xl border border-v3-line/60 px-3 py-2.5"
+                                    >
+                                        <span
+                                            aria-hidden
+                                            className="font-v3-display text-lg leading-none text-v3-light tabular-nums"
+                                        >
                                             {index + 1}
                                         </span>
                                         {label}
@@ -246,70 +290,7 @@ export default function BusinessModelStressTestTool() {
                                 ))}
                             </ol>
                         </div>
-                    </div>
-                )}
 
-                {step !== "intro" && step !== "result" && (
-                    <div>
-                        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-bold tracking-widest uppercase">
-                            {[
-                                { id: "model", label: "1 · Business model" },
-                                { id: "factors", label: "2 · Stress factors" },
-                                { id: "lead", label: "3 · Run the test" },
-                            ].map((item) => (
-                                <span
-                                    key={item.id}
-                                    className={`rounded-full px-3 py-1 ${
-                                        step === item.id
-                                            ? "bg-[#0F3F35] text-white"
-                                            : "bg-stone-100 text-stone-400"
-                                    }`}
-                                >
-                                    {item.label}
-                                </span>
-                            ))}
-                        </div>
-                        <h1 className="font-serif text-4xl text-[#0F3F35] md:text-5xl">
-                            {step === "model" && "Describe the business model"}
-                            {step === "factors" && "Choose what to stress it with"}
-                            {step === "lead" && "Run the stress test"}
-                        </h1>
-                        <p className="mt-4 max-w-3xl text-base leading-relaxed text-stone-600">
-                            {step === "model" &&
-                                "Be specific and honest — the test can only stress what you actually write down. Vague answers produce a vague heat map."}
-                            {step === "factors" &&
-                                `Pick the ${MIN_STRESS_FACTORS}-${MAX_STRESS_FACTORS} uncertainties with the highest impact on your model. Each one is tested at both extremes, because a future that only ever goes your way is not a test.`}
-                            {step === "lead" &&
-                                "Your heat map takes up to a minute to build. Tell us where to say it is ready."}
-                        </p>
-                    </div>
-                )}
-
-                {step === "result" && report && (
-                    <div>
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#D97706]/30 bg-[#D97706]/5 px-3 py-1 text-xs font-bold tracking-widest text-[#D97706] uppercase">
-                            <Sparkles className="size-3.5" /> Stress test complete
-                        </div>
-                        <h1 className="font-serif text-4xl text-[#0F3F35] md:text-5xl">
-                            Where your model breaks
-                        </h1>
-                    </div>
-                )}
-
-                {error && (
-                    <div
-                        role="alert"
-                        className="mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
-                    >
-                        <AlertCircle className="mt-0.5 size-5 shrink-0" />
-                        <span>{error}</span>
-                    </div>
-                )}
-            </section>
-
-            <section className="mx-auto max-w-6xl px-6 md:px-12">
-                {step === "intro" && (
-                    <div className="space-y-8">
                         <div className="grid gap-4 md:grid-cols-3">
                             {[
                                 {
@@ -325,51 +306,103 @@ export default function BusinessModelStressTestTool() {
                                     body: "The method deliberately ignores how likely a future is. It asks what happens to you if it arrives — which is the part you can act on.",
                                 },
                             ].map((card) => (
-                                <div
-                                    key={card.title}
-                                    className="rounded-2xl border border-stone-200 bg-white p-6"
-                                >
-                                    <h2 className="font-bold text-[#0F3F35]">{card.title}</h2>
-                                    <div className="my-3 h-1 w-8 bg-[#D97706]" />
-                                    <p className="text-sm leading-relaxed text-stone-600">{card.body}</p>
+                                <div key={card.title} className="rounded-2xl border border-v3-line/80 p-6">
+                                    <h2 className="font-medium text-v3-bone">{card.title}</h2>
+                                    <div aria-hidden className="my-4 h-px w-8 bg-v3-light" />
+                                    <p className="text-sm leading-relaxed text-v3-soft rtl:leading-loose">
+                                        {card.body}
+                                    </p>
                                 </div>
                             ))}
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setStep("model")}
-                            className="inline-flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#0F3F35] px-8 font-bold text-white transition-colors hover:bg-[#D97706]"
-                        >
-                            Start the stress test <ArrowRight className="size-4" />
-                        </button>
-                        <p className="text-sm text-stone-500">
-                            Takes about 10 minutes to fill in · Free · No account needed
-                        </p>
-                    </div>
-                )}
+                    </StepIn>
+                </>
+            )}
 
+            {step !== "intro" && step !== "result" && (
+                <>
+                    <ToolProgress
+                        label={
+                            <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                {stepItems.map((item) => (
+                                    <span
+                                        key={item.id}
+                                        aria-current={step === item.id ? "step" : undefined}
+                                        className={step === item.id ? "text-v3-bone" : "text-v3-mute"}
+                                    >
+                                        {item.label}
+                                    </span>
+                                ))}
+                            </span>
+                        }
+                        percent={((stepIndex + 1) / stepItems.length) * 100}
+                    />
+                    <StepIn key={step} className="pt-10">
+                        <h1 className="font-v3-display text-4xl font-light leading-tight md:text-5xl rtl:leading-snug">
+                            {step === "model" && "Describe the business model"}
+                            {step === "factors" && "Choose what to stress it with"}
+                            {step === "lead" && "Run the stress test"}
+                        </h1>
+                        <p className="mt-4 max-w-3xl leading-relaxed text-v3-soft rtl:leading-loose">
+                            {step === "model" &&
+                                "Be specific and honest — the test can only stress what you actually write down. Vague answers produce a vague heat map."}
+                            {step === "factors" &&
+                                `Pick the ${MIN_STRESS_FACTORS}-${MAX_STRESS_FACTORS} uncertainties with the highest impact on your model. Each one is tested at both extremes, because a future that only ever goes your way is not a test.`}
+                            {step === "lead" &&
+                                "Your heat map takes up to a minute to build. Tell us where to say it is ready."}
+                        </p>
+                    </StepIn>
+                </>
+            )}
+
+            {step === "result" && report && (
+                <StepIn className="pb-10">
+                    <p className="mb-4 inline-flex items-center gap-2 text-sm text-v3-light">
+                        <Sparkles className="size-4" aria-hidden /> Stress test complete
+                    </p>
+                    <h1 className="font-v3-display text-[clamp(2.5rem,6vw,4.5rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:leading-[1.4] rtl:tracking-normal">
+                        Where your model breaks
+                    </h1>
+                </StepIn>
+            )}
+
+            {error && (
+                <div
+                    role="alert"
+                    className="mt-6 flex items-start gap-3 rounded-2xl border border-v3-light/60 bg-v3-light/[0.07] p-4 text-sm text-v3-bone"
+                >
+                    <AlertCircle className="mt-0.5 size-5 shrink-0 text-v3-light" aria-hidden />
+                    <span>{error}</span>
+                </div>
+            )}
+
+            <div className="mt-10">
                 {step === "model" && (
-                    <div className="space-y-6">
-                        <div className="grid gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-4">
                             {businessModelComponents.map((component) => (
-                                <div
+                                <StepIn
                                     key={component.id}
-                                    className="rounded-2xl border border-stone-200 bg-white p-5"
+                                    className="flex flex-col gap-2 border-b border-v3-line/60 pb-6"
                                 >
                                     <label
                                         htmlFor={component.id}
                                         className="flex items-baseline justify-between gap-3"
                                     >
-                                        <span className="font-bold text-[#0F3F35]">{component.name}</span>
-                                        <span className="text-[10px] font-bold tracking-wider text-stone-400 uppercase">
+                                        <span className="text-lg text-v3-bone">{component.name}</span>
+                                        <span className="text-[11px] tracking-wider text-v3-mute uppercase">
                                             {component.required ? "Required" : "Optional"}
                                         </span>
                                     </label>
-                                    <p className="mt-1 text-xs text-stone-500">{component.question}</p>
+                                    <p id={`${component.id}-hint`} className="text-sm text-v3-mute">
+                                        {component.question}
+                                    </p>
                                     <textarea
                                         id={component.id}
                                         rows={3}
                                         maxLength={700}
+                                        aria-describedby={`${component.id}-hint`}
+                                        aria-required={component.required || undefined}
                                         value={businessModel[component.id] || ""}
                                         onChange={(event) =>
                                             setBusinessModel((current) => ({
@@ -378,51 +411,50 @@ export default function BusinessModelStressTestTool() {
                                             }))
                                         }
                                         placeholder={component.placeholder}
-                                        className="mt-3 w-full resize-y rounded-xl border border-stone-200 bg-stone-50 p-3 text-sm text-[#1C1917] outline-none transition-colors placeholder:text-stone-400 focus:border-[#D97706] focus:bg-white"
+                                        className={`${fieldClass} mt-1 resize-y py-3 text-sm leading-relaxed`}
                                     />
-                                </div>
+                                </StepIn>
                             ))}
                         </div>
 
-                        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white p-5">
-                            <p className="text-sm text-stone-600">
-                                <strong className="text-[#0F3F35]">
+                        <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-v3-line bg-v3-raise/95 p-5 backdrop-blur-md">
+                            <p className="text-sm text-v3-soft" aria-live="polite">
+                                <strong className="font-medium text-v3-light tabular-nums">
                                     {describedCount}/{businessModelComponents.length}
                                 </strong>{" "}
                                 components described
                                 {!modelReady && (
-                                    <span className="block text-xs text-stone-400">
+                                    <span className="block text-xs text-v3-mute">
                                         {missingRequired.length
                                             ? `Still needed: ${missingRequired.map((item) => item.name.toLowerCase()).join(", ")}.`
                                             : `Describe at least ${MIN_DESCRIBED_COMPONENTS} components to run a meaningful test.`}
                                     </span>
                                 )}
                             </p>
-                            <button
-                                type="button"
+                            <ToolButton
                                 disabled={!modelReady}
                                 onClick={() => {
                                     setStep("factors");
-                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                    scrollToTop();
                                 }}
-                                className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-xl bg-[#0F3F35] px-6 font-bold text-white transition-colors hover:bg-[#D97706] disabled:cursor-not-allowed disabled:opacity-40"
                             >
-                                Choose stress factors <ArrowRight className="size-4" />
-                            </button>
+                                Choose stress factors{" "}
+                                <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+                            </ToolButton>
                         </div>
                     </div>
                 )}
 
                 {step === "factors" && (
-                    <div className="space-y-8">
+                    <div className="flex flex-col gap-10">
                         {pestleOrder.map((perspective) => {
                             const factors = allFactors.filter(
                                 (factor) => factor.perspective === perspective
                             );
                             if (!factors.length) return null;
                             return (
-                                <div key={perspective}>
-                                    <h2 className="mb-3 text-xs font-bold tracking-widest text-stone-400 uppercase">
+                                <StepIn key={perspective}>
+                                    <h2 className="mb-4 text-xs tracking-widest text-v3-mute uppercase">
                                         {perspective}
                                     </h2>
                                     <div className="grid gap-3 md:grid-cols-2">
@@ -433,10 +465,10 @@ export default function BusinessModelStressTestTool() {
                                             return (
                                                 <div
                                                     key={factor.id}
-                                                    className={`relative rounded-2xl border p-5 transition-colors ${
+                                                    className={`relative rounded-2xl border p-5 transition-all duration-300 ${
                                                         isSelected
-                                                            ? "border-[#0F3F35] bg-white shadow-sm"
-                                                            : "border-stone-200 bg-white"
+                                                            ? "border-v3-light bg-v3-light/10 shadow-[0_0_30px_-12px_rgba(232,196,138,0.8)]"
+                                                            : "border-v3-line bg-v3-raise hover:border-v3-mute"
                                                     } ${isFull ? "opacity-50" : ""}`}
                                                 >
                                                     <button
@@ -445,23 +477,24 @@ export default function BusinessModelStressTestTool() {
                                                         disabled={isFull}
                                                         aria-pressed={isSelected}
                                                         aria-label={`Stress factor: ${factor.name}`}
-                                                        className="flex w-full cursor-pointer items-start gap-3 text-left disabled:cursor-not-allowed"
+                                                        className="flex w-full cursor-pointer items-start gap-3 rounded-lg pe-7 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-4 focus-visible:ring-offset-v3-raise disabled:cursor-not-allowed"
                                                     >
                                                         <span
+                                                            aria-hidden
                                                             className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-md border ${
                                                                 isSelected
-                                                                    ? "border-[#0F3F35] bg-[#0F3F35] text-white"
-                                                                    : "border-stone-300"
+                                                                    ? "border-v3-light bg-v3-light text-v3-ink"
+                                                                    : "border-v3-mute"
                                                             }`}
                                                         >
                                                             {isSelected && <Check className="size-3.5" />}
                                                         </span>
                                                         <span className="min-w-0 flex-1">
-                                                            <span className="block font-bold text-[#0F3F35]">
+                                                            <span className="block font-medium text-v3-bone">
                                                                 {factor.name}
                                                             </span>
                                                             {factor.description && (
-                                                                <span className="mt-1 block text-xs leading-relaxed text-stone-500">
+                                                                <span className="mt-1 block text-xs leading-relaxed text-v3-mute">
                                                                     {factor.description}
                                                                 </span>
                                                             )}
@@ -471,13 +504,13 @@ export default function BusinessModelStressTestTool() {
                                                         {factor.outcomes.map((outcome) => (
                                                             <div
                                                                 key={outcome.id}
-                                                                className="rounded-xl bg-stone-50 p-3"
+                                                                className="rounded-xl border border-v3-line/60 p-3"
                                                             >
-                                                                <p className="text-xs font-bold text-[#0F3F35]">
+                                                                <p className="text-xs font-medium text-v3-soft">
                                                                     {outcome.label}
                                                                 </p>
                                                                 {outcome.description && (
-                                                                    <p className="mt-1 text-[11px] leading-relaxed text-stone-500">
+                                                                    <p className="mt-1 text-[11px] leading-relaxed text-v3-mute">
                                                                         {outcome.description}
                                                                     </p>
                                                                 )}
@@ -489,255 +522,242 @@ export default function BusinessModelStressTestTool() {
                                                             type="button"
                                                             onClick={() => removeCustomFactor(factor.id)}
                                                             aria-label={`Remove ${factor.name}`}
-                                                            className="absolute top-4 right-4 cursor-pointer text-stone-300 transition-colors hover:text-red-500"
+                                                            className="absolute end-4 top-4 cursor-pointer rounded text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                                                         >
-                                                            <Trash2 className="size-4" />
+                                                            <Trash2 className="size-4" aria-hidden />
                                                         </button>
                                                     )}
                                                 </div>
                                             );
                                         })}
                                     </div>
-                                </div>
+                                </StepIn>
                             );
                         })}
 
                         {showCustomForm ? (
-                            <form
-                                onSubmit={addCustomFactor}
-                                className="space-y-4 rounded-2xl border border-[#D97706]/30 bg-[#D97706]/5 p-6"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <h2 className="font-bold text-[#0F3F35]">Add your own uncertainty</h2>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowCustomForm(false)}
-                                        aria-label="Cancel"
-                                        className="cursor-pointer text-stone-400 hover:text-[#0F3F35]"
-                                    >
-                                        <X className="size-4" />
-                                    </button>
-                                </div>
-                                <div className="grid gap-3 md:grid-cols-[1fr_200px]">
-                                    <input
-                                        value={customDraft.name}
-                                        onChange={(event) =>
-                                            setCustomDraft((current) => ({
-                                                ...current,
-                                                name: event.target.value,
-                                            }))
-                                        }
-                                        maxLength={120}
-                                        placeholder="What is uncertain? e.g. Our largest client's renewal policy"
-                                        className="h-12 w-full rounded-xl border border-stone-200 bg-white px-4 text-sm outline-none focus:border-[#D97706]"
-                                    />
-                                    <select
-                                        value={customDraft.perspective}
-                                        onChange={(event) =>
-                                            setCustomDraft((current) => ({
-                                                ...current,
-                                                perspective: event.target.value as PestlePerspective,
-                                            }))
-                                        }
-                                        className="h-12 w-full cursor-pointer rounded-xl border border-stone-200 bg-white px-4 text-sm outline-none focus:border-[#D97706]"
-                                    >
-                                        {pestleOrder.map((perspective) => (
-                                            <option key={perspective} value={perspective}>
-                                                {perspective}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="grid gap-3 md:grid-cols-2">
-                                    <input
-                                        value={customDraft.outcomeA}
-                                        onChange={(event) =>
-                                            setCustomDraft((current) => ({
-                                                ...current,
-                                                outcomeA: event.target.value,
-                                            }))
-                                        }
-                                        maxLength={120}
-                                        placeholder="Extreme outcome 1 — e.g. They renew at current volume"
-                                        className="h-12 w-full rounded-xl border border-stone-200 bg-white px-4 text-sm outline-none focus:border-[#D97706]"
-                                    />
-                                    <input
-                                        value={customDraft.outcomeB}
-                                        onChange={(event) =>
-                                            setCustomDraft((current) => ({
-                                                ...current,
-                                                outcomeB: event.target.value,
-                                            }))
-                                        }
-                                        maxLength={120}
-                                        placeholder="Extreme outcome 2 — e.g. They leave entirely"
-                                        className="h-12 w-full rounded-xl border border-stone-200 bg-white px-4 text-sm outline-none focus:border-[#D97706]"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl bg-[#0F3F35] px-5 text-sm font-bold text-white transition-colors hover:bg-[#D97706]"
+                            <StepIn>
+                                <form
+                                    onSubmit={addCustomFactor}
+                                    className="flex flex-col gap-4 rounded-2xl border border-v3-light/40 bg-v3-raise p-6"
                                 >
-                                    <Plus className="size-4" /> Add uncertainty
-                                </button>
-                            </form>
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="font-v3-display text-xl font-light text-v3-bone">
+                                            Add your own uncertainty
+                                        </h2>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowCustomForm(false)}
+                                            aria-label="Cancel"
+                                            className="cursor-pointer rounded text-v3-mute transition-colors hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
+                                        >
+                                            <X className="size-4" aria-hidden />
+                                        </button>
+                                    </div>
+                                    <div className="grid gap-3 md:grid-cols-[1fr_200px]">
+                                        <input
+                                            value={customDraft.name}
+                                            onChange={(event) =>
+                                                setCustomDraft((current) => ({
+                                                    ...current,
+                                                    name: event.target.value,
+                                                }))
+                                            }
+                                            maxLength={120}
+                                            aria-label="What is uncertain? e.g. Our largest client's renewal policy"
+                                            placeholder="What is uncertain? e.g. Our largest client's renewal policy"
+                                            className={`${fieldClass} h-12 text-sm`}
+                                        />
+                                        <select
+                                            value={customDraft.perspective}
+                                            aria-label="Perspective"
+                                            onChange={(event) =>
+                                                setCustomDraft((current) => ({
+                                                    ...current,
+                                                    perspective: event.target.value as PestlePerspective,
+                                                }))
+                                            }
+                                            className={`${fieldClass} h-12 cursor-pointer text-sm`}
+                                        >
+                                            {pestleOrder.map((perspective) => (
+                                                <option key={perspective} value={perspective}>
+                                                    {perspective}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="grid gap-3 md:grid-cols-2">
+                                        <input
+                                            value={customDraft.outcomeA}
+                                            onChange={(event) =>
+                                                setCustomDraft((current) => ({
+                                                    ...current,
+                                                    outcomeA: event.target.value,
+                                                }))
+                                            }
+                                            maxLength={120}
+                                            aria-label="Extreme outcome 1 — e.g. They renew at current volume"
+                                            placeholder="Extreme outcome 1 — e.g. They renew at current volume"
+                                            className={`${fieldClass} h-12 text-sm`}
+                                        />
+                                        <input
+                                            value={customDraft.outcomeB}
+                                            onChange={(event) =>
+                                                setCustomDraft((current) => ({
+                                                    ...current,
+                                                    outcomeB: event.target.value,
+                                                }))
+                                            }
+                                            maxLength={120}
+                                            aria-label="Extreme outcome 2 — e.g. They leave entirely"
+                                            placeholder="Extreme outcome 2 — e.g. They leave entirely"
+                                            className={`${fieldClass} h-12 text-sm`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <ToolButton type="submit" variant="secondary">
+                                            <Plus className="size-4" aria-hidden /> Add uncertainty
+                                        </ToolButton>
+                                    </div>
+                                </form>
+                            </StepIn>
                         ) : (
                             <button
                                 type="button"
                                 onClick={() => setShowCustomForm(true)}
-                                className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-stone-300 px-5 py-3 text-sm font-bold text-stone-500 transition-colors hover:border-[#D97706] hover:text-[#D97706]"
+                                className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl border border-dashed border-v3-line px-5 py-3 text-sm text-v3-soft transition-colors hover:border-v3-light hover:text-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
                             >
-                                <Plus className="size-4" /> Add an uncertainty specific to your business
+                                <Plus className="size-4" aria-hidden /> Add an uncertainty specific to your business
                             </button>
                         )}
 
-                        <div className="sticky bottom-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-[0_18px_50px_-30px_rgba(15,63,53,0.45)]">
-                            <p className="text-sm text-stone-600">
-                                <strong className="text-[#0F3F35]">
+                        <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-v3-line bg-v3-raise/95 p-5 backdrop-blur-md">
+                            <p className="text-sm text-v3-soft" aria-live="polite">
+                                <strong className="font-medium text-v3-light tabular-nums">
                                     {selectedIds.length}/{MAX_STRESS_FACTORS}
                                 </strong>{" "}
                                 selected
                                 {!factorsReady && (
-                                    <span className="block text-xs text-stone-400">
+                                    <span className="block text-xs text-v3-mute">
                                         Select at least {MIN_STRESS_FACTORS}.
                                     </span>
                                 )}
                             </p>
                             <div className="flex items-center gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setStep("model")}
-                                    className="cursor-pointer text-sm font-medium text-stone-500 hover:text-[#0F3F35]"
-                                >
+                                <ToolButton variant="quiet" onClick={() => setStep("model")}>
                                     Back
-                                </button>
-                                <button
-                                    type="button"
+                                </ToolButton>
+                                <ToolButton
                                     disabled={!factorsReady}
                                     onClick={() => {
                                         setStep("lead");
-                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                        scrollToTop();
                                     }}
-                                    className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-xl bg-[#0F3F35] px-6 font-bold text-white transition-colors hover:bg-[#D97706] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
-                                    Continue <ArrowRight className="size-4" />
-                                </button>
+                                    Continue <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+                                </ToolButton>
                             </div>
                         </div>
                     </div>
                 )}
 
                 {step === "lead" && (
-                    <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-                        <form
-                            onSubmit={runTest}
-                            className="rounded-3xl border border-stone-200 bg-white p-7 md:p-9"
-                        >
-                            <div className="space-y-4">
-                                <div>
-                                    <label
-                                        htmlFor="stress-name"
-                                        className="text-sm font-medium text-stone-700"
-                                    >
-                                        First name (optional)
-                                    </label>
-                                    <input
-                                        id="stress-name"
-                                        type="text"
-                                        value={name}
-                                        onChange={(event) => setName(event.target.value)}
-                                        disabled={loading}
-                                        placeholder="Sara"
-                                        className="mt-2 h-12 w-full rounded-xl border border-stone-200 bg-stone-50 px-4 text-sm outline-none focus:border-[#D97706] focus:bg-white"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="stress-email"
-                                        className="text-sm font-medium text-stone-700"
-                                    >
-                                        Work email
-                                    </label>
-                                    <input
-                                        id="stress-email"
-                                        type="email"
-                                        required
-                                        value={email}
-                                        onChange={(event) => setEmail(event.target.value)}
-                                        disabled={loading}
-                                        placeholder="sara@company.com"
-                                        className="mt-2 h-12 w-full rounded-xl border border-stone-200 bg-stone-50 px-4 text-sm outline-none focus:border-[#D97706] focus:bg-white"
-                                    />
-                                </div>
-                            </div>
+                    <div className="flex flex-col gap-8">
+                        <ToolPanel>
+                            <form onSubmit={runTest} className="flex flex-col gap-5">
+                                <ToolField
+                                    id="stress-name"
+                                    label="First name (optional)"
+                                    type="text"
+                                    value={name}
+                                    onChange={(event) => setName(event.target.value)}
+                                    disabled={loading}
+                                    placeholder="Sara"
+                                />
+                                <ToolField
+                                    id="stress-email"
+                                    label="Work email"
+                                    type="email"
+                                    dir="ltr"
+                                    required
+                                    value={email}
+                                    onChange={(event) => setEmail(event.target.value)}
+                                    disabled={loading}
+                                    placeholder="sara@company.com"
+                                />
 
-                            <button
-                                type="submit"
-                                disabled={loading || !email.trim()}
-                                className="mt-6 flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#0F3F35] px-7 font-bold text-white transition-colors hover:bg-[#D97706] disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {loading ? (
-                                    <>
-                                        <LoaderCircle className="size-5 animate-spin" /> Building your heat
-                                        map…
-                                    </>
-                                ) : (
-                                    <>
-                                        Run the stress test <ArrowRight className="size-4" />
-                                    </>
-                                )}
-                            </button>
-
-                            {loading ? (
-                                <div className="mt-6 rounded-2xl bg-stone-50 p-5">
-                                    <p className="text-sm font-medium text-[#0F3F35]">
-                                        {loadingStages[stage]}
-                                    </p>
-                                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-stone-200">
-                                        <div className="h-full w-2/3 animate-pulse rounded-full bg-[#D97706]" />
-                                    </div>
-                                    <p className="mt-3 text-xs text-stone-400">
-                                        This usually takes 30-60 seconds. Please keep this tab open.
-                                    </p>
-                                </div>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => setStep("factors")}
-                                    className="mt-4 cursor-pointer text-sm font-medium text-stone-500 hover:text-[#0F3F35]"
+                                <ToolButton
+                                    type="submit"
+                                    loading={loading}
+                                    disabled={!email.trim()}
+                                    className="mt-2 w-full"
                                 >
-                                    Back to stress factors
-                                </button>
-                            )}
-                        </form>
+                                    {loading ? (
+                                        "Building your heat map…"
+                                    ) : (
+                                        <>
+                                            Run the stress test{" "}
+                                            <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
+                                        </>
+                                    )}
+                                </ToolButton>
 
-                        <aside className="rounded-3xl border border-stone-200 bg-white p-6">
-                            <h2 className="text-xs font-bold tracking-widest text-stone-400 uppercase">
-                                What will be tested
-                            </h2>
-                            <p className="mt-3 text-sm font-bold text-[#0F3F35]">
-                                {describedCount} business model components
-                            </p>
-                            <ul className="mt-4 space-y-2">
-                                {selectedFactors.map((factor) => (
-                                    <li key={factor.id} className="rounded-xl bg-stone-50 p-3">
-                                        <p className="text-sm font-bold text-[#0F3F35]">{factor.name}</p>
-                                        <p className="mt-1 text-xs text-stone-500">
-                                            {factor.outcomes[0].label} ↔ {factor.outcomes[1].label}
+                                {loading ? (
+                                    <div
+                                        className="rounded-2xl border border-v3-line/60 p-5"
+                                        role="status"
+                                        aria-live="polite"
+                                    >
+                                        <p className="text-sm text-v3-bone">{loadingStages[stage]}</p>
+                                        <div className="relative mt-4 h-px overflow-hidden bg-v3-line">
+                                            <div className="absolute inset-y-0 start-0 w-2/3 animate-pulse bg-v3-light motion-reduce:animate-none" />
+                                        </div>
+                                        <p className="mt-3 text-xs text-v3-mute">
+                                            This usually takes 30-60 seconds. Please keep this tab open.
                                         </p>
-                                    </li>
-                                ))}
-                            </ul>
-                            <p className="mt-4 text-xs leading-relaxed text-stone-400">
-                                {describedCount * selectedFactors.length * 2} cells will be mapped and
-                                coloured.
-                            </p>
-                        </aside>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <ToolButton variant="quiet" onClick={() => setStep("factors")} className="-ms-3">
+                                            Back to stress factors
+                                        </ToolButton>
+                                    </div>
+                                )}
+                            </form>
+                        </ToolPanel>
+
+                        <StepIn delay={0.1}>
+                            <aside className="rounded-3xl border border-v3-line/80 p-6 md:p-8">
+                                <h2 className="text-xs tracking-widest text-v3-mute uppercase">
+                                    What will be tested
+                                </h2>
+                                <p className="mt-3 font-v3-display text-2xl font-light text-v3-bone">
+                                    {describedCount} business model components
+                                </p>
+                                <ul className="mt-5 flex flex-col">
+                                    {selectedFactors.map((factor) => (
+                                        <li
+                                            key={factor.id}
+                                            className="border-b border-v3-line/60 py-3 last:border-b-0"
+                                        >
+                                            <p className="text-sm font-medium text-v3-bone">{factor.name}</p>
+                                            <p className="mt-1 text-xs text-v3-mute">
+                                                {factor.outcomes[0].label} ↔ {factor.outcomes[1].label}
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <p className="mt-4 text-xs leading-relaxed text-v3-mute">
+                                    {describedCount * selectedFactors.length * 2} cells will be mapped and
+                                    coloured.
+                                </p>
+                            </aside>
+                        </StepIn>
                     </div>
                 )}
 
                 {step === "result" && report && <ResultSummary report={report} onReset={reset} />}
-            </section>
-        </main>
+            </div>
+        </ToolShell>
     );
 }

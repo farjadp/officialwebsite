@@ -1,6 +1,7 @@
 import { localeAlternates } from "@/lib/seo"
 import type { Metadata } from "next";
 import AiWebsiteReadinessTool from "@/components/ai-website-readiness/tool";
+import { ToolShell } from "@/components/v3/tool-kit";
 
 // The tool itself is the shared English component. Only TRL has a Persian
 // config today; making the rest truly Persian is separate, scheduled work.
@@ -12,5 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function AiWebsiteReadinessFaPage() {
-    return <AiWebsiteReadinessTool />;
+    return (
+        <ToolShell wide>
+            <AiWebsiteReadinessTool />
+        </ToolShell>
+    );
 }

@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 }
 
 export default function ImpossibleTrinitySimulatorFaPage() {
-    return <ImpossibleTrinitySimulator />
+    return <ImpossibleTrinitySimulator locale="fa" />
 }

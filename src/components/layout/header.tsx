@@ -66,6 +66,14 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
     // Close the mobile menu on navigation.
     useEffect(() => setMenuOpen(false), [pathname])
 
+    // Sticky bars further down the page (tool progress, the resume's action
+    // bar) sit at top-20 under this header; when it slides away they follow
+    // it up to top-0 instead of leaving an 80px gap. See globals.css.
+    useEffect(() => {
+        document.documentElement.toggleAttribute("data-header-hidden", hidden && !reduce)
+        return () => document.documentElement.removeAttribute("data-header-hidden")
+    }, [hidden, reduce])
+
     const entries: Entry[] = [
         { label: t.services, href: href(ROUTES.services) },
         {

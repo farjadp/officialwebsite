@@ -1,7 +1,7 @@
 "use client";
 
 import { Question } from "@/data/business-model-score/config";
-import { cn } from "@/lib/utils";
+import { QuestionBlock, ScaleOptions } from "@/components/v3/tool-kit";
 
 interface QuestionCardProps {
     question: Question;
@@ -20,29 +20,13 @@ const scaleOptions = [
 
 export function QuestionCard({ question, value, onChange, index }: QuestionCardProps) {
     return (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm transition-all hover:shadow-md">
-            <p className="text-base font-medium text-slate-800 mb-5 leading-snug">
-                <span className="text-slate-300 mr-2 font-bold">{index + 1}.</span>
-                {question.text}
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-                {scaleOptions.map((option) => (
-                    <button
-                        key={option.value}
-                        onClick={() => onChange(option.value)}
-                        className={cn(
-                            "flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 text-center",
-                            value === option.value
-                                ? "border-[#1B4B43] bg-[#1B4B43]/5 text-[#1B4B43] scale-[1.03]"
-                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-300 hover:bg-slate-100"
-                        )}
-                    >
-                        <span className="text-xl font-bold mb-1">{option.value}</span>
-                        <span className="text-[10px] font-medium leading-tight">{option.label}</span>
-                    </button>
-                ))}
-            </div>
-        </div>
+        <QuestionBlock index={`${index + 1}.`} text={question.text}>
+            <ScaleOptions
+                label={question.text}
+                value={value}
+                onChange={onChange}
+                options={scaleOptions.map((o) => ({ value: o.value, label: o.label, mark: o.value }))}
+            />
+        </QuestionBlock>
     );
 }

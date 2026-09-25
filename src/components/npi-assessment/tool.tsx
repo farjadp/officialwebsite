@@ -1,29 +1,22 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { npiQuestions, QuestionDef } from '@/lib/npi/data';
 import { submitNPIPlanLead } from '@/actions/npi-assessment';
-import { ArrowRight, ArrowLeft, Loader2, Download, CheckCircle2 } from 'lucide-react';
-
-// --- Theme Tokens (Merged with user HTML colors) ---
-const theme = {
-  bg: '#F4F6F9',
-  primary: '#1F3F6E',
-  navy: '#0D1B2A',
-  accent: '#2962B8',
-  highlight: '#C0392B',
-  text: '#0D1B2A',
-  cardBg: '#FFFFFF',
-  textMid: '#3A4A5C',
-  textLight: '#7A8A9C',
-  nBg: '#1A3A5C', nSoft: '#D6E8F7',
-  pBg: '#145233', pSoft: '#D5F0E3',
-  iBg: '#4A1A6E', iSoft: '#EBD9FF',
-};
+import { Check, Download } from 'lucide-react';
+import {
+  QuestionBlock,
+  ScaleOptions,
+  StepIn,
+  ToolButton,
+  ToolField,
+  ToolIntro,
+  ToolPanel,
+  ToolProgress,
+} from '@/components/v3/tool-kit';
 
 // --- Schema ---
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
@@ -36,19 +29,113 @@ const leadSchema = z.object({
 });
 type LeadFormValues = z.infer<typeof leadSchema>;
 
+const PROGRESS_LABELS = ['Intro', 'Narrative', 'Presence', 'Impact', 'Plan'];
+
+/** Back to the top of the tool; instant when the visitor prefers reduced motion. */
+function scrollToTop() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: reduce ? 'instant' : 'smooth' });
+}
+
+/** A checkbox group in the ScaleOptions look: each option toggles on its own. */
+function MultiOptions({
+  options,
+  selected,
+  onToggle,
+  labelledBy,
+  max,
+}: {
+  options: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  labelledBy: string;
+  max?: number;
+}) {
+  const full = max !== undefined && selected.length >= max;
+  return (
+    <div role="group" aria-labelledby={labelledBy} className="flex flex-col gap-2">
+      {options.map((opt) => {
+        const isSelected = selected.includes(opt);
+        const blocked = full && !isSelected;
+        return (
+          <button
+            key={opt}
+            type="button"
+            role="checkbox"
+            aria-checked={isSelected}
+            aria-disabled={blocked || undefined}
+            onClick={() => onToggle(opt)}
+            className={`flex min-h-14 items-center gap-3 rounded-xl border px-4 py-3 text-start text-sm font-medium leading-snug transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light ${
+              isSelected
+                ? 'border-v3-light bg-v3-light/10 text-v3-bone shadow-[0_0_30px_-12px_rgba(232,196,138,0.8)]'
+                : blocked
+                  ? 'cursor-not-allowed border-v3-line bg-v3-raise text-v3-mute'
+                  : 'border-v3-line bg-v3-raise text-v3-soft hover:border-v3-mute hover:text-v3-bone'
+            }`}
+          >
+            <span
+              aria-hidden
+              className={`flex size-5 shrink-0 items-center justify-center rounded-md border ${
+                isSelected ? 'border-v3-light bg-v3-light text-v3-ink' : 'border-v3-mute'
+              }`}
+            >
+              {isSelected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+            </span>
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function Tags({ items }: { items: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {items.map(t => (
+        <li key={t} className="rounded-full border border-v3-line px-3 py-1 text-sm text-v3-bone">{t}</li>
+      ))}
+    </ul>
+  );
+}
+
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2 border-b border-v3-line/60 py-4 last:border-b-0 sm:flex-row sm:gap-6">
+      <dt className="shrink-0 text-sm text-v3-mute sm:w-36">{label}</dt>
+      <dd className="leading-relaxed text-v3-bone rtl:leading-loose">{children}</dd>
+    </div>
+  );
+}
+
+function Pillar({ heading, children }: { heading: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-2xl border border-v3-line/80 p-6 md:p-8">
+      <h3 className="mb-4 text-sm font-medium text-v3-light">{heading}</h3>
+      {children}
+    </section>
+  );
+}
+
 export function NPIAssessmentTool() {
   const [step, setStep] = useState<Step>(1);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LeadFormValues>({
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
     defaultValues: { agreed: true }
   });
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 6) as Step);
-  const prevStep = () => setStep((s) => Math.max(s - 1, 1) as Step);
+  const nextStep = () => {
+    setStep((s) => Math.min(s + 1, 6) as Step);
+    scrollToTop();
+  };
+  const prevStep = () => {
+    setStep((s) => Math.max(s - 1, 1) as Step);
+    scrollToTop();
+  };
 
   const handleSingleSelect = (qId: string, val: string) => {
     setAnswers(prev => ({ ...prev, [qId]: val }));
@@ -90,6 +177,7 @@ export function NPIAssessmentTool() {
       if (res.success && res.downloadBase64) {
         setDownloadUrl(`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${res.downloadBase64}`);
         setStep(6);
+        scrollToTop();
       } else {
         alert("Failed to save. Please try again.");
       }
@@ -103,66 +191,51 @@ export function NPIAssessmentTool() {
   // --- Render Helpers ---
   const renderQuestion = (q: QuestionDef) => {
     const ans = answers[q.id];
+    const labelId = `npi-${q.id}`;
 
     return (
-      <div key={q.id} className="mb-8 relative">
-        <label className="flex items-center gap-2 text-[15px] font-bold mb-3 text-[#0D1B2A] leading-tight">
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#2962B8] text-white text-[11px] flex-shrink-0">
-            {q.id.replace('q', '')}
-          </span>
-          {q.question}
-        </label>
-        
-        <div className="pl-8">
-          {(q.type === 'multiple' && q.maxSelections) && (
-            <p className="text-xs text-[#7A8A9C] mb-3 -mt-2">
-              (Choose up to {q.maxSelections}. Selected: {Array.isArray(ans) ? ans.length : 0}/{q.maxSelections})
-            </p>
-          )}
+      <QuestionBlock
+        key={q.id}
+        id={labelId}
+        index={q.id.replace('q', '')}
+        text={q.question}
+        hint={
+          q.type === 'multiple' && q.maxSelections ? (
+            <span aria-live="polite">(Choose up to {q.maxSelections}. Selected: {Array.isArray(ans) ? ans.length : 0}/{q.maxSelections})</span>
+          ) : undefined
+        }
+      >
+        {q.type === 'text' && (
+          <textarea
+            aria-labelledby={labelId}
+            className="min-h-28 w-full rounded-xl border border-v3-line bg-v3-raise p-4 text-base leading-relaxed text-v3-bone transition-colors placeholder:text-v3-mute/70 focus:border-v3-light/60 focus:outline-none focus:ring-2 focus:ring-v3-light/70 rtl:leading-loose"
+            placeholder={q.placeholder}
+            rows={3}
+            value={(ans as string) || ''}
+            onChange={(e) => handleTextChange(q.id, e.target.value)}
+          />
+        )}
 
-          {q.type === 'text' && (
-            <textarea
-              className="w-full p-4 border-2 border-[#C5CBD8] rounded-lg text-[14px] text-[#0D1B2A] transition-colors focus:outline-none focus:border-[#2962B8]"
-              placeholder={q.placeholder}
-              rows={3}
-              value={(ans as string) || ''}
-              onChange={(e) => handleTextChange(q.id, e.target.value)}
-            />
-          )}
+        {q.type === 'single' && q.options && (
+          <ScaleOptions
+            layout="list"
+            label={q.question}
+            options={q.options.map((opt) => ({ value: opt, label: opt }))}
+            value={typeof ans === 'string' ? ans : undefined}
+            onChange={(val) => handleSingleSelect(q.id, val)}
+          />
+        )}
 
-          {(q.type === 'single' || q.type === 'multiple') && q.options && (
-            <div className="flex flex-wrap gap-2">
-              {q.options.map((opt) => {
-                const isMulti = q.type === 'multiple';
-                const selectedArray = (ans as string[]) || [];
-                const isSelected = isMulti ? selectedArray.includes(opt) : ans === opt;
-                
-                let activeBorder = '#2962B8';
-                let activeText = '#2962B8';
-                let activeBg = '#D6E8F7';
-
-                if (q.step === 'presence') { activeBorder = '#145233'; activeText = '#145233'; activeBg = '#D5F0E3'; }
-                if (q.step === 'impact') { activeBorder = '#4A1A6E'; activeText = '#4A1A6E'; activeBg = '#EBD9FF'; }
-
-                return (
-                  <div
-                    key={opt}
-                    onClick={() => isMulti ? handleMultiSelect(q.id, opt, q.maxSelections) : handleSingleSelect(q.id, opt)}
-                    className="px-4 py-2 border-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-all select-none hover:shadow-sm hover:opacity-80"
-                    style={{
-                      borderColor: isSelected ? activeBorder : '#C5CBD8',
-                      backgroundColor: isSelected ? activeBg : '#FFFFFF',
-                      color: isSelected ? activeText : '#3A4A5C'
-                    }}
-                  >
-                    {opt}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
+        {q.type === 'multiple' && q.options && (
+          <MultiOptions
+            options={q.options}
+            selected={Array.isArray(ans) ? ans : []}
+            onToggle={(opt) => handleMultiSelect(q.id, opt, q.maxSelections)}
+            labelledBy={labelId}
+            max={q.maxSelections}
+          />
+        )}
+      </QuestionBlock>
     );
   };
 
@@ -172,132 +245,139 @@ export function NPIAssessmentTool() {
     switch (step) {
       case 1:
         return (
-          <div className="text-center py-6">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
-              <span className="px-5 py-2 rounded-full text-[13px] font-extrabold tracking-widest uppercase bg-[#D6E8F7] text-[#1A3A5C]">N · Narrative</span>
-              <span className="px-5 py-2 rounded-full text-[13px] font-extrabold tracking-widest uppercase bg-[#D5F0E3] text-[#145233]">P · Presence</span>
-              <span className="px-5 py-2 rounded-full text-[13px] font-extrabold tracking-widest uppercase bg-[#EBD9FF] text-[#4A1A6E]">I · Impact</span>
-            </div>
-            <h1 className="text-3xl md:text-[30px] leading-tight font-extrabold mb-4 text-[#0D1B2A]">
-              Build Your Personal Brand Plan in 5 Minutes
-            </h1>
-            <p className="text-[16px] mb-8 mx-auto max-w-[520px] text-[#3A4A5C] leading-relaxed">
-              Answer 12 questions. Get a free personalized NPI plan — your narrative, your presence system, and your impact targets — in an Excel file you can use starting today.
-            </p>
-            
-            <div className="flex flex-col gap-3 max-w-[460px] mx-auto text-left mb-8">
-              <div className="flex items-center gap-3 text-[14px] text-[#3A4A5C]">
-                <div className="w-7 h-7 rounded-full bg-[#D6E8F7] flex items-center justify-center flex-shrink-0 text-[13px]">🧭</div>
-                <span><strong>Narrative</strong> — your brand statement, audience, and core themes</span>
+          <ToolIntro
+            kicker={
+              <span className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-v3-light/60 px-4 py-1.5">N · Narrative</span>
+                <span className="rounded-full border border-v3-light/60 px-4 py-1.5">P · Presence</span>
+                <span className="rounded-full border border-v3-light/60 px-4 py-1.5">I · Impact</span>
+              </span>
+            }
+            title="Build Your Personal Brand Plan in 5 Minutes"
+            lead="Answer 12 questions. Get a free personalized NPI plan — your narrative, your presence system, and your impact targets — in an Excel file you can use starting today."
+            action={
+              <div className="flex w-full flex-col items-start gap-10">
+                <ul className="flex w-full flex-col border-y border-v3-line/70">
+                  {[
+                    { mark: 'N', name: 'Narrative', rest: 'your brand statement, audience, and core themes' },
+                    { mark: 'P', name: 'Presence', rest: 'your weekly visibility system based on your reality' },
+                    { mark: 'I', name: 'Impact', rest: 'the metrics that actually matter for your goal' },
+                  ].map((row) => (
+                    <li key={row.mark} className="flex items-baseline gap-5 border-b border-v3-line/70 py-4 last:border-b-0">
+                      <span aria-hidden className="w-5 shrink-0 font-v3-display text-2xl leading-none text-v3-light">{row.mark}</span>
+                      <span className="leading-relaxed text-v3-soft rtl:leading-loose"><strong className="font-medium text-v3-bone">{row.name}</strong> — {row.rest}</span>
+                    </li>
+                  ))}
+                </ul>
+                <ToolButton onClick={nextStep}>Start Building My Plan →</ToolButton>
               </div>
-              <div className="flex items-center gap-3 text-[14px] text-[#3A4A5C]">
-                <div className="w-7 h-7 rounded-full bg-[#D5F0E3] flex items-center justify-center flex-shrink-0 text-[13px]">📅</div>
-                <span><strong>Presence</strong> — your weekly visibility system based on your reality</span>
-              </div>
-              <div className="flex items-center gap-3 text-[14px] text-[#3A4A5C]">
-                <div className="w-7 h-7 rounded-full bg-[#EBD9FF] flex items-center justify-center flex-shrink-0 text-[13px]">🎯</div>
-                <span><strong>Impact</strong> — the metrics that actually matter for your goal</span>
-              </div>
-            </div>
-
-            <button
-              onClick={nextStep}
-              className="px-7 py-3.5 rounded-lg font-bold text-[14px] text-white transition-transform hover:-translate-y-0.5 flex items-center justify-center mx-auto gap-2 bg-[#C0392B]"
-            >
-              Start Building My Plan →
-            </button>
-            <p className="mt-4 text-[12px] text-[#7A8A9C]">Used by consultants, founders, and professionals in Canada</p>
-          </div>
+            }
+            meta="Used by consultants, founders, and professionals in Canada"
+          />
         );
-      
+
       case 2:
       case 3:
-      case 4:
+      case 4: {
         const stepName = step === 2 ? 'narrative' : step === 3 ? 'presence' : 'impact';
         const questionsForStep = npiQuestions.filter(q => q.step === stepName);
-        
-        let badgeClass = 'bg-[#1A3A5C] text-[#D6E8F7]';
+
         let badgeLabel = 'N · Narrative';
         let subtitle = 'Define what you stand for';
         let desc = 'These 4 questions build your brand statement and core themes.';
-        
+
         if (step === 3) {
-          badgeClass = 'bg-[#D5F0E3] text-[#145233]';
           badgeLabel = 'P · Presence';
           subtitle = 'How you show up consistently';
           desc = 'These answers build your personal presence system.';
         } else if (step === 4) {
-          badgeClass = 'bg-[#EBD9FF] text-[#4A1A6E]';
           badgeLabel = 'I · Impact';
           subtitle = 'Define the results that matter';
           desc = 'These answers determine what you should measure — and what success actually looks like.';
         }
 
         return (
-          <div className="text-left">
-            <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 ${badgeClass}`}>
-              {badgeLabel}
-            </span>
-            <h2 className="text-[20px] font-bold mb-2 text-[#0D1B2A]">{subtitle}</h2>
-            <p className="text-[13px] text-[#7A8A9C] mb-8">{desc}</p>
-            
-            <div className="space-y-2">
+          <div className="flex flex-col pt-10">
+            <p className="mb-3 text-sm text-v3-light">{badgeLabel}</p>
+            <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight md:text-4xl rtl:leading-snug">{subtitle}</h2>
+            <p className="text-v3-soft">{desc}</p>
+
+            <div className="flex flex-col">
               {questionsForStep.map(renderQuestion)}
             </div>
           </div>
         );
+      }
 
       case 5:
         return (
-          <div className="text-left py-2">
-            <span className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 bg-[#FDEBD0] text-[#7B2A00]">
-              Get Your Plan
-            </span>
-            <h2 className="text-[20px] font-bold mb-4 text-[#0D1B2A]">
-              Your personalized NPI plan is ready.
-            </h2>
-            <p className="text-[#3A4A5C] text-[15px] mb-6">
-              Enter your name and email to access your free Excel plan. You will also receive a copy by email.
-            </p>
+          <div className="pt-10">
+            <ToolPanel>
+              <p className="mb-3 text-sm text-v3-light">Get Your Plan</p>
+              <h2 className="mb-3 font-v3-display text-3xl font-light leading-tight rtl:leading-snug">
+                Your personalized NPI plan is ready.
+              </h2>
+              <p className="mb-8 leading-relaxed text-v3-soft rtl:leading-loose">
+                Enter your name and email to access your free Excel plan. You will also receive a copy by email.
+              </p>
 
-            <form id="lead-form" onSubmit={handleSubmit(onSubmitLead)} className="space-y-4">
-              <div>
-                <label className="block text-[13px] font-bold mb-2 text-[#0D1B2A]">Full Name *</label>
-                <input {...register("name")} className="w-full p-3 border-2 border-[#C5CBD8] rounded-lg outline-none focus:border-[#2962B8] text-[14px]" placeholder="Your full name" />
-                {errors.name && <p className="text-[#C0392B] text-xs mt-1">{errors.name.message}</p>}
-              </div>
+              <form id="lead-form" onSubmit={handleSubmit(onSubmitLead)} className="flex flex-col gap-5">
+                <ToolField
+                  label="Full Name *"
+                  autoComplete="name"
+                  placeholder="Your full name"
+                  error={errors.name?.message}
+                  {...register("name")}
+                />
 
-              <div>
-                <label className="block text-[13px] font-bold mb-2 text-[#0D1B2A]">Email Address *</label>
-                <input type="email" {...register("email")} className="w-full p-3 border-2 border-[#C5CBD8] rounded-lg outline-none focus:border-[#2962B8] text-[14px]" placeholder="your@email.com" />
-                {errors.email && <p className="text-[#C0392B] text-xs mt-1">{errors.email.message}</p>}
-              </div>
+                <ToolField
+                  label="Email Address *"
+                  type="email"
+                  dir="ltr"
+                  autoComplete="email"
+                  placeholder="your@email.com"
+                  error={errors.email?.message}
+                  {...register("email")}
+                />
 
-              <div>
-                <label className="block text-[13px] font-bold mb-2 text-[#0D1B2A]">Your Current Role <em className="font-normal text-[#7A8A9C]">(optional)</em></label>
-                <input {...register("role")} className="w-full p-3 border-2 border-[#C5CBD8] rounded-lg outline-none focus:border-[#2962B8] text-[14px]" placeholder="e.g. Founder, Consultant" />
-              </div>
+                <ToolField
+                  label={<>Your Current Role <em className="font-normal text-v3-mute">(optional)</em></>}
+                  autoComplete="organization-title"
+                  placeholder="e.g. Founder, Consultant"
+                  {...register("role")}
+                />
 
-              <div className="flex items-start gap-3 mt-4 p-3.5 bg-[#F4F6F9] rounded-lg">
-                <input type="checkbox" id="agreed" {...register("agreed")} className="mt-0.5 w-4 h-4" />
-                <label htmlFor="agreed" className="text-[12px] text-[#3A4A5C] leading-snug cursor-pointer">
-                  I agree to receive occasional insights and updates from Farjad Pourmohammad. No spam. Unsubscribe anytime.
+                <label
+                  htmlFor="agreed"
+                  className="mt-2 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-v3-line bg-v3-ink/40 p-4"
+                >
+                  <input
+                    type="checkbox"
+                    id="agreed"
+                    {...register("agreed")}
+                    className="mt-0.5 size-5 shrink-0 cursor-pointer accent-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
+                  />
+                  <span className="text-sm leading-snug text-v3-soft rtl:leading-relaxed">
+                    I agree to receive occasional insights and updates from Farjad Pourmohammad. No spam. Unsubscribe anytime.
+                  </span>
                 </label>
-              </div>
-            </form>
+              </form>
+            </ToolPanel>
           </div>
         );
 
-      case 6:
+      case 6: {
         // Result Logic completely aligned with user's HTML payload
         const ans = (id: string): string => (answers[id] as string) || '';
         const ansArr = (id: string): string[] => (answers[id] as string[]) || [];
 
-        const firstName = answers.name ? (answers.name as string).split(' ')[0] : 'Your';
+        // The name is collected by the lead form, not stored in `answers`.
+        const leadName = (getValues('name') || '').trim();
+        const firstName = leadName ? leadName.split(' ')[0] : 'Your';
         const knownForHtml = (ansArr('q3').slice(0,2) || []).join(' and ').toLowerCase();
         const brandStatement = `"I help ${ans('q1') || '...'} ${ans('q2').toLowerCase().replace(/^they /, '')} through ${knownForHtml}."`;
-        
-        const rhythmMap: any = {
+
+        const rhythmMap: Record<string, string> = {
           'Every day': 'Post daily: rotate short post → story → insight → engagement → repeat.',
           '3–4 times per week (recommended)': 'Week structure: 2 short posts + 1 long-form + 5 meaningful comments.',
           '1–2 times per week': '1 strong post per week + 3–5 thoughtful comments on relevant content.',
@@ -305,7 +385,7 @@ export function NPIAssessmentTool() {
         };
         const rhythm = rhythmMap[ans('q6')] || ans('q6') || '';
 
-        const metricsMap: any = {
+        const metricsMap: Record<string, string[]> = {
           'Get more consulting or freelance clients': ['Qualified inbound DMs / week', 'Discovery calls booked / month', 'Referrals received / month'],
           'Attract investors or partnerships': ['Investor intro conversations / month', 'Partnership meetings / month', 'Warm introductions through content'],
           'Get speaking invitations': ['Speaking invitations / month', 'Event applications submitted', 'Podcast / guest appearances'],
@@ -316,10 +396,11 @@ export function NPIAssessmentTool() {
         };
         const metrics = metricsMap[ans('q9')] || ['Inbound opportunities / month', 'Content engagement quality', 'Network growth (qualified)'];
 
+        type Action = { title: string; desc: string };
         const generateActions = () => {
-          const acts = [];
-          
-          const challenges: any = {
+          const acts: Action[] = [];
+
+          const challenges: Record<string, Action> = {
             'I do not know what to say or stand for': { title: 'Use your brand statement as your LinkedIn headline.', desc: " The statement in your plan above — put it on your profile today. Not tomorrow. Today." },
             'I do not show up consistently enough': { title: 'Commit to one post this week — just one.', desc: " Forget streaks and consistency goals for now. Publish one strong thing. Build the habit from there." },
             'I get attention but no real results': { title: 'Add a clear call to action to your next 3 posts.', desc: " End each post with one sentence that invites a specific response: a DM, a comment, a booking." },
@@ -329,7 +410,7 @@ export function NPIAssessmentTool() {
           };
           if (challenges[ans('q12')]) acts.push(challenges[ans('q12')]);
 
-          const goals: any = {
+          const goals: Record<string, Action> = {
             'Get more consulting or freelance clients': { title: 'Reach out to 3 warm contacts this week.', desc: " No pitch. Just a genuine check-in or share something relevant to them. Relationship before transaction." },
             'Attract investors or partnerships': { title: 'Write one post about a real problem you are solving.', desc: " Not your solution — the problem. Investors and partners lean in when they recognize the pain." },
             'Get speaking invitations': { title: 'Comment thoughtfully on 5 event organizer or host posts this week.', desc: " Be visible in the right spaces before you ask to be on stage." },
@@ -337,7 +418,7 @@ export function NPIAssessmentTool() {
           };
           if (goals[ans('q9')]) acts.push(goals[ans('q9')]);
 
-          const consistencies: any = {
+          const consistencies: Record<string, Action> = {
             'Very consistent — I posted regularly': { title: 'Your next step is quality over quantity.', desc: " You show up — good. Now ask: does each piece of content tie directly to one of your 5 themes?" },
             'Inconsistent — I started and stopped': { title: 'Lower the bar to make consistency possible.', desc: " A system you keep for 9 months beats a sprint that lasts 9 days. Cut your target in half if needed." },
             'Not active — I am starting now': { title: 'Publish your first post this week.', desc: " Share your brand statement from this plan as a LinkedIn post. Say who you help and why it matters. That is post one." },
@@ -351,157 +432,130 @@ export function NPIAssessmentTool() {
         };
         const actions = generateActions();
 
-        const tagMap = (arr: string[], color: string) => arr.map(t => <span key={t} className={`px-2.5 py-1 rounded-full text-[12px] font-semibold m-0.5 inline-block ${color}`}>{t}</span>);
-
         return (
-          <div className="w-full">
-            <div className="text-center pb-6 border-b-2 border-[#E8ECF2] mb-7">
-              <div className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3 bg-[#E8ECF2] text-[#1F3F6E]">Your NPI Plan</div>
-              <h1 className="text-[24px] font-extrabold text-[#0D1B2A] mb-2">{firstName}'s Personal Brand Plan</h1>
-              <p className="text-[14px] text-[#7A8A9C]">Built with the NPI Framework · {new Date().toLocaleDateString('en-CA', {year:'numeric',month:'long',day:'numeric'})}</p>
+          <div className="flex w-full flex-col gap-6 py-8 md:py-12">
+            <div className="flex flex-col gap-3 border-b border-v3-line pb-10 text-center">
+              <p className="text-sm text-v3-light">Your NPI Plan</p>
+              <h1 className="font-v3-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] rtl:leading-[1.4]">{firstName}&apos;s Personal Brand Plan</h1>
+              <p className="text-sm text-v3-mute">Built with the NPI Framework · {new Date().toLocaleDateString('en-CA', {year:'numeric',month:'long',day:'numeric'})}</p>
             </div>
 
-            {/* Narrative Box */}
-            <div className="mb-6">
-              <div className="bg-[#1A3A5C] text-white text-[11px] font-extrabold tracking-widest uppercase px-3.5 py-2 rounded-t-md">N · NARRATIVE — What you stand for</div>
-              <div className="border border-t-0 border-[#C5CBD8] rounded-b-lg p-5 bg-white">
-                <div className="bg-[#D6E8F7] border-l-4 border-[#1A3A5C] p-4 rounded-r-lg text-[15px] font-bold text-[#1A3A5C] italic leading-relaxed mb-4">
-                  {brandStatement}
-                </div>
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Target Audience</div><div className="text-[14px] text-[#0D1B2A]">{ans('q1')}</div></div>
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Known For</div><div className="flex flex-wrap">{tagMap(ansArr('q3'), 'bg-[#D6E8F7] text-[#1A3A5C]')}</div></div>
-                <div className="flex gap-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Core Themes</div><div className="flex flex-wrap">{tagMap(ansArr('q4'), 'bg-[#D6E8F7] text-[#1A3A5C]')}</div></div>
-              </div>
-            </div>
+            {/* Narrative */}
+            <Pillar heading="N · NARRATIVE — What you stand for">
+              <blockquote className="mb-4 border-s-2 border-v3-light ps-5 font-v3-display text-xl font-light italic leading-relaxed text-v3-bone rtl:not-italic rtl:leading-loose">
+                {brandStatement}
+              </blockquote>
+              <dl>
+                <Row label="Target Audience">{ans('q1')}</Row>
+                <Row label="Known For"><Tags items={ansArr('q3')} /></Row>
+                <Row label="Core Themes"><Tags items={ansArr('q4')} /></Row>
+              </dl>
+            </Pillar>
 
-            {/* Presence Box */}
-            <div className="mb-6">
-              <div className="bg-[#145233] text-white text-[11px] font-extrabold tracking-widest uppercase px-3.5 py-2 rounded-t-md">P · PRESENCE — How you show up</div>
-              <div className="border border-t-0 border-[#C5CBD8] rounded-b-lg p-5 bg-white">
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Main Platforms</div><div className="flex flex-wrap">{tagMap(ansArr('q5'), 'bg-[#D5F0E3] text-[#145233]')}</div></div>
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Frequency</div><div className="text-[14px] text-[#0D1B2A]">{ans('q6')}</div></div>
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Formats</div><div className="flex flex-wrap">{tagMap(ansArr('q7'), 'bg-[#D5F0E3] text-[#145233]')}</div></div>
-                <div className="flex gap-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Weekly Rhythm</div><div className="text-[14px] text-[#0D1B2A]">{rhythm}</div></div>
-              </div>
-            </div>
+            {/* Presence */}
+            <Pillar heading="P · PRESENCE — How you show up">
+              <dl>
+                <Row label="Main Platforms"><Tags items={ansArr('q5')} /></Row>
+                <Row label="Frequency">{ans('q6')}</Row>
+                <Row label="Formats"><Tags items={ansArr('q7')} /></Row>
+                <Row label="Weekly Rhythm">{rhythm}</Row>
+              </dl>
+            </Pillar>
 
-            {/* Impact Box */}
-            <div className="mb-6">
-              <div className="bg-[#4A1A6E] text-white text-[11px] font-extrabold tracking-widest uppercase px-3.5 py-2 rounded-t-md">I · IMPACT — What you measure</div>
-              <div className="border border-t-0 border-[#C5CBD8] rounded-b-lg p-5 bg-white">
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Primary Goal</div><div className="text-[14px] text-[#0D1B2A]">{ans('q9')}</div></div>
-                <div className="flex gap-3 mb-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">90-Day Target</div><div className="text-[14px] text-[#0D1B2A]">{ans('q10')}</div></div>
-                <div className="flex gap-3"><div className="text-[12px] font-bold text-[#7A8A9C] w-32 shrink-0 uppercase tracking-wide">Key Metrics</div><div className="flex flex-wrap">{tagMap(metrics, 'bg-[#EBD9FF] text-[#4A1A6E]')}</div></div>
-              </div>
-            </div>
+            {/* Impact */}
+            <Pillar heading="I · IMPACT — What you measure">
+              <dl>
+                <Row label="Primary Goal">{ans('q9')}</Row>
+                <Row label="90-Day Target">{ans('q10')}</Row>
+                <Row label="Key Metrics"><Tags items={metrics} /></Row>
+              </dl>
+            </Pillar>
 
-            {/* Actions Box */}
-            <div className="mb-8">
-              <div className="bg-[#0D1B2A] text-white text-[11px] font-extrabold tracking-widest uppercase px-3.5 py-2 rounded-t-md">⚡ YOUR NEXT 3 ACTIONS — Start this week</div>
-              <div className="border border-t-0 border-[#C5CBD8] rounded-b-lg p-5 bg-white">
+            {/* Actions */}
+            <Pillar heading="⚡ YOUR NEXT 3 ACTIONS — Start this week">
+              <ol className="flex flex-col">
                 {actions.map((ac, i) => (
-                  <div key={i} className="flex gap-3 items-start py-3 border-b border-[#E8ECF2] last:border-0 last:pb-0">
-                    <div className="w-7 h-7 rounded-full bg-[#C0392B] text-white text-[13px] font-bold flex items-center justify-center shrink-0">{i + 1}</div>
-                    <div className="text-[14px] text-[#0D1B2A] leading-relaxed">
-                      <strong className="block text-[#0D1B2A] mb-0.5">{ac.title}</strong>
+                  <li key={i} className="flex items-start gap-5 border-b border-v3-line/60 py-4 last:border-b-0">
+                    <span className="w-5 shrink-0 font-v3-display text-2xl leading-none text-v3-light">{i + 1}</span>
+                    <p className="leading-relaxed text-v3-soft rtl:leading-loose">
+                      <strong className="mb-1 block font-medium text-v3-bone">{ac.title}</strong>
                       {ac.desc}
-                    </div>
-                  </div>
+                    </p>
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ol>
+            </Pillar>
 
             {/* Download Output */}
-            <div className="mt-7 p-6 bg-[#F4F6F9] rounded-xl text-center border-2 border-dashed border-[#C5CBD8]">
-              <h3 className="text-[16px] font-extrabold text-[#0D1B2A] mb-2">📥 Download Your Personalized NPI Excel Plan</h3>
-              <p className="text-[13px] text-[#3A4A5C] mb-4">Get your complete NPI operating system — Narrative, Weekly Tracker, Impact Log, and Pipeline — pre-filled with your answers.</p>
-              
+            <ToolPanel className="mt-4 text-center">
+              <h3 className="mb-3 font-v3-display text-2xl font-light">📥 Download Your Personalized NPI Excel Plan</h3>
+              <p className="mx-auto mb-6 max-w-xl leading-relaxed text-v3-soft rtl:leading-loose">Get your complete NPI operating system — Narrative, Weekly Tracker, Impact Log, and Pipeline — pre-filled with your answers.</p>
+
               {downloadUrl && (
                 <a
                   href={downloadUrl}
                   download={`NPI_Operating_System.xlsx`}
-                  className="block w-full py-4 rounded-lg font-bold text-[15px] text-white transition-colors bg-[#1F3F6E] hover:bg-[#0D1B2A]"
+                  className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-v3-bone px-7 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-raise"
                 >
+                  <Download className="h-4 w-4" aria-hidden />
                   Download My NPI Plan (.xlsx)
                 </a>
               )}
-            </div>
+            </ToolPanel>
 
-            <div className="text-center mt-7 pt-5 border-t border-[#C5CBD8] text-[13px] text-[#7A8A9C] leading-relaxed">
-              Built on the NPI Framework by <strong>Farjad Pourmohammad</strong> — Business Consultant, Toronto<br/>
-              <a href="https://farjadp.info" target="_blank" rel="noopener" className="text-[#2962B8] font-semibold hover:underline">farjadp.info</a> · Book a free strategy session
+            <div className="mt-4 border-t border-v3-line pt-6 text-center text-sm leading-relaxed text-v3-mute">
+              Built on the NPI Framework by <strong className="font-medium text-v3-soft">Farjad Pourmohammad</strong> — Business Consultant, Toronto<br/>
+              <a href="https://farjadp.info" target="_blank" rel="noopener" className="font-medium text-v3-light underline-offset-4 hover:underline">farjadp.info</a> · Book a free strategy session
             </div>
           </div>
         );
+      }
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center py-10" style={{ backgroundColor: theme.bg }}>
-
-      {/* Embedded top progress bar style matching user request */}
+    <div className="flex flex-col">
       {step > 1 && step < 6 && (
-        <div className="w-full bg-white border-b border-[#C5CBD8] sticky top-0 z-50 mb-8 p-3 shadow-sm max-w-3xl mx-auto rounded-xl">
-           <div className="flex justify-between max-w-[680px] mx-auto text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#7A8A9C] mb-2">
-             <span className={step >= 1 ? 'text-[#145233]' : ''}>Intro</span>
-             <span className={step >= 2 ? (step === 2 ? 'text-[#2962B8]' : 'text-[#145233]') : ''}>Narrative</span>
-             <span className={step >= 3 ? (step === 3 ? 'text-[#2962B8]' : 'text-[#145233]') : ''}>Presence</span>
-             <span className={step >= 4 ? (step === 4 ? 'text-[#2962B8]' : 'text-[#145233]') : ''}>Impact</span>
-             <span className={step >= 5 ? (step === 5 ? 'text-[#2962B8]' : 'text-[#145233]') : ''}>Plan</span>
-           </div>
-           <div className="max-w-[680px] mx-auto bg-[#E8ECF2] h-1.5 rounded-full overflow-hidden">
-             <div 
-               className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#2962B8] to-[#C0392B]"
-               style={{ width: `${(step / 5) * 100}%` }}
-             />
-           </div>
-        </div>
+        <ToolProgress
+          label={
+            <ol className="flex flex-wrap gap-x-4 gap-y-1">
+              {PROGRESS_LABELS.map((l, i) => (
+                <li
+                  key={l}
+                  aria-current={i + 1 === step ? 'step' : undefined}
+                  className={i + 1 === step ? 'text-v3-light' : i + 1 < step ? 'text-v3-soft' : ''}
+                >
+                  {l}
+                </li>
+              ))}
+            </ol>
+          }
+          percent={(step / 5) * 100}
+        />
       )}
 
-      <div className="w-full max-w-[720px] bg-white rounded-xl shadow-lg border border-slate-100 p-8 md:p-10 mx-auto transition-all">
-        {/* Content Wrapper */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3 }}
-          >
-            {renderStepContent()}
-          </motion.div>
-        </AnimatePresence>
+      <StepIn key={step}>
+        {renderStepContent()}
+      </StepIn>
 
-        {/* Navigation Buttons */}
-        {step > 1 && step < 6 && (
-          <div className="flex items-center gap-3 mt-8 pt-6">
-            <button
-              onClick={prevStep}
-              className="px-6 py-3.5 rounded-lg font-bold text-[#3A4A5C] bg-[#E8ECF2] hover:bg-[#C5CBD8] transition-colors text-[14px]"
-            >
-              ← Back
-            </button>
+      {/* Navigation Buttons */}
+      {step > 1 && step < 6 && (
+        <div className="flex items-center gap-3 pt-10">
+          <ToolButton variant="quiet" onClick={prevStep}>
+            ← Back
+          </ToolButton>
 
-            {step < 5 ? (
-              <button
-                onClick={nextStep}
-                disabled={!isStepValid()}
-                className={`flex-1 py-3.5 rounded-lg font-bold text-white transition-all text-[14px] ${!isStepValid() ? 'bg-[#C5CBD8] cursor-not-allowed' : 'bg-[#C0392B] hover:-translate-y-px hover:shadow'}`}
-              >
-                {step === 4 ? 'Almost Done →' : 'Next →'}
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit(onSubmitLead)}
-                disabled={isSubmitting}
-                className="flex-1 py-3.5 rounded-lg font-bold text-white bg-[#C0392B] transition-all text-[14px] flex items-center justify-center gap-2 hover:-translate-y-px hover:shadow disabled:opacity-75 disabled:cursor-wait"
-              >
-                {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Building your plan...</> : 'Get My Free NPI Plan →'}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+          {step < 5 ? (
+            <ToolButton className="flex-1" onClick={nextStep} disabled={!isStepValid()}>
+              {step === 4 ? 'Almost Done →' : 'Next →'}
+            </ToolButton>
+          ) : (
+            <ToolButton className="flex-1" onClick={handleSubmit(onSubmitLead)} loading={isSubmitting}>
+              {isSubmitting ? 'Building your plan...' : 'Get My Free NPI Plan →'}
+            </ToolButton>
+          )}
+        </div>
+      )}
     </div>
   );
 }

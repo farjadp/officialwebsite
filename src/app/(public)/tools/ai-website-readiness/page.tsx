@@ -1,6 +1,7 @@
 import { localeAlternates } from "@/lib/seo"
 import type { Metadata } from "next";
 import AiWebsiteReadinessTool from "@/components/ai-website-readiness/tool";
+import { ToolShell } from "@/components/v3/tool-kit";
 
 export const metadata: Metadata = {
     alternates: localeAlternates("/tools/ai-website-readiness", "en"),
@@ -10,5 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function AiWebsiteReadinessPage() {
-  return <AiWebsiteReadinessTool />;
+  return (
+    <ToolShell wide>
+      <AiWebsiteReadinessTool />
+    </ToolShell>
+  );
 }

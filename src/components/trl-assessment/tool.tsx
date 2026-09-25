@@ -1,58 +1,35 @@
 "use client";
 
+// ============================================================================
+// File Path: src/components/trl-assessment/tool.tsx
+// Why: The TRL assessment flow (intro → three phases of evidence questions →
+//      optional lead step → result) in the v3 "Light" look. Questions,
+//      scoring, lead capture and usage tracking are unchanged — they live in
+//      src/data/trl-assessment and the two fetch calls below.
+// Env / Identity: Client Component
+// ============================================================================
+
 import { useState } from "react";
-import { TOTAL_CRITERIA, TrlCriterion, TrlLocale } from "@/data/trl-assessment/config";
+import { ArrowLeft, ArrowRight, Play } from "lucide-react";
+import { TOTAL_CRITERIA, TrlLocale } from "@/data/trl-assessment/config";
 import { TrlAnswers, calculateTrl, getTrlContent, TrlResult } from "@/data/trl-assessment/logic";
 import { getTrlUiStrings } from "@/data/trl-assessment/ui";
+import {
+    QuestionBlock,
+    ScaleOptions,
+    StepIn,
+    ToolButton,
+    ToolField,
+    ToolIntro,
+    ToolPanel,
+    ToolProgress,
+} from "@/components/v3/tool-kit";
 import { ResultSummary } from "./result-summary";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Loader2, Play } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-function CriterionCard({
-    criterion,
-    index,
-    value,
-    onChange,
-    options,
-}: {
-    criterion: TrlCriterion;
-    index: number;
-    value: number | undefined;
-    onChange: (value: number) => void;
-    options: { value: number; label: string }[];
-}) {
-    // Distinct selected states: No -> stone, Partially -> amber, Yes -> green
-    const selectedClasses = [
-        "border-stone-400 bg-stone-100 text-stone-700",
-        "border-[#D97706] bg-[#D97706]/10 text-[#B45309]",
-        "border-[#0F3F35] bg-[#0F3F35] text-white",
-    ];
-
-    return (
-        <div className="bg-white border border-stone-200 rounded-2xl p-6 transition-all hover:border-stone-300 hover:shadow-md">
-            <h4 className="text-base sm:text-lg font-medium text-[#1C1917] mb-4 leading-relaxed">
-                <span className="text-stone-400 me-2">{index + 1}.</span>
-                {criterion.text}
-            </h4>
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                {options.map((option) => (
-                    <button
-                        key={option.value}
-                        onClick={() => onChange(option.value)}
-                        className={cn(
-                            "flex items-center justify-center p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-center text-sm font-medium",
-                            value === option.value
-                                ? selectedClasses[option.value]
-                                : "border-stone-100 bg-[#FDFBF7] text-stone-500 hover:border-stone-300 hover:bg-stone-50"
-                        )}
-                    >
-                        {option.label}
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
+/** Jump back to the top of the tool; instant when the visitor asks for less motion. */
+function scrollToTop() {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" });
 }
 
 export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
@@ -88,17 +65,17 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
     const handleNext = () => {
         if (currentPhaseIndex < content.phases.length - 1) {
             setCurrentPhaseIndex((prev) => prev + 1);
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            scrollToTop();
         } else {
             setStep("lead");
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            scrollToTop();
         }
     };
 
     const handlePrevious = () => {
         if (currentPhaseIndex > 0) {
             setCurrentPhaseIndex((prev) => prev - 1);
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            scrollToTop();
         }
     };
 
@@ -134,7 +111,7 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
         setResult(finalResult);
         setIsCalculating(false);
         setStep("result");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTop();
     };
 
     const handleReset = () => {
@@ -142,7 +119,7 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
         setCurrentPhaseIndex(0);
         setStep("intro");
         setResult(null);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTop();
     };
 
     const isCurrentPhaseComplete = () =>
@@ -153,41 +130,45 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
 
     if (step === "intro") {
         return (
-            <div dir={content.dir} className="max-w-3xl mx-auto text-center space-y-8 py-12 px-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D97706]/30 bg-[#D97706]/5 text-[#D97706] text-xs font-bold uppercase tracking-widest">
-                    {ui.badge}
-                </div>
-                <h1 className="font-serif text-4xl sm:text-6xl leading-[1.15] text-[#0F3F35]">
-                    {ui.introTitleLead}{" "}
-                    <span className="text-[#D97706]">{ui.introTitleAccent}</span>
-                </h1>
-                <p className="text-lg sm:text-xl text-stone-600 leading-relaxed max-w-2xl mx-auto">
-                    {ui.introBody}
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-start">
-                    {content.phases.map((phase, i) => (
-                        <div key={phase.id} className="bg-white border border-stone-200 rounded-2xl p-5 relative overflow-hidden">
-                            <div className="absolute top-0 end-0 w-16 h-16 bg-[#0F3F35]/5 rounded-bl-full" />
-                            <div className="text-xs font-mono uppercase tracking-widest text-[#D97706] mb-2">{phase.trlRange}</div>
-                            <div className="font-bold text-[#0F3F35]">{phase.title}</div>
-                            <div className="text-xs text-stone-500 mt-2 leading-relaxed">{phase.description}</div>
-                            <div className="w-6 h-1 bg-[#D97706] mt-4" style={{ width: `${(i + 1) * 16}px` }} />
-                        </div>
-                    ))}
-                </div>
-                <div className="pt-4">
-                    <button
-                        onClick={() => setStep("questions")}
-                        className="inline-flex items-center gap-2 h-14 px-10 text-lg font-bold rounded-full bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 transition-all duration-300 hover:scale-105"
-                    >
-                        {ui.startButton}
-                        <Play className={cn("w-5 h-5", isRtl && "rotate-180")} />
-                    </button>
-                    <p className="text-sm text-stone-500 mt-4">{ui.durationLine}</p>
-                    <p className="text-xs text-stone-400 mt-2 max-w-xl mx-auto leading-relaxed">
+            <div dir={content.dir}>
+                <ToolIntro
+                    kicker={ui.badge}
+                    title={
+                        <>
+                            {ui.introTitleLead}{" "}
+                            <em className="text-v3-light not-italic ltr:italic">{ui.introTitleAccent}</em>
+                        </>
+                    }
+                    lead={ui.introBody}
+                    action={
+                        <ToolButton onClick={() => setStep("questions")}>
+                            {ui.startButton}
+                            <Play className="h-4 w-4 rtl:rotate-180" aria-hidden />
+                        </ToolButton>
+                    }
+                    meta={ui.durationLine}
+                />
+                <StepIn delay={0.32} className="flex flex-col gap-8 pb-8">
+                    <ol className="grid gap-3 sm:grid-cols-3">
+                        {content.phases.map((phase) => (
+                            <li
+                                key={phase.id}
+                                className="flex flex-col gap-2 rounded-2xl border border-v3-line/80 bg-v3-raise p-5"
+                            >
+                                <span className="text-sm tabular-nums text-v3-light" dir="ltr">
+                                    {phase.trlRange}
+                                </span>
+                                <span className="font-v3-display text-xl font-light text-v3-bone">{phase.title}</span>
+                                <span className="text-sm leading-relaxed text-v3-mute rtl:leading-loose">
+                                    {phase.description}
+                                </span>
+                            </li>
+                        ))}
+                    </ol>
+                    <p className="max-w-2xl border-s border-v3-light/50 ps-4 text-sm leading-relaxed text-v3-soft rtl:leading-loose">
                         {ui.honestyNote}
                     </p>
-                </div>
+                </StepIn>
             </div>
         );
     }
@@ -198,121 +179,104 @@ export function TrlAssessmentTool({ locale = "en" }: { locale?: TrlLocale }) {
 
     if (step === "lead") {
         return (
-            <div dir={content.dir} className="max-w-xl mx-auto bg-white border border-stone-200 shadow-xl rounded-3xl p-8 sm:p-12 text-center animate-in fade-in zoom-in-95 duration-500">
-                <h2 className="font-serif text-3xl text-[#0F3F35] mb-3">{ui.leadTitle}</h2>
-                <p className="text-stone-600 mb-8 leading-relaxed">{ui.leadBody}</p>
+            <div dir={content.dir} className="mx-auto max-w-xl py-8">
+                <ToolPanel>
+                    <h2 className="font-v3-display text-3xl font-light leading-tight rtl:leading-snug">{ui.leadTitle}</h2>
+                    <p className="mt-3 leading-relaxed text-v3-soft rtl:leading-loose">{ui.leadBody}</p>
 
-                <form onSubmit={handleCalculateResult} className="space-y-4 text-start">
-                    <div className="space-y-2">
-                        <label htmlFor="trl-name" className="text-sm font-medium text-stone-700">{ui.nameLabel}</label>
-                        <input
+                    <form onSubmit={handleCalculateResult} className="mt-8 flex flex-col gap-5">
+                        <ToolField
                             id="trl-name"
+                            label={ui.nameLabel}
                             type="text"
+                            autoComplete="given-name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="flex h-12 w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F3F35] focus:border-transparent transition-all"
                             placeholder={ui.namePlaceholder}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="trl-email" className="text-sm font-medium text-stone-700">{ui.emailLabel}</label>
-                        <input
+                        <ToolField
                             id="trl-email"
+                            label={ui.emailLabel}
                             type="email"
                             dir="ltr"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className={cn(
-                                "flex h-12 w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F3F35] focus:border-transparent transition-all",
-                                isRtl && "text-right placeholder:text-left"
-                            )}
                             placeholder={ui.emailPlaceholder}
                         />
-                    </div>
 
-                    <button
-                        type="submit"
-                        disabled={isCalculating}
-                        className="w-full h-14 text-lg font-bold rounded-xl mt-6 bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center justify-center gap-2"
-                    >
-                        {isCalculating ? (
-                            <>
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                                {ui.generating}
-                            </>
-                        ) : (
-                            ui.submit
-                        )}
-                    </button>
-                    <p className="text-xs text-stone-400 text-center mt-4">{ui.noSpam}</p>
-                </form>
+                        <ToolButton type="submit" loading={isCalculating} className="mt-3 w-full">
+                            {isCalculating ? ui.generating : ui.submit}
+                        </ToolButton>
+                        <p className="text-center text-xs text-v3-mute">{ui.noSpam}</p>
+                    </form>
+                </ToolPanel>
             </div>
         );
     }
 
     // "questions" step
     return (
-        <div dir={content.dir} className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div dir={content.dir}>
+            <ToolProgress
+                label={ui.phaseOf(currentPhaseIndex + 1, content.phases.length)}
+                percent={progressPercentage}
+                percentLabel={ui.completed(Math.round(progressPercentage))}
+                title={
+                    <>
+                        {currentPhase.title}{" "}
+                        <span className="font-v3-body text-lg text-v3-mute" dir="ltr">
+                            ({currentPhase.trlRange})
+                        </span>
+                    </>
+                }
+            />
+            <p className="mt-4 text-sm leading-relaxed text-v3-mute rtl:leading-loose">{currentPhase.description}</p>
 
-            {/* Progress Header */}
-            <div className="sticky top-0 z-10 bg-[#FDFBF7]/90 backdrop-blur-md pt-4 pb-4 border-b border-stone-200">
-                <div className="flex justify-between text-sm font-medium text-stone-500 mb-2">
-                    <span>{ui.phaseOf(currentPhaseIndex + 1, content.phases.length)}</span>
-                    <span className="text-[#D97706] font-bold">{ui.completed(Math.round(progressPercentage))}</span>
-                </div>
-                <Progress value={progressPercentage} className="h-2 [&>div]:bg-[#0F3F35]" />
-                <h2 className="font-serif text-3xl text-[#0F3F35] mt-6">
-                    {currentPhase.title} <span className="text-stone-400 text-xl font-sans">({currentPhase.trlRange})</span>
-                </h2>
-                <p className="text-sm text-stone-500 mt-1">{currentPhase.description}</p>
-            </div>
-
-            {/* Levels & Criteria */}
-            <div className="space-y-12 pt-4">
+            <div className="flex flex-col gap-16 pt-10">
                 {currentLevels.map((level) => (
-                    <div key={level.level} className="space-y-4">
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <span className="text-xs font-mono uppercase tracking-widest text-white bg-[#0F3F35] px-2.5 py-1 rounded">TRL {level.level}</span>
-                            <h3 className="text-xl font-bold text-[#1C1917]">{level.name}</h3>
-                        </div>
-                        <p className="text-sm text-stone-500 leading-relaxed border-s-2 border-[#D97706]/40 ps-3">{level.startupTranslation}</p>
-                        <div className="space-y-4">
+                    <section key={level.level} aria-labelledby={`trl-level-${level.level}`}>
+                        <StepIn className="flex flex-col gap-3">
+                            <div className="flex flex-wrap items-baseline gap-3">
+                                <span className="rounded-full border border-v3-light/60 px-3 py-1 text-xs tabular-nums text-v3-light" dir="ltr">
+                                    TRL {level.level}
+                                </span>
+                                <h3 id={`trl-level-${level.level}`} className="font-v3-display text-2xl font-light text-v3-bone">
+                                    {level.name}
+                                </h3>
+                            </div>
+                            <p className="border-s border-v3-light/40 ps-3 text-sm leading-relaxed text-v3-soft rtl:leading-loose">
+                                {level.startupTranslation}
+                            </p>
+                        </StepIn>
+                        <div>
                             {level.criteria.map((c, index) => (
-                                <CriterionCard
-                                    key={c.id}
-                                    index={index}
-                                    criterion={c}
-                                    value={answers[c.id]}
-                                    onChange={(val) => handleAnswer(c.id, val)}
-                                    options={answerOptions}
-                                />
+                                <QuestionBlock key={c.id} index={`${index + 1}.`} text={c.text}>
+                                    <ScaleOptions
+                                        options={answerOptions}
+                                        value={answers[c.id]}
+                                        onChange={(val) => handleAnswer(c.id, val)}
+                                        label={c.text}
+                                    />
+                                </QuestionBlock>
                             ))}
                         </div>
-                    </div>
+                    </section>
                 ))}
             </div>
 
-            {/* Navigation Footer */}
-            <div className="flex items-center justify-between pt-6 border-t border-stone-200">
-                <button
-                    onClick={handlePrevious}
-                    disabled={currentPhaseIndex === 0}
-                    className="inline-flex items-center gap-2 text-stone-500 hover:text-[#0F3F35] disabled:opacity-40 disabled:cursor-not-allowed font-medium px-4 py-2 transition-colors"
-                >
-                    <PrevArrow className="w-4 h-4" />
+            {/* Navigation */}
+            <div className="mt-10 flex items-center justify-between gap-4 border-t border-v3-line/70 pt-8">
+                <ToolButton variant="quiet" onClick={handlePrevious} disabled={currentPhaseIndex === 0}>
+                    <PrevArrow className="h-4 w-4" aria-hidden />
                     {ui.previous}
-                </button>
+                </ToolButton>
 
-                <button
-                    onClick={handleNext}
-                    disabled={!isCurrentPhaseComplete()}
-                    className="inline-flex items-center gap-2 rounded-full px-8 h-12 font-bold bg-[#0F3F35] text-white hover:bg-[#0F3F35]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
+                <ToolButton onClick={handleNext} disabled={!isCurrentPhaseComplete()}>
                     {currentPhaseIndex === content.phases.length - 1 ? ui.finish : ui.nextPhase}
-                    <NextArrow className="w-4 h-4" />
-                </button>
+                    <NextArrow className="h-4 w-4" aria-hidden />
+                </ToolButton>
             </div>
-
         </div>
     );
 }

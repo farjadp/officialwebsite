@@ -228,6 +228,13 @@
   animation: v3-sheen 10s ease-in-out infinite;
 }
 
+/* Sticky bars under the header follow it when it hides (header.tsx). */
+.v3-under-header {
+  top: 5rem;
+  transition: top 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-header-hidden] .v3-under-header { top: 0; }
+
 .v3-beam { animation: v3-beam 16s ease-in-out infinite; }
 [dir="rtl"] .v3-beam { animation-direction: reverse; }
 .v3-drift { animation: v3-drift 26s ease-in-out infinite alternate; }

@@ -1,16 +1,84 @@
 "use client"
 
+// ============================================================================
+// File Path: src/app/(public)/tools/impossible-trinity-simulator/simulator-client.tsx
+// Why: The Impossible Trinity simulator in the v3 "Light" look. Restyle only:
+//      the three sliders, the thresholds, the crash timing and every word are
+//      as they were. The stress bar and slider fills are framer-motion scales
+//      (no inline widths), the glitch shake is framer-motion and is skipped
+//      under reduced motion. Shared by /tools and /fa/tools; `locale` only
+//      keeps the internal links inside the visitor's locale.
+// Env / Identity: Client Component
+// ============================================================================
+
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ShieldAlert, TrendingUp, Zap, Activity, RefreshCcw, AlertTriangle, ArrowLeft, ArrowRight, Target, Bot } from 'lucide-react';
 import Link from 'next/link';
+import type { Locale } from '@/components/home/v3/copy';
+import { localePath } from '@/lib/nav';
+import { ToolShell, StepIn, ToolButton } from '@/components/v3/tool-kit';
 
+const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-export default function ImpossibleTrinitySimulator() {
+/** A range input in v3: a hairline track, a fill of light, a bone thumb. */
+function V3Slider({
+    id,
+    value,
+    onChange,
+    disabled,
+    labelledBy,
+}: {
+    id: string;
+    value: number;
+    onChange: (v: number) => void;
+    disabled: boolean;
+    labelledBy: string;
+}) {
+    const reduce = useReducedMotion();
+    return (
+        <div className="relative flex h-6 items-center">
+            <div aria-hidden className="absolute inset-x-0 h-1.5 overflow-hidden rounded-full bg-v3-line">
+                <motion.div
+                    className={`absolute inset-y-0 start-0 w-full origin-left rounded-full rtl:origin-right ${disabled ? 'bg-v3-mute' : 'bg-v3-light'}`}
+                    initial={false}
+                    animate={{ scaleX: value / 100 }}
+                    transition={reduce ? { duration: 0 } : { type: 'tween', duration: 0.15, ease: 'easeOut' }}
+                />
+            </div>
+            <input
+                type="range"
+                id={id}
+                min="0"
+                max="100"
+                value={value}
+                onChange={(e) => onChange(parseInt(e.target.value))}
+                disabled={disabled}
+                aria-labelledby={labelledBy}
+                aria-valuetext={`${value}%`}
+                className="relative h-6 w-full cursor-pointer appearance-none bg-transparent focus:outline-none disabled:cursor-not-allowed
+                    [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
+                    [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-v3-ink [&::-webkit-slider-thumb]:bg-v3-bone [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(232,196,138,0.5)] [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:duration-150
+                    active:[&::-webkit-slider-thumb]:scale-125 active:[&::-webkit-slider-thumb]:bg-v3-light
+                    focus-visible:[&::-webkit-slider-thumb]:ring-4 focus-visible:[&::-webkit-slider-thumb]:ring-v3-light/50
+                    disabled:[&::-webkit-slider-thumb]:bg-v3-mute disabled:[&::-webkit-slider-thumb]:shadow-none
+                    [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
+                    [&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-v3-ink [&::-moz-range-thumb]:bg-v3-bone [&::-moz-range-thumb]:shadow-[0_0_12px_rgba(232,196,138,0.5)]
+                    active:[&::-moz-range-thumb]:bg-v3-light
+                    focus-visible:[&::-moz-range-thumb]:ring-4 focus-visible:[&::-moz-range-thumb]:ring-v3-light/50
+                    disabled:[&::-moz-range-thumb]:bg-v3-mute"
+            />
+        </div>
+    );
+}
+
+export default function ImpossibleTrinitySimulator({ locale = "en" }: { locale?: Locale }) {
     const [profit, setProfit] = useState(50);
     const [safety, setSafety] = useState(50);
     const [speed, setSpeed] = useState(50);
     const [isCrashed, setIsCrashed] = useState(false);
     const [isGlitching, setIsGlitching] = useState(false);
+    const reduce = useReducedMotion();
 
     const CRITICAL_POINT = 220;
     const DANGER_ZONE = 180;
@@ -38,264 +106,239 @@ export default function ImpossibleTrinitySimulator() {
 
     const percentage = Math.min((total / CRITICAL_POINT) * 100, 100);
 
-    let pressureBarClass = 'h-full transition-all duration-500 ease-out ';
+    let pressureBarClass = 'absolute inset-y-0 start-0 w-full origin-left rounded-full rtl:origin-right transition-colors duration-500 ';
     let statusBoxClass = 'mt-10 p-5 rounded-xl border transition-colors duration-300 ';
     let statusTextClass = 'text-sm leading-relaxed font-medium ';
     let statusText = '';
-    let mainCardClass = 'relative w-full max-w-xl mx-auto bg-white border border-stone-200 rounded-3xl p-8 md:p-10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] transition-all duration-300 ';
+    let mainCardClass = 'relative w-full max-w-xl mx-auto bg-v3-raise border rounded-3xl p-8 md:p-10 transition-[border-color,box-shadow,scale] duration-300 ';
+    let totalPillClass = '';
 
     if (total > DANGER_ZONE) {
-        pressureBarClass += 'bg-red-600';
-        statusBoxClass += 'bg-red-50 border-red-200';
+        pressureBarClass += 'bg-v3-light shadow-[0_0_14px_rgba(232,196,138,0.9)]';
+        statusBoxClass += 'bg-v3-light/10 border-v3-light';
         statusText = 'CRITICAL WARNING: Unsustainable pressure on the team. Complete project collapse is imminent!';
-        statusTextClass += 'text-red-700 font-bold';
-        mainCardClass += 'border-red-300 shadow-[0_0_40px_rgba(220,38,38,0.15)] scale-[1.02] ';
+        statusTextClass += 'text-v3-light font-bold';
+        mainCardClass += 'border-v3-light shadow-[0_0_60px_-10px_rgba(232,196,138,0.45)] scale-[1.02] ';
+        totalPillClass = 'bg-v3-light text-v3-ink';
     } else if (total > WARNING_ZONE) {
-        pressureBarClass += 'bg-[#D97706]';
-        statusBoxClass += 'bg-[#D97706]/5 border-[#D97706]/20';
+        pressureBarClass += 'bg-v3-light/70';
+        statusBoxClass += 'bg-v3-light/5 border-v3-light/40';
         statusText = 'Quality degradation detected. Resources are stretched, but the project is moving forward.';
-        statusTextClass += 'text-[#D97706]';
+        statusTextClass += 'text-v3-light';
+        mainCardClass += 'border-v3-light/40 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)] ';
+        totalPillClass = 'border border-v3-light/50 text-v3-light';
     } else {
-        pressureBarClass += 'bg-[#0F3F35]';
-        statusBoxClass += 'bg-stone-50 border-stone-200';
+        pressureBarClass += 'bg-v3-soft';
+        statusBoxClass += 'bg-v3-ink border-v3-line';
         statusText = 'Equilibrium maintained. The project scope is safe and logical.';
-        statusTextClass += 'text-stone-600';
+        statusTextClass += 'text-v3-soft';
+        mainCardClass += 'border-v3-line/80 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.2)] ';
+        totalPillClass = 'border border-v3-line text-v3-soft';
     }
 
-    if (isGlitching) {
-        mainCardClass += 'animate-glitch ';
-    }
+    const href = (p: string) => localePath(locale, p);
+
+    const sliders = [
+        { id: 'profit', label: 'Profit Margin', icon: TrendingUp, value: profit, set: setProfit },
+        { id: 'safety', label: 'Risk Mitigation', icon: ShieldAlert, value: safety, set: setSafety },
+        { id: 'speed', label: 'Execution Velocity', icon: Zap, value: speed, set: setSpeed },
+    ];
+
+    const cardLink = 'group relative flex flex-col rounded-3xl border border-v3-line/80 p-8 transition-all duration-500 hover:-translate-y-1 hover:border-v3-light/60 hover:bg-v3-raise focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light';
+    const iconBox = 'mb-6 flex size-12 items-center justify-center rounded-xl border border-v3-line bg-v3-raise text-v3-light transition-colors duration-500 group-hover:border-v3-light/60';
+    const arrowCls = 'w-4 h-4 text-v3-light transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1';
 
     return (
-        <div className="bg-[#FDFBF7] min-h-screen p-6 md:p-12 text-[#1C1917] font-sans selection:bg-[#0F3F35] selection:text-white pb-24">
-            <style dangerouslySetInnerHTML={{__html: `
-                input[type=range] {
-                    -webkit-appearance: none;
-                    width: 100%;
-                    background: transparent;
-                }
-                input[type=range]:focus { outline: none; }
-                input[type=range]::-webkit-slider-runnable-track {
-                    width: 100%;
-                    height: 6px;
-                    cursor: pointer;
-                    background: #E7E5E4;
-                    border-radius: 999px;
-                }
-                input[type=range]::-webkit-slider-thumb {
-                    height: 20px;
-                    width: 20px;
-                    border-radius: 50%;
-                    cursor: pointer;
-                    -webkit-appearance: none;
-                    margin-top: -7px;
-                    background: #0F3F35;
-                    border: 2px solid #FDFBF7;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                    transition: transform 0.15s ease, background 0.15s ease;
-                }
-                input[type=range]:disabled::-webkit-slider-thumb {
-                    background: #A8A29E;
-                    cursor: not-allowed;
-                }
-                input[type=range]:active::-webkit-slider-thumb { 
-                    transform: scale(1.2); 
-                    background: #D97706;
-                }
-                
-                @keyframes glitch {
-                    0% { transform: translate(0) }
-                    20% { transform: translate(-5px, 5px) rotate(-1deg) }
-                    40% { transform: translate(-5px, -5px) rotate(1deg) }
-                    60% { transform: translate(5px, 5px) rotate(-1deg) }
-                    80% { transform: translate(5px, -5px) rotate(1deg) }
-                    100% { transform: translate(0) }
-                }
-                .animate-glitch { animation: glitch 0.2s ease-in-out infinite; }
-            `}} />
-
-            <div className="max-w-3xl mx-auto space-y-12">
+        <ToolShell>
+            <div className="space-y-12">
                 {/* Back Button */}
-                <div>
-                    <Link href="/tools" className="inline-flex items-center gap-2 text-stone-500 hover:text-[#0F3F35] transition-colors font-medium text-sm group">
-                        <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
+                <StepIn>
+                    <Link href={href('/tools')} className="inline-flex items-center gap-2 text-v3-mute hover:text-v3-light transition-colors font-medium text-sm group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light rounded">
+                        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 rtl:-scale-x-100 rtl:group-hover:translate-x-1" aria-hidden />
                         Back to Tools Library
                     </Link>
-                </div>
+                </StepIn>
 
                 {/* Simulator Card */}
-                <div className={mainCardClass}>
-                    {isCrashed && (
-                        <div className="absolute inset-0 z-50 bg-[#0F3F35]/95 flex flex-col items-center justify-center p-8 text-center backdrop-blur-md rounded-3xl animate-in fade-in zoom-in duration-300">
-                            <AlertTriangle className="w-20 h-20 text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]" />
-                            <h2 className="text-4xl md:text-5xl font-serif text-white mb-4 tracking-tight drop-shadow-md">
-                                System Collapsed
-                            </h2>
-                            <p className="text-stone-300 text-lg mb-10 max-w-sm font-medium leading-relaxed">
-                                You demanded the impossible. The framework shattered under compounding constraints before reaching deployment.
+                <StepIn delay={0.08}>
+                    <motion.div
+                        className={mainCardClass}
+                        animate={
+                            isGlitching && !reduce
+                                ? { x: [0, -5, -5, 5, 5, 0], y: [0, 5, -5, 5, -5, 0], rotate: [0, -1, 1, -1, 1, 0] }
+                                : { x: 0, y: 0, rotate: 0 }
+                        }
+                        transition={isGlitching && !reduce ? { duration: 0.2, ease: 'easeInOut', repeat: Infinity } : { duration: 0.2 }}
+                    >
+                        <AnimatePresence>
+                            {isCrashed && (
+                                <motion.div
+                                    key="crash"
+                                    role="alertdialog"
+                                    aria-labelledby="trinity-crash-title"
+                                    className="absolute inset-0 z-50 bg-v3-ink/95 flex flex-col items-center justify-center p-8 text-center backdrop-blur-md rounded-3xl border border-v3-light/60"
+                                    initial={reduce ? false : { opacity: 0, scale: 0.96 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.98 }}
+                                    transition={{ duration: 0.3, ease: ARRIVE }}
+                                >
+                                    <AlertTriangle className="w-20 h-20 text-v3-light mb-6 drop-shadow-[0_0_15px_rgba(232,196,138,0.8)]" aria-hidden />
+                                    <h2 id="trinity-crash-title" className="text-4xl md:text-5xl font-v3-display font-light text-v3-bone mb-4 tracking-tight">
+                                        System Collapsed
+                                    </h2>
+                                    <p className="text-v3-soft text-lg mb-10 max-w-sm leading-relaxed">
+                                        You demanded the impossible. The framework shattered under compounding constraints before reaching deployment.
+                                    </p>
+                                    <ToolButton onClick={resetSystem} autoFocus>
+                                        <RefreshCcw className="w-5 h-5 transition-transform duration-500 group-hover:-rotate-180" aria-hidden />
+                                        Reboot with Logic
+                                    </ToolButton>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        <div className="text-center mb-10">
+                            <p className="text-sm text-v3-light mb-4">
+                                Interactive Diagnostic
                             </p>
-                            <button 
-                                onClick={resetSystem} 
-                                className="group flex items-center gap-2 px-8 py-4 bg-[#D97706] hover:bg-[#B45309] text-white rounded-full font-bold transition-all shadow-[0_0_20px_rgba(217,119,6,0.4)] hover:shadow-[0_0_30px_rgba(217,119,6,0.6)] cursor-pointer"
+                            <h1 className="font-v3-display font-light text-3xl md:text-4xl leading-tight text-v3-bone mb-3">
+                                Impossible Trinity <em className="text-v3-light not-italic ltr:italic">Simulator</em>
+                            </h1>
+                            <p className="text-v3-soft text-sm md:text-base max-w-sm mx-auto">
+                                Break the constraints, but anticipate the consequences.
+                            </p>
+                        </div>
+
+                        <div className="mb-10 bg-v3-ink p-6 rounded-2xl border border-v3-line/80">
+                            <div className="flex justify-between items-center text-xs font-bold mb-3">
+                                <span className="text-v3-mute uppercase tracking-wider flex items-center gap-2">
+                                    <Activity className="w-4 h-4 text-v3-light" aria-hidden />
+                                    Structural Stress
+                                </span>
+                                <span className={`tabular-nums tracking-widest px-2 py-1 rounded-md transition-colors duration-300 ${totalPillClass}`} dir="ltr" aria-live="polite">
+                                    {total} / {CRITICAL_POINT}
+                                </span>
+                            </div>
+                            <div
+                                className="relative h-2 w-full bg-v3-line rounded-full overflow-hidden"
+                                role="meter"
+                                aria-label="Structural Stress"
+                                aria-valuemin={0}
+                                aria-valuemax={CRITICAL_POINT}
+                                aria-valuenow={Math.min(total, CRITICAL_POINT)}
                             >
-                                <RefreshCcw className="w-5 h-5 group-hover:-rotate-180 transition-transform duration-500" />
-                                Reboot with Logic
-                            </button>
-                        </div>
-                    )}
-
-                    <div className="text-center mb-10">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D97706]/30 bg-[#D97706]/5 text-[#D97706] text-xs font-bold uppercase tracking-widest mb-4">
-                            Interactive Diagnostic
-                        </div>
-                        <h1 className="font-serif text-3xl md:text-4xl leading-tight text-[#0F3F35] mb-3">
-                            Impossible Trinity <span className="text-[#D97706]">Simulator</span>
-                        </h1>
-                        <p className="text-stone-500 text-sm md:text-base font-medium max-w-sm mx-auto">
-                            Break the constraints, but anticipate the consequences.
-                        </p>
-                    </div>
-
-                    <div className="mb-10 bg-stone-50 p-6 rounded-2xl border border-stone-100">
-                        <div className="flex justify-between items-center text-xs font-bold mb-3">
-                            <span className="text-stone-500 uppercase tracking-wider flex items-center gap-2">
-                                <Activity className="w-4 h-4 text-[#0F3F35]" />
-                                Structural Stress
-                            </span>
-                            <span className={`font-mono tracking-widest px-2 py-1 rounded-md ${total > DANGER_ZONE ? 'bg-red-100 text-red-700' : total > WARNING_ZONE ? 'bg-amber-100 text-amber-700' : 'bg-[#0F3F35]/10 text-[#0F3F35]'}`}>
-                                {total} / {CRITICAL_POINT}
-                            </span>
-                        </div>
-                        <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
-                            <div className={pressureBarClass} style={{ width: `${percentage}%` }}></div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-8 relative z-10">
-                        <div className="group">
-                            <div className="flex justify-between items-center mb-3">
-                                <label className="text-[#1C1917] font-bold text-sm flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4 text-[#0F3F35]" />
-                                    Profit Margin
-                                </label>
-                                <span className="font-mono font-bold bg-stone-100 text-[#0F3F35] px-3 py-1 rounded-lg text-sm min-w-[3.5rem] text-center border border-stone-200 transition-colors group-hover:border-[#0F3F35]/30">
-                                    {profit}%
-                                </span>
+                                <motion.div
+                                    className={pressureBarClass}
+                                    initial={false}
+                                    animate={{ scaleX: percentage / 100 }}
+                                    transition={reduce ? { duration: 0 } : { duration: 0.5, ease: ARRIVE }}
+                                />
                             </div>
-                            <input type="range" id="profit" min="0" max="100" value={profit} onChange={(e) => setProfit(parseInt(e.target.value))} disabled={isCrashed} />
                         </div>
 
-                        <div className="group">
-                            <div className="flex justify-between items-center mb-3">
-                                <label className="text-[#1C1917] font-bold text-sm flex items-center gap-2">
-                                    <ShieldAlert className="w-4 h-4 text-[#0F3F35]" />
-                                    Risk Mitigation
-                                </label>
-                                <span className="font-mono font-bold bg-stone-100 text-[#0F3F35] px-3 py-1 rounded-lg text-sm min-w-[3.5rem] text-center border border-stone-200 transition-colors group-hover:border-[#0F3F35]/30">
-                                    {safety}%
-                                </span>
-                            </div>
-                            <input type="range" id="safety" min="0" max="100" value={safety} onChange={(e) => setSafety(parseInt(e.target.value))} disabled={isCrashed} />
+                        <div className="space-y-8 relative z-10">
+                            {sliders.map((s) => {
+                                const Icon = s.icon;
+                                return (
+                                    <div key={s.id} className="group">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <label id={`${s.id}-label`} htmlFor={s.id} className="text-v3-bone font-bold text-sm flex items-center gap-2">
+                                                <Icon className="w-4 h-4 text-v3-light" aria-hidden />
+                                                {s.label}
+                                            </label>
+                                            <span className="tabular-nums font-bold bg-v3-ink text-v3-bone px-3 py-1 rounded-lg text-sm min-w-[3.5rem] text-center border border-v3-line transition-colors group-hover:border-v3-light/50" dir="ltr">
+                                                {s.value}%
+                                            </span>
+                                        </div>
+                                        <V3Slider id={s.id} value={s.value} onChange={s.set} disabled={isCrashed} labelledBy={`${s.id}-label`} />
+                                    </div>
+                                );
+                            })}
                         </div>
 
-                        <div className="group">
-                            <div className="flex justify-between items-center mb-3">
-                                <label className="text-[#1C1917] font-bold text-sm flex items-center gap-2">
-                                    <Zap className="w-4 h-4 text-[#0F3F35]" />
-                                    Execution Velocity
-                                </label>
-                                <span className="font-mono font-bold bg-stone-100 text-[#0F3F35] px-3 py-1 rounded-lg text-sm min-w-[3.5rem] text-center border border-stone-200 transition-colors group-hover:border-[#0F3F35]/30">
-                                    {speed}%
-                                </span>
-                            </div>
-                            <input type="range" id="speed" min="0" max="100" value={speed} onChange={(e) => setSpeed(parseInt(e.target.value))} disabled={isCrashed} />
+                        <div className={statusBoxClass}>
+                            <h3 className="text-xs font-bold text-v3-mute mb-2 uppercase tracking-wider flex items-center gap-2">
+                                Real-time Diagnostics
+                            </h3>
+                            <p className={statusTextClass} aria-live="polite">
+                                {statusText}
+                            </p>
                         </div>
-                    </div>
-
-                    <div className={statusBoxClass}>
-                        <h3 className="text-xs font-bold text-stone-400 mb-2 uppercase tracking-wider flex items-center gap-2">
-                            Real-time Diagnostics
-                        </h3>
-                        <p className={statusTextClass}>
-                            {statusText}
-                        </p>
-                    </div>
-                </div>
+                    </motion.div>
+                </StepIn>
 
                 {/* Philosophy Section */}
-                <div className="bg-white border border-stone-200 rounded-3xl p-8 md:p-10 shadow-sm transition-all hover:shadow-md">
-                    <h2 className="font-serif text-2xl md:text-3xl text-[#0F3F35] mb-6">The Philosophy of Constraints</h2>
-                    <p className="text-stone-600 leading-relaxed text-sm md:text-base mb-4 font-medium">
-                        In engineering and business logic, the <strong>Impossible Trinity</strong> dictates that you can optimize for only two of three constraints: <strong className="text-[#D97706]">Speed</strong>, <strong className="text-[#D97706]">Safety</strong>, and <strong className="text-[#D97706]">Profit</strong>. 
-                    </p>
-                    <p className="text-stone-600 leading-relaxed text-sm md:text-base font-medium">
-                        When clients or stakeholders demand all three simultaneously—zero risk, maximum speed, and aggressive cost-cutting—the structural integrity of the project breaks down. This simulator visualizes the compounding pressure that leads to system collapse. True engineering leadership is having the courage to define trade-offs, not ignoring them.
-                    </p>
-                </div>
+                <StepIn delay={0.16}>
+                    <div className="border border-v3-line/80 rounded-3xl p-8 md:p-10">
+                        <h2 className="font-v3-display font-light text-2xl md:text-3xl text-v3-bone mb-6">The Philosophy of Constraints</h2>
+                        <p className="text-v3-soft leading-relaxed text-sm md:text-base mb-4">
+                            In engineering and business logic, the <strong className="text-v3-bone">Impossible Trinity</strong> dictates that you can optimize for only two of three constraints: <strong className="text-v3-light">Speed</strong>, <strong className="text-v3-light">Safety</strong>, and <strong className="text-v3-light">Profit</strong>.
+                        </p>
+                        <p className="text-v3-soft leading-relaxed text-sm md:text-base">
+                            When clients or stakeholders demand all three simultaneously—zero risk, maximum speed, and aggressive cost-cutting—the structural integrity of the project breaks down. This simulator visualizes the compounding pressure that leads to system collapse. True engineering leadership is having the courage to define trade-offs, not ignoring them.
+                        </p>
+                    </div>
+                </StepIn>
 
                 {/* Other Tools Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Link href="/tools/npi-assessment" className="group bg-white border border-stone-200 rounded-3xl p-8 transition-all hover:border-[#D97706] hover:shadow-lg relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-[#0F3F35]/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
-                        <div className="p-3 bg-stone-100 rounded-lg text-[#0F3F35] w-fit mb-6 group-hover:bg-[#0F3F35] group-hover:text-white transition-colors duration-300">
-                            <Target className="w-6 h-6" />
-                        </div>
-                        <h3 className="font-bold text-lg text-[#0F3F35] mb-2 leading-tight">NPI Brand Assessment</h3>
-                        <p className="text-stone-600 text-sm mb-6 leading-relaxed">Evaluate the 3 core pillars of your brand: Narrative, Presence, and Impact.</p>
-                        <div className="flex items-center justify-between text-[#0F3F35] font-medium text-sm border-t border-stone-100 pt-5">
-                            <span className="group-hover:text-[#D97706] transition-colors">Diagnose Brand</span>
-                            <ArrowRight className="w-4 h-4 transform group-hover:translate-x-2 transition-transform text-[#D97706]" />
-                        </div>
-                    </Link>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <StepIn delay={0.2}>
+                        <Link href={href('/tools/npi-assessment')} className={cardLink}>
+                            <div className={iconBox}>
+                                <Target className="w-5 h-5" aria-hidden />
+                            </div>
+                            <h3 className="font-v3-display text-xl text-v3-bone mb-2 leading-tight transition-colors group-hover:text-v3-light">NPI Brand Assessment</h3>
+                            <p className="text-v3-soft text-sm mb-6 leading-relaxed">Evaluate the 3 core pillars of your brand: Narrative, Presence, and Impact.</p>
+                            <div className="mt-auto flex items-center justify-between text-v3-bone font-medium text-sm border-t border-v3-line/70 pt-5">
+                                <span className="group-hover:text-v3-light transition-colors">Diagnose Brand</span>
+                                <ArrowRight className={arrowCls} aria-hidden />
+                            </div>
+                        </Link>
+                    </StepIn>
 
-                    <Link href="/tools/ai-adoption-score" className="group bg-white border border-stone-200 rounded-3xl p-8 transition-all hover:border-[#D97706] hover:shadow-lg relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-[#0F3F35]/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
-                        <div className="p-3 bg-stone-100 rounded-lg text-[#0F3F35] w-fit mb-6 group-hover:bg-[#0F3F35] group-hover:text-white transition-colors duration-300">
-                            <Bot className="w-6 h-6" />
-                        </div>
-                        <h3 className="font-bold text-lg text-[#0F3F35] mb-2 leading-tight">AI Adoption Readiness</h3>
-                        <p className="text-stone-600 text-sm mb-6 leading-relaxed">Determine if your business is structurally ready for true AI integration.</p>
-                        <div className="flex items-center justify-between text-[#0F3F35] font-medium text-sm border-t border-stone-100 pt-5">
-                            <span className="group-hover:text-[#D97706] transition-colors">Take Assessment</span>
-                            <ArrowRight className="w-4 h-4 transform group-hover:translate-x-2 transition-transform text-[#D97706]" />
-                        </div>
-                    </Link>
+                    <StepIn delay={0.28}>
+                        <Link href={href('/tools/ai-adoption-score')} className={cardLink}>
+                            <div className={iconBox}>
+                                <Bot className="w-5 h-5" aria-hidden />
+                            </div>
+                            <h3 className="font-v3-display text-xl text-v3-bone mb-2 leading-tight transition-colors group-hover:text-v3-light">AI Adoption Readiness</h3>
+                            <p className="text-v3-soft text-sm mb-6 leading-relaxed">Determine if your business is structurally ready for true AI integration.</p>
+                            <div className="mt-auto flex items-center justify-between text-v3-bone font-medium text-sm border-t border-v3-line/70 pt-5">
+                                <span className="group-hover:text-v3-light transition-colors">Take Assessment</span>
+                                <ArrowRight className={arrowCls} aria-hidden />
+                            </div>
+                        </Link>
+                    </StepIn>
                 </div>
 
                 {/* Most Read Articles */}
-                <div className="bg-white border border-stone-200 rounded-3xl p-8 md:p-10 shadow-sm transition-all hover:shadow-md">
-                    <h2 className="font-serif text-2xl text-[#0F3F35] mb-6">Trending Insights</h2>
-                    <div className="space-y-3">
-                        <Link href="/blog" className="flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100 group">
-                            <div className="mb-2 md:mb-0">
-                                <span className="text-[10px] font-bold tracking-widest text-[#D97706] uppercase mb-2 block">Engineering Systems</span>
-                                <h4 className="font-bold text-[#1C1917] group-hover:text-[#0F3F35] transition-colors">Why Your MVP is Over-Engineered by Developers Who've Never Sold Anything</h4>
-                            </div>
-                            <span className="text-xs font-bold text-stone-400 flex items-center gap-1 group-hover:text-[#D97706] transition-colors">
-                                Read Article <ArrowRight className="w-3 h-3" />
-                            </span>
-                        </Link>
-                        <Link href="/blog" className="flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100 group">
-                            <div className="mb-2 md:mb-0">
-                                <span className="text-[10px] font-bold tracking-widest text-[#D97706] uppercase mb-2 block">Leadership</span>
-                                <h4 className="font-bold text-[#1C1917] group-hover:text-[#0F3F35] transition-colors">The True Cost of Avoiding Hard Technical Conversations with Clients</h4>
-                            </div>
-                            <span className="text-xs font-bold text-stone-400 flex items-center gap-1 group-hover:text-[#D97706] transition-colors">
-                                Read Article <ArrowRight className="w-3 h-3" />
-                            </span>
-                        </Link>
-                        <Link href="/blog" className="flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100 group">
-                            <div className="mb-2 md:mb-0">
-                                <span className="text-[10px] font-bold tracking-widest text-[#D97706] uppercase mb-2 block">Business Models</span>
-                                <h4 className="font-bold text-[#1C1917] group-hover:text-[#0F3F35] transition-colors">Stop Selling Features, Start Selling Leverage and Reliability</h4>
-                            </div>
-                            <span className="text-xs font-bold text-stone-400 flex items-center gap-1 group-hover:text-[#D97706] transition-colors">
-                                Read Article <ArrowRight className="w-3 h-3" />
-                            </span>
-                        </Link>
+                <StepIn delay={0.32}>
+                    <div className="border border-v3-line/80 rounded-3xl p-8 md:p-10">
+                        <h2 className="font-v3-display font-light text-2xl text-v3-bone mb-6">Trending Insights</h2>
+                        <div className="space-y-3">
+                            {[
+                                { tag: 'Engineering Systems', title: "Why Your MVP is Over-Engineered by Developers Who've Never Sold Anything" },
+                                { tag: 'Leadership', title: 'The True Cost of Avoiding Hard Technical Conversations with Clients' },
+                                { tag: 'Business Models', title: 'Stop Selling Features, Start Selling Leverage and Reliability' },
+                            ].map((a) => (
+                                <Link
+                                    key={a.title}
+                                    href="/blog"
+                                    className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-5 rounded-2xl border border-transparent transition-colors hover:bg-v3-raise hover:border-v3-line group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light"
+                                >
+                                    <div className="mb-2 md:mb-0">
+                                        <span className="text-[10px] font-bold tracking-widest text-v3-light uppercase mb-2 block">{a.tag}</span>
+                                        <h4 className="font-bold text-v3-bone group-hover:text-v3-light transition-colors">{a.title}</h4>
+                                    </div>
+                                    <span className="shrink-0 text-xs font-bold text-v3-mute flex items-center gap-1 group-hover:text-v3-light transition-colors">
+                                        Read Article <ArrowRight className="w-3 h-3 rtl:-scale-x-100" aria-hidden />
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </StepIn>
             </div>
-        </div>
+        </ToolShell>
     );
 }

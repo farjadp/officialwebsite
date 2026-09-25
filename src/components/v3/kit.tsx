@@ -22,7 +22,7 @@ const WRAP = "mx-auto w-full max-w-[1600px] px-5 md:px-10 lg:px-14"
 /** The page ground. Every v3 page starts here. */
 export function V3Page({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink">
+    <div className="min-h-screen overflow-x-clip bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink">
       {children}
     </div>
   )

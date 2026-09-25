@@ -1,5 +1,7 @@
+"use client";
+
 import { Question } from "@/data/startup-readiness/config";
-import { cn } from "@/lib/utils";
+import { QuestionBlock, ScaleOptions } from "@/components/v3/tool-kit";
 
 interface QuestionCardProps {
     question: Question;
@@ -18,29 +20,17 @@ const scaleOptions = [
 
 export function QuestionCard({ question, value, onChange, index }: QuestionCardProps) {
     return (
-        <div className="bg-white border rounded-xl p-6 shadow-sm mb-4 transition-all hover:shadow-md">
-            <h3 className="text-lg font-medium text-slate-800 mb-4">
-                <span className="text-slate-400 mr-2">{index + 1}.</span>
-                {question.text}
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-3">
-                {scaleOptions.map((option) => (
-                    <button
-                        key={option.value}
-                        onClick={() => onChange(option.value)}
-                        className={cn(
-                            "flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 text-center",
-                            value === option.value
-                                ? "border-primary bg-primary/5 text-primary scale-[1.02]"
-                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-300 hover:bg-slate-100"
-                        )}
-                    >
-                        <span className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2">{option.value}</span>
-                        <span className="text-xs font-medium leading-tight max-w-[80%] mx-auto">{option.label}</span>
-                    </button>
-                ))}
-            </div>
-        </div>
+        <QuestionBlock index={`${index + 1}.`} text={question.text}>
+            <ScaleOptions
+                label={question.text}
+                value={value}
+                onChange={onChange}
+                options={scaleOptions.map((option) => ({
+                    value: option.value,
+                    mark: option.value,
+                    label: option.label,
+                }))}
+            />
+        </QuestionBlock>
     );
 }

@@ -6,13 +6,16 @@
 //       screen, so none of it reached the HTML. The page shipped ~150 words and
 //       was uncitable: "what does TRL 4 mean" is exactly the question this data
 //       answers, and neither search engines nor AI assistants could see it.
-//       This is a server component on purpose — no "use client".
+//       This is a server component on purpose — no "use client". The v3
+//       Reveal / LightRule wrappers are client components rendered as
+//       elements (never called), so every word stays in the server HTML.
 // ============================================================================
 
 import { trlLevels, trlPhases } from "@/data/trl-assessment/config"
 import { trlLevelsFa, trlPhasesFa } from "@/data/trl-assessment/config.fa"
 import type { TrlLocale } from "@/data/trl-assessment/config"
 import { SITE_URL } from "@/lib/seo"
+import { LightRule, Reveal } from "@/components/v3/motion"
 
 const COPY = {
     en: {
@@ -68,89 +71,100 @@ export function TrlReference({ locale }: { locale: TrlLocale }) {
         <section
             dir={isFa ? "rtl" : "ltr"}
             aria-labelledby="trl-reference-heading"
-            className="mx-auto mt-24 max-w-3xl border-t border-stone-200 pt-16"
+            className="mt-24 border-t border-v3-line/70 pt-20"
         >
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
             />
 
-            <h2
-                id="trl-reference-heading"
-                className="font-serif text-3xl leading-tight text-[#0F3F35] sm:text-4xl"
-            >
-                {t.heading}
-            </h2>
-            <p className="mt-5 text-base leading-[1.9] text-stone-600">{t.lede}</p>
+            <Reveal className="flex flex-col gap-5">
+                <h2
+                    id="trl-reference-heading"
+                    className="font-v3-display text-4xl font-light leading-[1.05] tracking-[-0.015em] md:text-5xl rtl:leading-[1.4] rtl:tracking-normal"
+                >
+                    {t.heading}
+                </h2>
+                <p className="text-lg leading-relaxed text-v3-soft rtl:leading-loose">{t.lede}</p>
+            </Reveal>
 
-            <h3 className="mt-14 font-mono text-xs uppercase tracking-[0.2em] text-[#D97706]">
-                {t.phasesHeading}
-            </h3>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                {phases.map((phase) => (
-                    <div key={phase.id} className="rounded-2xl border border-stone-200 bg-white p-5">
-                        <div className="font-mono text-xs uppercase tracking-widest text-[#D97706]">
-                            {phase.trlRange}
+            <Reveal className="mt-14">
+                <h3 className="text-sm text-v3-light">{t.phasesHeading}</h3>
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                    {phases.map((phase) => (
+                        <div key={phase.id} className="flex flex-col gap-2 rounded-2xl border border-v3-line/80 bg-v3-raise p-5">
+                            <div className="text-sm tabular-nums text-v3-light" dir="ltr">
+                                {phase.trlRange}
+                            </div>
+                            <div className="font-v3-display text-xl font-light text-v3-bone">{phase.title}</div>
+                            <p className="text-sm leading-relaxed text-v3-mute rtl:leading-loose">{phase.description}</p>
                         </div>
-                        <div className="mt-2 font-bold text-[#0F3F35]">{phase.title}</div>
-                        <p className="mt-2 text-xs leading-relaxed text-stone-500">{phase.description}</p>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            </Reveal>
 
-            <div className="mt-14 space-y-12">
-                {levels.map((level) => (
-                    <article key={level.level} id={`trl-${level.level}`} className="scroll-mt-24">
-                        <h3 className="font-serif text-2xl text-[#0F3F35]">
-                            {t.levelWord} {level.level} — {level.name}
-                        </h3>
+            <LightRule className="mt-16">
+                <ol className="flex flex-col">
+                    {levels.map((level) => (
+                        <li
+                            key={level.level}
+                            id={`trl-${level.level}`}
+                            className="relative grid scroll-mt-28 grid-cols-[4.5rem_1fr] gap-0 py-8 md:grid-cols-[7.5rem_1fr]"
+                        >
+                            <span aria-hidden className="whitespace-nowrap pe-4 pt-1 font-v3-display text-lg tabular-nums text-v3-mute md:text-2xl">
+                                {t.levelWord} {level.level}
+                            </span>
+                            <span
+                                aria-hidden
+                                className="absolute start-[4.5rem] top-[2.85rem] h-2 w-2 -translate-x-1/2 rounded-full bg-v3-ink ring-1 ring-v3-light md:start-[7.5rem] rtl:translate-x-1/2"
+                            />
+                            <Reveal className="min-w-0 ps-6 md:ps-10">
+                                <article>
+                                    <h3 className="font-v3-display text-2xl font-light leading-tight text-v3-bone md:text-3xl rtl:leading-snug">
+                                        {t.levelWord} {level.level} — {level.name}
+                                    </h3>
 
-                        <dl className="mt-4 space-y-4">
-                            <div>
-                                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                                    {t.definitionLabel}
-                                </dt>
-                                <dd className="mt-1 text-base leading-[1.9] text-stone-700">
-                                    {level.nasaDefinition}
-                                </dd>
-                            </div>
-                            <div>
-                                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                                    {t.ventureLabel}
-                                </dt>
-                                <dd className="mt-1 text-base leading-[1.9] text-stone-700">
-                                    {level.startupTranslation}
-                                </dd>
-                            </div>
-                            <div>
-                                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                                    {t.evidenceLabel}
-                                </dt>
-                                <dd className="mt-2">
-                                    <ul className="space-y-2">
-                                        {level.criteria.map((criterion) => (
-                                            <li
-                                                key={criterion.id}
-                                                className="relative ps-5 text-sm leading-[1.8] text-stone-600 before:absolute before:start-0 before:top-[0.75em] before:h-1 before:w-1 before:rounded-full before:bg-[#0F3F35]/40"
-                                            >
-                                                {criterion.text}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </dd>
-                            </div>
-                            <div>
-                                <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                                    {t.advanceLabel}
-                                </dt>
-                                <dd className="mt-1 text-base leading-[1.9] text-stone-700">
-                                    {level.advanceHint}
-                                </dd>
-                            </div>
-                        </dl>
-                    </article>
-                ))}
-            </div>
+                                    <dl className="mt-6 flex flex-col gap-5">
+                                        <div>
+                                            <dt className="text-sm text-v3-light">{t.definitionLabel}</dt>
+                                            <dd className="mt-1 leading-relaxed text-v3-soft rtl:leading-loose">
+                                                {level.nasaDefinition}
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt className="text-sm text-v3-light">{t.ventureLabel}</dt>
+                                            <dd className="mt-1 leading-relaxed text-v3-soft rtl:leading-loose">
+                                                {level.startupTranslation}
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt className="text-sm text-v3-light">{t.evidenceLabel}</dt>
+                                            <dd className="mt-2">
+                                                <ul className="flex flex-col gap-2">
+                                                    {level.criteria.map((criterion) => (
+                                                        <li
+                                                            key={criterion.id}
+                                                            className="relative ps-5 text-sm leading-relaxed text-v3-soft rtl:leading-loose before:absolute before:start-0 before:top-[0.6em] before:h-1.5 before:w-1.5 before:rounded-full before:border before:border-v3-mute"
+                                                        >
+                                                            {criterion.text}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt className="text-sm text-v3-light">{t.advanceLabel}</dt>
+                                            <dd className="mt-1 leading-relaxed text-v3-soft rtl:leading-loose">
+                                                {level.advanceHint}
+                                            </dd>
+                                        </div>
+                                    </dl>
+                                </article>
+                            </Reveal>
+                        </li>
+                    ))}
+                </ol>
+            </LightRule>
         </section>
     )
 }

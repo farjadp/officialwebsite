@@ -36,7 +36,7 @@ const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 /** The ground for a tool page: dark, a slow beam, a centred column. */
 export function ToolShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
-    <div className="relative isolate min-h-screen overflow-x-hidden bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink">
+    <div className="relative isolate min-h-screen overflow-x-clip bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink">
       <div
         aria-hidden
         className="v3-beam pointer-events-none absolute -top-1/4 start-0 -z-10 h-[160%] w-72 bg-linear-to-r from-transparent via-v3-light/[0.06] to-transparent"
@@ -150,7 +150,7 @@ export function ToolProgress({
   const reduce = useReducedMotion()
   const clamped = Math.max(0, Math.min(100, percent))
   return (
-    <div className="sticky top-20 z-10 -mx-5 border-b border-v3-line/70 bg-v3-ink/90 px-5 pb-5 pt-5 backdrop-blur-md md:-mx-10 md:px-10">
+    <div className="v3-under-header sticky z-10 -mx-5 border-b border-v3-line/70 bg-v3-ink/90 px-5 pb-5 pt-5 backdrop-blur-md md:-mx-10 md:px-10">
       <div className="mb-3 flex items-center justify-between gap-4 text-sm">
         <span className="text-v3-mute">{label}</span>
         <span className="tabular-nums text-v3-light">{percentLabel ?? `${Math.round(clamped)}%`}</span>
@@ -382,7 +382,7 @@ export function ScoreRing({
           fill="none"
           strokeWidth="2.5"
           strokeLinecap="round"
-          className="stroke-v3-light drop-shadow-[0_0_6px_rgba(232,196,138,0.7)]"
+          className="stroke-v3-light"
           strokeDasharray={c}
           initial={{ strokeDashoffset: reduce ? c * (1 - pct) : c }}
           animate={{ strokeDashoffset: c * (1 - pct) }}

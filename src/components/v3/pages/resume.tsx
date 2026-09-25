@@ -561,9 +561,9 @@ export function ResumePage({ locale }: { locale: Locale }) {
   const href = (p: string) => localePath(locale, p)
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink print:min-h-0 print:overflow-visible print:bg-white print:text-black">
+    <div className="min-h-screen overflow-x-clip bg-v3-ink font-v3-body text-v3-bone selection:bg-v3-light selection:text-v3-ink print:min-h-0 print:overflow-visible print:bg-white print:text-black">
       {/* ── Action bar (screen only). Sticks under the h-20 site header. ── */}
-      <div className="sticky top-20 z-40 border-b border-v3-line/70 bg-v3-ink/85 backdrop-blur-md print:hidden">
+      <div className="v3-under-header sticky z-40 border-b border-v3-line/70 bg-v3-ink/85 backdrop-blur-md print:hidden">
         <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4 px-5 py-3 md:px-10 lg:px-14">
           <div className="flex min-w-0 items-center gap-3">
             <span className="font-v3-display text-lg text-v3-bone">{t.bar.name}</span>
