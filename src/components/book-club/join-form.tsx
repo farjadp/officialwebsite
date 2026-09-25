@@ -2,8 +2,10 @@
 
 // ============================================================================
 // Hardware Source: join-form.tsx
-// Version: 1.0.0 — 2026-08-20
-// Why: Book club signup — email → Google Calendar invite
+// Version: 3.0.0 — 2026-09-25
+// Why: Book club signup — email → Google Calendar invite. v3 "Light" look:
+//      dark fields, visible labels, a ring of light on focus, the error
+//      inline under the email field. Fields, action and messages unchanged.
 // Env / Identity: Client Component
 // ============================================================================
 
@@ -13,14 +15,19 @@ import { Loader2, MailCheck, ScrollText } from "lucide-react"
 
 const initialState: JoinFormState = {}
 
+const FIELD =
+    "h-14 w-full rounded-xl border border-v3-line bg-v3-raise px-5 text-base text-v3-bone placeholder:text-v3-mute transition-colors hover:border-v3-mute focus:border-v3-light focus:outline-none focus-visible:ring-2 focus-visible:ring-v3-light/60 aria-invalid:border-v3-light"
+const LABEL = "text-sm text-v3-soft"
+
 export function BookClubJoinForm() {
     const [state, formAction, isPending] = useActionState(joinBookClub, initialState)
+    const hasError = state.status === "error"
 
     if (state.status === "success" || state.status === "partial") {
         return (
-            <div className="flex items-center gap-4 rounded-2xl border-2 border-[#1B4B43]/30 bg-[#1B4B43]/5 p-6 text-right">
-                <MailCheck className="h-8 w-8 shrink-0 text-[#1B4B43]" />
-                <p className="text-lg font-medium leading-relaxed text-[#1B4B43]">
+            <div role="status" className="flex items-center gap-4 rounded-2xl border border-v3-light/50 bg-v3-raise p-6 text-start">
+                <MailCheck className="h-8 w-8 shrink-0 text-v3-light" aria-hidden />
+                <p className="text-lg leading-relaxed text-v3-bone rtl:leading-loose">
                     {state.message}
                 </p>
             </div>
@@ -28,41 +35,56 @@ export function BookClubJoinForm() {
     }
 
     return (
-        <form action={formAction} className="space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row">
+        <form action={formAction} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+                <label htmlFor="book-club-name" className={LABEL}>
+                    نام (اختیاری)
+                </label>
                 <input
+                    id="book-club-name"
                     type="text"
                     name="name"
                     placeholder="نام (اختیاری)"
-                    className="h-14 rounded-xl border-2 border-[#3E2723]/20 bg-[#FDFAF3] px-5 text-base text-[#2B1B12] placeholder:text-[#8D7B6F] focus:border-[#7B2D26] focus:outline-none sm:w-1/3"
+                    autoComplete="name"
+                    className={FIELD}
                     dir="rtl"
                 />
+            </div>
+            <div className="flex flex-col gap-2">
+                <label htmlFor="book-club-email" className={LABEL}>
+                    ایمیل
+                </label>
                 <input
+                    id="book-club-email"
                     type="email"
                     name="email"
                     required
                     placeholder="you@gmail.com"
-                    className="h-14 flex-1 rounded-xl border-2 border-[#3E2723]/20 bg-[#FDFAF3] px-5 text-base text-[#2B1B12] placeholder:text-[#8D7B6F] focus:border-[#7B2D26] focus:outline-none"
+                    autoComplete="email"
+                    aria-invalid={hasError || undefined}
+                    aria-describedby={hasError ? "book-club-error" : undefined}
+                    className={`${FIELD} text-left`}
                     dir="ltr"
-                    style={{ textAlign: "left" }}
                 />
-                <button
-                    type="submit"
-                    disabled={isPending}
-                    className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-[#7B2D26] px-8 text-base font-bold text-[#FDFAF3] transition-colors hover:bg-[#5E1F1A] disabled:opacity-60"
-                >
-                    {isPending ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                        <ScrollText className="h-5 w-5" />
-                    )}
-                    {isPending ? "در حال ثبت..." : "به دورهمی بپیوند"}
-                </button>
+                {hasError && (
+                    <p id="book-club-error" role="alert" className="text-sm font-medium text-v3-light">
+                        {state.message}
+                    </p>
+                )}
             </div>
-            {state.status === "error" && (
-                <p className="text-sm font-medium text-[#7B2D26]">{state.message}</p>
-            )}
-            <p className="text-sm leading-relaxed text-[#8D7B6F]">
+            <button
+                type="submit"
+                disabled={isPending}
+                className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-v3-bone px-8 text-base font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-raise disabled:translate-y-0 disabled:opacity-60"
+            >
+                {isPending ? (
+                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                ) : (
+                    <ScrollText className="h-5 w-5" aria-hidden />
+                )}
+                {isPending ? "در حال ثبت..." : "به دورهمی بپیوند"}
+            </button>
+            <p className="text-sm leading-relaxed text-v3-mute rtl:leading-loose">
                 با ثبت ایمیل، دعوت‌نامه Google Calendar جلسه بعدی — همراه لینک Google Meet — مستقیم برایت ارسال می‌شود.
             </p>
         </form>

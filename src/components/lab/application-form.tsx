@@ -2,9 +2,12 @@
 
 // Shared by /lab and /fa/lab. One component in two languages, posting to the
 // same /api/lab-apply endpoint, so the two application forms cannot drift.
+// v3 "Light" (2026-09-25): restyled only — fields, validation, payload,
+// endpoints and messages are unchanged. The deck input is now visually
+// hidden (sr-only) rather than display:none, so it can be reached by keyboard.
 
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, FileText, Loader2, Upload, X } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Check, FileText, Loader2, Upload, X } from "lucide-react";
 import type { Locale } from "@/lib/perk-offer";
 
 type Stage = "idea" | "validation" | "pre-mvp" | "";
@@ -114,10 +117,29 @@ const COPY = {
   },
 } as const;
 
+// v3 "Light": dark raised fields on the ink ground, one light accent for
+// focus, selection and errors. No second colour — an error is marked by the
+// light border, an icon and its message, never by colour alone.
+const FOCUS =
+  "outline-none focus-visible:ring-2 focus-visible:ring-v3-light focus-visible:ring-offset-2 focus-visible:ring-offset-v3-ink";
+
 const fieldClass = (hasError: boolean) =>
-  `w-full px-4 py-3 rounded-2xl border bg-white text-[#1C1917] placeholder-stone-400 outline-none transition-all duration-200
-   focus:ring-2 focus:ring-[#1B4B43]/30 focus:border-[#1B4B43]
-   ${hasError ? "border-red-400 bg-red-50" : "border-stone-200"}`;
+  `block min-h-12 w-full rounded-xl border bg-v3-raise px-4 py-3 text-base text-v3-bone placeholder:text-v3-mute/70 caret-v3-light outline-none transition-colors duration-200
+   focus:border-v3-light focus:ring-2 focus:ring-v3-light/40
+   ${hasError ? "border-v3-light/80" : "border-v3-line hover:border-v3-mute/60"}`;
+
+const LABEL = "block text-sm font-medium text-v3-bone";
+const HINT = "text-sm leading-relaxed text-v3-mute rtl:leading-loose";
+const REQ = <span className="text-v3-light">*</span>;
+
+function FieldError({ id, children }: { id?: string; children: React.ReactNode }) {
+  return (
+    <p id={id} className="flex items-start gap-2 text-sm text-v3-light">
+      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      <span>{children}</span>
+    </p>
+  );
+}
 
 export function ApplicationForm({ locale }: { locale: Locale }) {
   const t = COPY[locale];
@@ -189,23 +211,26 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
 
   if (status === "done") {
     return (
-      <div role="status" className="bg-[#1B4B43] text-white rounded-2xl p-10 md:p-14 text-center space-y-6">
-        <div className="w-16 h-16 bg-white/15 rounded-full flex items-center justify-center mx-auto">
-          <Check className="w-8 h-8 text-white" />
+      <div
+        role="status"
+        className="flex flex-col items-center gap-6 rounded-2xl border border-v3-light/50 bg-v3-raise p-10 text-center shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)] md:p-14"
+      >
+        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-v3-light/60">
+          <Check className="h-8 w-8 text-v3-light" aria-hidden />
         </div>
-        <h3 className="text-2xl font-black">{t.doneTitle}</h3>
-        <p className="text-emerald-100/90 leading-loose max-w-md mx-auto">{t.doneBody}</p>
-        <p className="text-emerald-100/60 text-sm">{t.doneSign}</p>
+        <h3 className="font-v3-display text-3xl font-light text-v3-bone rtl:leading-snug">{t.doneTitle}</h3>
+        <p className="mx-auto max-w-md text-lg leading-relaxed text-v3-soft rtl:leading-loose">{t.doneBody}</p>
+        <p className="text-sm text-v3-mute">{t.doneSign}</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label htmlFor="lab-name" className="block text-sm font-bold text-[#111827]">
-            {t.name} <span className="text-red-500">*</span>
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-7">
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="lab-name" className={LABEL}>
+            {t.name} {REQ}
           </label>
           <input
             id="lab-name" type="text" placeholder={t.namePlaceholder} autoComplete="name"
@@ -213,12 +238,12 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
             className={fieldClass(!!errors.name)}
           />
-          {errors.name && <p id="lab-name-error" className="text-red-600 text-xs">{errors.name}</p>}
+          {errors.name && <FieldError id="lab-name-error">{errors.name}</FieldError>}
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="lab-email" className="block text-sm font-bold text-[#111827]">
-            {t.email} <span className="text-red-500">*</span>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="lab-email" className={LABEL}>
+            {t.email} {REQ}
           </label>
           <input
             id="lab-email" type="email" placeholder="you@example.com" dir="ltr" autoComplete="email"
@@ -226,14 +251,14 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
             value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
             className={fieldClass(!!errors.email)}
           />
-          {errors.email && <p id="lab-email-error" className="text-red-600 text-xs">{errors.email}</p>}
+          {errors.email && <FieldError id="lab-email-error">{errors.email}</FieldError>}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label htmlFor="lab-phone" className="block text-sm font-bold text-[#111827]">
-            {t.phone} <span className="text-red-500">*</span>
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="lab-phone" className={LABEL}>
+            {t.phone} {REQ}
           </label>
           <input
             id="lab-phone" type="tel" placeholder="+98 912 000 0000" dir="ltr" autoComplete="tel"
@@ -241,12 +266,12 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
             value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className={fieldClass(!!errors.phone)}
           />
-          {errors.phone && <p id="lab-phone-error" className="text-red-600 text-xs">{errors.phone}</p>}
+          {errors.phone && <FieldError id="lab-phone-error">{errors.phone}</FieldError>}
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="lab-telegram" className="block text-sm font-bold text-[#111827]">
-            {t.telegram} <span className="text-red-500">*</span>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="lab-telegram" className={LABEL}>
+            {t.telegram} {REQ}
           </label>
           <input
             id="lab-telegram" type="text" placeholder="@username" dir="ltr"
@@ -254,13 +279,13 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
             value={form.telegram} onChange={(e) => setForm({ ...form, telegram: e.target.value })}
             className={fieldClass(!!errors.telegram)}
           />
-          {errors.telegram && <p id="lab-telegram-error" className="text-red-600 text-xs">{errors.telegram}</p>}
+          {errors.telegram && <FieldError id="lab-telegram-error">{errors.telegram}</FieldError>}
         </div>
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="lab-social" className="block text-sm font-bold text-[#111827]">{t.social}</label>
-        <p id="lab-social-hint" className="text-xs text-stone-500">{t.socialHint}</p>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="lab-social" className={LABEL}>{t.social}</label>
+        <p id="lab-social-hint" className={HINT}>{t.socialHint}</p>
         <input
           id="lab-social" type="text" placeholder="https://linkedin.com/in/..." dir="ltr"
           aria-describedby="lab-social-hint"
@@ -269,35 +294,48 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
         />
       </div>
 
-      <fieldset className="space-y-3" aria-invalid={!!errors.stage} aria-describedby={errors.stage ? "lab-stage-error" : undefined}>
-        <legend className="text-sm font-bold text-[#111827]">
-          {t.stage} <span className="text-red-500">*</span>
+      <fieldset className="flex flex-col gap-3" aria-invalid={!!errors.stage} aria-describedby={errors.stage ? "lab-stage-error" : undefined}>
+        <legend className={`${LABEL} mb-3`}>
+          {t.stage} {REQ}
         </legend>
-        <div className="grid grid-cols-3 gap-3">
-          {t.stages.map((s) => (
-            <button
-              key={s.value}
-              type="button"
-              aria-pressed={form.stage === s.value}
-              onClick={() => setForm({ ...form, stage: s.value })}
-              className={`p-4 rounded-2xl border-2 text-start transition-all duration-200 hover:border-[#1B4B43]/50
-                ${form.stage === s.value ? "border-[#1B4B43] bg-[#1B4B43]/8" : "border-stone-200 bg-white"}`}
-            >
-              <p dir="ltr" className={`font-bold text-sm mb-1 text-start ${form.stage === s.value ? "text-[#1B4B43]" : "text-[#111827]"}`}>
-                {s.label}
-              </p>
-              <p className="text-xs text-stone-500 leading-tight">{s.sub}</p>
-            </button>
-          ))}
+        <div className="grid gap-3 sm:grid-cols-3">
+          {t.stages.map((s) => {
+            const selected = form.stage === s.value;
+            return (
+              <button
+                key={s.value}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setForm({ ...form, stage: s.value })}
+                className={`flex min-h-16 flex-col gap-1 rounded-xl border p-4 text-start transition-all duration-300 hover:-translate-y-0.5 ${FOCUS}
+                  ${selected
+                    ? "border-v3-light bg-v3-light/10 shadow-[0_0_40px_-24px_rgba(232,196,138,0.7)]"
+                    : errors.stage
+                      ? "border-v3-light/60 bg-v3-raise hover:border-v3-light"
+                      : "border-v3-line bg-v3-raise hover:border-v3-mute/60"}`}
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span dir="ltr" className={`text-sm font-semibold ${selected ? "text-v3-light" : "text-v3-bone"}`}>
+                    {s.label}
+                  </span>
+                  <span
+                    aria-hidden
+                    className={`h-2 w-2 shrink-0 rounded-full transition-colors ${selected ? "bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" : "bg-v3-line"}`}
+                  />
+                </span>
+                <span className="text-sm leading-snug text-v3-mute">{s.sub}</span>
+              </button>
+            );
+          })}
         </div>
-        {errors.stage && <p id="lab-stage-error" className="text-red-600 text-xs">{errors.stage}</p>}
+        {errors.stage && <FieldError id="lab-stage-error">{errors.stage}</FieldError>}
       </fieldset>
 
-      <div className="space-y-2">
-        <label htmlFor="lab-problem" className="block text-sm font-bold text-[#111827]">
-          {t.problem} <span className="text-red-500">*</span>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="lab-problem" className={LABEL}>
+          {t.problem} {REQ}
         </label>
-        <p id="lab-problem-hint" className="text-xs text-stone-500">{t.problemHint}</p>
+        <p id="lab-problem-hint" className={HINT}>{t.problemHint}</p>
         <textarea
           id="lab-problem" rows={4} placeholder={t.problemPlaceholder}
           aria-invalid={!!errors.problem}
@@ -306,18 +344,18 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
           className={`${fieldClass(!!errors.problem)} resize-none leading-loose`}
         />
         <div className="flex justify-between gap-4">
-          {errors.problem ? <p id="lab-problem-error" className="text-red-600 text-xs">{errors.problem}</p> : <span />}
-          <span className="ms-auto text-xs text-stone-500 tabular-nums" aria-live="polite">
+          {errors.problem ? <FieldError id="lab-problem-error">{errors.problem}</FieldError> : <span />}
+          <span className="ms-auto shrink-0 text-xs tabular-nums text-v3-mute" aria-live="polite">
             {t.charCount(form.problem.length)}
           </span>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="lab-why" className="block text-sm font-bold text-[#111827]">
-          {t.why} <span className="text-red-500">*</span>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="lab-why" className={LABEL}>
+          {t.why} {REQ}
         </label>
-        <p id="lab-why-hint" className="text-xs text-stone-500">{t.whyHint}</p>
+        <p id="lab-why-hint" className={HINT}>{t.whyHint}</p>
         <textarea
           id="lab-why" rows={3} placeholder={t.whyPlaceholder}
           aria-invalid={!!errors.why}
@@ -325,44 +363,44 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
           value={form.why} onChange={(e) => setForm({ ...form, why: e.target.value })}
           className={`${fieldClass(!!errors.why)} resize-none leading-loose`}
         />
-        {errors.why && <p id="lab-why-error" className="text-red-600 text-xs">{errors.why}</p>}
+        {errors.why && <FieldError id="lab-why-error">{errors.why}</FieldError>}
       </div>
 
-      <div className="space-y-2">
-        <span className="block text-sm font-bold text-[#111827]">{t.deck}</span>
-        <p className="text-xs text-stone-500">{t.deckHint}</p>
+      <div className="flex flex-col gap-2">
+        <span className={LABEL}>{t.deck}</span>
+        <p className={HINT}>{t.deckHint}</p>
 
         {deck ? (
-          <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-[#1B4B43]/30 bg-[#1B4B43]/5">
-            <span className="flex items-center gap-2.5 min-w-0 text-sm text-[#1B4B43] font-medium">
-              <FileText className="w-4 h-4 shrink-0" />
+          <div className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-v3-light/40 bg-v3-light/5 ps-4 pe-1">
+            <span className="flex min-w-0 items-center gap-2.5 text-sm font-medium text-v3-bone">
+              <FileText className="h-4 w-4 shrink-0 text-v3-light" aria-hidden />
               <span className="truncate" dir="ltr">{deck.name}</span>
             </span>
             <button
               type="button"
               onClick={() => setDeck(null)}
-              className="text-stone-400 hover:text-red-600 transition-colors shrink-0"
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-v3-mute transition-colors hover:text-v3-light ${FOCUS}`}
               aria-label={t.deckRemove}
             >
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" aria-hidden />
             </button>
           </div>
         ) : (
           <label
             htmlFor="deck"
-            className={`flex items-center justify-center gap-2.5 px-4 py-3.5 rounded-2xl border-2 border-dashed text-sm font-bold transition-colors
+            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-xl border border-dashed px-4 py-3.5 text-sm font-medium transition-colors focus-within:ring-2 focus-within:ring-v3-light focus-within:ring-offset-2 focus-within:ring-offset-v3-ink
               ${deckUploading
-                ? "border-stone-200 text-stone-400 cursor-wait"
-                : "border-stone-300 text-[#1B4B43] cursor-pointer hover:border-[#1B4B43] hover:bg-[#1B4B43]/5"}`}
+                ? "cursor-wait border-v3-line text-v3-mute"
+                : "cursor-pointer border-v3-mute/50 text-v3-bone hover:border-v3-light hover:bg-v3-light/5 hover:text-v3-light"}`}
           >
             {deckUploading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 {t.deckUploading}
               </>
             ) : (
               <>
-                <Upload className="w-4 h-4" />
+                <Upload className="h-4 w-4" aria-hidden />
                 {t.deckChoose}
               </>
             )}
@@ -370,7 +408,7 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
               id="deck"
               type="file"
               accept=".pdf,.ppt,.pptx,.doc,.docx"
-              className="hidden"
+              className="sr-only"
               disabled={deckUploading}
               onChange={(e) => {
                 const f = e.target.files?.[0];
@@ -380,29 +418,30 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
             />
           </label>
         )}
-        {deckError && <p className="text-red-600 text-xs">{deckError}</p>}
+        {deckError && <FieldError>{deckError}</FieldError>}
       </div>
 
       {submitError && (
-        <p role="alert" className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
-          {submitError}
+        <p role="alert" className="flex items-start gap-3 rounded-xl border border-v3-light/60 bg-v3-light/10 px-4 py-3 text-sm text-v3-bone">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-v3-light" aria-hidden />
+          <span>{submitError}</span>
         </p>
       )}
 
       <button
         type="submit"
         disabled={status === "loading" || deckUploading}
-        className="w-full py-4 bg-[#1B4B43] text-white font-bold rounded-full text-base hover:bg-[#123730] transition-colors duration-300 flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+        className={`group flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-v3-bone py-4 text-base font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:bg-v3-bone ${FOCUS}`}
       >
         {status === "loading" ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
             {t.sending}
           </>
         ) : (
           <>
-            <SubmitIcon className="w-5 h-5" />
             {t.submit}
+            <SubmitIcon className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden />
           </>
         )}
       </button>

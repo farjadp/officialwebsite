@@ -23,16 +23,10 @@ import {
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import type { Locale, Role } from "@/components/home/v3/copy"
+import { localDigits } from "@/lib/digits"
 
 const ARRIVE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const ROTATE_MS = 6000
-const FA_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"]
-
-export function localDigits(n: number | string, locale: Locale): string {
-  const s = String(n)
-  return locale === "fa" ? s.replace(/\d/g, (d) => FA_DIGITS[Number(d)]) : s
-}
-
 export function Arrow({ locale, className }: { locale: Locale; className?: string }) {
   const Icon = locale === "fa" ? ArrowLeft : ArrowRight
   return <Icon className={className} aria-hidden />
