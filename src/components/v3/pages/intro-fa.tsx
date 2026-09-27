@@ -1,30 +1,28 @@
 // ============================================================================
 // File Path: src/components/v3/pages/intro-fa.tsx
 // Why: /fa/intro — a plain-language introduction for Persian speakers in
-//      Canada who have never heard words like "mentor", "accelerator" or "AI
-//      strategy" and so cannot tell whether Farjad's work is for them. The
-//      rest of the site speaks to founders; this page speaks to a hairdresser,
-//      a contractor or a newcomer with an idea. Persian only, by design: it
-//      is a page to send to someone, not a translation of an English page.
+//      Canada who run, or want to run, a small business and have no idea
+//      what "web design", "custom software" or "AI automation" would do for
+//      them. The focus is those three services; mentoring is left out on
+//      purpose. Persian only: it is a page to send to someone.
 //
-//      Copy rules: no jargon without a translation into everyday words;
-//      figures only from Farjad's own numbers (the combined $10M is never
-//      stated without naming the service grants); no promise about price,
-//      visas or outcomes that the booking and services pages do not make.
+//      Every idea is shown before it is named: a chat that books a haircut
+//      at 11pm, an automation run for the reader's own trade, a before/after
+//      site, a time calculator with the reader's numbers, and real product
+//      videos (other companies', credited, via What Ships).
+//
+//      Copy rules: no jargon without its everyday meaning; only Farjad's own
+//      projects under "built myself"; no promise about price, timelines or
+//      results that the rest of the site does not make.
 // Env / Identity: React Server Component
 // ============================================================================
 
 import type { ReactNode } from "react"
-import Image from "next/image"
+import { ArrowUpLeft } from "lucide-react"
 import {
-  Card,
-  Checklist,
-  Chip,
   CountUp,
   CtaBand,
   Headline,
-  Kicker,
-  LightRule,
   PageHero,
   Reveal,
   Section,
@@ -32,307 +30,287 @@ import {
   V3Faq,
   V3Page,
 } from "@/components/v3/kit"
+import { HeroChat } from "@/components/v3/intro/hero-chat"
+import { ServiceTabs } from "@/components/v3/intro/service-tabs"
+import { AutomationPicker } from "@/components/v3/intro/automation-picker"
+import { BeforeAfter } from "@/components/v3/intro/before-after"
+import { TimeCalculator } from "@/components/v3/intro/time-calculator"
+import { Showcase } from "@/components/v3/intro/showcase"
+import { FlipGlossary } from "@/components/v3/intro/flip-glossary"
 
-const B = ({ children }: { children: ReactNode }) => (
-  <strong className="font-semibold text-v3-bone">{children}</strong>
-)
+const B = ({ children }: { children: ReactNode }) => <strong className="font-semibold text-v3-bone">{children}</strong>
 
-const HELPS = [
-  {
-    kicker: "اگر ایده دارید",
-    title: "ولی مطمئن نیستید جواب می‌دهد",
-    body: "قبل از اینکه پس‌اندازتان را خرج کنید، با هم می‌سنجیم که آیا کسی واقعاً حاضر است برای این ایده پول بدهد. این کار چند هفته طول می‌کشد، نه چند سال.",
-    result: "یا با خیال راحت جلو می‌روید، یا پولتان را نجات داده‌اید.",
-  },
-  {
-    kicker: "اگر کسب‌وکار دارید",
-    title: "ولی وقت سر خاراندن ندارید",
-    body: "خیلی از کارهای تکراری، مثل جواب دادن به پیام مشتری، نوشتن فاکتور یا مرتب کردن اطلاعات، امروز با ابزارهای هوش مصنوعی خودکار می‌شوند. می‌گویم کدامش برای کار شما می‌ارزد و کدامش فقط خرج اضافه است.",
-    result: "ساعت‌های بیشتر برای خودِ کار، و هزینه‌ی کمتر.",
-  },
-  {
-    kicker: "اگر سر یک تصمیم مانده‌اید",
-    title: "و کسی را ندارید که رک بگوید",
-    body: "استخدام کنم یا نه؟ این مشتری را نگه دارم؟ برای استارتاپ ویزا اقدام کنم؟ وقتی اطرافتان کسی نیست که بی‌تعارف نظر بدهد، من هستم.",
-    result: "تصمیمی که پشتش دلیل است، نه دلشوره.",
-  },
+const SITE_GAINS = [
+  { title: "روی گوشی درست دیده می‌شود", body: "بیشتر مشتری‌ها با گوشی می‌آیند. اگر متن ریز باشد و دکمه‌ها گم، می‌روند." },
+  { title: "مشتری می‌داند چه کند", body: "یک دکمه‌ی روشن: سفارش، رزرو یا تماس. نه شش منو و یک اطلاعیه‌ی قرمز." },
+  { title: "اعتماد می‌سازد", body: "نظر مشتری‌ها، ساعت کاری درست و ظاهری که نشان می‌دهد این کسب‌وکار زنده است." },
+  { title: "در گوگل پیدا می‌شود", body: "ساختار درست باعث می‌شود وقتی کسی در محله‌ی شما جست‌وجو می‌کند، شما را ببیند." },
 ]
 
-const SOUNDS_LIKE_YOU = [
-  "«یک ایده دارم، ولی نمی‌دانم از کجا شروع کنم.»",
-  "«تازه به کانادا آمده‌ام و نمی‌دانم اینجا کسب‌وکار چطور کار می‌کند.»",
-  "«کار خودم را دارم، ولی از صبح تا شب درگیر کارهای تکراری‌ام.»",
-  "«همه از هوش مصنوعی حرف می‌زنند، ولی نمی‌دانم به کار من چه ربطی دارد.»",
-  "«درباره‌ی استارتاپ ویزا حرف‌های ضدونقیض زیادی شنیده‌ام.»",
-  "«کسی را ندارم که صادقانه بگوید دارم درست می‌روم یا نه.»",
-]
-
-const NOT_FOR_YOU = [
-  "دنبال کسی هستید که فقط بگوید ایده‌تان عالی است.",
-  "دنبال راه میان‌بری برای اقامت هستید، بدون ساختن یک کسب‌وکار واقعی.",
-  "انتظار دارید کس دیگری کار را به جای شما انجام دهد.",
-]
-
-const WORDS = [
+const BUILT = [
   {
-    term: "استارتاپ",
-    en: "Startup",
-    body: "کسب‌وکار تازه‌ای که می‌خواهد سریع بزرگ شود، معمولاً با کمک فناوری. هر کسب‌وکار تازه‌ای استارتاپ نیست؛ یک نانوایی خوب هم کسب‌وکار ارزشمندی است، و من با آن هم کار می‌کنم.",
+    title: "همین سایتی که در آن هستید",
+    body: "سایت دوزبانه‌ی فارسی و انگلیسی، با یک سیستم هوش مصنوعی که موضوع‌های روز را پیدا می‌کند و پیش‌نویس محتوا آماده می‌کند، و سیستم ایمیل‌مارکتینگ مخصوص خودش.",
+    tag: "طراحی سایت · اتوماسیون",
+    href: "https://github.com/farjadp/officialwebsite",
   },
   {
-    term: "منتور",
-    en: "Mentor",
-    body: "کسی که قبلاً این راه را رفته و تجربه‌اش را در اختیار شما می‌گذارد. کار را به جای شما انجام نمی‌دهد، ولی نمی‌گذارد در چاله‌هایی بیفتید که خودش افتاده.",
+    title: "پورتال‌های سازمانی",
+    body: "از ۲۰۱۰ تا ۲۰۱۵ در VaniaIT، پورتال‌های وب چند شرکت بزرگ ایرانی را طراحی و برنامه‌نویسی کردم.",
+    tag: "برنامه‌نویسی",
   },
   {
-    term: "هوش مصنوعی",
-    en: "AI",
-    body: "نرم‌افزارهایی مثل ChatGPT که می‌نویسند، خلاصه می‌کنند، جواب می‌دهند و کارهای تکراری را انجام می‌دهند. ابزار است، نه جادو؛ جایی به کار می‌آید و جایی نه.",
+    title: "زیرساخت ابری دولتی",
+    body: "مدیر ارشد فنی نخستین شرکت رایانش ابری دولتی ایران بودم، از ۲۰۱۷ تا ۲۰۲۰. یعنی سرورهایی که سازمان‌های بزرگ رویشان کار می‌کردند.",
+    tag: "زیرساخت",
   },
   {
-    term: "شتاب‌دهنده",
-    en: "Accelerator",
-    body: "برنامه‌ای چندماهه که به کسب‌وکارهای تازه آموزش، ارتباط و گاهی سرمایه می‌دهد. من با حدود ۲۰ برنامه‌ی این‌چنینی کار کرده‌ام و تیم‌ها را برای ورود به آن‌ها آماده کرده‌ام.",
+    title: "ایجنت ساخت دوره‌ی آموزشی",
+    body: "چند ایجنت هوش مصنوعی که با هم کار می‌کنند تا از یک موضوع، یک دوره‌ی آموزشی کامل بسازند.",
+    tag: "هوش مصنوعی",
+    href: "https://github.com/farjadp/course-creation-agent",
   },
   {
-    term: "استارتاپ ویزا",
-    en: "Start-up Visa",
-    body: "برنامه‌ی دولت کانادا برای کارآفرینانی که کسب‌وکاری نوآورانه می‌سازند. راهی به اقامت است، ولی فقط وقتی پشتش یک کسب‌وکار واقعی باشد.",
+    title: "اپلیکیشن آیفون تقویم پارسی",
+    body: "اپلیکیشن بومی iOS که تقویم جلالی و زرتشتی را به گوشی‌های امروزی می‌آورد.",
+    tag: "اپلیکیشن موبایل",
+    href: "https://github.com/farjadp/parscalendar",
   },
   {
-    term: "گرنت",
-    en: "Grant",
-    body: "کمکی که لازم نیست پس داده شود. گاهی پول نقد است و گاهی خدمات رایگان، مثل سرور و نرم‌افزار یا مشاوره.",
+    title: "داشبورد بیماران iMedica",
+    body: "پنلی امن برای اینکه کلینیک پرونده و نوبت بیماران را یک‌جا مدیریت کند.",
+    tag: "برنامه‌نویسی",
   },
 ]
 
 const STEPS = [
-  {
-    n: "۱",
-    title: "یک وقت رزرو می‌کنید",
-    body: "از صفحه‌ی رزرو، زمانی را که برایتان مناسب است انتخاب می‌کنید. جلسه آنلاین است و می‌توانیم فارسی حرف بزنیم.",
-  },
-  {
-    n: "۲",
-    title: "حرف می‌زنیم",
-    body: "۶۰ تا ۹۰ دقیقه. شما از وضعیتتان می‌گویید و من سؤال می‌پرسم. لازم نیست اصطلاح تخصصی بلد باشید؛ همین که بدانید کجا گیر کرده‌اید کافی است.",
-  },
-  {
-    n: "۳",
-    title: "با یک قدم مشخص بیرون می‌روید",
-    body: "آخر جلسه می‌دانید کار بعدی چیست. اگر همراهی بیشتری لازم بود، با هم تصمیم می‌گیریم. اگر نه، همان یک جلسه کافی است.",
-  },
-]
-
-const CREDENTIALS = [
-  "دکتری انسان‌شناسی",
-  "کارشناسی ارشد مهندسی نرم‌افزار",
-  "ممیز ارشد ISO 27001 (استاندارد امنیت اطلاعات)",
-  "دانشکده‌ی کسب‌وکار شولیک، دانشگاه یورک",
+  { n: "۱", title: "گفت‌وگو", body: "شما می‌گویید کجای کار وقتتان را می‌گیرد یا مشتری از دست می‌رود. لازم نیست اصطلاح فنی بلد باشید." },
+  { n: "۲", title: "نقشه", body: "پیشنهاد می‌دهم چه چیزی ساخته شود و، به همان اندازه مهم، چه چیزی لازم نیست." },
+  { n: "۳", title: "ساخت", body: "قدم‌به‌قدم می‌سازم و در طول کار نشانتان می‌دهم، تا چیزی که تحویل می‌گیرید غافلگیرتان نکند." },
+  { n: "۴", title: "تحویل و آموزش", body: "یاد می‌گیرید خودتان با آن کار کنید. ابزاری که فقط سازنده‌اش بلد باشد، ابزار خوبی نیست." },
 ]
 
 const FAQ = [
   {
-    q: "باید انگلیسی بلد باشم؟",
-    a: "نه. می‌توانیم از اول تا آخر فارسی حرف بزنیم.",
+    q: "باید چیزی از کامپیوتر و برنامه‌نویسی بلد باشم؟",
+    a: "نه. کافی است کار خودتان را بشناسید. بخش فنی با من است، و هر چیزی را که لازم باشد بدانید به زبان ساده توضیح می‌دهم.",
   },
   {
-    q: "من استارتاپ ندارم، یک کسب‌وکار معمولی دارم. به درد من هم می‌خورد؟",
-    a: "بله. آرایشگاه، شرکت ساختمانی، دفتر حسابداری یا فروشگاه اینترنتی؛ سؤال‌های اصلی یکی است: مشتری از کجا می‌آید، وقت کجا هدر می‌رود و قدم بعدی چیست.",
+    q: "کسب‌وکارم کوچک است. این کارها برای شرکت‌های بزرگ نیست؟",
+    a: "برعکس. در یک کسب‌وکار کوچک، صاحب کار همه‌کاره است، پس هر ساعتی که از کار تکراری آزاد شود مستقیم به خود کار برمی‌گردد. خیلی از ابزارهایی که ده سال پیش فقط برای شرکت‌های بزرگ بود، امروز برای یک آرایشگاه هم در دسترس است.",
   },
   {
-    q: "هزینه‌اش چقدر است؟",
+    q: "هوش مصنوعی اطلاعات مشتری‌های من را جایی می‌فرستد؟",
     a: (
       <>
-        هزینه‌ی جلسه را پیش از رزرو، در صفحه‌ی رزرو می‌بینید، و <B>تمام آن به خیریه‌های معتبر اهدا می‌شود</B>. اگر فعلاً
-        نمی‌خواهید هزینه کنید، خودارزیابی‌های سایت و آزمایشگاه بنیان‌گذار رایگان‌اند.
+        بستگی به ابزار و تنظیمات آن دارد، و همین را پیش از شروع روشن می‌کنم. من <B>ممیز ارشد ISO 27001</B> هستم، یعنی
+        استاندارد بین‌المللی امنیت اطلاعات کار هر روزم است. جایی که اطلاعات حساس است، ابزاری انتخاب می‌کنیم که داده را
+        نگه ندارد یا روی سرور خودتان کار کند.
       </>
     ),
   },
   {
-    q: "می‌توانید اقامت یا ویزای من را تضمین کنید؟",
-    a: "نه، و به کسی که چنین قولی می‌دهد شک کنید. کار من بخش کسب‌وکار است: کمک می‌کنم چیزی بسازید که واقعی و قابل‌دفاع باشد. کارهای حقوقی پرونده با وکیل یا مشاور رسمی مهاجرت است.",
+    q: "سایت فارسی می‌سازید یا انگلیسی؟",
+    a: "هر دو. همین سایت دو زبان دارد. در کانادا معمولاً نسخه‌ی انگلیسی لازم است، و نسخه‌ی فارسی برای مشتری‌های فارسی‌زبانتان.",
+  },
+  {
+    q: "هزینه‌اش چقدر است؟",
+    a: "به اندازه‌ی کار بستگی دارد؛ یک چت‌بات ساده با یک سامانه‌ی کامل فرق دارد. در گفت‌وگوی اول می‌گویم چه چیزی لازم است و چه چیزی نه، و پیش از هر تعهدی درباره‌ی هزینه حرف می‌زنیم.",
   },
   {
     q: "هوش مصنوعی جای کارمندهای من را می‌گیرد؟",
-    a: "معمولاً نه. بیشتر وقت‌ها کارهای خسته‌کننده را برمی‌دارد تا آدم‌ها به کارهای مهم‌تر برسند. اگر جایی به کار شما نیاید، همین را صادقانه می‌گویم.",
+    a: "معمولاً نه. کارهای خسته‌کننده را برمی‌دارد تا آدم‌ها به کارهای مهم‌تر برسند. جایی هم که به کار شما نمی‌آید، همین را صادقانه می‌گویم.",
+  },
+  {
+    q: "باید انگلیسی بلد باشم؟",
+    a: "نه. از اول تا آخر می‌توانیم فارسی حرف بزنیم.",
   },
 ]
 
 export function IntroFaPage() {
   return (
     <V3Page>
-      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      {/* ── Hero: the idea, shown ────────────────────────────────────── */}
       <PageHero
         kicker="سلام، من فرجادم."
-        title="کمک می‌کنم کار خودتان را در کانادا"
-        accent="درست شروع کنید و درست رشد بدهید."
-        lead="اگر ایده‌ای در سر دارید، یا کسب‌وکاری دارید که گیر کرده، من کسی هستم که کنارتان می‌نشیند، صادقانه نگاه می‌کند و می‌گوید قدم بعدی چیست. ۲۲ سال است خودم شرکت می‌سازم؛ اول در ایران، حالا در تورنتو."
+        title="سایت، نرم‌افزار"
+        accent="و هوش مصنوعی، برای کار شما."
+        lead="برای کسب‌وکارهای کوچک و متوسط در کانادا سایت می‌سازم، نرم‌افزار می‌نویسم و کارهای تکراری را به هوش مصنوعی می‌سپارم؛ به زبان ساده و بی‌تعارف. ۲۲ سال است این کار را می‌کنم. همین‌جا ببینید یک مشتری ساعت ۱۱ شب چطور وقت می‌گیرد، بدون اینکه صاحب سالن بیدار باشد."
         actions={
           <>
             <V3Button href="/fa/booking" locale="fa">
               رزرو یک گفت‌وگو
             </V3Button>
             <V3Button href="#simple" locale="fa" variant="quiet">
-              اول بخوانید، بعد تصمیم بگیرید
+              ببینید چه کاری از دستم برمی‌آید
             </V3Button>
           </>
         }
         aside={
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-v3-line/80">
-            <Image
-              src="/images/farjad-portrait.jpg"
-              alt="پرتره‌ی فرجاد"
-              fill
-              priority
-              sizes="(max-width: 1024px) 90vw, 40vw"
-              className="v3-drift object-cover object-[center_30%]"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-v3-ink/80 via-transparent to-transparent" />
-            <p className="absolute bottom-5 start-5 end-5 text-sm leading-relaxed text-v3-soft">
-              مربی کسب‌وکار و مشاور هوش مصنوعی · تورنتو
-            </p>
+          <div className="pb-12">
+            <HeroChat />
           </div>
         }
       />
 
-      {/* ── What I do, in one picture ────────────────────────────────── */}
+      {/* ── Three services ───────────────────────────────────────────── */}
       <Section
         id="simple"
         kicker="به زبان ساده"
-        title="کار من شبیه"
-        accent="کار یک مربی است."
-        lead="مربی خودش در زمین بازی نمی‌کند. ولی قبلاً بازی کرده، اشتباه‌ها را می‌شناسد و از کنار زمین چیزهایی می‌بیند که بازیکن در گرماگرم بازی نمی‌بیند. من برای صاحبان کسب‌وکار همین کار را می‌کنم."
+        title="سه کار انجام می‌دهم."
+        accent="هر سه برای اینکه مشتری بیشتر و دردسر کمتر داشته باشید."
       >
-        <div className="grid gap-5 md:grid-cols-3">
-          {HELPS.map((h, i) => (
-            <Reveal key={h.kicker} delay={i * 0.08} className="h-full">
-              <Card tone={i === 1 ? "lit" : "raised"}>
-                <Kicker>{h.kicker}</Kicker>
-                <Headline as="h3" size="card">
-                  {h.title}
-                </Headline>
-                <p className="text-lg leading-loose text-v3-soft">{h.body}</p>
-                <p className="mt-auto border-t border-v3-line/70 pt-4 leading-loose text-v3-bone">
-                  <span className="text-v3-light">نتیجه: </span>
-                  {h.result}
-                </p>
-              </Card>
-            </Reveal>
-          ))}
-        </div>
+        <ServiceTabs />
       </Section>
 
-      {/* ── Recognition ──────────────────────────────────────────────── */}
-      <Section title="اگر یکی از این جمله‌ها حرف دل شماست،" accent="این صفحه برای شماست.">
-        <div className="grid gap-12 lg:grid-cols-12">
-          <Reveal className="lg:col-span-7">
-            <Checklist items={SOUNDS_LIKE_YOU} />
-          </Reveal>
-          <Reveal delay={0.1} className="lg:col-span-5">
-            <Card tone="plain">
-              <p className="text-lg text-v3-bone">و برای رعایت انصاف، اگر:</p>
-              <Checklist items={NOT_FOR_YOU} tone="no" />
-              <p className="leading-loose text-v3-mute">احتمالاً آدم مناسبی برای هم نیستیم. بهتر است همین اول بدانید.</p>
-            </Card>
-          </Reveal>
-        </div>
-      </Section>
-
-      {/* ── A small dictionary ───────────────────────────────────────── */}
+      {/* ── Automation, on your own trade ────────────────────────────── */}
       <Section
-        kicker="واژه‌نامه‌ی کوچک"
-        title="چند کلمه که در کار من"
-        accent="زیاد می‌شنوید."
-        lead="اگر این کلمه‌ها را جای دیگری در سایت دیدید و گیج شدید، معنی ساده‌شان این است:"
+        kicker="اتوماسیون یعنی چه؟"
+        title="روی کار خودتان"
+        accent="ببینید."
+        lead="کار خودتان را انتخاب کنید و ببینید یک کار روزمره چطور خودش انجام می‌شود. روی هر مرحله بزنید تا همان‌جا بایستد."
       >
-        <dl className="grid gap-x-10 gap-y-2 md:grid-cols-2 lg:grid-cols-3">
-          {WORDS.map((w, i) => (
-            <Reveal key={w.term} delay={(i % 3) * 0.06}>
-              <div className="flex h-full flex-col gap-3 border-t border-v3-line/70 py-8">
-                <dt className="flex items-baseline gap-3">
-                  <span className="font-v3-display text-2xl text-v3-bone">{w.term}</span>
-                  <span className="text-sm text-v3-mute" dir="ltr" lang="en">
-                    {w.en}
-                  </span>
-                </dt>
-                <dd className="text-lg leading-loose text-v3-soft">{w.body}</dd>
-              </div>
-            </Reveal>
-          ))}
-        </dl>
+        <AutomationPicker />
       </Section>
 
-      {/* ── Why trust me ─────────────────────────────────────────────── */}
-      <Section kicker="چرا به من اعتماد کنید؟" title="این راه را" accent="خودم رفته‌ام.">
-        <div className="grid gap-5 sm:grid-cols-3">
-          {[
-            { to: 22, suffix: "+", label: "سال ساختن شرکت، در ایران و کانادا" },
-            { to: 50, suffix: "+", label: "تیم کسب‌وکار که در هفت سال گذشته کنارشان بوده‌ام" },
-            { to: 20, suffix: "", label: "برنامه‌ی شتاب‌دهی که با آن‌ها همکاری کرده‌ام (حدوداً)" },
-          ].map((f, i) => (
-            <Reveal key={f.label} delay={i * 0.08}>
-              <div className="flex flex-col gap-3 border-t border-v3-light/40 pt-6">
-                <CountUp to={f.to} suffix={f.suffix} locale="fa" className="font-v3-display text-6xl font-light text-v3-light" />
-                <p className="text-lg leading-loose text-v3-soft">{f.label}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-
-        <div className="mt-16 grid gap-12 lg:grid-cols-12">
-          <Reveal className="flex flex-col gap-6 lg:col-span-7">
-            <p className="text-xl leading-loose text-v3-bone md:text-2xl">
-              حدود ده شرکت راه انداخته‌ام. <B>سه‌تایش موفق شد و فروخته شد.</B> بقیه شکست خورد، و راستش بیشترِ چیزهایی
-              که امروز به شما می‌گویم از همان شکست‌ها آمده است.
-            </p>
-            <p className="text-lg leading-loose text-v3-soft">
-              تیم‌هایی که همراهشان بوده‌ام نزدیک به <B>۵ میلیون دلار سرمایه</B> جذب کرده‌اند و نزدیک به ۵ میلیون دلار
-              دیگر هم <B>کمک خدماتی (گرنت)</B> گرفته‌اند؛ یعنی خدماتی مثل سرور، نرم‌افزار و مشاوره که لازم نبود پولش را
-              بدهند.
-            </p>
+      {/* ── What design changes ──────────────────────────────────────── */}
+      <Section kicker="طراحی سایت" title="یک سایت خوب" accent="چه فرقی می‌کند؟">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          <Reveal className="lg:col-span-7">
+            <BeforeAfter />
           </Reveal>
-          <Reveal delay={0.1} className="flex flex-col gap-4 lg:col-span-5">
-            <LightRule>سوابق رسمی</LightRule>
-            <div className="flex flex-wrap gap-2">
-              {CREDENTIALS.map((c) => (
-                <Chip key={c}>{c}</Chip>
-              ))}
+          <ul className="flex flex-col gap-6 lg:col-span-5">
+            {SITE_GAINS.map((g, i) => (
+              <li key={g.title}>
+                <Reveal delay={i * 0.08} className="flex flex-col gap-2 border-s-2 border-v3-light/60 ps-5">
+                  <span className="text-xl text-v3-bone">{g.title}</span>
+                  <span className="leading-loose text-v3-soft">{g.body}</span>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
+
+      {/* ── Your time, in your numbers ───────────────────────────────── */}
+      <Section
+        kicker="حساب کنید"
+        title="کارهای تکراری"
+        accent="سالی چقدر از وقت شما را می‌گیرد؟"
+        lead="با عددهای خودتان امتحان کنید. همه‌چیز همین‌جا در مرورگر شما حساب می‌شود و جایی ذخیره نمی‌شود."
+      >
+        <TimeCalculator />
+      </Section>
+
+      {/* ── What the world is shipping ───────────────────────────────── */}
+      <Section
+        kicker="ویدئوهای کوتاه"
+        title="امروز دنیا"
+        accent="با این ابزارها چه می‌سازد."
+        lead={
+          <>
+            این‌ها <B>کار من نیست</B>؛ محصول شرکت‌های دیگر است و نشان می‌دهد امروز چه چیزی ممکن است. کار من این است که همین
+            نوع ابزارها را، به اندازه و به زبان کسب‌وکار شما، راه بیندازم. روی هر کدام بزنید تا ویدئو باز شود.
+          </>
+        }
+      >
+        <Showcase />
+        <p className="mt-8 text-sm text-v3-mute">
+          ویدئوها از{" "}
+          <a href="https://whatships.com/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-v3-light">
+            What Ships
+          </a>
+          ، فهرستی مستقل از ویدئوهای معرفی محصول، و از پست اصلی هر شرکت در X پخش می‌شوند. نام‌ها و ویدئوها متعلق به صاحبانشان است.
+        </p>
+      </Section>
+
+      {/* ── Built myself ─────────────────────────────────────────────── */}
+      <Section kicker="کارهای خودم" title="این‌ها را" accent="خودم ساخته‌ام.">
+        <div className="mb-14 grid gap-5 sm:grid-cols-3">
+          <Reveal>
+            <div className="flex flex-col gap-3 border-t border-v3-light/40 pt-6">
+              <CountUp to={22} suffix="+" locale="fa" className="font-v3-display text-6xl font-light text-v3-light" />
+              <p className="text-lg leading-loose text-v3-soft">سال ساختن نرم‌افزار و شرکت، در ایران و کانادا</p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="flex flex-col gap-3 border-t border-v3-light/40 pt-6">
+              <span className="font-v3-display text-4xl font-light leading-tight text-v3-light">مهندسی نرم‌افزار</span>
+              <p className="text-lg leading-loose text-v3-soft">کارشناسی ارشد؛ برنامه‌نویسی کار اصلی من بوده، نه سرگرمی</p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <div className="flex flex-col gap-3 border-t border-v3-light/40 pt-6">
+              <span className="font-v3-display text-4xl font-light leading-tight text-v3-light" dir="ltr">
+                ISO 27001
+              </span>
+              <p className="text-lg leading-loose text-v3-soft">ممیز ارشد امنیت اطلاعات؛ یعنی اطلاعات مشتری‌های شما را جدی می‌گیرم</p>
             </div>
           </Reveal>
         </div>
+
+        <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {BUILT.map((b, i) => {
+            const inner = (
+              <>
+                <span className="text-sm text-v3-light">{b.tag}</span>
+                <Headline as="h3" size="card">
+                  {b.title}
+                </Headline>
+                <p className="text-lg leading-loose text-v3-soft">{b.body}</p>
+                {b.href && (
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-sm text-v3-mute transition-colors group-hover:text-v3-light">
+                    کدش را ببینید
+                    <ArrowUpLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+                  </span>
+                )}
+              </>
+            )
+            const cls =
+              "group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-v3-line p-7 transition-all duration-500 hover:-translate-y-1 hover:border-v3-light/60 hover:bg-v3-raise md:p-8"
+            return (
+              <li key={b.title} className="h-full">
+                <Reveal delay={(i % 3) * 0.08} className="h-full">
+                  {b.href ? (
+                    <a href={b.href} target="_blank" rel="noopener noreferrer" className={cls}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <div className={cls}>{inner}</div>
+                  )}
+                </Reveal>
+              </li>
+            )
+          })}
+        </ul>
       </Section>
 
-      {/* ── How it starts ────────────────────────────────────────────── */}
-      <Section kicker="قدم اول" title="کار با من" accent="این‌طوری شروع می‌شود.">
-        <ol className="grid gap-5 md:grid-cols-3">
+      {/* ── Words ────────────────────────────────────────────────────── */}
+      <Section
+        kicker="واژه‌نامه‌ی کوچک"
+        title="چند کلمه که"
+        accent="زیاد می‌شنوید."
+        lead="روی هر کارت بزنید تا معنی ساده‌اش را ببینید."
+      >
+        <FlipGlossary />
+      </Section>
+
+      {/* ── How it goes ──────────────────────────────────────────────── */}
+      <Section kicker="روند کار" title="از اولین گفت‌وگو" accent="تا چیزی که کار می‌کند.">
+        <ol className="relative grid gap-5 md:grid-cols-4">
+          <span aria-hidden className="absolute inset-x-0 top-7 hidden h-px bg-linear-to-l from-v3-light/70 via-v3-line to-transparent md:block" />
           {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 0.08} className="h-full">
-              <li className="flex h-full flex-col gap-4 rounded-2xl border border-v3-line/80 p-7 md:p-8">
-                <span className="font-v3-display text-5xl font-light text-v3-light">{s.n}</span>
-                <Headline as="h3" size="card">
-                  {s.title}
-                </Headline>
+            <li key={s.n} className="relative h-full">
+              <Reveal delay={i * 0.1} className="flex h-full flex-col gap-4">
+                <span className="relative z-10 grid h-14 w-14 place-items-center rounded-full border border-v3-light/70 bg-v3-ink font-v3-display text-2xl text-v3-light">
+                  {s.n}
+                </span>
+                <h3 className="text-2xl text-v3-bone">{s.title}</h3>
                 <p className="text-lg leading-loose text-v3-soft">{s.body}</p>
-              </li>
-            </Reveal>
+              </Reveal>
+            </li>
           ))}
         </ol>
-
-        <Reveal className="mt-12 flex flex-col gap-4 rounded-2xl border border-dashed border-v3-line p-7 md:flex-row md:items-center md:justify-between md:p-8">
-          <p className="max-w-2xl text-lg leading-loose text-v3-soft">
-            <span className="text-v3-bone">هنوز آماده‌ی جلسه نیستید؟</span> با یک خودارزیابی رایگان ده‌دقیقه‌ای شروع کنید،
-            یا درباره‌ی آزمایشگاه بنیان‌گذار بخوانید: هشت هفته کار گروهی روی کسب‌وکار خودتان، رایگان.
-          </p>
-          <div className="flex shrink-0 flex-wrap gap-3">
-            <V3Button href="/fa/tools" locale="fa" variant="secondary">
-              خودارزیابی رایگان
-            </V3Button>
-            <V3Button href="/fa/lab" locale="fa" variant="quiet">
-              آزمایشگاه بنیان‌گذار
-            </V3Button>
-          </div>
-        </Reveal>
       </Section>
 
       {/* ── Questions ────────────────────────────────────────────────── */}
@@ -341,13 +319,18 @@ export function IntroFaPage() {
       </Section>
 
       <CtaBand
-        title="معمولاً یک گفت‌وگو کافی است"
-        accent="تا ببینید به کارتان می‌آیم یا نه."
-        body="اگر این صفحه به درد کسی می‌خورد که می‌شناسید، برایش بفرستید. شاید همان چیزی باشد که دنبالش است."
+        title="بگویید کجای کار وقتتان را می‌گیرد."
+        accent="با هم ببینیم چه چیزی را می‌شود به نرم‌افزار سپرد."
+        body="اگر این صفحه به درد کسی می‌خورد که می‌شناسید، برایش بفرستید."
         action={
-          <V3Button href="/fa/booking" locale="fa">
-            رزرو یک گفت‌وگو
-          </V3Button>
+          <div className="flex flex-wrap gap-3">
+            <V3Button href="/fa/booking" locale="fa">
+              رزرو یک گفت‌وگو
+            </V3Button>
+            <V3Button href="/fa/contact" locale="fa" variant="secondary">
+              پیام بدهید
+            </V3Button>
+          </div>
         }
       />
     </V3Page>
