@@ -37,6 +37,7 @@ import { BeforeAfter } from "@/components/v3/intro/before-after"
 import { TimeCalculator } from "@/components/v3/intro/time-calculator"
 import { IndustryFlows } from "@/components/v3/intro/industry-flows"
 import { FlipGlossary } from "@/components/v3/intro/flip-glossary"
+import { DirectContact } from "@/components/v3/intro/direct-contact"
 
 const B = ({ children }: { children: ReactNode }) => <strong className="font-semibold text-v3-bone">{children}</strong>
 
@@ -310,6 +311,17 @@ export function IntroFaPage() {
       {/* ── Questions ────────────────────────────────────────────────── */}
       <Section kicker="سؤال‌های رایج" title="چیزهایی که" accent="معمولاً می‌پرسند.">
         <V3Faq items={FAQ} />
+      </Section>
+
+      {/* ── Straight to me ───────────────────────────────────────────── */}
+      <Section
+        id="contact"
+        kicker="مستقیم با خودم"
+        title="ترجیح می‌دهید اول یک پیام بدهید؟"
+        accent="راحت باشید."
+        lead="پشت این شماره و ایمیل خودم هستم، نه منشی و نه ربات. فارسی بنویسید، سؤالتان را بپرسید؛ جواب می‌دهم."
+      >
+        <DirectContact />
       </Section>
 
       <CtaBand

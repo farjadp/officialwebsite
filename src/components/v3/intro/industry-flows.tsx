@@ -3,7 +3,7 @@
 // ============================================================================
 // File Path: src/components/v3/intro/industry-flows.tsx
 // Why: The simple picker above shows one chore automated. This shows what a
-//      serious system looks like for a professional: six trades, each a
+//      serious system looks like for a professional: seven trades, each a
 //      pipeline where the machine does the heavy, repetitive part and one
 //      step is marked as the professional's own judgement. The steps light
 //      up in turn; clicking one stops on it. The architect gets a picture of
@@ -23,6 +23,7 @@ import {
   Clapperboard,
   FileCheck2,
   HardHat,
+  House,
   Scale,
   Sparkles,
   Stethoscope,
@@ -176,6 +177,43 @@ const INDUSTRIES: Industry[] = [
     ],
     tools: ["خواندن نقشه‌ی PDF", "فهرست قیمت تأمین‌کننده", "پیش‌فاکتور خودکار", "گزارش صوتی"],
     outputs: ["برآورد مقادیر", "پیش‌فاکتور آماده", "یادآوری پیگیری", "گزارش روزانه برای کارفرما"],
+  },
+  {
+    key: "realestate",
+    label: "مشاور املاک",
+    icon: <House className="h-5 w-5" aria-hidden />,
+    today:
+      "هر ملک تازه یعنی ساعت‌ها نوشتن آگهی، آماده کردن عکس و پست، و جواب دادن به ده‌ها پیامی که بیشترشان از خریدار جدی نیست.",
+    outcome: "آگهی زودتر و بهتر منتشر می‌شود و وقت شما صرف خریدارهای جدی و مذاکره می‌شود، نه جواب دادن به «قیمتش چنده؟».",
+    steps: [
+      {
+        title: "از عکس تا آگهی",
+        body: "عکس‌ها و مشخصات ملک را می‌دهید؛ متن آگهی به فارسی و انگلیسی نوشته می‌شود و نکته‌های مهم محله هم در آن می‌آید.",
+      },
+      {
+        title: "چیدمان مجازی",
+        body: "از عکس اتاق خالی، تصویر همان اتاق با مبلمان ساخته می‌شود تا خریدار فضا را تصور کند. هر تصویر برچسب «چیدمان مجازی» می‌خورد.",
+      },
+      {
+        title: "انتشار همه‌جا",
+        body: "پست اینستاگرام، ویدئوی کوتاه و ایمیل برای خریدارانی که دنبال همین نوع ملک بودند، آماده و منتشر می‌شود.",
+      },
+      {
+        title: "غربال پیام‌ها",
+        body: "دستیار به سؤال‌های اولیه جواب می‌دهد و بودجه، زمان خرید و وضعیت تأیید وام را می‌پرسد.",
+      },
+      {
+        title: "گفت‌وگو با خریدار جدی",
+        body: "فقط خریدارهای جدی، با خلاصه‌ی کامل گفت‌وگو، به شما می‌رسند. بازدید و مذاکره کار شماست.",
+        you: true,
+      },
+      {
+        title: "پیگیری بلندمدت",
+        body: "خریداری که امروز آماده نیست، ماه‌ها بعد وقتی ملک مناسبش آمد دوباره پیگیری می‌شود.",
+      },
+    ],
+    tools: ["نویسنده‌ی دوزبانه", "مدل‌های تصویرساز", "فهرست مشتری‌ها (CRM)", "زمان‌بندی انتشار"],
+    outputs: ["آگهی فارسی و انگلیسی", "تصاویر چیدمان مجازی", "پست و ویدئوی کوتاه", "فهرست خریداران جدی"],
   },
   {
     key: "content",
