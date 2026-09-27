@@ -8,8 +8,8 @@
 //
 //      Every idea is shown before it is named: a chat that books a haircut
 //      at 11pm, an automation run for the reader's own trade, a before/after
-//      site, a time calculator with the reader's numbers, and real product
-//      videos (other companies', credited, via What Ships).
+//      site, a time calculator with the reader's numbers, and six
+//      professions' end-to-end automations with the human step marked.
 //
 //      Copy rules: no jargon without its everyday meaning; only Farjad's own
 //      projects under "built myself"; no promise about price, timelines or
@@ -35,7 +35,7 @@ import { ServiceTabs } from "@/components/v3/intro/service-tabs"
 import { AutomationPicker } from "@/components/v3/intro/automation-picker"
 import { BeforeAfter } from "@/components/v3/intro/before-after"
 import { TimeCalculator } from "@/components/v3/intro/time-calculator"
-import { Showcase } from "@/components/v3/intro/showcase"
+import { IndustryFlows } from "@/components/v3/intro/industry-flows"
 import { FlipGlossary } from "@/components/v3/intro/flip-glossary"
 
 const B = ({ children }: { children: ReactNode }) => <strong className="font-semibold text-v3-bone">{children}</strong>
@@ -173,6 +173,22 @@ export function IntroFaPage() {
         <AutomationPicker />
       </Section>
 
+      {/* ── Serious systems, by profession ────────────────────────── */}
+      <Section
+        kicker="اتوماسیون‌های پیچیده‌تر"
+        title="برای متخصص‌ها: سیستم کار سنگین را می‌کند،"
+        accent="تصمیم با شما می‌ماند."
+        lead={
+          <>
+            حرفه‌ی خودتان را انتخاب کنید. مرحله‌های <B>خودکار</B> را سیستم انجام می‌دهد و مرحله‌ای که <B>کار شما</B> است،
+            همان‌جایی است که تجربه‌تان لازم است. این‌ها طرح سیستم‌هایی است که می‌شود ساخت، نه گزارش پروژه‌های گذشته؛ جزئیات
+            هر کدام به ابزار و روش کار خود شما بستگی دارد.
+          </>
+        }
+      >
+        <IndustryFlows />
+      </Section>
+
       {/* ── What design changes ──────────────────────────────────────── */}
       <Section kicker="طراحی سایت" title="یک سایت خوب" accent="چه فرقی می‌کند؟">
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
@@ -200,28 +216,6 @@ export function IntroFaPage() {
         lead="با عددهای خودتان امتحان کنید. همه‌چیز همین‌جا در مرورگر شما حساب می‌شود و جایی ذخیره نمی‌شود."
       >
         <TimeCalculator />
-      </Section>
-
-      {/* ── What the world is shipping ───────────────────────────────── */}
-      <Section
-        kicker="ویدئوهای کوتاه"
-        title="امروز دنیا"
-        accent="با این ابزارها چه می‌سازد."
-        lead={
-          <>
-            این‌ها <B>کار من نیست</B>؛ محصول شرکت‌های دیگر است و نشان می‌دهد امروز چه چیزی ممکن است. کار من این است که همین
-            نوع ابزارها را، به اندازه و به زبان کسب‌وکار شما، راه بیندازم. روی هر کدام بزنید تا ویدئو باز شود.
-          </>
-        }
-      >
-        <Showcase />
-        <p className="mt-8 text-sm text-v3-mute">
-          ویدئوها از{" "}
-          <a href="https://whatships.com/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-v3-light">
-            What Ships
-          </a>
-          ، فهرستی مستقل از ویدئوهای معرفی محصول، و از پست اصلی هر شرکت در X پخش می‌شوند. نام‌ها و ویدئوها متعلق به صاحبانشان است.
-        </p>
       </Section>
 
       {/* ── Built myself ─────────────────────────────────────────────── */}
