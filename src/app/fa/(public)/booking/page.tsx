@@ -12,9 +12,9 @@ import { BookingPage } from "@/components/v3/pages/booking"
 
 export const metadata: Metadata = {
   alternates: localeAlternates("/booking", "fa"),
-  title: "رزرو جلسه استراتژی | مشاوره ۳۰ دقیقه‌ای",
+  title: "رزرو گفت‌وگوی اول | جلسه‌ی ۶۰ تا ۹۰ دقیقه‌ای با فرجاد",
   description:
-    "یک جلسه ۳۰ دقیقه‌ای با فرجاد رزرو کنید؛ مسئله اصلی را تشخیص دهید و گام بعدی را تعیین کنید.",
+    "یک گفت‌وگوی ۶۰ تا ۹۰ دقیقه‌ای با فرجاد، به فارسی: مسئله‌ی اصلی کارتان روشن می‌شود و با برنامه‌ی قدم بعدی بیرون می‌روید. هزینه‌ی جلسه به خیریه می‌رسد.",
 }
 
 export default function Page() {
