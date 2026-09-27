@@ -155,7 +155,12 @@ const FILTERS: { key: "all" | Kind; label: string }[] = [
   { key: "bot", label: "ربات تلگرام" },
 ]
 
-const host = (href: string) => new URL(href).host.replace(/^www\./, "")
+/** What the frame's address bar shows. A Telegram link is only meaningful with its handle. */
+const host = (href: string) => {
+  const u = new URL(href)
+  const h = u.host.replace(/^www\./, "")
+  return h === "t.me" ? `${h}${u.pathname}` : h
+}
 
 export function ProjectShowcase() {
   const [filter, setFilter] = useState<"all" | Kind>("all")
