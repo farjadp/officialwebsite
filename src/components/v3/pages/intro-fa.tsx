@@ -18,11 +18,9 @@
 // ============================================================================
 
 import type { ReactNode } from "react"
-import { ArrowUpLeft } from "lucide-react"
 import {
   CountUp,
   CtaBand,
-  Headline,
   PageHero,
   Reveal,
   Section,
@@ -37,6 +35,7 @@ import { BeforeAfter } from "@/components/v3/intro/before-after"
 import { TimeCalculator } from "@/components/v3/intro/time-calculator"
 import { IndustryFlows } from "@/components/v3/intro/industry-flows"
 import { FlipGlossary } from "@/components/v3/intro/flip-glossary"
+import { ProjectShowcase } from "@/components/v3/intro/project-showcase"
 import { DirectContact } from "@/components/v3/intro/direct-contact"
 
 const B = ({ children }: { children: ReactNode }) => <strong className="font-semibold text-v3-bone">{children}</strong>
@@ -46,42 +45,6 @@ const SITE_GAINS = [
   { title: "مشتری می‌داند چه کند", body: "یک دکمه‌ی روشن: سفارش، رزرو یا تماس. نه شش منو و یک اطلاعیه‌ی قرمز." },
   { title: "اعتماد می‌سازد", body: "نظر مشتری‌ها، ساعت کاری درست و ظاهری که نشان می‌دهد این کسب‌وکار زنده است." },
   { title: "در گوگل پیدا می‌شود", body: "ساختار درست باعث می‌شود وقتی کسی در محله‌ی شما جست‌وجو می‌کند، شما را ببیند." },
-]
-
-const BUILT = [
-  {
-    title: "همین سایتی که در آن هستید",
-    body: "سایت دوزبانه‌ی فارسی و انگلیسی، با یک سیستم هوش مصنوعی که موضوع‌های روز را پیدا می‌کند و پیش‌نویس محتوا آماده می‌کند، و سیستم ایمیل‌مارکتینگ مخصوص خودش.",
-    tag: "طراحی سایت · اتوماسیون",
-    href: "https://github.com/farjadp/officialwebsite",
-  },
-  {
-    title: "پورتال‌های سازمانی",
-    body: "از ۲۰۱۰ تا ۲۰۱۵ در VaniaIT، پورتال‌های وب چند شرکت بزرگ ایرانی را طراحی و برنامه‌نویسی کردم.",
-    tag: "برنامه‌نویسی",
-  },
-  {
-    title: "زیرساخت ابری دولتی",
-    body: "مدیر ارشد فنی نخستین شرکت رایانش ابری دولتی ایران بودم، از ۲۰۱۷ تا ۲۰۲۰. یعنی سرورهایی که سازمان‌های بزرگ رویشان کار می‌کردند.",
-    tag: "زیرساخت",
-  },
-  {
-    title: "ایجنت ساخت دوره‌ی آموزشی",
-    body: "چند ایجنت هوش مصنوعی که با هم کار می‌کنند تا از یک موضوع، یک دوره‌ی آموزشی کامل بسازند.",
-    tag: "هوش مصنوعی",
-    href: "https://github.com/farjadp/course-creation-agent",
-  },
-  {
-    title: "اپلیکیشن آیفون تقویم پارسی",
-    body: "اپلیکیشن بومی iOS که تقویم جلالی و زرتشتی را به گوشی‌های امروزی می‌آورد.",
-    tag: "اپلیکیشن موبایل",
-    href: "https://github.com/farjadp/parscalendar",
-  },
-  {
-    title: "داشبورد بیماران iMedica",
-    body: "پنلی امن برای اینکه کلینیک پرونده و نوبت بیماران را یک‌جا مدیریت کند.",
-    tag: "برنامه‌نویسی",
-  },
 ]
 
 const STEPS = [
@@ -244,40 +207,7 @@ export function IntroFaPage() {
           </Reveal>
         </div>
 
-        <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {BUILT.map((b, i) => {
-            const inner = (
-              <>
-                <span className="text-sm text-v3-light">{b.tag}</span>
-                <Headline as="h3" size="card">
-                  {b.title}
-                </Headline>
-                <p className="text-lg leading-loose text-v3-soft">{b.body}</p>
-                {b.href && (
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-sm text-v3-mute transition-colors group-hover:text-v3-light">
-                    کدش را ببینید
-                    <ArrowUpLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
-                  </span>
-                )}
-              </>
-            )
-            const cls =
-              "group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-v3-line p-7 transition-all duration-500 hover:-translate-y-1 hover:border-v3-light/60 hover:bg-v3-raise md:p-8"
-            return (
-              <li key={b.title} className="h-full">
-                <Reveal delay={(i % 3) * 0.08} className="h-full">
-                  {b.href ? (
-                    <a href={b.href} target="_blank" rel="noopener noreferrer" className={cls}>
-                      {inner}
-                    </a>
-                  ) : (
-                    <div className={cls}>{inner}</div>
-                  )}
-                </Reveal>
-              </li>
-            )
-          })}
-        </ul>
+        <ProjectShowcase />
       </Section>
 
       {/* ── Words ────────────────────────────────────────────────────── */}
