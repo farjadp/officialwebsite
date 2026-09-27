@@ -63,6 +63,8 @@ const EN_ONLY_PATHS = [
 /** Persian-only routes. */
 const FA_ONLY_PATHS = [
     '/book-club',
+    // A plain-language introduction for Persian speakers; no English twin.
+    '/intro',
 ]
 
 /**

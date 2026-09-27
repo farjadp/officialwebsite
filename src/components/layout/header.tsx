@@ -75,6 +75,9 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
     }, [hidden, reduce])
 
     const entries: Entry[] = [
+        // Persian only, and first: it is the page to hand someone who does not
+        // yet know what any of the other labels mean.
+        ...(hasRoute("intro", locale) ? [{ label: t.intro, href: href(ROUTES.intro) }] : []),
         { label: t.services, href: href(ROUTES.services) },
         {
             label: t.proofOfWork,

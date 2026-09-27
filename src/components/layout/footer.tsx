@@ -114,6 +114,7 @@ export function Footer({ locale = "en" }: { locale?: Locale }) {
                             {hasRoute("labPerks", locale) && <FooterLink href={href(ROUTES.labPerks)}>{t.labPerks}</FooterLink>}
                             <FooterLink href={href(ROUTES.work)}>{t.work}</FooterLink>
                             {hasRoute("resume", locale) && <FooterLink href={href(ROUTES.resume)}>{t.resume}</FooterLink>}
+                            {hasRoute("intro", locale) && <FooterLink href={href(ROUTES.intro)}>{t.intro}</FooterLink>}
                             <FooterLink href={href(ROUTES.about)} strong>{t.startHere}</FooterLink>
                         </ul>
                     </div>

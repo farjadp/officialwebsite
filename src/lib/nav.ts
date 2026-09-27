@@ -35,6 +35,7 @@ export const ROUTES = {
     privacy: "/privacy",
     terms: "/terms",
     bookClub: "/book-club",
+    intro: "/intro",
     lab: "/lab",
     labPerks: "/lab/perks",
 } as const
@@ -51,6 +52,9 @@ const AVAILABILITY: Partial<Record<RouteKey, { en: boolean; fa: boolean }>> = {
     blog: { en: true, fa: false },
     // Persian-only: this has never had an English counterpart.
     bookClub: { en: false, fa: true },
+    // Persian-only by design: a plain-language introduction written for
+    // Persian speakers in Canada, not a translation of an English page.
+    intro: { en: false, fa: true },
     // The Lab and its perk-partner call are published in both languages.
 }
 
@@ -102,6 +106,7 @@ type NavLabels = {
     about: string
     resume: string
     bookClub: string
+    intro: string
     lab: string
     labProgramme: string
     labProgrammeNote: string
@@ -139,6 +144,7 @@ export const NAV: Record<Locale, NavLabels> = {
         about: "About",
         resume: "Resume",
         bookClub: "Book Club",
+        intro: "In Plain Language",
         lab: "Lab",
         labProgramme: "The Programme",
         labProgrammeNote: "Eight weeks, five teams",
@@ -174,6 +180,7 @@ export const NAV: Record<Locale, NavLabels> = {
         about: "درباره من",
         resume: "رزومه",
         bookClub: "باشگاه کتاب",
+        intro: "به زبان ساده",
         lab: "منتورشیپ",
         labProgramme: "دوره‌ی منتورشیپ",
         labProgrammeNote: "۸ هفته، ۵ تیم",
@@ -221,6 +228,7 @@ type FooterLabels = {
     tools: string
     booking: string
     bookClub: string
+    intro: string
     lab: string
     labPerks: string
     privacy: string
@@ -257,6 +265,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         tools: "Founder Tools",
         booking: "Book a Call",
         bookClub: "Book Club",
+        intro: "In Plain Language",
         lab: "Lab",
         labPerks: "Perk Partners",
         privacy: "Privacy Policy",
@@ -291,6 +300,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         tools: "ابزارهای بنیان‌گذار",
         booking: "رزرو جلسه",
         bookClub: "باشگاه کتاب",
+        intro: "به زبان ساده",
         lab: "منتورشیپ",
         labPerks: "شرکای Perk",
         privacy: "سیاست حریم خصوصی",
