@@ -1,17 +1,14 @@
 // ============================================================================
 // File Path: src/components/v3/pages/booking.tsx
 // Why: /booking and /fa/booking in the v3 "Light" look, one component for
-//      both locales so they cannot drift apart. The English copy is carried
-//      over from the v2 files. The Persian copy was rewritten on 27 Sep 2026:
-//      it read as a threat ("war room", "we stress-test you", "immediate
-//      legal action") and spoke only to startup-visa applicants. It now uses
-//      the calm, plain voice of /fa/intro and fits any business owner. The
-//      fee, the rules and the NDA mean exactly what they meant before.
+//      both locales so they cannot drift apart. Both locales' copy was
+//      rewritten on 27 Sep 2026: it read as a threat ("war room", "we
+//      stress-test you", "burned", "immediate legal action") and spoke only
+//      to startup-visa applicants. It now uses the calm, plain voice of
+//      /fa/intro and fits any business owner. The fee, the rules and the NDA
+//      mean exactly what they meant before.
 //      The Google Calendar appointment embed, its "open in new tab" fallback
 //      and the Telegram link are untouched — same URLs, same new-tab targets.
-//      Still open: the ENGLISH metadata promises a 30-minute call while the
-//      body describes a 60–90 minute session. The Persian metadata was
-//      corrected to 60–90 on 27 Sep 2026.
 // Env / Identity: React Server Component
 // ============================================================================
 
@@ -75,15 +72,15 @@ type Copy = {
 
 const COPY: Record<Locale, Copy> = {
   en: {
-    kicker: "Strategy Session",
-    title: "Secure Your",
-    accent: "Slot",
-    lead: "We donate 100% of the session fee to verified charities. We value commitment over profit.",
+    kicker: "First Conversation",
+    title: "Book a",
+    accent: "Time",
+    lead: "A calm, focused conversation about your work. The full session fee goes to verified charities; I ask for it so that both of us arrive committed.",
     fee: {
-      title: "Social Impact Fee",
+      title: "Session fee, paid to charity",
       amount: 144,
       currency: "USD",
-      note: "Pay directly to a charity of your choice. Send us the receipt to confirm your booking.",
+      note: "Pay the amount directly to a charity of your choice and send me the receipt to confirm your booking.",
     },
     details: {
       title: "Session Details",
@@ -94,97 +91,101 @@ const COPY: Record<Locale, Copy> = {
       ],
     },
     tech: {
-      title: "Tech Check",
-      question: "Calendar Not Loading?",
+      title: "If the Calendar Won't Load",
+      question: "Can't see the calendar below?",
       body: {
-        before: "Due to internet restrictions, you likely need a ",
+        before: "If you are visiting from Iran, you will probably need a ",
         strong: "VPN",
         after: " to see the Google Calendar embedded below.",
       },
-      telegram: "Book manually via Telegram",
+      telegram: "Book through Telegram instead",
     },
     schedule: {
-      title: "Schedule your appointment",
+      title: "Choose a time",
       iframeTitle: "Google Calendar Appointment Scheduling",
       trouble: "Having trouble viewing the calendar? ",
       open: "Open in new tab",
       end: ".",
     },
     room: {
-      title: "Inside the",
-      accent: '"War Room"',
-      lead: "This is not a casual chat. It is a structured strategic audit. Here is the breakdown of our 60-90 minute session:",
+      title: "What happens",
+      accent: "in the session?",
+      lead: "A conversation with a clear structure, so none of your time is wasted. The 60-90 minutes run like this:",
       steps: [
         {
           when: "Min 0-15",
-          title: "The Diagnostic",
-          body: "We stress-test your current status. Capital verification, team structure analysis, and identifying immediate \"red flags\" in your profile.",
+          title: "Understanding",
+          body: "You tell me about your work and where you are stuck, and I ask questions until the real problem is clear. No technical vocabulary needed.",
         },
         {
           when: "Min 15-45",
-          title: "The Pivot Strategy",
-          body: "We re-engineer your business concept. We explain exactly how to position your product to satisfy specific requirements and market gaps.",
+          title: "Options",
+          body: "We weigh the possible routes together, from business strategy to the website, software or automation that would actually help. I will be just as honest about what you don't need.",
         },
         {
           when: "Min 45-60",
-          title: "The Execution Plan",
-          body: "You leave with a clear roadmap: Which path to approach, specific budget parameters, and the estimated timeline for your goals.",
+          title: "Next Steps",
+          body: "You leave with a clear plan: what to do first, on what budget, and over what timeframe.",
         },
       ],
-      receiveTitle: "What you receive",
-      receive: ["Video Recording", "Audio Transcript", "PDF Action Plan", "Resource Links"],
+      receiveTitle: "What you receive afterwards",
+      receive: ["Video Recording", "Transcript", "PDF Action Plan", "Resource Links"],
     },
     nda: {
-      title: "Mutual NDA Protocol",
+      title: "Confidentiality, Both Ways",
       sub: "Non-Disclosure Agreement",
       confidential: {
-        title: "Strictly Confidential",
+        title: "The recording is yours",
         body: {
-          before: "The session recording is for your ",
-          strong: "personal review only",
-          after: ". It is strictly forbidden to publish, share, or upload any part of this meeting to social media.",
+          before: "The session recording is ",
+          strong: "for your own review",
+          after: ". Please don't publish or share any part of it on social media or elsewhere.",
         },
       },
       privacy: {
-        title: "Two-Way Privacy",
-        body: "We respect your trade secrets. In return, you respect our intellectual property. We do not share your data, and you do not share our internal strategies publicly.",
+        title: "Mutual Trust",
+        body: "Whatever you tell me about your business stays with me and is never published. In return, I ask you not to make public the methods and material you see in the session.",
       },
       legal: {
-        title: "Legal Consequence",
-        body: "Violation of this privacy policy by either party will result in immediate legal action and blacklisting from future opportunities.",
+        title: "If It's Not Respected",
+        body: "If either side breaks this agreement, the other side reserves the right to take legal action, and further work together won't be possible.",
       },
-      agree: "By booking a session, you automatically agree to these terms.",
+      agree: "Booking a session means accepting this agreement.",
     },
     rules: {
-      title: "Engagement Rules",
+      title: "Two Simple Agreements",
       items: [
-        { n: "01.", title: "No-Show Policy", body: "Missed calls without 24h notice are burned. No reschedules." },
+        {
+          n: "01.",
+          title: "If you can't make it",
+          body: "Let me know at least 24 hours ahead and we'll move the session. A session missed without notice is not rescheduled.",
+        },
         {
           n: "02.",
-          title: "Donation Verification",
-          body: "Email/TG the charity receipt within 6 hours of booking to avoid auto-cancellation.",
+          title: "Charity receipt",
+          body: "Send the receipt by email or Telegram within 6 hours of booking; otherwise the slot is released for someone else.",
         },
       ],
     },
     faq: {
       title: "Booking",
-      accent: "FAQ",
+      accent: "Questions",
       items: [
         {
-          q: "Can I bring my co-founder?",
-          a: "Yes. We actually encourage all key decision-makers (up to 3 people) to join the call so everyone is aligned.",
+          q: "Can I bring a partner or colleague?",
+          a: "Yes, and I'd encourage it. If you make decisions with someone, it helps to have them there (up to 3 people) so you all leave with the same picture.",
         },
         {
-          q: "What if I don't have a charity receipt yet?",
-          a: "You can book the slot first to secure it, but you must send the receipt within 6 hours to confirm.",
+          q: "What if I don't have the charity receipt yet?",
+          a: "Book the time first so you don't lose it, then you have 6 hours to send the receipt.",
         },
         {
           q: "Is the fee refundable?",
-          a: "Since it is a direct donation to charity, we cannot refund it. However, we can reschedule your call if you notify us 24 hours in advance.",
+          a: "No, because it has gone straight to charity. But if you let me know 24 hours ahead, we'll reschedule.",
         },
         {
           q: "Do you speak Farsi?",
-          a: "Yes. The session can be conducted in your preferred language (Farsi or English).",
+          a: "Yes. The session can be in whichever you prefer, Farsi or English.",
         },
       ],
     },

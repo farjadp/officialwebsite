@@ -12,11 +12,11 @@ import { BookingPage } from "@/components/v3/pages/booking"
 
 export const metadata: Metadata = {
   alternates: localeAlternates("/booking", "en"),
-  title: "Book a Strategy Call | 30-Minute Consultation",
-  description: "Book a 30-minute strategy call with Farjad. Diagnose your core problem and decide on next steps. Session fee goes directly to charity.",
+  title: "Book a First Conversation | 60-90 Minutes with Farjad",
+  description: "A 60-90 minute conversation with Farjad, in English or Farsi: the core problem in your work gets clear and you leave with a plan for the next step. The session fee goes to charity.",
   openGraph: {
-    title: "Book a Strategy Call | Farjad",
-    description: "Diagnose your core problem in 30 minutes. Session fee goes to charity.",
+    title: "Book a First Conversation | Farjad",
+    description: "60-90 minutes to find the core problem and plan the next step. The session fee goes to charity.",
     images: ["/images/og-default.png"],
   },
 }
