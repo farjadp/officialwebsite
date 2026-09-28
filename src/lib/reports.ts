@@ -19,6 +19,8 @@ export type ReportMeta = {
   published: string
   /** Date the figures were taken, ISO. */
   dataAsOf: string
+  /** Set when a published report is corrected, so lastmod and dateModified move. */
+  updated?: string
   readMinutes: number
   /** The one number the report is about, shown large on the index. */
   figure: string
@@ -46,7 +48,7 @@ export const REPORTS: ReportMeta[] = [
         title: "آمریکا کجای دنیا ایستاده؟",
         tagline: "۸ سهم، ۲۰ اقتصاد",
         summary:
-          "ارزش بازار ۸ شرکت تکنولوژی آمریکایی به ۲۵٫۷ تریلیون دلار رسیده است. این عدد را کنار اقتصاد کشورهای اروپا بگذارید و ببینید درباره‌ی سرمایه، هوش مصنوعی و انتظار از آینده چه می‌گوید.",
+          "ارزش بازار ۸ شرکت تکنولوژی آمریکایی ۲۵٫۷ تریلیون دلار است؛ بیشتر از GDP سالانه‌ی کل اتحادیه‌ی اروپا. این عدد کنار اقتصاد ۲۰ کشور اروپایی.",
         topic: "اقتصاد هوش مصنوعی",
         figureLabel: "۸ شرکت، یک ارزش بازار",
       },
@@ -56,6 +58,11 @@ export const REPORTS: ReportMeta[] = [
 
 export function getReport(slug: string): ReportMeta | undefined {
   return REPORTS.find((r) => r.slug === slug)
+}
+
+/** The day a report last changed: its correction date, else its publication. */
+export function reportModified(r: ReportMeta): string {
+  return r.updated ?? r.published
 }
 
 /** Newest first. */

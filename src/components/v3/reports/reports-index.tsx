@@ -12,6 +12,7 @@ import type { Locale } from "@/lib/nav"
 import { localePath } from "@/lib/nav"
 import { localDigits } from "@/lib/digits"
 import { formatReportDate, reportsByDate } from "@/lib/reports"
+import { absoluteUrl } from "@/lib/seo"
 import { Arrow, Beam, PageHero, Reveal, V3Page } from "@/components/v3/kit"
 
 const COPY = {
@@ -38,8 +39,45 @@ const COPY = {
 export function ReportsIndex({ locale }: { locale: Locale }) {
   const t = COPY[locale]
   const reports = reportsByDate()
+  const url = absoluteUrl(localePath(locale, "/reports"))
+
+  // A collection with its members named, so an answer engine can see what the
+  // section holds without crawling every report, plus the two-level trail.
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: t.kicker,
+      description: t.lead,
+      url,
+      inLanguage: locale === "fa" ? "fa-IR" : "en",
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: reports.length,
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        itemListElement: reports.map((r, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: r.copy[locale].title,
+          url: absoluteUrl(localePath(locale, `/reports/${r.slug}`)),
+        })),
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: locale === "fa" ? "خانه" : "Home", item: absoluteUrl(localePath(locale, "/")) },
+        { "@type": "ListItem", position: 2, name: t.kicker, item: url },
+      ],
+    },
+  ]
+
   return (
     <V3Page>
+      {jsonLd.map((node, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(node) }} />
+      ))}
       <PageHero kicker={t.kicker} title={t.title} accent={t.accent} lead={t.lead} />
       <section className="relative isolate overflow-hidden">
         <Beam className="[animation-delay:-5s]" />

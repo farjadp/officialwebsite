@@ -30,28 +30,31 @@ export type CountryKey =
   | "de" | "gb" | "fr" | "it" | "ru" | "es" | "nl" | "ch" | "pl" | "ie"
   | "be" | "se" | "at" | "no" | "dk" | "ro" | "cz" | "pt" | "fi" | "gr"
 
-/** The 20 largest European economies by 2026 nominal GDP (IMF projection). */
-export const COUNTRIES: { key: CountryKey; flag: string; gdp: number }[] = [
-  { key: "de", flag: "🇩🇪", gdp: 5452.86 },
-  { key: "gb", flag: "🇬🇧", gdp: 4264.79 },
-  { key: "fr", flag: "🇫🇷", gdp: 3596.09 },
-  { key: "it", flag: "🇮🇹", gdp: 2738.16 },
-  { key: "ru", flag: "🇷🇺", gdp: 2656.45 },
-  { key: "es", flag: "🇪🇸", gdp: 2091.22 },
-  { key: "nl", flag: "🇳🇱", gdp: 1450 },
-  { key: "ch", flag: "🇨🇭", gdp: 1150 },
-  { key: "pl", flag: "🇵🇱", gdp: 1130 },
-  { key: "ie", flag: "🇮🇪", gdp: 779.38 },
-  { key: "be", flag: "🇧🇪", gdp: 776.73 },
-  { key: "se", flag: "🇸🇪", gdp: 760.48 },
-  { key: "at", flag: "🇦🇹", gdp: 623.72 },
-  { key: "no", flag: "🇳🇴", gdp: 599.41 },
-  { key: "dk", flag: "🇩🇰", gdp: 503.77 },
-  { key: "ro", flag: "🇷🇴", gdp: 480.83 },
-  { key: "cz", flag: "🇨🇿", gdp: 432.6 },
-  { key: "pt", flag: "🇵🇹", gdp: 380.64 },
-  { key: "fi", flag: "🇫🇮", gdp: 337.67 },
-  { key: "gr", flag: "🇬🇷", gdp: 307.55 },
+/**
+ * The 20 largest European economies by 2026 nominal GDP (IMF projection).
+ * `key` is the ISO 3166-1 alpha-2 code, which is also the flag file's name.
+ */
+export const COUNTRIES: { key: CountryKey; gdp: number }[] = [
+  { key: "de", gdp: 5452.86 },
+  { key: "gb", gdp: 4264.79 },
+  { key: "fr", gdp: 3596.09 },
+  { key: "it", gdp: 2738.16 },
+  { key: "ru", gdp: 2656.45 },
+  { key: "es", gdp: 2091.22 },
+  { key: "nl", gdp: 1450 },
+  { key: "ch", gdp: 1150 },
+  { key: "pl", gdp: 1130 },
+  { key: "ie", gdp: 779.38 },
+  { key: "be", gdp: 776.73 },
+  { key: "se", gdp: 760.48 },
+  { key: "at", gdp: 623.72 },
+  { key: "no", gdp: 599.41 },
+  { key: "dk", gdp: 503.77 },
+  { key: "ro", gdp: 480.83 },
+  { key: "cz", gdp: 432.6 },
+  { key: "pt", gdp: 380.64 },
+  { key: "fi", gdp: 337.67 },
+  { key: "gr", gdp: 307.55 },
 ]
 
 /** EU-27, 2026 nominal GDP (IMF projection). */

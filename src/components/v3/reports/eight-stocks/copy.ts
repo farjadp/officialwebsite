@@ -13,7 +13,8 @@ import type { CompanyKey, CountryKey, LayerKey } from "./data"
 
 type Copy = {
   countries: Record<CountryKey, string>
-  hero: { kicker: string; hook: string[]; megaUnit: string; megaLabel: string; stackHint: string; asOf: string; byline: string }
+  hero: { kicker: string; hook: string[]; summary: string; megaUnit: string; megaLabel: string; stackHint: string; asOf: string; byline: string }
+  findings: { kicker: string; title: string; items: string[] }
   basket: {
     kicker: string
     title: string
@@ -120,11 +121,24 @@ export const COPY: Record<Locale, Copy> = {
         "In a conversation I guessed that NVIDIA alone is worth about as much as the yearly output of most European countries.",
         "Then I checked. Then I added up seven more companies.",
       ],
+      summary:
+        "At the close of 25 September 2026, eight American technology companies — NVIDIA, Apple, Google, Microsoft, Amazon, Meta, Broadcom and AMD — were worth $25.68 trillion between them, more than the entire European Union produces in a year.",
       megaUnit: "trillion",
       megaLabel: "The combined market value of eight American companies. Nothing else.",
       stackHint: "Tap a company to see its share.",
       asOf: "Market values at the close of 25 September 2026",
       byline: "Farjad",
+    },
+    findings: {
+      kicker: "What the numbers say",
+      title: "Five findings",
+      items: [
+        "The eight companies are worth $25.68 trillion between them, more than the $23.0 trillion the IMF expects the whole EU-27 to produce in 2026.",
+        "NVIDIA alone is worth $5.43 trillion, within half a percent of Germany's entire 2026 GDP of $5.45 trillion.",
+        "It takes Europe's 11 largest economies together to produce more in one year than these eight companies are worth today.",
+        "NVIDIA is worth about 15 times what it was at the end of 2022, when its market value was $364 billion.",
+        "The four largest — NVIDIA, Apple, Google and Microsoft — come to $18.4 trillion, close to the $18.7 trillion combined GDP of Germany, the UK, France, Italy and Russia.",
+      ],
     },
     basket: {
       kicker: "Next to Europe",
@@ -134,7 +148,7 @@ export const COPY: Record<Locale, Copy> = {
       presets: { all: "All eight", nvidia: "NVIDIA only", top4: "Top four" },
       basketLabel: "Your basket",
       companiesLabel: "Companies in the basket",
-      verdict: (bigger, total) => `Worth more than the annual GDP of ${bigger} of these ${total} economies.`,
+      verdict: (bigger, total) => `Worth more than the annual GDP of ${bigger} of these ${total} economies, taken one at a time.`,
       legendBasket: "Basket market value",
       legendGdp: "Country GDP, 2026",
       rowHint: "× how many times the basket fits the country's GDP",
@@ -275,11 +289,24 @@ export const COPY: Record<Locale, Copy> = {
         "جایی بحث شد و من حسی گفتم ارزش NVIDIA به‌تنهایی اندازه‌ی GDP بیشتر کشورهای اروپایی است.",
         "بعد چک کردم. بعد هفت شرکت دیگر را هم کنارش جمع زدم.",
       ],
+      summary:
+        "در پایان معاملات ۲۵ سپتامبر ۲۰۲۶، ارزش بازار هشت شرکت تکنولوژی آمریکایی — NVIDIA، اپل، گوگل، مایکروسافت، آمازون، متا، برادکام و AMD — روی هم ۲۵٫۶۸ تریلیون دلار بود؛ بیشتر از چیزی که کل اتحادیه‌ی اروپا در یک سال تولید می‌کند.",
       megaUnit: "تریلیون",
       megaLabel: "ارزش بازار مجموع فقط همین ۸ شرکت آمریکایی. کاری به بقیه‌ی شرکت‌های بزرگ ندارم.",
       stackHint: "روی هر شرکت بزنید تا سهمش را ببینید.",
       asOf: "ارزش بازار در پایان معاملات ۲۵ سپتامبر ۲۰۲۶",
       byline: "فرجاد",
+    },
+    findings: {
+      kicker: "این عددها چه می‌گویند",
+      title: "پنج یافته",
+      items: [
+        "ارزش بازار این ۸ شرکت روی هم ۲۵٫۶۸ تریلیون دلار است؛ بیشتر از ۲۳٫۰ تریلیون دلاری که صندوق بین‌المللی پول برای تولید کل اتحادیه‌ی اروپا در سال ۲۰۲۶ پیش‌بینی می‌کند.",
+        "ارزش NVIDIA به‌تنهایی ۵٫۴۳ تریلیون دلار است؛ کمتر از نیم درصد با کل GDP آلمان در ۲۰۲۶، یعنی ۵٫۴۵ تریلیون دلار، فاصله دارد.",
+        "۱۱ اقتصاد بزرگ اروپا با هم لازم‌اند تا تولید یک سالشان از ارزش امروز این ۸ شرکت بیشتر شود.",
+        "ارزش NVIDIA حدود ۱۵ برابر پایان سال ۲۰۲۲ است؛ آن زمان ۳۶۴ میلیارد دلار بود.",
+        "چهار شرکت اول — NVIDIA، اپل، گوگل و مایکروسافت — روی هم ۱۸٫۴ تریلیون دلار می‌شوند؛ نزدیک به ۱۸٫۷ تریلیون دلار مجموع GDP آلمان، بریتانیا، فرانسه، ایتالیا و روسیه.",
+      ],
     },
     basket: {
       kicker: "کنار اقتصاد اروپا",
@@ -289,7 +316,7 @@ export const COPY: Record<Locale, Copy> = {
       presets: { all: "هر ۸ شرکت", nvidia: "فقط NVIDIA", top4: "۴ تای اول" },
       basketLabel: "سبد شما",
       companiesLabel: "شرکت‌های داخل سبد",
-      verdict: (bigger, total) => `از GDP سالانه‌ی ${bigger} اقتصاد از این ${total} اقتصاد بیشتر است.`,
+      verdict: (bigger, total) => `از GDP سالانه‌ی ${bigger} اقتصاد از این ${total} اقتصاد بیشتر است؛ هر کدام جداگانه، نه با هم.`,
       legendBasket: "ارزش بازار سبد",
       legendGdp: "GDP کشور در ۲۰۲۶",
       rowHint: "× یعنی سبد چند برابر GDP آن کشور است",

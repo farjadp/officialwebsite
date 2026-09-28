@@ -14,7 +14,7 @@ import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { SITE_URL } from '@/lib/seo'
 import { PORTFOLIO_ITEMS } from './(public)/portfolio/data'
-import { REPORTS } from '@/lib/reports'
+import { REPORTS, reportModified } from '@/lib/reports'
 
 type Entry = MetadataRoute.Sitemap[number]
 
@@ -109,10 +109,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Reports are bilingual and dated by their publication day.
     const reportEntries: Entry[] = REPORTS.flatMap((r) => {
-        const when = new Date(`${r.published}T00:00:00.000Z`)
+        const when = new Date(`${reportModified(r)}T00:00:00.000Z`)
+        const languages = {
+            en: `${SITE_URL}/reports/${r.slug}`,
+            fa: `${SITE_URL}/fa/reports/${r.slug}`,
+        }
         return [
-            entry(`/reports/${r.slug}`, 0.8, 'yearly', when),
-            entry(`/fa/reports/${r.slug}`, 0.7, 'yearly', when),
+            { ...entry(`/reports/${r.slug}`, 0.8, 'yearly', when), alternates: { languages } },
+            { ...entry(`/fa/reports/${r.slug}`, 0.7, 'yearly', when), alternates: { languages } },
         ]
     })
 

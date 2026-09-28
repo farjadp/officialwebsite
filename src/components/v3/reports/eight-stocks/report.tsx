@@ -12,11 +12,13 @@ import type { Locale } from "@/lib/nav"
 import { localePath } from "@/lib/nav"
 import { absoluteUrl } from "@/lib/seo"
 import { formatReportDate, type ReportMeta } from "@/lib/reports"
+import { reportJsonLd } from "../report-route"
 import { Beam, Card, Headline, Kicker, Lead, Reveal, Spotlight, V3Button, V3Page } from "@/components/v3/kit"
 import { ReadingProgress } from "@/components/v3/reading-progress"
 import { num, times, usd } from "../fmt"
 import { COPY } from "./copy"
 import { COMPANIES, COUNTRIES, TOTAL_CAP } from "./data"
+import { Flag, Mark } from "./marks"
 import {
   BasketComparator,
   CompanyStack,
@@ -53,8 +55,26 @@ export function EightStocksReport({ locale, meta }: { locale: Locale; meta: Repo
   const path = localePath(locale, `/reports/${meta.slug}`)
   const minutes = locale === "fa" ? `${num(meta.readMinutes, locale)} دقیقه مطالعه` : `${meta.readMinutes} min read`
 
+  const jsonLd = reportJsonLd({
+    locale,
+    slug: meta.slug,
+    mentions: COMPANIES.map((x) => x.name),
+    citation: c.method.sources,
+    about:
+      locale === "fa"
+        ? ["هوش مصنوعی", "ارزش بازار", "اقتصاد اروپا", "تولید ناخالص داخلی"]
+        : ["Artificial intelligence", "Market capitalization", "Economy of Europe", "Gross domestic product"],
+  })
+
   return (
     <V3Page>
+      {jsonLd.map((node, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(node) }}
+        />
+      ))}
       <ReadingProgress />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
@@ -86,6 +106,12 @@ export function EightStocksReport({ locale, meta }: { locale: Locale; meta: Repo
             ))}
           </Reveal>
 
+          <Reveal immediate delay={0.16}>
+            <p className="max-w-3xl border-s-2 border-v3-light/70 ps-5 text-lg leading-relaxed text-v3-bone md:text-xl rtl:leading-loose">
+              {c.hero.summary}
+            </p>
+          </Reveal>
+
           <Reveal immediate delay={0.2} className="flex flex-col gap-3">
             <p className="flex flex-wrap items-baseline gap-x-5 font-v3-display font-light leading-none">
               <span className="text-[clamp(5rem,17vw,14rem)] tracking-[-0.03em] text-v3-light drop-shadow-[0_0_60px_rgba(232,196,138,0.35)]">
@@ -102,6 +128,28 @@ export function EightStocksReport({ locale, meta }: { locale: Locale; meta: Repo
           <p className="text-xs text-v3-mute">{c.hero.asOf}</p>
         </div>
       </header>
+
+      {/* ── Key findings ─────────────────────────────────────────────── */}
+      <section className="border-b border-v3-line/70">
+        <div className={`${WRAP} py-20 md:py-24`}>
+          <Reveal className="mb-10 flex flex-col gap-3">
+            <Kicker>{c.findings.kicker}</Kicker>
+            <Headline className="max-w-3xl">{c.findings.title}</Headline>
+          </Reveal>
+          <ol className="grid gap-x-12 gap-y-1 lg:grid-cols-2">
+            {c.findings.items.map((f, i) => (
+              <Reveal key={i} delay={i * 0.06}>
+                <li className="flex gap-5 border-b border-v3-line/60 py-5">
+                  <span className="mt-1 shrink-0 font-v3-display text-xl text-v3-light tabular-nums">
+                    {locale === "fa" ? ["۰۱", "۰۲", "۰۳", "۰۴", "۰۵"][i] : `0${i + 1}`}
+                  </span>
+                  <span className="text-lg leading-relaxed text-v3-soft rtl:leading-loose">{f}</span>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+        </div>
+      </section>
 
       {/* ── Basket vs Europe ─────────────────────────────────────────── */}
       <Block kicker={c.basket.kicker} title={c.basket.title} lead={c.basket.lead}>
@@ -166,7 +214,8 @@ export function EightStocksReport({ locale, meta }: { locale: Locale; meta: Repo
             {c.why.onlys.map((o, i) => (
               <Reveal key={o.key} delay={i * 0.08}>
                 <Card className="group transition-colors duration-500 hover:border-v3-light/60 hover:bg-v3-raise">
-                  <span dir="ltr" className="self-start font-v3-display text-2xl text-v3-bone">
+                  <span dir="ltr" className="flex items-center gap-3 self-start font-v3-display text-2xl text-v3-bone">
+                    <Mark company={o.key} className="text-xl text-v3-light" />
                     {COMPANIES.find((x) => x.key === o.key)!.name}
                   </span>
                   <span className="text-v3-mute transition-colors duration-500 group-hover:text-v3-light">{o.was}</span>
@@ -251,7 +300,7 @@ export function EightStocksReport({ locale, meta }: { locale: Locale; meta: Repo
                   {COUNTRIES.map((k, i) => (
                     <tr key={k.key} className="border-t border-v3-line/50">
                       <td className="px-4 py-2.5 tabular-nums text-v3-mute">{num(i + 1, locale)}</td>
-                      <td className="px-4 py-2.5 text-v3-bone"><span aria-hidden className="me-2">{k.flag}</span>{c.countries[k.key]}</td>
+                      <td className="px-4 py-2.5 text-v3-bone"><Flag code={k.key} className="me-2" />{c.countries[k.key]}</td>
                       <td className="px-4 py-2.5 text-end tabular-nums text-v3-soft"><bdi dir="ltr">{usd(k.gdp, locale)}</bdi></td>
                       <td className="px-4 py-2.5 text-end tabular-nums text-v3-light"><bdi dir="ltr">{times(TOTAL_CAP / k.gdp, locale, 2)}</bdi></td>
                     </tr>

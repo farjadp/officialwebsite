@@ -19,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import type { Locale } from "@/lib/nav"
 import { num, pct, times, usd } from "../fmt"
 import { COPY } from "./copy"
+import { Flag, Mark } from "./marks"
 import {
   COMPANIES,
   COUNTRIES,
@@ -105,8 +106,9 @@ export function CompanyStack({ locale }: { locale: Locale }) {
                 on ? "opacity-100 brightness-110" : "opacity-75 hover:opacity-100"
               }`}
             >
-              <span className="absolute inset-x-1 bottom-1.5 hidden truncate text-start text-[11px] font-semibold text-v3-ink md:block">
-                {co.name}
+              <span className="absolute inset-x-1 bottom-1.5 hidden items-center gap-1.5 truncate text-start text-[11px] font-semibold text-v3-ink md:flex">
+                <Mark company={co.key} />
+                <span className="truncate">{co.name}</span>
               </span>
             </motion.button>
           )
@@ -115,7 +117,8 @@ export function CompanyStack({ locale }: { locale: Locale }) {
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 text-sm" aria-live="polite">
         <span className="text-v3-mute">{t.stackHint}</span>
         <span className="flex items-baseline gap-3">
-          <span className="font-semibold text-v3-bone" dir="ltr">
+          <span className="inline-flex items-center gap-2 font-semibold text-v3-bone" dir="ltr">
+            <Mark company={c.key} />
             {c.name}
           </span>
           <Fig className="text-v3-light">{usd(c.cap, locale)}</Fig>
@@ -153,7 +156,7 @@ export function BasketComparator({ locale }: { locale: Locale }) {
     setPicked((p) => (p.includes(k) ? (p.length === 1 ? p : p.filter((x) => x !== k)) : [...p, k]))
 
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+    <div role="group" aria-label={t.title} className="grid gap-10 lg:grid-cols-12 lg:gap-14">
       {/* Controls */}
       <div className="flex flex-col gap-8 lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
         <div className="flex flex-col gap-2">
@@ -204,15 +207,15 @@ export function BasketComparator({ locale }: { locale: Locale }) {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggle(c.key)}
-                  className={`flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 text-start transition-all duration-300 ${
+                  className={`flex min-h-12 min-w-0 flex-col justify-center gap-0.5 rounded-xl border px-3 py-2 text-start transition-all duration-300 ${
                     on ? "border-v3-light/60 bg-v3-raise text-v3-bone" : "border-v3-line/70 text-v3-mute hover:text-v3-bone"
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <span className={`h-2 w-2 rounded-full transition-colors ${on ? "bg-v3-light shadow-[0_0_8px_rgba(232,196,138,0.8)]" : "bg-v3-line"}`} />
-                    <span dir="ltr" className="text-sm font-medium">{c.name}</span>
+                  <span className="flex min-w-0 items-center gap-2">
+                    <Mark company={c.key} className={`text-[1.15em] transition-colors ${on ? "text-v3-light" : "text-v3-mute"}`} />
+                    <span dir="ltr" className="truncate text-sm font-medium">{c.name}</span>
                   </span>
-                  <Fig className="text-xs text-v3-mute">{usd(c.cap, locale)}</Fig>
+                  <Fig className="ps-[1.75em] text-[11px] text-v3-mute">{usd(c.cap, locale)}</Fig>
                 </button>
               )
             })}
@@ -241,7 +244,7 @@ export function BasketComparator({ locale }: { locale: Locale }) {
               >
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-[15px] text-v3-bone">
-                    <span aria-hidden className="me-2">{c.flag}</span>
+                    <Flag code={c.key} className="me-2" />
                     {names[c.key]}
                   </span>
                   <Fig className="text-xs text-v3-mute">{usd(c.gdp, locale)}</Fig>
@@ -304,7 +307,7 @@ export function EuropeStacker({ locale }: { locale: Locale }) {
   })()
 
   return (
-    <div className="flex flex-col gap-10">
+    <div role="group" aria-label={t.title} className="flex flex-col gap-10">
       <div className="flex flex-col gap-4">
         <label htmlFor="stack-n" className="flex flex-wrap items-baseline justify-between gap-3">
           <span className="text-sm text-v3-mute">{t.sliderLabel}</span>
@@ -361,7 +364,7 @@ export function EuropeStacker({ locale }: { locale: Locale }) {
                   i % 2 ? "bg-v3-soft/45" : "bg-v3-soft/65"
                 }`}
               >
-                <span aria-hidden>{c.gdp > 700 ? c.flag : ""}</span>
+                {c.gdp > 700 ? <Flag code={c.key} /> : null}
               </motion.div>
             ))}
           </div>
@@ -410,7 +413,7 @@ export function NvidiaRace({ locale }: { locale: Locale }) {
   }
 
   return (
-    <div className="flex flex-col gap-10">
+    <div role="group" aria-label={t.title} className="flex flex-col gap-10">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-1">
           <span className="text-sm text-v3-mute">
@@ -477,7 +480,7 @@ export function NvidiaRace({ locale }: { locale: Locale }) {
                 k % 2 ? "mt-5" : "mt-1"
               }`}
             >
-              <span aria-hidden>{c.flag}</span> <span className="hidden md:inline">{names[c.key]}</span>
+              <Flag code={c.key} /> <span className="hidden md:inline">{names[c.key]}</span>
             </span>
           </div>
         ))}
@@ -494,7 +497,7 @@ export function NvidiaRace({ locale }: { locale: Locale }) {
                 on ? "border-v3-light/60 bg-v3-light/10" : "border-v3-line/60 opacity-50"
               }`}
             >
-              <span aria-hidden className="text-lg">{c.flag}</span>
+              <Flag code={c.key} className="h-4" />
               <span className="w-full truncate text-[11px] text-v3-soft">{names[c.key]}</span>
             </li>
           )
@@ -511,7 +514,9 @@ export function NvidiaRace({ locale }: { locale: Locale }) {
 
 // ── Top four vs big five ────────────────────────────────────────────────────
 
-function SplitRow({ label, total, items, lit, scale, locale }: { label: string; total: number; items: { k: string; v: number; n: string }[]; lit: boolean; scale: number; locale: Locale }) {
+type SplitItem = { k: string; v: number; n: string; mark?: CompanyKey; code?: string }
+
+function SplitRow({ label, total, items, lit, scale, locale }: { label: string; total: number; items: SplitItem[]; lit: boolean; scale: number; locale: Locale }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-4">
@@ -530,6 +535,7 @@ function SplitRow({ label, total, items, lit, scale, locale }: { label: string; 
               lit ? `${SHADES[i * 2]} text-v3-ink` : i % 2 ? "bg-v3-soft/45 text-v3-ink" : "bg-v3-soft/65 text-v3-ink"
             }`}
           >
+            {it.mark ? <Mark company={it.mark} className="me-1.5" /> : it.code ? <Flag code={it.code} className="me-1.5" /> : null}
             <span className="truncate">{it.n}</span>
           </motion.div>
         ))}
@@ -548,9 +554,9 @@ export function TopFourVsBigFive({ locale }: { locale: Locale }) {
   const scale = Math.max(s4, s5)
 
   return (
-    <div className="flex flex-col gap-8">
-      <SplitRow scale={scale} locale={locale} label={t.companies} total={s4} lit items={four.map((c) => ({ k: c.key, v: c.cap, n: c.name }))} />
-      <SplitRow scale={scale} locale={locale} label={`${t.economies} · ${t.economyNames}`} total={s5} lit={false} items={five.map((c) => ({ k: c.key, v: c.gdp, n: names[c.key] }))} />
+    <div role="group" aria-label={t.title} className="flex flex-col gap-8">
+      <SplitRow scale={scale} locale={locale} label={t.companies} total={s4} lit items={four.map((c) => ({ k: c.key, v: c.cap, n: c.name, mark: c.key }))} />
+      <SplitRow scale={scale} locale={locale} label={`${t.economies} · ${t.economyNames}`} total={s5} lit={false} items={five.map((c) => ({ k: c.key, v: c.gdp, n: names[c.key], code: c.key }))} />
     </div>
   )
 }
@@ -605,7 +611,7 @@ export function LayerMap({ locale }: { locale: Locale }) {
   const top = [...LAYERS].reverse()
 
   return (
-    <div className="flex flex-col gap-8">
+    <div role="group" aria-label={t.title} className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">
         <span className="text-sm text-v3-mute">{t.hint}</span>
         <div className="flex flex-wrap gap-2">
@@ -618,10 +624,11 @@ export function LayerMap({ locale }: { locale: Locale }) {
                 aria-pressed={on}
                 onClick={() => setCo(on ? null : c.key)}
                 dir="ltr"
-                className={`min-h-10 rounded-full border px-4 text-sm font-medium transition-colors ${
+                className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors ${
                   on ? "border-v3-light bg-v3-light text-v3-ink" : "border-v3-line text-v3-soft hover:border-v3-light hover:text-v3-light"
                 }`}
               >
+                <Mark company={c.key} />
                 {c.name}
               </button>
             )
@@ -660,10 +667,11 @@ export function LayerMap({ locale }: { locale: Locale }) {
                     <span
                       key={h}
                       dir="ltr"
-                      className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
                         lit ? "border-v3-light bg-v3-light text-v3-ink" : "border-v3-line text-v3-soft"
                       }`}
                     >
+                      <Mark company={c.key} />
                       {c.name}
                     </span>
                   )
