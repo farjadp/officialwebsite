@@ -109,6 +109,7 @@ export function Footer({ locale = "en" }: { locale?: Locale }) {
                         <h2 className="text-sm text-v3-mute">{t.colLibrary}</h2>
                         <ul className="flex flex-col">
                             {hasRoute("blog", locale) && <FooterLink href={href(ROUTES.blog)}>{t.allEssays}</FooterLink>}
+                            <FooterLink href={href(ROUTES.reports)}>{t.reports}</FooterLink>
                             {hasRoute("bookClub", locale) && <FooterLink href={href(ROUTES.bookClub)}>{t.bookClub}</FooterLink>}
                             {hasRoute("lab", locale) && <FooterLink href={href(ROUTES.lab)}>{t.lab}</FooterLink>}
                             {hasRoute("labPerks", locale) && <FooterLink href={href(ROUTES.labPerks)}>{t.labPerks}</FooterLink>}

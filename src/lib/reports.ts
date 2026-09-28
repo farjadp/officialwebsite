@@ -1,0 +1,73 @@
+// ============================================================================
+// File Path: src/lib/reports.ts
+// Why: The register of published reports, for /reports and /fa/reports.
+//      A plain data module (no React) so the sitemap, the nav and the route
+//      pages can all read it. Every report exists in both locales.
+//
+//      To publish a report: add an entry here, add its component to
+//      components/v3/reports/registry.tsx under the same slug. The index,
+//      both routes, the sitemap and the language switcher pick it up.
+// ============================================================================
+
+import type { Locale } from "@/lib/nav"
+
+export type ReportMeta = {
+  slug: string
+  /** Running number shown on the index: 01, 02, … */
+  number: number
+  /** Publication date, ISO. */
+  published: string
+  /** Date the figures were taken, ISO. */
+  dataAsOf: string
+  readMinutes: number
+  /** The one number the report is about, shown large on the index. */
+  figure: string
+  copy: Record<Locale, { title: string; tagline: string; summary: string; topic: string; figureLabel: string }>
+}
+
+export const REPORTS: ReportMeta[] = [
+  {
+    slug: "eight-stocks-twenty-economies",
+    number: 1,
+    published: "2026-09-27",
+    dataAsOf: "2026-09-25",
+    readMinutes: 6,
+    figure: "$25.7T",
+    copy: {
+      en: {
+        title: "Eight Stocks, Twenty Economies",
+        tagline: "Where does America stand?",
+        summary:
+          "Eight US tech companies are worth $25.7 trillion. Put that number next to Europe's economies and see what it says about capital, AI and expectations.",
+        topic: "AI economy",
+        figureLabel: "8 companies, one market value",
+      },
+      fa: {
+        title: "آمریکا کجای دنیا ایستاده؟",
+        tagline: "۸ سهم، ۲۰ اقتصاد",
+        summary:
+          "ارزش بازار ۸ شرکت تکنولوژی آمریکایی به ۲۵٫۷ تریلیون دلار رسیده است. این عدد را کنار اقتصاد کشورهای اروپا بگذارید و ببینید درباره‌ی سرمایه، هوش مصنوعی و انتظار از آینده چه می‌گوید.",
+        topic: "اقتصاد هوش مصنوعی",
+        figureLabel: "۸ شرکت، یک ارزش بازار",
+      },
+    },
+  },
+]
+
+export function getReport(slug: string): ReportMeta | undefined {
+  return REPORTS.find((r) => r.slug === slug)
+}
+
+/** Newest first. */
+export function reportsByDate(): ReportMeta[] {
+  return [...REPORTS].sort((a, b) => b.published.localeCompare(a.published))
+}
+
+export function formatReportDate(iso: string, locale: Locale): string {
+  return new Date(`${iso}T12:00:00Z`).toLocaleDateString(locale === "fa" ? "fa-IR-u-ca-gregory" : "en-CA", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  })
+}

@@ -13,6 +13,8 @@
 // this table.
 // ============================================================================
 
+import { REPORTS } from "@/lib/reports"
+
 export type Locale = "en" | "fa"
 
 /** Public routes, written without a locale prefix. */
@@ -36,6 +38,7 @@ export const ROUTES = {
     terms: "/terms",
     bookClub: "/book-club",
     intro: "/intro",
+    reports: "/reports",
     lab: "/lab",
     labPerks: "/lab/perks",
 } as const
@@ -85,6 +88,11 @@ export function stripLocale(pathname: string): string {
  */
 export function counterpartPath(pathname: string, target: Locale): string {
     const bare = stripLocale(pathname)
+    // Every report is published in both locales, so a report page switches
+    // to its own translation rather than falling back to the home page.
+    if (/^\/reports\/[a-z0-9-]+$/.test(bare) && REPORTS.some((r) => `/reports/${r.slug}` === bare)) {
+        return localePath(target, bare)
+    }
     const entry = (Object.entries(ROUTES) as [RouteKey, string][]).find(
         ([, path]) => path === bare
     )
@@ -107,6 +115,7 @@ type NavLabels = {
     resume: string
     bookClub: string
     intro: string
+    reports: string
     lab: string
     labProgramme: string
     labProgrammeNote: string
@@ -145,6 +154,7 @@ export const NAV: Record<Locale, NavLabels> = {
         resume: "Resume",
         bookClub: "Book Club",
         intro: "In Plain Language",
+        reports: "Reports",
         lab: "Lab",
         labProgramme: "The Programme",
         labProgrammeNote: "Eight weeks, five teams",
@@ -181,6 +191,7 @@ export const NAV: Record<Locale, NavLabels> = {
         resume: "رزومه",
         bookClub: "باشگاه کتاب",
         intro: "به زبان ساده",
+        reports: "گزارش‌ها",
         lab: "منتورشیپ",
         labProgramme: "دوره‌ی منتورشیپ",
         labProgrammeNote: "۸ هفته، ۵ تیم",
@@ -229,6 +240,7 @@ type FooterLabels = {
     booking: string
     bookClub: string
     intro: string
+    reports: string
     lab: string
     labPerks: string
     privacy: string
@@ -266,6 +278,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         booking: "Book a Call",
         bookClub: "Book Club",
         intro: "In Plain Language",
+        reports: "Reports",
         lab: "Lab",
         labPerks: "Perk Partners",
         privacy: "Privacy Policy",
@@ -301,6 +314,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         booking: "رزرو جلسه",
         bookClub: "باشگاه کتاب",
         intro: "به زبان ساده",
+        reports: "گزارش‌ها",
         lab: "منتورشیپ",
         labPerks: "شرکای Perk",
         privacy: "سیاست حریم خصوصی",

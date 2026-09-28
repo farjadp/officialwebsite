@@ -14,6 +14,7 @@ import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { SITE_URL } from '@/lib/seo'
 import { PORTFOLIO_ITEMS } from './(public)/portfolio/data'
+import { REPORTS } from '@/lib/reports'
 
 type Entry = MetadataRoute.Sitemap[number]
 
@@ -49,6 +50,7 @@ const BILINGUAL_PATHS = [
     '/work',
     '/lab',
     '/lab/perks',
+    '/reports',
     '/privacy',
     '/terms',
 ]
@@ -105,6 +107,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         entry(`/fa/portfolio/${item.id}`, 0.6, 'yearly'),
     ])
 
+    // Reports are bilingual and dated by their publication day.
+    const reportEntries: Entry[] = REPORTS.flatMap((r) => {
+        const when = new Date(`${r.published}T00:00:00.000Z`)
+        return [
+            entry(`/reports/${r.slug}`, 0.8, 'yearly', when),
+            entry(`/fa/reports/${r.slug}`, 0.7, 'yearly', when),
+        ]
+    })
+
     // Blog posts carry a real lastModified, so they get an honest one.
     let postEntries: Entry[] = []
     try {
@@ -119,5 +130,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error('Failed to query posts for sitemap generation', e)
     }
 
-    return [...staticEntries, ...portfolioEntries, ...postEntries]
+    return [...staticEntries, ...portfolioEntries, ...reportEntries, ...postEntries]
 }

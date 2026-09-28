@@ -88,6 +88,7 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
             ],
         },
         ...(hasRoute("blog", locale) ? [{ label: t.blog, href: href(ROUTES.blog) }] : []),
+        { label: t.reports, href: href(ROUTES.reports) },
         ...(hasRoute("bookClub", locale) ? [{ label: t.bookClub, href: href(ROUTES.bookClub) }] : []),
         ...(hasRoute("lab", locale)
             ? [
