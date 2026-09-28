@@ -59,7 +59,7 @@ export function Footer({ locale = "en" }: { locale?: Locale }) {
                 <div className="grid gap-14 lg:grid-cols-12">
                     <div className="flex flex-col gap-6 lg:col-span-5">
                         <Link href={href(ROUTES.home)} className="inline-flex items-center gap-3 self-start">
-                            <Image src="/images/logo-mark-light.png" alt="" width={571} height={556} className="h-11 w-auto" />
+                            <Image src="/images/logo-mark-light.png" alt="" width={571} height={556} className="v3-logo h-11 w-auto" />
                             <span className="font-v3-display text-3xl rtl:text-2xl rtl:font-medium">{nav.brand}</span>
                         </Link>
                         <p className="max-w-md text-lg leading-relaxed text-v3-soft rtl:leading-loose">{t.manifesto}</p>

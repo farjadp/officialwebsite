@@ -99,7 +99,7 @@ export function AIBugReporter() {
             {isOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-v3-ink/80 p-4 backdrop-blur-sm">
                     <div
-                        className="w-full max-w-md overflow-hidden rounded-2xl border border-v3-line/80 bg-v3-raise font-v3-body text-v3-bone shadow-[0_40px_120px_-60px_rgba(232,196,138,0.5)]"
+                        className="w-full max-w-md overflow-hidden rounded-2xl border border-v3-line/80 bg-v3-raise font-v3-body text-v3-bone shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.5)]"
                         dir="rtl"
                     >
                         {/* Header */}

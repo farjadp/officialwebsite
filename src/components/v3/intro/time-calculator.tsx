@@ -157,7 +157,7 @@ export function TimeCalculator() {
       </div>
 
       <div className="lg:col-span-5">
-        <div className="sticky top-28 flex flex-col gap-6 overflow-hidden rounded-3xl border border-v3-light/50 bg-v3-raise p-8 shadow-[0_0_80px_-30px_rgba(232,196,138,0.5)]">
+        <div className="sticky top-28 flex flex-col gap-6 overflow-hidden rounded-3xl border border-v3-light/50 bg-v3-raise p-8 shadow-[0_0_80px_-30px_rgb(var(--v3-glow)/0.5)]">
           <p className="text-v3-mute">در یک سال کاری ({localDigits(WEEKS, "fa")} هفته) پس می‌گیرید:</p>
           <div className="flex flex-col gap-1">
             <p className="flex items-baseline gap-3">

@@ -155,7 +155,7 @@ function WebVisual() {
   const loop = reduce ? {} : { repeat: Infinity, repeatType: "reverse" as const, repeatDelay: 1.6 }
   const fill = (delay: number) => ({
     initial: { backgroundColor: "rgba(51,48,44,0.6)" },
-    animate: { backgroundColor: ["rgba(51,48,44,0.6)", "rgba(232,196,138,0.9)"] },
+    animate: { backgroundColor: ["rgba(51,48,44,0.6)", "rgb(var(--v3-glow)/0.9)"] },
     transition: { duration: 0.6, delay, ...loop, repeatDelay: 2.4 },
   })
   return (
@@ -273,7 +273,7 @@ function AiVisual() {
         {!reduce && (
           <motion.span
             aria-hidden
-            className="absolute start-[0.85rem] h-3 w-3 rounded-full bg-v3-light shadow-[0_0_18px_4px_rgba(232,196,138,0.6)]"
+            className="absolute start-[0.85rem] h-3 w-3 rounded-full bg-v3-light shadow-[0_0_18px_4px_rgb(var(--v3-glow)/0.6)]"
             animate={{ top: ["6%", "88%"] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.6 }}
           />

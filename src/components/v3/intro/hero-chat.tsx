@@ -65,7 +65,7 @@ export function HeroChat() {
   return (
     <div className="relative mx-auto w-full max-w-md" aria-label="نمایش یک گفت‌وگوی خودکار با مشتری" role="img">
       {/* phone */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-v3-line bg-v3-raise p-4 shadow-[0_40px_120px_-40px_rgba(232,196,138,0.35)]">
+      <div className="relative overflow-hidden rounded-[2rem] border border-v3-line bg-v3-raise p-4 shadow-[0_40px_120px_-40px_rgb(var(--v3-glow)/0.35)]">
         <div className="flex items-center justify-between border-b border-v3-line/70 px-2 pb-3">
           <div className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-v3-light/15 text-v3-light">

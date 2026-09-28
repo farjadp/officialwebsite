@@ -177,7 +177,7 @@ export function ToolProgress({
         aria-valuenow={Math.round(clamped)}
       >
         <motion.div
-          className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+          className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.7)] rtl:origin-right"
           initial={false}
           animate={{ scaleX: clamped / 100 }}
           transition={reduce ? { duration: 0 } : { duration: 0.6, ease: ARRIVE }}
@@ -290,7 +290,7 @@ export function ScaleOptions<T extends string | number>({
               layout === "scale" ? "sm:flex-col sm:justify-center sm:text-center" : ""
             } ${
               selected
-                ? "border-v3-light bg-v3-light/10 text-v3-bone shadow-[0_0_30px_-12px_rgba(232,196,138,0.8)]"
+                ? "border-v3-light bg-v3-light/10 text-v3-bone shadow-[0_0_30px_-12px_rgb(var(--v3-glow)/0.8)]"
                 : "border-v3-line bg-v3-raise text-v3-soft hover:border-v3-mute hover:text-v3-bone"
             }`}
           >
@@ -349,7 +349,7 @@ export function ToolField({ label, error, hint, id, className, ...rest }: FieldP
 export function ToolPanel({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <StepIn
-      className={`rounded-3xl border border-v3-line/80 bg-v3-raise p-7 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)] md:p-10 ${className ?? ""}`}
+      className={`rounded-3xl border border-v3-line/80 bg-v3-raise p-7 shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.35)] md:p-10 ${className ?? ""}`}
     >
       {children}
     </StepIn>
@@ -486,7 +486,7 @@ export function ResultList({
               aria-hidden
               className={`mt-2 h-2 w-2 shrink-0 rounded-full ${
                 tone === "strength"
-                  ? "bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]"
+                  ? "bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]"
                   : tone === "risk"
                     ? "border border-v3-light"
                     : "bg-v3-mute"

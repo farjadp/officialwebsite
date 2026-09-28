@@ -373,7 +373,7 @@ export function ContactPage({ locale }: { locale: Locale }) {
                         {t.direct.email}
                       </a>
                       <span className="flex items-center gap-2 text-sm text-v3-mute">
-                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)] motion-safe:animate-pulse" />
+                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)] motion-safe:animate-pulse" />
                         {t.direct.responds}
                       </span>
                     </div>

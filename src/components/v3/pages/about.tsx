@@ -311,10 +311,10 @@ export function AboutPage({ locale }: { locale: Locale }) {
               sizes="(max-width: 1024px) 100vw, 40vw"
               className="v3-drift object-cover object-[center_30%] grayscale"
             />
-            <div aria-hidden className="absolute inset-0 bg-linear-to-t from-v3-ink/90 via-transparent to-transparent" />
-            <figcaption className="absolute bottom-6 start-6 flex flex-col gap-1 rounded-2xl border border-v3-line bg-v3-ink/85 px-5 py-4 backdrop-blur-sm">
-              <span className="text-sm text-v3-light">{t.hero.basedLabel}</span>
-              <span className="font-v3-display text-xl text-v3-bone">{t.hero.basedValue}</span>
+            <div aria-hidden className="absolute inset-0 bg-linear-to-t from-v3-media/90 via-transparent to-transparent" />
+            <figcaption className="absolute bottom-6 start-6 flex flex-col gap-1 rounded-2xl border border-v3-media-line bg-v3-media/85 px-5 py-4 backdrop-blur-sm">
+              <span className="text-sm text-v3-media-light">{t.hero.basedLabel}</span>
+              <span className="font-v3-display text-xl text-v3-media-bone">{t.hero.basedValue}</span>
             </figcaption>
           </figure>
         }

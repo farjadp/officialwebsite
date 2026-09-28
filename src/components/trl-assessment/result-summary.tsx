@@ -81,7 +81,7 @@ export function ResultSummary({ result, onReset, locale = "en" }: ResultSummaryP
                                             aria-hidden
                                             className={`mt-1 grid size-7 shrink-0 place-items-center rounded-full font-v3-display text-sm tabular-nums ${
                                                 lr.achieved
-                                                    ? "bg-v3-light text-v3-ink shadow-[0_0_12px_rgba(232,196,138,0.6)]"
+                                                    ? "bg-v3-light text-v3-ink shadow-[0_0_12px_rgb(var(--v3-glow)/0.6)]"
                                                     : "border border-v3-line text-v3-mute"
                                             }`}
                                         >

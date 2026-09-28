@@ -339,7 +339,7 @@ export function EuropeStacker({ locale }: { locale: Locale }) {
             <Fig className="text-v3-light">{usd(TOTAL_CAP, locale, 1)}</Fig>
           </div>
           <motion.div
-            className="h-10 rounded-e-lg bg-v3-light shadow-[0_0_40px_-12px_rgba(232,196,138,0.7)]"
+            className="h-10 rounded-e-lg bg-v3-light shadow-[0_0_40px_-12px_rgb(var(--v3-glow)/0.7)]"
             initial={{ width: 0 }}
             whileInView={{ width: w(TOTAL_CAP) }}
             viewport={{ once: true }}
@@ -463,7 +463,7 @@ export function NvidiaRace({ locale }: { locale: Locale }) {
       <div className="relative pb-16 pt-2">
         <div className="relative h-14 overflow-hidden rounded-xl bg-v3-raise">
           <motion.div
-            className="h-full rounded-e-xl bg-v3-light shadow-[0_0_50px_-10px_rgba(232,196,138,0.8)]"
+            className="h-full rounded-e-xl bg-v3-light shadow-[0_0_50px_-10px_rgb(var(--v3-glow)/0.8)]"
             animate={{ width: `${(cap / max) * 100}%` }}
             transition={{ duration: reduce ? 0 : 0.9, ease: ARRIVE }}
           />
@@ -651,7 +651,7 @@ export function LayerMap({ locale }: { locale: Locale }) {
               animate={{ opacity: holds ? 1 : 0.28, x: 0 }}
               transition={{ duration: 0.35 }}
               className={`grid grid-cols-[2.5rem_1fr] items-center gap-x-4 gap-y-2 rounded-2xl border px-5 py-4 md:grid-cols-[3rem_12rem_1fr] ${
-                co && holds ? "border-v3-light/60 bg-v3-raise shadow-[0_0_40px_-24px_rgba(232,196,138,0.7)]" : "border-v3-line/70"
+                co && holds ? "border-v3-light/60 bg-v3-raise shadow-[0_0_40px_-24px_rgb(var(--v3-glow)/0.7)]" : "border-v3-line/70"
               }`}
             >
               <span className="text-sm tabular-nums text-v3-mute">{num(idx, locale).padStart(2, locale === "fa" ? "۰" : "0")}</span>

@@ -82,7 +82,7 @@ export function ResultSummary({ result, onReset, locale = "en" }: ResultSummaryP
 
 
             {/* ── Recommended Next Steps ──────────────────────────────────────── */}
-            <section className="flex flex-col gap-8 rounded-3xl border border-v3-line/80 bg-v3-raise p-7 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)] md:p-10">
+            <section className="flex flex-col gap-8 rounded-3xl border border-v3-line/80 bg-v3-raise p-7 shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.35)] md:p-10">
                 <div className="flex flex-col gap-2">
                     <h3 className="font-v3-display text-3xl font-light leading-tight rtl:leading-snug">{ui.nextStepsTitle}</h3>
                     <p className="max-w-xl leading-relaxed text-v3-soft rtl:leading-loose">{ui.nextStepsBody}</p>

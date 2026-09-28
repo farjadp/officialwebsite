@@ -93,7 +93,7 @@ export function ResultSummary({
 
     return (
         <div className="flex flex-col gap-8">
-            <StepIn className={`${panel} shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)]`}>
+            <StepIn className={`${panel} shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.35)]`}>
                 <div className="grid items-center gap-10 md:grid-cols-[auto_1fr]">
                     <ScoreRing locale={locale} score={result.robustnessIndex} />
                     <div className="flex flex-col items-start gap-4">

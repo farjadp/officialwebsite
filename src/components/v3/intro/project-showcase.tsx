@@ -258,7 +258,7 @@ function TiltCard({ project, onOpen }: { project: Project; onOpen: () => void })
   const rotateY = useSpring(useTransform(mx, [0, 1], [-6, 6]), { stiffness: 200, damping: 20 })
   const glowX = useTransform(mx, (v) => `${v * 100}%`)
   const glowY = useTransform(my, (v) => `${v * 100}%`)
-  const glow = useTransform([glowX, glowY], ([x, y]) => `radial-gradient(420px circle at ${x} ${y}, rgba(232,196,138,0.16), transparent 60%)`)
+  const glow = useTransform([glowX, glowY], ([x, y]) => `radial-gradient(420px circle at ${x} ${y}, rgb(var(--v3-glow)/0.16), transparent 60%)`)
 
   const move = (e: PointerEvent<HTMLButtonElement>) => {
     if (reduce) return

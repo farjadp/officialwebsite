@@ -185,12 +185,12 @@ function V3Slider({
                 aria-valuetext={`${value}%`}
                 className="relative h-6 w-full cursor-pointer appearance-none bg-transparent focus:outline-none disabled:cursor-not-allowed
                     [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
-                    [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-v3-ink [&::-webkit-slider-thumb]:bg-v3-bone [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgba(232,196,138,0.5)] [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:duration-150
+                    [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-v3-ink [&::-webkit-slider-thumb]:bg-v3-bone [&::-webkit-slider-thumb]:shadow-[0_0_12px_rgb(var(--v3-glow)/0.5)] [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:duration-150
                     active:[&::-webkit-slider-thumb]:scale-125 active:[&::-webkit-slider-thumb]:bg-v3-light
                     focus-visible:[&::-webkit-slider-thumb]:ring-4 focus-visible:[&::-webkit-slider-thumb]:ring-v3-light/50
                     disabled:[&::-webkit-slider-thumb]:bg-v3-mute disabled:[&::-webkit-slider-thumb]:shadow-none
                     [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
-                    [&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-v3-ink [&::-moz-range-thumb]:bg-v3-bone [&::-moz-range-thumb]:shadow-[0_0_12px_rgba(232,196,138,0.5)]
+                    [&::-moz-range-thumb]:size-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-v3-ink [&::-moz-range-thumb]:bg-v3-bone [&::-moz-range-thumb]:shadow-[0_0_12px_rgb(var(--v3-glow)/0.5)]
                     active:[&::-moz-range-thumb]:bg-v3-light
                     focus-visible:[&::-moz-range-thumb]:ring-4 focus-visible:[&::-moz-range-thumb]:ring-v3-light/50
                     disabled:[&::-moz-range-thumb]:bg-v3-mute"
@@ -243,25 +243,25 @@ export default function ImpossibleTrinitySimulator({ locale = "en" }: { locale?:
     let totalPillClass = '';
 
     if (total > DANGER_ZONE) {
-        pressureBarClass += 'bg-v3-light shadow-[0_0_14px_rgba(232,196,138,0.9)]';
+        pressureBarClass += 'bg-v3-light shadow-[0_0_14px_rgb(var(--v3-glow)/0.9)]';
         statusBoxClass += 'bg-v3-light/10 border-v3-light';
         statusText = t.statusCritical;
         statusTextClass += 'text-v3-light font-bold';
-        mainCardClass += 'border-v3-light shadow-[0_0_60px_-10px_rgba(232,196,138,0.45)] scale-[1.02] ';
+        mainCardClass += 'border-v3-light shadow-[0_0_60px_-10px_rgb(var(--v3-glow)/0.45)] scale-[1.02] ';
         totalPillClass = 'bg-v3-light text-v3-ink';
     } else if (total > WARNING_ZONE) {
         pressureBarClass += 'bg-v3-light/70';
         statusBoxClass += 'bg-v3-light/5 border-v3-light/40';
         statusText = t.statusWarning;
         statusTextClass += 'text-v3-light';
-        mainCardClass += 'border-v3-light/40 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)] ';
+        mainCardClass += 'border-v3-light/40 shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.35)] ';
         totalPillClass = 'border border-v3-light/50 text-v3-light';
     } else {
         pressureBarClass += 'bg-v3-soft';
         statusBoxClass += 'bg-v3-ink border-v3-line';
         statusText = t.statusStable;
         statusTextClass += 'text-v3-soft';
-        mainCardClass += 'border-v3-line/80 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.2)] ';
+        mainCardClass += 'border-v3-line/80 shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.2)] ';
         totalPillClass = 'border border-v3-line text-v3-soft';
     }
 
@@ -311,7 +311,7 @@ export default function ImpossibleTrinitySimulator({ locale = "en" }: { locale?:
                                     exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.98 }}
                                     transition={{ duration: 0.3, ease: ARRIVE }}
                                 >
-                                    <AlertTriangle className="w-20 h-20 text-v3-light mb-6 drop-shadow-[0_0_15px_rgba(232,196,138,0.8)]" aria-hidden />
+                                    <AlertTriangle className="w-20 h-20 text-v3-light mb-6 drop-shadow-[0_0_15px_rgb(var(--v3-glow)/0.8)]" aria-hidden />
                                     <h2 id="trinity-crash-title" className="text-4xl md:text-5xl font-v3-display font-light text-v3-bone mb-4 tracking-tight">
                                         {t.crashTitle}
                                     </h2>

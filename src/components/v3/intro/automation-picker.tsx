@@ -131,7 +131,7 @@ export function AutomationPicker() {
               <span
                 aria-hidden
                 className={`hidden h-2 w-2 rounded-full transition-all lg:block ${
-                  i === tradeIdx ? "bg-v3-light shadow-[0_0_12px_rgba(232,196,138,0.9)]" : "bg-v3-line"
+                  i === tradeIdx ? "bg-v3-light shadow-[0_0_12px_rgb(var(--v3-glow)/0.9)]" : "bg-v3-line"
                 }`}
               />
             </button>
@@ -170,7 +170,7 @@ export function AutomationPicker() {
                     {!last && (
                       <span aria-hidden className="absolute bottom-0 start-5 top-11 w-px bg-v3-line">
                         <motion.span
-                          className="absolute inset-0 origin-top bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]"
+                          className="absolute inset-0 origin-top bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]"
                           initial={false}
                           animate={{ scaleY: reduce || i < step ? 1 : 0 }}
                           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -187,9 +187,9 @@ export function AutomationPicker() {
                       <motion.span
                         className="relative z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full border text-sm"
                         animate={{
-                          borderColor: on ? "rgba(232,196,138,0.9)" : "rgba(51,48,44,1)",
-                          backgroundColor: current ? "rgba(232,196,138,1)" : "rgba(20,19,18,1)",
-                          color: current ? "rgba(20,19,18,1)" : on ? "rgba(232,196,138,1)" : "rgba(163,156,144,1)",
+                          borderColor: on ? "rgb(var(--v3-glow)/0.9)" : "rgba(51,48,44,1)",
+                          backgroundColor: current ? "rgb(var(--v3-glow)/1)" : "rgba(20,19,18,1)",
+                          color: current ? "rgba(20,19,18,1)" : on ? "rgb(var(--v3-glow)/1)" : "rgba(163,156,144,1)",
                           scale: current ? 1.08 : 1,
                         }}
                         transition={{ duration: 0.35 }}

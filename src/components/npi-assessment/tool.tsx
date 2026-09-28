@@ -67,7 +67,7 @@ function MultiOptions({
             onClick={() => onToggle(opt)}
             className={`flex min-h-14 items-center gap-3 rounded-xl border px-4 py-3 text-start text-sm font-medium leading-snug transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-v3-light ${
               isSelected
-                ? 'border-v3-light bg-v3-light/10 text-v3-bone shadow-[0_0_30px_-12px_rgba(232,196,138,0.8)]'
+                ? 'border-v3-light bg-v3-light/10 text-v3-bone shadow-[0_0_30px_-12px_rgb(var(--v3-glow)/0.8)]'
                 : blocked
                   ? 'cursor-not-allowed border-v3-line bg-v3-raise text-v3-mute'
                   : 'border-v3-line bg-v3-raise text-v3-soft hover:border-v3-mute hover:text-v3-bone'

@@ -26,6 +26,7 @@ import {
 } from "framer-motion"
 import { ChevronDown, Menu, UserRound, X } from "lucide-react"
 import { useEffect, useId, useRef, useState, type ReactNode } from "react"
+import { ThemeToggle } from "./theme-toggle"
 import {
     NAV,
     ROUTES,
@@ -137,7 +138,7 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                             width={571}
                             height={556}
                             priority
-                            className="h-9 w-auto shrink-0 transition-transform duration-700 group-hover:rotate-[8deg]"
+                            className="v3-logo h-9 w-auto shrink-0 transition-transform duration-700 group-hover:rotate-[8deg]"
                         />
                         <span className="flex flex-col">
                             <span className="font-v3-display text-[26px] leading-none tracking-[-0.01em] rtl:text-[22px] rtl:font-medium">
@@ -167,6 +168,7 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                         >
                             {t.switchTo}
                         </a>
+                        <ThemeToggle locale={locale} />
                         <div className="hidden xl:block">
                             <Dropdown
                                 label={t.portal}
@@ -198,7 +200,7 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                 {/* How far down the page you are: a thin line of light. */}
                 <motion.div
                     aria-hidden
-                    className="absolute inset-x-0 -bottom-px h-px origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+                    className="absolute inset-x-0 -bottom-px h-px origin-left bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.7)] rtl:origin-right"
                     style={{ scaleX: reduce ? 0 : progress }}
                 />
             </motion.header>

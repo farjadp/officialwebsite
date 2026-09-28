@@ -127,10 +127,10 @@ export function ServiceCta({ locale = "en" }: { locale?: Locale }) {
         <div className="grid gap-5 lg:grid-cols-12">
           {/* ── Booking ─────────────────────────────────────────────── */}
           <Reveal delay={0.08} className="lg:col-span-5">
-            <div className="relative flex h-full flex-col justify-between gap-12 rounded-2xl border border-v3-light/50 bg-v3-raise p-7 shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)] md:p-10">
+            <div className="relative flex h-full flex-col justify-between gap-12 rounded-2xl border border-v3-light/50 bg-v3-raise p-7 shadow-[0_0_60px_-30px_rgb(var(--v3-glow)/0.5)] md:p-10">
               <div className="flex flex-col gap-5">
                 <span className="inline-flex items-center gap-2 self-start rounded-full border border-v3-light/50 px-3 py-1.5 text-[13px] text-v3-light">
-                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" />
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]" />
                   {t.availableNow}
                 </span>
                 <Headline as="h3" size="card">

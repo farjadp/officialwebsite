@@ -12,14 +12,25 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-dana), var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  /* Home v3 "Light": warm charcoal, bone, and the colour of the light. */
-  --color-v3-ink: #141312;
-  --color-v3-raise: #1f1d1b;
-  --color-v3-line: #33302c;
-  --color-v3-mute: #a39c90;
-  --color-v3-soft: #cfc8bb;
-  --color-v3-bone: #ede8df;
-  --color-v3-light: #e8c48a;
+  /* v3 "Light". The names are semantic, not literal: `ink` is the ground and
+     `bone` is the strongest text, so both themes swap their real values and
+     every component follows without touching a class. Defined below. */
+  --color-v3-ink: var(--v3-ink);
+  --color-v3-raise: var(--v3-raise);
+  --color-v3-line: var(--v3-line);
+  --color-v3-mute: var(--v3-mute);
+  --color-v3-soft: var(--v3-soft);
+  --color-v3-bone: var(--v3-bone);
+  --color-v3-light: var(--v3-accent);
+  /* Fixed in both themes: chrome laid over photography, which is always dark. */
+  --color-v3-media: #141312;
+  --color-v3-media-bone: #ede8df;
+  --color-v3-media-mute: #a39c90;
+  --color-v3-media-line: #33302c;
+  --color-v3-media-light: #e8c48a;
+  /* Fixed in both themes: the frame behind a third-party embed that is
+     always white, so the theme must not turn it black. */
+  --color-v3-embed: #ede8df;
   --font-v3-display: var(--v3-display, var(--font-newsreader)), serif;
   --font-v3-body: var(--v3-body, var(--font-instrument)), sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -62,6 +73,40 @@
   --color-iran-mashi: #D4AF37;
   --color-iran-hennaei: #A52A2A;
   --color-iran-khormaei: #8B4513;
+}
+
+/* ─── v3 palettes ────────────────────────────────────────────────────────
+   Dark is the design's own identity and stays the default; light is the
+   opt-in. `--v3-glow` is the accent as bare channels, so the gold halos can
+   be written rgb(var(--v3-glow)/.8) and follow the theme too. */
+:root,
+:root[data-theme="dark"] {
+  --v3-ink: #141312;
+  --v3-raise: #1f1d1b;
+  --v3-line: #33302c;
+  --v3-mute: #a39c90;
+  --v3-soft: #cfc8bb;
+  --v3-bone: #ede8df;
+  --v3-accent: #e8c48a;
+  --v3-glow: 232 196 138;
+  --v3-sheen: #2b2825;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --v3-ink: #faf8f3;
+  --v3-raise: #f2ecdf;
+  --v3-line: #ddd4c2;
+  --v3-mute: #6d6559;
+  --v3-soft: #4a443b;
+  --v3-bone: #17150f;
+  /* The pale gold reads at 1.4:1 on paper, so light gets a burnt ochre. It is
+     this dark because it must also clear 4.5:1 on --v3-raise, not just on the
+     ground, and stay legible under the paper-coloured button text. */
+  --v3-accent: #8d5d16;
+  --v3-glow: 141 93 22;
+  --v3-sheen: #d8d0c0;
+  color-scheme: light;
 }
 
 :root {
@@ -219,7 +264,7 @@
 }
 
 .v3-wordmark {
-  background-image: linear-gradient(100deg, #2b2825 0%, #2b2825 42%, #e8c48a 50%, #2b2825 58%, #2b2825 100%);
+  background-image: linear-gradient(100deg, var(--v3-sheen) 0%, var(--v3-sheen) 42%, var(--v3-accent) 50%, var(--v3-sheen) 58%, var(--v3-sheen) 100%);
   background-size: 250% 100%;
   background-position: 120% 0;
   -webkit-background-clip: text;
@@ -234,6 +279,13 @@
   transition: top 450ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 html[data-header-hidden] .v3-under-header { top: 0; }
+
+/* The logo mark is a light-on-transparent PNG with no dark counterpart.
+   On paper it is nearly invisible, so light mode darkens it enough to read
+   while keeping the gold of the swirls. */
+:root[data-theme="light"] .v3-logo {
+  filter: brightness(0.45) saturate(1.5);
+}
 
 .v3-beam { animation: v3-beam 16s ease-in-out infinite; }
 [dir="rtl"] .v3-beam { animation-direction: reverse; }

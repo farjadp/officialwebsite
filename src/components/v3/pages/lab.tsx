@@ -570,7 +570,7 @@ export function LabPage({ locale }: { locale: Locale }) {
                         <CountUp to={t.channel.poll.yesPct} prefix="٪" locale={locale} className="font-semibold text-v3-light" />
                       </div>
                       <div className="h-1.5 overflow-hidden rounded-full bg-v3-line">
-                        <div className="h-full w-[71%] rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.6)]" />
+                        <div className="h-full w-[71%] rounded-full bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.6)]" />
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">

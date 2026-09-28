@@ -334,7 +334,7 @@ export function IndustryFlows() {
                           s.you ? "rounded-xl" : ""
                         }`}
                         animate={{
-                          borderColor: on ? (s.you ? "#ede8df" : "rgba(232,196,138,0.9)") : "#33302c",
+                          borderColor: on ? (s.you ? "#ede8df" : "rgb(var(--v3-glow)/0.9)") : "#33302c",
                           backgroundColor: current ? (s.you ? "#ede8df" : "#e8c48a") : "#141312",
                           color: current ? "#141312" : on ? (s.you ? "#ede8df" : "#e8c48a") : "#a39c90",
                           scale: current ? 1.08 : 1,
@@ -377,7 +377,7 @@ export function IndustryFlows() {
 
           {/* what comes out */}
           <div className="flex flex-col gap-6 lg:col-span-5">
-            <div className="rounded-3xl border border-v3-light/50 bg-v3-raise p-6 shadow-[0_0_80px_-30px_rgba(232,196,138,0.45)] md:p-8">
+            <div className="rounded-3xl border border-v3-light/50 bg-v3-raise p-6 shadow-[0_0_80px_-30px_rgb(var(--v3-glow)/0.45)] md:p-8">
               {ind.key === "architect" ? <MassingOptions step={step} /> : <Outputs items={ind.outputs} />}
             </div>
             <div className="flex flex-col gap-3 rounded-3xl border border-v3-line p-6 md:p-8">

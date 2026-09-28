@@ -184,7 +184,7 @@ export function ScorecardWidget({ locale = "en" }: { locale?: ScorecardLocale })
                     aria-valuenow={Math.round(progress)}
                 >
                     <motion.div
-                        className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+                        className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.7)] rtl:origin-right"
                         initial={false}
                         animate={{ scaleX: progress / 100 }}
                         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

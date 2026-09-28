@@ -631,7 +631,7 @@ export function ResumePage({ locale }: { locale: Locale }) {
           <aside className="flex flex-col gap-6 print:gap-4">
             <Reveal>
               <div className="group/photo flex flex-col items-center gap-4 rounded-2xl border border-v3-line/70 bg-v3-raise/40 p-6 transition-colors duration-500 hover:border-v3-light/40 print:gap-2 print:rounded-none print:border-0 print:bg-white print:p-0">
-                <div className="flex h-28 w-28 items-center justify-center rounded-full border border-v3-light/40 bg-v3-ink shadow-[0_0_60px_-20px_rgba(232,196,138,0.5)] transition-transform duration-500 group-hover/photo:-translate-y-0.5 print:h-16 print:w-16 print:border-neutral-400 print:bg-white print:shadow-none">
+                <div className="flex h-28 w-28 items-center justify-center rounded-full border border-v3-light/40 bg-v3-ink shadow-[0_0_60px_-20px_rgb(var(--v3-glow)/0.5)] transition-transform duration-500 group-hover/photo:-translate-y-0.5 print:h-16 print:w-16 print:border-neutral-400 print:bg-white print:shadow-none">
                   <span className={`font-v3-display text-5xl font-light text-v3-light print:text-3xl ${P_INK}`}>F</span>
                 </div>
                 <p className={`text-center text-sm tracking-wide text-v3-mute print:text-[10px] ${P_MUTE}`}>{t.photoCaption}</p>
@@ -722,7 +722,7 @@ export function ResumePage({ locale }: { locale: Locale }) {
                         </span>
                         <span
                           aria-hidden
-                          className="absolute start-[4.5rem] top-8 h-2 w-2 -translate-x-1/2 rounded-full bg-v3-ink ring-1 ring-v3-light transition-shadow duration-500 group-first/job:top-2 group-hover/job:shadow-[0_0_12px_rgba(232,196,138,0.8)] md:start-[7.5rem] rtl:translate-x-1/2 print:hidden"
+                          className="absolute start-[4.5rem] top-8 h-2 w-2 -translate-x-1/2 rounded-full bg-v3-ink ring-1 ring-v3-light transition-shadow duration-500 group-first/job:top-2 group-hover/job:shadow-[0_0_12px_rgb(var(--v3-glow)/0.8)] md:start-[7.5rem] rtl:translate-x-1/2 print:hidden"
                         />
                         <Reveal delay={Math.min(i, 3) * 0.04} className="flex min-w-0 flex-col gap-3 ps-4 md:ps-8 print:gap-1.5 print:ps-0">
                           <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">

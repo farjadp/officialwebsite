@@ -71,7 +71,7 @@ export function HomeV3({ locale, posts = [] }: { locale: Locale; posts?: HomePos
             <div className="absolute inset-0 bg-linear-to-b from-v3-ink via-transparent to-transparent lg:bg-linear-to-r lg:via-transparent rtl:lg:bg-linear-to-l" />
             <Link
               href={t.labBadge.href}
-              className="group absolute bottom-8 start-5 flex flex-col gap-1.5 rounded-2xl border border-v3-line bg-v3-ink/85 px-5 py-4 text-sm backdrop-blur-sm transition-colors hover:border-v3-light md:start-10 lg:bottom-10 lg:start-12"
+              className="group absolute bottom-8 start-5 flex flex-col gap-1.5 rounded-2xl border border-v3-media-line bg-v3-media/85 px-5 py-4 text-sm text-v3-media-bone backdrop-blur-sm transition-colors hover:border-v3-light md:start-10 lg:bottom-10 lg:start-12"
             >
               <span className="flex items-center gap-2.5 font-semibold">
                 <span className="relative flex h-2 w-2" aria-hidden>
@@ -81,7 +81,7 @@ export function HomeV3({ locale, posts = [] }: { locale: Locale; posts?: HomePos
                 {t.labBadge.title}
                 <Arrow locale={locale} className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
               </span>
-              <span className="text-v3-mute">{t.labBadge.detail}</span>
+              <span className="text-v3-media-mute">{t.labBadge.detail}</span>
             </Link>
           </div>
         </div>

@@ -122,7 +122,7 @@ export function ArticleSidebar({
                     aria-valuenow={readingProgress}
                 >
                     <motion.div
-                        className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+                        className="absolute inset-y-0 start-0 w-full origin-left bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.7)] rtl:origin-right"
                         initial={false}
                         animate={{ scaleX: readingProgress / 100 }}
                         transition={reduce ? { duration: 0 } : { duration: 0.5, ease: ARRIVE }}

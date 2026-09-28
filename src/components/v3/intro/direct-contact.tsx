@@ -163,7 +163,7 @@ function PrimaryCard({
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={`group relative flex flex-col gap-5 overflow-hidden rounded-3xl border p-7 transition-colors duration-500 ${
         highlight
-          ? "border-v3-light/70 bg-v3-raise shadow-[0_0_80px_-30px_rgba(232,196,138,0.55)]"
+          ? "border-v3-light/70 bg-v3-raise shadow-[0_0_80px_-30px_rgb(var(--v3-glow)/0.55)]"
           : "border-v3-line hover:border-v3-light/50"
       }`}
     >

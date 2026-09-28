@@ -135,7 +135,7 @@ export function LegalPage({ doc, locale }: { doc: LegalDocument; locale: "en" | 
                 <Reveal>
                   <section
                     id={CONTACT_ID}
-                    className="mt-12 scroll-mt-28 rounded-2xl border border-v3-light/50 bg-v3-raise p-7 shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)] md:p-8"
+                    className="mt-12 scroll-mt-28 rounded-2xl border border-v3-light/50 bg-v3-raise p-7 shadow-[0_0_60px_-30px_rgb(var(--v3-glow)/0.5)] md:p-8"
                   >
                     <Headline as="h2" size="card" className="mb-4 text-v3-bone">
                       {doc.contactHeading}

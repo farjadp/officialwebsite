@@ -591,7 +591,7 @@ export function FounderAdvisory({ locale }: { locale: Locale }) {
           {t.diagnostic.questions.map((q, i) => (
             <Reveal key={q} delay={i * 0.08}>
               <Card tone="raised" className={LIFT}>
-                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" />
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]" />
                 <p className="text-lg leading-relaxed text-v3-bone rtl:leading-loose">{q}</p>
               </Card>
             </Reveal>

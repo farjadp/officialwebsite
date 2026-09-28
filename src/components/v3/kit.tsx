@@ -229,7 +229,7 @@ export function Card({
   const tones = {
     plain: "border border-v3-line/80",
     raised: "border border-v3-line/80 bg-v3-raise",
-    lit: "border border-v3-light/50 bg-v3-raise shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)]",
+    lit: "border border-v3-light/50 bg-v3-raise shadow-[0_0_60px_-30px_rgb(var(--v3-glow)/0.5)]",
   }
   const base = `relative flex h-full flex-col gap-4 rounded-2xl p-7 md:p-8 ${tones[tone]} ${className ?? ""}`
   if (!href) return <div className={base}>{children}</div>
@@ -257,7 +257,7 @@ export function Checklist({ items, tone = "yes" }: { items: ReactNode[]; tone?: 
         <li key={i} className="flex items-start gap-4 border-b border-v3-line/60 py-4 last:border-b-0">
           <span
             aria-hidden
-            className={`mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full ${tone === "yes" ? "bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" : "bg-v3-mute/60"}`}
+            className={`mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full ${tone === "yes" ? "bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]" : "bg-v3-mute/60"}`}
           />
           <span className={`text-lg leading-relaxed rtl:leading-loose ${tone === "yes" ? "text-v3-bone" : "text-v3-mute"}`}>{item}</span>
         </li>

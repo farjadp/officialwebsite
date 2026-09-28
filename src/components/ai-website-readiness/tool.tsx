@@ -44,7 +44,7 @@ const statusConfig: Record<
   passing: {
     icon: Check,
     className: "border-v3-light/60 text-v3-light",
-    iconClass: "bg-v3-light text-v3-ink shadow-[0_0_12px_rgba(232,196,138,0.5)]",
+    iconClass: "bg-v3-light text-v3-ink shadow-[0_0_12px_rgb(var(--v3-glow)/0.5)]",
   },
   attention: {
     icon: CircleAlert,
@@ -176,7 +176,7 @@ export default function AiWebsiteReadinessTool({
         <StepIn delay={0.3}>
           <form
             onSubmit={scan}
-            className="mt-12 flex flex-col gap-4 rounded-3xl border border-v3-line/80 p-5 shadow-[0_40px_120px_-60px_rgba(232,196,138,0.35)] md:flex-row md:items-end md:p-6"
+            className="mt-12 flex flex-col gap-4 rounded-3xl border border-v3-line/80 p-5 shadow-[0_40px_120px_-60px_rgb(var(--v3-glow)/0.35)] md:flex-row md:items-end md:p-6"
           >
             <div className="min-w-0 flex-1">
               <ToolField
@@ -237,7 +237,7 @@ export default function AiWebsiteReadinessTool({
               </div>
             </div>
             <div className="mt-7 h-px overflow-hidden bg-v3-line">
-              <div className="h-full w-2/3 bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] motion-safe:animate-pulse" />
+              <div className="h-full w-2/3 bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.7)] motion-safe:animate-pulse" />
             </div>
           </div>
         </StepIn>
@@ -302,7 +302,7 @@ export default function AiWebsiteReadinessTool({
             </StepIn>
 
             {!!priorities.length && (
-              <StepIn delay={0.1} className="rounded-3xl border border-v3-light/40 p-7 shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)] md:p-9">
+              <StepIn delay={0.1} className="rounded-3xl border border-v3-light/40 p-7 shadow-[0_0_60px_-30px_rgb(var(--v3-glow)/0.5)] md:p-9">
                 <div className="mb-6 flex items-center gap-3">
                   <div className="grid size-10 place-items-center rounded-xl bg-v3-light text-v3-ink">
                     <Sparkles className="size-5" aria-hidden />

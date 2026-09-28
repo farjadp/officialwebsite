@@ -447,7 +447,7 @@ export default function BusinessModelStressTestTool({
                                                     key={factor.id}
                                                     className={`relative rounded-2xl border p-5 transition-all duration-300 ${
                                                         isSelected
-                                                            ? "border-v3-light bg-v3-light/10 shadow-[0_0_30px_-12px_rgba(232,196,138,0.8)]"
+                                                            ? "border-v3-light bg-v3-light/10 shadow-[0_0_30px_-12px_rgb(var(--v3-glow)/0.8)]"
                                                             : "border-v3-line bg-v3-raise hover:border-v3-mute"
                                                     } ${isFull ? "opacity-50" : ""}`}
                                                 >

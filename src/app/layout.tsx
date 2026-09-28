@@ -147,7 +147,20 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} data-theme="dark" suppressHydrationWarning>
+      <head>
+        {/*
+          Runs before first paint so a visitor who chose light never sees the
+          dark page flash first. Deliberately NOT reading the system theme:
+          the dark design is the site's identity, and light is an opt-in the
+          visitor makes once. Kept inline and tiny for that reason.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('v3-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}`,
+          }}
+        />
+      </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable, GeistMono.variable, danaFont.variable, newsreader.variable, instrumentSans.variable)}>
         <script
           type="application/ld+json"

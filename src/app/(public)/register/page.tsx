@@ -25,7 +25,7 @@ export default function RegisterPage() {
                 <Beam />
                 <div className="relative z-10 flex flex-col gap-6">
                     <span className="inline-flex w-fit items-center gap-2 rounded-full border border-v3-line px-3 py-1.5 text-[13px] text-v3-soft">
-                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" />
+                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]" />
                         farjadp.info
                     </span>
                     <h2 className="font-v3-display text-4xl font-light leading-[1.05] tracking-[-0.015em] md:text-5xl rtl:leading-[1.4] rtl:tracking-normal">

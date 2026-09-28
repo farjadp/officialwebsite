@@ -18,7 +18,7 @@ export function ReadingProgress() {
   return (
     <motion.div
       aria-hidden
-      className="v3-under-header pointer-events-none fixed inset-x-0 z-40 h-px origin-left bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.7)] rtl:origin-right"
+      className="v3-under-header pointer-events-none fixed inset-x-0 z-40 h-px origin-left bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.7)] rtl:origin-right"
       style={{ scaleX }}
     />
   )

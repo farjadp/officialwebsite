@@ -147,7 +147,7 @@ export function PortfolioIndex({ locale }: { locale: Locale }) {
             {journey.map((s) => {
               const dot =
                 s.status === "Active"
-                  ? "bg-v3-light shadow-[0_0_12px_rgba(232,196,138,0.8)]"
+                  ? "bg-v3-light shadow-[0_0_12px_rgb(var(--v3-glow)/0.8)]"
                   : s.status === "Dead" || s.status === "Done"
                     ? "bg-v3-ink ring-1 ring-v3-mute"
                     : "bg-v3-bone"

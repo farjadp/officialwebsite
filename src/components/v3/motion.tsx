@@ -205,7 +205,7 @@ export function Spotlight({ className }: { className?: string }) {
     <div
       ref={ref}
       aria-hidden
-      className={`pointer-events-none absolute inset-0 opacity-[var(--o,0)] transition-opacity duration-700 [background:radial-gradient(420px_circle_at_var(--x,50%)_var(--y,50%),rgba(232,196,138,0.08),transparent_70%)] ${className ?? ""}`}
+      className={`pointer-events-none absolute inset-0 opacity-[var(--o,0)] transition-opacity duration-700 [background:radial-gradient(420px_circle_at_var(--x,50%)_var(--y,50%),rgb(var(--v3-glow)/0.08),transparent_70%)] ${className ?? ""}`}
     />
   )
 }
@@ -298,7 +298,7 @@ export function LightRule({ children, className }: { children: ReactNode; classN
       <div className="absolute inset-y-0 start-[4.5rem] md:start-[7.5rem]" aria-hidden>
         <div className="absolute inset-0 w-px bg-v3-line" />
         <motion.div
-          className="absolute inset-0 w-px origin-top bg-v3-light shadow-[0_0_12px_rgba(232,196,138,0.6)]"
+          className="absolute inset-0 w-px origin-top bg-v3-light shadow-[0_0_12px_rgb(var(--v3-glow)/0.6)]"
           style={{ scaleY: reduce ? 1 : scaleY }}
         />
       </div>

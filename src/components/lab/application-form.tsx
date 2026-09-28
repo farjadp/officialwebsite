@@ -213,7 +213,7 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
     return (
       <div
         role="status"
-        className="flex flex-col items-center gap-6 rounded-2xl border border-v3-light/50 bg-v3-raise p-10 text-center shadow-[0_0_60px_-30px_rgba(232,196,138,0.5)] md:p-14"
+        className="flex flex-col items-center gap-6 rounded-2xl border border-v3-light/50 bg-v3-raise p-10 text-center shadow-[0_0_60px_-30px_rgb(var(--v3-glow)/0.5)] md:p-14"
       >
         <div className="flex h-16 w-16 items-center justify-center rounded-full border border-v3-light/60">
           <Check className="h-8 w-8 text-v3-light" aria-hidden />
@@ -309,7 +309,7 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
                 onClick={() => setForm({ ...form, stage: s.value })}
                 className={`flex min-h-16 flex-col gap-1 rounded-xl border p-4 text-start transition-all duration-300 hover:-translate-y-0.5 ${FOCUS}
                   ${selected
-                    ? "border-v3-light bg-v3-light/10 shadow-[0_0_40px_-24px_rgba(232,196,138,0.7)]"
+                    ? "border-v3-light bg-v3-light/10 shadow-[0_0_40px_-24px_rgb(var(--v3-glow)/0.7)]"
                     : errors.stage
                       ? "border-v3-light/60 bg-v3-raise hover:border-v3-light"
                       : "border-v3-line bg-v3-raise hover:border-v3-mute/60"}`}
@@ -320,7 +320,7 @@ export function ApplicationForm({ locale }: { locale: Locale }) {
                   </span>
                   <span
                     aria-hidden
-                    className={`h-2 w-2 shrink-0 rounded-full transition-colors ${selected ? "bg-v3-light shadow-[0_0_10px_rgba(232,196,138,0.8)]" : "bg-v3-line"}`}
+                    className={`h-2 w-2 shrink-0 rounded-full transition-colors ${selected ? "bg-v3-light shadow-[0_0_10px_rgb(var(--v3-glow)/0.8)]" : "bg-v3-line"}`}
                   />
                 </span>
                 <span className="text-sm leading-snug text-v3-mute">{s.sub}</span>

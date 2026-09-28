@@ -114,7 +114,7 @@ export function EightStocksReport({ locale, meta }: { locale: Locale; meta: Repo
 
           <Reveal immediate delay={0.2} className="flex flex-col gap-3">
             <p className="flex flex-wrap items-baseline gap-x-5 font-v3-display font-light leading-none">
-              <span className="text-[clamp(5rem,17vw,14rem)] tracking-[-0.03em] text-v3-light drop-shadow-[0_0_60px_rgba(232,196,138,0.35)]">
+              <span className="text-[clamp(5rem,17vw,14rem)] tracking-[-0.03em] text-v3-light drop-shadow-[0_0_60px_rgb(var(--v3-glow)/0.35)]">
                 <MegaFigure locale={locale} />
               </span>
               <span className="text-3xl text-v3-bone md:text-5xl">{c.hero.megaUnit}{locale === "fa" ? " دلار" : " USD"}</span>

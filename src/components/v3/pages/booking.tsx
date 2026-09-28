@@ -423,13 +423,13 @@ export function BookingPage({ locale }: { locale: Locale }) {
       {/* ── The calendar ────────────────────────────────────────────── */}
       <Section id={SCHEDULE_ID} title={t.schedule.title} className="scroll-mt-24 bg-v3-raise/40">
         <Reveal>
-          <div className="overflow-hidden rounded-2xl border border-v3-light/40 bg-v3-bone shadow-[0_0_80px_-40px_rgba(232,196,138,0.55)]">
+          <div className="overflow-hidden rounded-2xl border border-v3-light/40 bg-v3-embed shadow-[0_0_80px_-40px_rgb(var(--v3-glow)/0.55)]">
             <iframe
               src={CALENDAR_EMBED}
               width="100%"
               height="100%"
               title={t.schedule.iframeTitle}
-              className="block h-[800px] w-full border-0 bg-v3-bone"
+              className="block h-[800px] w-full border-0 bg-v3-embed"
             />
           </div>
         </Reveal>

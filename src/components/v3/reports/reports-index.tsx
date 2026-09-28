@@ -111,7 +111,7 @@ export function ReportsIndex({ locale }: { locale: Locale }) {
                         </span>
                       </div>
                       <div className="flex flex-col gap-2 md:col-span-5 md:items-end">
-                        <span dir="ltr" className="font-v3-display text-7xl font-light tabular-nums text-v3-light drop-shadow-[0_0_40px_rgba(232,196,138,0.3)] md:text-9xl">
+                        <span dir="ltr" className="font-v3-display text-7xl font-light tabular-nums text-v3-light drop-shadow-[0_0_40px_rgb(var(--v3-glow)/0.3)] md:text-9xl">
                           {figure}
                         </span>
                         <span className="text-sm text-v3-mute">{m.figureLabel}</span>

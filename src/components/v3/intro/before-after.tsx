@@ -41,7 +41,7 @@ export function BeforeAfter() {
         </motion.div>
 
         {/* divider */}
-        <motion.div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-v3-light shadow-[0_0_20px_rgba(232,196,138,0.9)]" style={{ left }}>
+        <motion.div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-v3-light shadow-[0_0_20px_rgb(var(--v3-glow)/0.9)]" style={{ left }}>
           <span className="absolute top-1/2 left-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-v3-light bg-v3-ink text-v3-light shadow-xl">
             <span aria-hidden dir="ltr" className="text-lg">‹ ›</span>
           </span>
