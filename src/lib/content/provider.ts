@@ -57,10 +57,14 @@ const RATES: Record<string, { in: number; out: number }> = {
 }
 const FALLBACK_RATE = { in: 5, out: 25 }
 
-function costCents(model: string, inputTokens: number, outputTokens: number): number {
+/** Unrounded: a caller summing many small calls must not lose them to rounding. */
+export function estimateCents(model: string, inputTokens: number, outputTokens: number): number {
     const rate = RATES[model] ?? FALLBACK_RATE
-    const dollars = (inputTokens / 1e6) * rate.in + (outputTokens / 1e6) * rate.out
-    return Math.round(dollars * 100)
+    return ((inputTokens / 1e6) * rate.in + (outputTokens / 1e6) * rate.out) * 100
+}
+
+function costCents(model: string, inputTokens: number, outputTokens: number): number {
+    return Math.round(estimateCents(model, inputTokens, outputTokens))
 }
 
 function keyFor(provider: Provider): string {

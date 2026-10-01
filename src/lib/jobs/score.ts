@@ -16,7 +16,7 @@
 
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
-import { complete, ProviderKeyMissing } from "@/lib/content/provider"
+import { complete, estimateCents, ProviderKeyMissing } from "@/lib/content/provider"
 import { loadProfile, type Profile } from "./profile"
 import { AUTHORISATIONS } from "./types"
 
@@ -115,6 +115,7 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
     const pending = [...canada, ...rest]
 
     let stopped: string | undefined
+    let spent = 0
     const scoreOne = async (posting: (typeof pending)[number]) => {
         if (stopped) return
         try {
@@ -140,7 +141,8 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
                 },
             })
             report.scored++
-            report.costCents += result.costCents
+            // Each call is a fraction of a cent; rounding per call reported 0 for 100 of them.
+            spent += estimateCents(result.model, result.inputTokens, result.outputTokens)
         } catch (error) {
             // No key is not this posting's fault: stop, and do not spend its attempts.
             if (error instanceof ProviderKeyMissing) {
@@ -157,6 +159,7 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
         if (stopped) break
     }
     if (stopped) report.stopped = stopped
+    report.costCents = Math.round(spent)
 
     return report
 }

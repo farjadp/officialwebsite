@@ -124,3 +124,37 @@ export function planIngest(
 
     return plan
 }
+
+/**
+ * The same job posted once per city, or by two aggregators, is one decision.
+ * Rows sharing a company and a title collapse into the best-scored one, which
+ * keeps the others' locations so nothing is hidden.
+ */
+export function collapseDuplicates<T extends { company: string; title: string; score: number | null; location: string | null }>(
+    rows: T[],
+): (T & { alsoAt: string[] })[] {
+    const key = (row: T) =>
+        `${row.company}|${row.title}`
+            .toLowerCase()
+            .replace(/\(.*?\)/g, "")
+            .replace(/[^a-z0-9|]+/g, " ")
+            .trim()
+    const groups = new Map<string, T[]>()
+    for (const row of rows) {
+        const k = key(row)
+        groups.set(k, [...(groups.get(k) ?? []), row])
+    }
+    const out: (T & { alsoAt: string[] })[] = []
+    const emitted = new Set<string>()
+    // Keep the caller's order: a group appears where its first row was.
+    for (const row of rows) {
+        const k = key(row)
+        if (emitted.has(k)) continue
+        emitted.add(k)
+        const group = groups.get(k) ?? [row]
+        const best = group.reduce((a, b) => ((b.score ?? -1) > (a.score ?? -1) ? b : a))
+        const alsoAt = [...new Set(group.filter((r) => r !== best).map((r) => r.location).filter((l): l is string => Boolean(l) && l !== best.location))]
+        out.push({ ...best, alsoAt })
+    }
+    return out
+}

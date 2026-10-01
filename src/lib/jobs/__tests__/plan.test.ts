@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { evaluate, planIngest, type Known } from "../plan"
+import { collapseDuplicates, evaluate, planIngest, type Known } from "../plan"
 import { ProfileSchema } from "../profile"
 import { fingerprint, type RawPosting } from "../types"
 
@@ -78,5 +78,18 @@ describe("planIngest", () => {
     it("leaves an already closed posting alone", () => {
         const plan = planIngest("LEVER", "acme", [], [known("1", { missedRuns: 2, closedAt: new Date() })], profile)
         expect(plan.missed).toEqual([])
+    })
+})
+
+describe("collapseDuplicates", () => {
+    it("keeps one row per company and title, the best scored, with the other places", () => {
+        const rows = [
+            { id: "a", company: "Acme", title: "CTO (AI)", score: 70, location: "Toronto" },
+            { id: "b", company: "Other", title: "PM", score: 60, location: "Ottawa" },
+            { id: "c", company: "ACME", title: "CTO", score: 85, location: "Canada" },
+        ]
+        const out = collapseDuplicates(rows)
+        expect(out.map((r) => r.id)).toEqual(["c", "b"])
+        expect(out[0].alsoAt).toEqual(["Toronto"])
     })
 })

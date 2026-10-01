@@ -11,6 +11,7 @@ import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { RunButton } from "@/components/admin/jobs/run-button"
 import { StatusSelect } from "@/components/admin/jobs/status-select"
+import { collapseDuplicates } from "@/lib/jobs/plan"
 import { loadProfile } from "@/lib/jobs/profile"
 import { JOB_STATUSES } from "@/lib/jobs/types"
 
@@ -56,17 +57,18 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         ...(min > 0 ? { score: { gte: min } } : {}),
     }
 
-    const [profile, postings, boards, totals] = await Promise.all([
+    const [profile, found, boards, totals] = await Promise.all([
         loadProfile(),
         prisma.jobPosting.findMany({
             where,
             orderBy: [{ score: { sort: "desc", nulls: "last" } }, { firstSeenAt: "desc" }],
-            take: 150,
+            take: 400,
         }),
         prisma.jobBoard.count({ where: { enabled: true } }),
         prisma.jobPosting.groupBy({ by: ["status"], where: { prefilter: "PASS" }, _count: true }),
     ])
 
+    const postings = collapseDuplicates(found).slice(0, 150)
     const count = (wanted: string[]) =>
         totals.filter((row) => wanted.includes(row.status)).reduce((sum, row) => sum + row._count, 0)
     const laneLabel = (key: string | null) => profile.lanes.find((lane) => lane.key === key)?.label ?? key ?? ""
@@ -203,6 +205,12 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
                                             ? ` · ${COUNTRY_LABEL[posting.country]}`
                                             : ""}
                                     </p>
+                                    {posting.alsoAt.length > 0 && (
+                                        <p className="mt-0.5 text-xs text-slate-400">
+                                            Also posted for {posting.alsoAt.slice(0, 3).join("; ")}
+                                            {posting.alsoAt.length > 3 ? ` and ${posting.alsoAt.length - 3} more` : ""}
+                                        </p>
+                                    )}
                                     {notes.fit && <p className="mt-1.5 line-clamp-2 text-sm text-slate-500">{notes.fit}</p>}
                                     <p className="mt-1.5 text-xs text-slate-400">
                                         {laneLabel(posting.lane)} · found {formatDistanceToNowStrict(posting.firstSeenAt)} ago
