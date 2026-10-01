@@ -67,8 +67,9 @@ export const DEFAULT_AGENTS: Record<AgentName, ResolvedAgent> = {
     "review.en": { provider: "anthropic", model: DEFAULT_MODEL_FOR_PROVIDER.anthropic },
     "review.fa": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     "art.prompt": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
-    // Many short judgements a day: the small model is the right size.
-    "jobs.score": { provider: "anthropic", model: "claude-haiku-4-5" },
+    // On OpenAI because that is the key production has; gpt-4o is the id
+    // already proven against it. Changeable from settings without a deploy.
+    "jobs.score": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
 }
 
 /** Which writer each reviewer must not share a vendor with. */
