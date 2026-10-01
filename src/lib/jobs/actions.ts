@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma"
 import { assist, reviewDocument, ASSIST_TARGETS, type AssistResult, type AssistTarget, type ModelReview } from "./assist"
 import type { Resume } from "./documents"
 import { applyEdit, EditSchema, type Edit } from "./editor"
+import { DEFAULT_CAPS, saveCaps } from "./budget"
 import { isPaused, setPaused } from "./control"
 import { generateDocuments as generate, type GenerateResult } from "./generate"
 import { assertOwner } from "./guard"
@@ -255,5 +256,30 @@ export async function reviewAction(
 export async function setPausedAction(paused: boolean): Promise<void> {
     await assertOwner()
     await setPaused(paused)
+    revalidatePath(PATH, "layout")
+}
+
+// ─── Budget ─────────────────────────────────────────────────────────────────
+
+export type BudgetFormState = { error?: string; saved?: boolean }
+
+export async function saveBudgetAction(_previous: BudgetFormState, formData: FormData): Promise<BudgetFormState> {
+    await assertOwner()
+    const dollars = (name: string) => Number(String(formData.get(name) ?? "").replace(/[$,\s]/g, ""))
+    const daily = dollars("daily")
+    const monthly = dollars("monthly")
+    if (!Number.isFinite(daily) || !Number.isFinite(monthly) || daily < 0 || monthly < 0) {
+        return { error: "Enter amounts in dollars, such as 3 or 40" }
+    }
+    if (daily > 100 || monthly > 1_000) return { error: "That is more than this tool should ever need. Daily up to $100, monthly up to $1,000." }
+    if (daily > monthly) return { error: "The daily budget cannot be larger than the monthly one" }
+    await saveCaps({ dailyCents: Math.round(daily * 100), monthlyCents: Math.round(monthly * 100) })
+    revalidatePath(PATH, "layout")
+    return { saved: true }
+}
+
+export async function resetBudgetAction(): Promise<void> {
+    await assertOwner()
+    await saveCaps(DEFAULT_CAPS)
     revalidatePath(PATH, "layout")
 }

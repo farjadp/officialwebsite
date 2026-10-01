@@ -7,6 +7,8 @@
 // ============================================================================
 
 import { format } from "date-fns"
+import { BudgetForm } from "@/components/admin/jobs/budget-form"
+import { budgetState } from "@/lib/jobs/budget"
 import { USAGE_TIMEZONE, usageByAgent, usageByDay, usageByWeek, usageTotal, type UsageRow } from "@/lib/jobs/usage"
 
 export const dynamic = "force-dynamic"
@@ -64,7 +66,7 @@ function Table({ rows, label }: { rows: (UsageRow & { name: string })[]; label: 
 }
 
 export default async function UsagePage() {
-    const [days, weeks, agents, total] = await Promise.all([usageByDay(14), usageByWeek(8), usageByAgent(), usageTotal()])
+    const [days, weeks, agents, total, budget] = await Promise.all([usageByDay(14), usageByWeek(8), usageByAgent(), usageTotal(), budgetState()])
     const todayKey = dayKey(new Date(), USAGE_TIMEZONE)
     const today = days.find((row) => dayKey(row.period, "UTC") === todayKey)
     // The newest week is this week only if something ran in it.
@@ -73,6 +75,14 @@ export default async function UsagePage() {
 
     return (
         <div className="space-y-6">
+            <BudgetForm
+                dailyCents={budget.dailyCents}
+                monthlyCents={budget.monthlyCents}
+                todayCents={budget.todayCents}
+                monthCents={budget.monthCents}
+                reason={budget.reason}
+            />
+
             <dl className="grid gap-4 sm:grid-cols-3">
                 {[
                     ["Today", today?.costCents ?? 0, (today?.inputTokens ?? 0) + (today?.outputTokens ?? 0)],

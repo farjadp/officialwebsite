@@ -18,6 +18,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { complete, estimateCents, ProviderKeyMissing } from "@/lib/content/provider"
 import { loadProfile, type Profile } from "./profile"
+import { budgetState } from "./budget"
 import { recordUsage } from "./usage"
 import { AUTHORISATIONS } from "./types"
 
@@ -157,6 +158,12 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
     }
 
     for (let i = 0; i < pending.length; i += SCORE_CONCURRENCY) {
+        // Asked before every batch: the ceiling is the owner's, not a suggestion.
+        const budget = await budgetState()
+        if (!budget.ok) {
+            stopped = budget.reason ?? "AI budget reached"
+            break
+        }
         await Promise.all(pending.slice(i, i + SCORE_CONCURRENCY).map(scoreOne))
         if (stopped) break
     }

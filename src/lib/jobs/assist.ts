@@ -17,6 +17,7 @@ import { complete } from "@/lib/content/provider"
 import { figures, sourceText, type Resume } from "./documents"
 import type { Profile } from "./profile"
 import { droppedQualifiers, keywordCoverage, resumeText } from "./review"
+import { assertBudget } from "./budget"
 import { recordUsage } from "./usage"
 
 export const ASSIST_TARGETS = ["headline", "summary", "bullets", "cover"] as const
@@ -76,6 +77,7 @@ export async function assist(input: {
         `Rewrite ${what}. The candidate's instruction: ${input.instruction.slice(0, 500) || "improve it for this posting"}`,
     ].join("\n")
 
+    await assertBudget()
     const source = `${sourceText(input.profile)}\n${current}`
     const known = new Set(figures(source))
 
@@ -135,6 +137,7 @@ export async function reviewDocument(input: { posting: PostingBrief; resume: Res
         "</cover_letter>",
     ].join("\n")
 
+    await assertBudget()
     const result = await complete({
         agent: "jobs.review",
         system: REVIEW_SYSTEM,

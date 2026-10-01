@@ -20,6 +20,7 @@ import {
 } from "./documents"
 import { loadProfile } from "./profile"
 import { droppedQualifiers } from "./review"
+import { assertBudget } from "./budget"
 import { recordUsage } from "./usage"
 
 export type GenerateResult = { ok: true; documentId: string } | { ok: false; error: string }
@@ -41,6 +42,7 @@ export async function generateDocuments(postingId: string): Promise<GenerateResu
 
     let feedback = ""
     for (let attempt = 0; attempt < 2; attempt++) {
+        await assertBudget()
         const result = await complete({
             agent: "jobs.resume",
             system: DOCUMENT_SYSTEM,
