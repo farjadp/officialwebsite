@@ -197,7 +197,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
                                             <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${badge.tone}`}>{badge.label}</span>
                                         )}
                                     </div>
-                                    <p className="mt-0.5 text-sm text-slate-600">
+                                    <p className="mt-0.5 line-clamp-1 text-sm text-slate-600">
                                         {posting.company}
                                         {posting.location ? ` · ${posting.location}` : ""}
                                         {posting.remote ? " · Remote" : ""}

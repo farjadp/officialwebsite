@@ -1,7 +1,7 @@
 // Fixtures are invented: this repository is public, and real postings and
 // target companies stay in the database.
 import { describe, it, expect } from "vitest"
-import { adzunaUrl, boardUrl, himalayasUrl, normalizeHimalayas, normalizeJooble, isValidToken, normalizeAdzuna, normalizeAshby, normalizeGreenhouse, normalizeLever, normalizeRemotive } from "../sources"
+import { adzunaUrl, boardUrl, himalayasUrl, remotePlaces, normalizeHimalayas, normalizeJooble, isValidToken, normalizeAdzuna, normalizeAshby, normalizeGreenhouse, normalizeLever, normalizeRemotive } from "../sources"
 
 describe("normalizeGreenhouse", () => {
     it("reads a job and unescapes its content", () => {
@@ -200,5 +200,14 @@ describe("Jooble", () => {
             "ca",
         )
         expect(job).toMatchObject({ externalId: "99", location: "Toronto, ON, Canada", description: "Run programs" })
+    })
+})
+
+describe("remotePlaces", () => {
+    it("keeps short lists and shortens long ones with Canada first", () => {
+        expect(remotePlaces([])).toBe("Remote, anywhere")
+        expect(remotePlaces(["Canada"])).toBe("Remote (Canada)")
+        const many = ["Albania", "Andorra", "Argentina", "Canada", "Chile", "Croatia"]
+        expect(remotePlaces(many)).toBe("Remote (Canada, Albania and 4 more)")
     })
 })

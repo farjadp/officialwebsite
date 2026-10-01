@@ -261,6 +261,15 @@ export function normalizeAdzuna(payload: unknown, country: "ca" | "us"): RawPost
     )
 }
 
+/** "Remote (Canada)", or for a long list "Remote (Canada, United States and 38 more)". */
+export function remotePlaces(places: string[]): string {
+    if (places.length === 0) return "Remote, anywhere"
+    if (places.length <= 4) return `Remote (${places.join(", ")})`
+    // Name the two countries the search is about first, so the location reader still sees them.
+    const first = [...places.filter((p) => p === "Canada" || p === "United States"), ...places.filter((p) => p !== "Canada" && p !== "United States")].slice(0, 2)
+    return `Remote (${first.join(", ")} and ${places.length - first.length} more)`
+}
+
 export function normalizeHimalayas(payload: unknown): RawPosting[] {
     if (!isObject(payload)) throw new Error("Himalayas: unexpected response shape")
     return keep(
@@ -277,7 +286,7 @@ export function normalizeHimalayas(payload: unknown): RawPosting[] {
                 title,
                 company: text(job.companyName) ?? "Unknown",
                 // Himalayas lists only remote jobs; the restriction is who may apply.
-                location: places.length ? `Remote (${places.join(", ")})` : "Remote, anywhere",
+                location: remotePlaces(places),
                 remoteHint: true,
                 department: list(job.parentCategories).map(text).find(Boolean) ?? null,
                 url,
