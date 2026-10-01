@@ -10,11 +10,14 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { assist, reviewDocument, ASSIST_TARGETS, type AssistResult, type AssistTarget, type ModelReview } from "./assist"
+import type { Resume } from "./documents"
+import { applyEdit, EditSchema, type Edit } from "./editor"
 import { generateDocuments as generate, type GenerateResult } from "./generate"
 import { assertOwner } from "./guard"
 import { parseEducation, parseHistory } from "./history"
 import { runIngest, type BoardReport } from "./ingest"
-import { ProfileSchema, parseKeywordList, parseLanes, saveProfile } from "./profile"
+import { ProfileSchema, loadProfile, parseKeywordList, parseLanes, saveProfile } from "./profile"
 import { scorePending, type ScoreReport } from "./score"
 import { fetchBoard, isValidToken } from "./sources"
 import { BOARD_KINDS, JOB_STATUSES, type BoardKind, type JobStatus } from "./types"
@@ -168,6 +171,78 @@ export async function generateDocumentsAction(postingId: string): Promise<Genera
         const result = await generate(postingId)
         if (result.ok) revalidatePath(`${PATH}/${postingId}`)
         return result
+    } catch (error) {
+        return { ok: false, error: message(error) }
+    }
+}
+
+// ─── Editor ─────────────────────────────────────────────────────────────────
+
+async function loadDocument(documentId: string) {
+    return prisma.jobDocument.findUnique({
+        where: { id: documentId },
+        include: { posting: { select: { id: true, title: true, company: true, description: true } } },
+    })
+}
+
+export async function saveDocumentAction(documentId: string, edit: Edit): Promise<{ ok: boolean; error?: string }> {
+    await assertOwner()
+    const parsed = EditSchema.safeParse(edit)
+    if (!parsed.success) return { ok: false, error: "Something in the edit is too long or malformed" }
+
+    const document = await loadDocument(documentId)
+    if (!document) return { ok: false, error: "That document no longer exists" }
+
+    const profile = await loadProfile()
+    const { resume, error } = applyEdit(document.resume as unknown as Resume, parsed.data, profile.history)
+    if (error) return { ok: false, error }
+
+    await prisma.jobDocument.update({
+        where: { id: documentId },
+        data: { resume, coverLetter: parsed.data.coverLetter.trim(), editedAt: new Date() },
+    })
+    revalidatePath(`${PATH}/${document.postingId}`)
+    return { ok: true }
+}
+
+export async function assistAction(input: {
+    documentId: string
+    target: string
+    current: string | string[]
+    instruction: string
+    roleCompany?: string
+}): Promise<AssistResult> {
+    await assertOwner()
+    if (!(ASSIST_TARGETS as readonly string[]).includes(input.target)) return { ok: false, error: "Unknown part" }
+    const document = await loadDocument(input.documentId)
+    if (!document) return { ok: false, error: "That document no longer exists" }
+    try {
+        return await assist({
+            profile: await loadProfile(),
+            posting: document.posting,
+            target: input.target as AssistTarget,
+            current: Array.isArray(input.current) ? input.current.slice(0, 8).map((b) => b.slice(0, 400)) : input.current.slice(0, 6_000),
+            instruction: input.instruction.slice(0, 500),
+            roleCompany: input.roleCompany,
+        })
+    } catch (error) {
+        return { ok: false, error: message(error) }
+    }
+}
+
+export async function reviewAction(
+    documentId: string,
+    resume: Resume,
+    coverLetter: string,
+): Promise<{ ok: true; review: ModelReview } | { ok: false; error: string }> {
+    await assertOwner()
+    const document = await loadDocument(documentId)
+    if (!document) return { ok: false, error: "That document no longer exists" }
+    try {
+        // The unsaved text in the editor is what gets reviewed; the stored
+        // document only supplies the posting.
+        const review = await reviewDocument({ posting: document.posting, resume, coverLetter: coverLetter.slice(0, 6_000) })
+        return { ok: true, review }
     } catch (error) {
         return { ok: false, error: message(error) }
     }

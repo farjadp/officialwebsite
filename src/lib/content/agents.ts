@@ -25,6 +25,8 @@ export const AGENT_NAMES = [
     // through the same provider layer, so its model is chosen here too.
     "jobs.score",
     "jobs.resume",
+    "jobs.assist",
+    "jobs.review",
 ] as const
 export type AgentName = (typeof AGENT_NAMES)[number]
 
@@ -72,6 +74,8 @@ export const DEFAULT_AGENTS: Record<AgentName, ResolvedAgent> = {
     // already proven against it. Changeable from settings without a deploy.
     "jobs.score": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     "jobs.resume": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
+    "jobs.assist": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
+    "jobs.review": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
 }
 
 /** Which writer each reviewer must not share a vendor with. */

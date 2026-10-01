@@ -1104,5 +1104,8 @@ model JobDocument {
   costCents   Int      @default(0)
   createdAt   DateTime @default(now())
 
+  // Set when the owner saves edits from the editor.
+  editedAt DateTime?
+
   @@index([postingId, createdAt])
 }

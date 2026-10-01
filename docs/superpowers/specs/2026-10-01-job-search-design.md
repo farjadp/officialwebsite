@@ -151,3 +151,22 @@ browsers; storing third-party credentials.
 - **Adzuna** source (`ADZUNA`, token `ca:title` or `us:title`): a market-wide
   title search, the main source once `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` exist.
   The "Boards" tab is now "Searches".
+
+## Résumé editor (2026-10-01)
+
+- `/admin/jobs/[id]/documents` is an editor beside the printed page. Wording
+  is editable; employers, places and dates are locked and re-applied on the
+  server (`editor.ts`); a title must be one the profile lists for that role.
+  Saving updates the document and stamps `editedAt`.
+- **AI help** (`assist.ts`, agent `jobs.assist`) on the headline, summary, a
+  role's bullets and the cover letter: quick actions or a free instruction.
+  The answer is a suggestion with warnings (figures not in the profile, a
+  dropped qualifier); nothing changes until "Use this".
+- **Review**: instant checks in the browser (`review.ts`: contact, length,
+  long or same-opening bullets, uniform rhythm, em dashes, stock phrases,
+  figures not in the profile, qualifiers dropped) and a model pass
+  (agent `jobs.review`): posting keywords with coverage computed in code,
+  each requirement met / partly / no, and lines that read as AI-written with
+  a rewrite that can be applied in place.
+- Generation now keeps qualifiers ("nearly $5M"): a draft that drops one is
+  sent back once, and noted if it still does.

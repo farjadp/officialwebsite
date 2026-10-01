@@ -19,6 +19,7 @@ import {
     sourceText,
 } from "./documents"
 import { loadProfile } from "./profile"
+import { droppedQualifiers } from "./review"
 
 export type GenerateResult = { ok: true; documentId: string } | { ok: false; error: string }
 
@@ -49,13 +50,20 @@ export async function generateDocuments(postingId: string): Promise<GenerateResu
         })
         costCents += result.costCents
 
-        const invented = inventedFigures(draftText(result.data), source)
+        const text = draftText(result.data)
+        const invented = inventedFigures(text, source)
         if (invented.length) {
             feedback = `\n\nYour previous draft used figures that are not in <candidate>: ${invented.join(", ")}. Rewrite it without them.`
             continue
         }
+        const dropped = droppedQualifiers(text, source)
+        if (dropped.length && attempt === 0) {
+            feedback = `\n\nYour previous draft stated these figures without the qualifier <candidate> gives them ("nearly", "more than"…): ${dropped.join(", ")}. Keep the qualifiers.`
+            continue
+        }
 
         const documents = assemble(profile, result.data)
+        if (dropped.length) documents.notes.push(`Check the wording around ${dropped.join(", ")}: the profile qualifies these figures`)
         const saved = await prisma.jobDocument.create({
             data: {
                 postingId: posting.id,

@@ -53,6 +53,7 @@ export const DOCUMENT_SYSTEM = [
     "Hard rules. Breaking any of them makes the document unusable:",
     "- Use only facts in <candidate>. You may select, reorder, merge and rephrase them. Never add an employer, a date, a credential, a technology, a responsibility or a result that is not there.",
     "- Never write a number that does not appear in <candidate>. If a fact has no number, write it without one.",
+    "- Keep the words that qualify a figure or a role in it: 'nearly', 'about', 'more than', 'helped'. 'Helped teams secure nearly $5M' must not become 'Raised $5M'.",
     "- For each role, choose its title from that role's allowed titles, copied exactly. Pick the one closest to the posting.",
     "- Include every role by its index. Give the roles most relevant to the posting 3-5 bullets and the others 0-2.",
     "- Do not overstate. No 'world-class', 'visionary', 'passionate', 'spearheaded', 'rockstar'. No claim of seniority the facts do not support.",
