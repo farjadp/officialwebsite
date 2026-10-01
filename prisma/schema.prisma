@@ -1013,3 +1013,77 @@ model ContentJob {
 
   @@index([state, lockedAt])
 }
+
+// ============================================================================
+// Job Search
+// Why: the owner's private job search — boards to watch, the postings found on
+//      them, and where each one stands. Spec:
+//      docs/superpowers/specs/2026-10-01-job-search-design.md
+// Kinds and states are TEXT with the union in a comment, as above. The career
+// profile is one AppSetting row (`jobs.profile`): this repository is public,
+// so nothing personal is seeded or committed.
+// ============================================================================
+
+model JobBoard {
+  id    String @id @default(cuid())
+  kind  String // "GREENHOUSE" | "LEVER" | "ASHBY" | "REMOTIVE"
+  label String // the company name, or what the search is for
+  // The company's slug on its board; for REMOTIVE, the search phrase.
+  token String
+
+  enabled       Boolean   @default(true)
+  lastFetchedAt DateTime?
+  lastError     String?
+  lastCount     Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  postings JobPosting[]
+
+  @@unique([kind, token])
+}
+
+model JobPosting {
+  id      String   @id @default(cuid())
+  boardId String
+  board   JobBoard @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  // kind:token:externalId — the same posting fetched twice is one row.
+  fingerprint String @unique
+  externalId  String
+
+  title       String
+  company     String
+  location    String?
+  country     String? // "CA" | "US" | "NA" | "OTHER"; null when it cannot be told
+  remote      Boolean   @default(false)
+  department  String?
+  url         String
+  // Plain text, kept only while the posting passes the prefilter.
+  description String?
+  postedAt    DateTime?
+
+  firstSeenAt DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  // Consecutive fetches of its board this posting was absent from.
+  missedRuns  Int       @default(0)
+  closedAt    DateTime?
+
+  prefilter       String  @default("REJECT") // "PASS" | "REJECT"
+  prefilterReason String?
+  lane            String?
+
+  score         Int? // 0–100
+  // { fit, gaps, authorisation: "OK" | "NEEDS_SPONSORSHIP" | "UNCLEAR" }
+  scoreNotes    Json?
+  scoredAt      DateTime?
+  scoreAttempts Int       @default(0)
+
+  // NEW SHORTLISTED APPLIED INTERVIEW OFFER REJECTED DISMISSED
+  status    String    @default("NEW")
+  appliedAt DateTime?
+  notes     String?
+
+  @@index([prefilter, status, score])
+  @@index([boardId, closedAt])
+}

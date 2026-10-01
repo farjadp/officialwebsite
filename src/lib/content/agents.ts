@@ -21,6 +21,9 @@ export const AGENT_NAMES = [
     "review.en",
     "review.fa",
     "art.prompt",
+    // Not a content agent: the job search (src/lib/jobs) scores postings
+    // through the same provider layer, so its model is chosen here too.
+    "jobs.score",
 ] as const
 export type AgentName = (typeof AGENT_NAMES)[number]
 
@@ -64,6 +67,8 @@ export const DEFAULT_AGENTS: Record<AgentName, ResolvedAgent> = {
     "review.en": { provider: "anthropic", model: DEFAULT_MODEL_FOR_PROVIDER.anthropic },
     "review.fa": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     "art.prompt": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
+    // Many short judgements a day: the small model is the right size.
+    "jobs.score": { provider: "anthropic", model: "claude-haiku-4-5" },
 }
 
 /** Which writer each reviewer must not share a vendor with. */

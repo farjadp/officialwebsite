@@ -15,7 +15,7 @@ import {
     LayoutDashboard, FileText, Layers, Hash, Image as ImageIcon, Users, Settings,
     LogOut, FolderTree, Share2, BarChart3, Sparkles, Inbox, Activity, BookOpen,
     HardDrive, MessageSquareQuote, FolderGit2, Mail, Rocket, ScanSearch,
-    ClipboardList, Search, ChevronDown, ScrollText, X, Gift,
+    ClipboardList, Search, ChevronDown, ScrollText, X, Gift, Briefcase,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -25,6 +25,8 @@ interface NavItem {
     icon: typeof LayoutDashboard
     /** Extra path prefixes that should also light this item up */
     match?: string[]
+    /** Shown to the owner only; the page itself refuses everyone else. */
+    ownerOnly?: boolean
 }
 
 interface NavGroup {
@@ -75,6 +77,7 @@ const NAV_GROUPS: NavGroup[] = [
             { title: "Perk Offers", href: "/admin/perk-offers", icon: Gift },
             { title: "Book Club", href: "/admin/book-club", icon: BookOpen },
             { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
+            { title: "Job Search", href: "/admin/jobs", icon: Briefcase, ownerOnly: true },
         ],
     },
     {
@@ -119,7 +122,7 @@ function useActiveHref(pathname: string): string | null {
     }, [pathname])
 }
 
-export function AdminSidebar() {
+export function AdminSidebar({ isOwner = false }: { isOwner?: boolean }) {
     const pathname = usePathname()
     const activeHref = useActiveHref(pathname)
     const [query, setQuery] = useState("")
@@ -153,15 +156,19 @@ export function AdminSidebar() {
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
-        if (!q) return NAV_GROUPS
-        return NAV_GROUPS.map((group) => ({
+        const visible = NAV_GROUPS.map((group) => ({
+            ...group,
+            items: group.items.filter((item) => isOwner || !item.ownerOnly),
+        }))
+        if (!q) return visible
+        return visible.map((group) => ({
             ...group,
             items: group.items.filter(
                 (item) =>
                     item.title.toLowerCase().includes(q) || group.title.toLowerCase().includes(q)
             ),
         })).filter((group) => group.items.length > 0)
-    }, [query])
+    }, [query, isOwner])
 
     const searching = query.trim().length > 0
     const totalMatches = filtered.reduce((sum, group) => sum + group.items.length, 0)

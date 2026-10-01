@@ -1,6 +1,6 @@
 # Job Search — design
 
-Date: 2026-10-01 · Status: awaiting review · Route: `/admin/jobs`
+Date: 2026-10-01 · Status: approved; phase 1 built · Route: `/admin/jobs`
 
 ## Why
 
@@ -58,7 +58,7 @@ content engine already follow.
   `lastError`, `lastCount`. Unique on (`kind`, `token`).
 - **`JobPosting`** — `boardId`, `fingerprint` (unique: kind + token + external
   id), `externalId`, `title`, `company`, `location`, `country`
-  (`CA` | `US` | `OTHER` | null), `remote`, `department`, `url`, `description`
+  (`CA` | `US` | `NA` for both | `OTHER` | null), `remote`, `department`, `url`, `description`
   (plain text), `postedAt`, `firstSeenAt`, `lastSeenAt`, `closedAt`.
   - Triage: `prefilter` (`PASS` | `REJECT`), `prefilterReason`.
   - Ranking: `score` (0–100), `lane`, `scoreNotes` (JSON: why it fits, gaps,
