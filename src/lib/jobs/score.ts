@@ -20,7 +20,9 @@ import { complete, ProviderKeyMissing } from "@/lib/content/provider"
 import { loadProfile, type Profile } from "./profile"
 import { AUTHORISATIONS } from "./types"
 
-export const DEFAULT_SCORES_PER_RUN = 25
+export const DEFAULT_SCORES_PER_RUN = 40
+/** Calls in flight at once: 40 one after another would not fit the cron's 300 s. */
+const SCORE_CONCURRENCY = 5
 /** After this many failed attempts a posting is left unscored for a person. */
 export const MAX_SCORE_ATTEMPTS = 3
 const DESCRIPTION_CHARS_FOR_MODEL = 7_000
@@ -112,7 +114,9 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
             : []
     const pending = [...canada, ...rest]
 
-    for (const posting of pending) {
+    let stopped: string | undefined
+    const scoreOne = async (posting: (typeof pending)[number]) => {
+        if (stopped) return
         try {
             const result = await complete({
                 agent: "jobs.score",
@@ -139,11 +143,20 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
             report.costCents += result.costCents
         } catch (error) {
             // No key is not this posting's fault: stop, and do not spend its attempts.
-            if (error instanceof ProviderKeyMissing) return { ...report, stopped: error.message }
+            if (error instanceof ProviderKeyMissing) {
+                stopped = error.message
+                return
+            }
             report.failed++
             await prisma.jobPosting.update({ where: { id: posting.id }, data: { scoreAttempts: { increment: 1 } } })
         }
     }
+
+    for (let i = 0; i < pending.length; i += SCORE_CONCURRENCY) {
+        await Promise.all(pending.slice(i, i + SCORE_CONCURRENCY).map(scoreOne))
+        if (stopped) break
+    }
+    if (stopped) report.stopped = stopped
 
     return report
 }

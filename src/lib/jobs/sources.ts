@@ -19,15 +19,20 @@ const USER_AGENT = "farjadp.info job search (+https://www.farjadp.info)"
 
 /** A board token is a slug or a search phrase — never a path or a URL. */
 export function isValidToken(kind: BoardKind, token: string): boolean {
-    if (kind === "ADZUNA") return /^(ca|us):[\w .+#&/-]{2,60}$/i.test(token)
+    if (kind === "ADZUNA") return /^(ca|us)(\/[a-z-]{2,40})?:[\w .+#&-]{2,60}$/i.test(token)
     if (kind === "REMOTIVE") return /^[\w .+#&-]{2,60}$/.test(token)
     return /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,80}$/.test(token)
 }
 
-/** "ca:product manager" → its two halves. */
-export function adzunaSearch(token: string): { country: "ca" | "us"; what: string } {
-    const [country, ...rest] = token.split(":")
-    return { country: country.toLowerCase() === "us" ? "us" : "ca", what: rest.join(":").trim() }
+/**
+ * "ca:product manager" → country and phrase. An optional Adzuna category tag
+ * narrows a phrase that means different things in different trades:
+ * "ca/it-jobs:project manager" leaves out construction and events.
+ */
+export function adzunaSearch(token: string): { country: "ca" | "us"; category: string | null; what: string } {
+    const colon = token.indexOf(":")
+    const [country, category] = token.slice(0, colon).toLowerCase().split("/")
+    return { country: country === "us" ? "us" : "ca", category: category || null, what: token.slice(colon + 1).trim() }
 }
 
 const ADZUNA_PAGES = 2
@@ -36,7 +41,7 @@ const ADZUNA_MAX_DAYS = 21
 
 /** The Adzuna URL without credentials; `fetchBoard` adds them, so they are never shown or logged. */
 export function adzunaUrl(token: string, page: number): string {
-    const { country, what } = adzunaSearch(token)
+    const { country, category, what } = adzunaSearch(token)
     const query = new URLSearchParams({
         what_phrase: what,
         results_per_page: String(ADZUNA_PER_PAGE),
@@ -44,6 +49,7 @@ export function adzunaUrl(token: string, page: number): string {
         sort_by: "date",
         "content-type": "application/json",
     })
+    if (category) query.set("category", category)
     return `https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?${query}`
 }
 

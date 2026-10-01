@@ -156,4 +156,11 @@ describe("Adzuna", () => {
         expect(url).toContain("what_phrase=full+stack+developer")
         expect(url).not.toContain("app_key")
     })
+
+    it("accepts an optional category and puts it in the query", () => {
+        expect(isValidToken("ADZUNA", "ca/it-jobs:project manager")).toBe(true)
+        expect(isValidToken("ADZUNA", "ca/../x:project manager")).toBe(false)
+        expect(adzunaUrl("ca/it-jobs:project manager", 1)).toContain("category=it-jobs")
+        expect(adzunaUrl("ca:project manager", 1)).not.toContain("category=")
+    })
 })

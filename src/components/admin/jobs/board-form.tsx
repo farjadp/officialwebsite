@@ -34,7 +34,8 @@ export function BoardForm() {
                 <p>
                     <b className="text-slate-700">A search</b> finds a job title across the whole market. Choose Adzuna and
                     write the country and the title: <code>ca:program manager</code> for Canada,{" "}
-                    <code>us:program manager</code> for the United States. This is the one to use most.
+                    <code>us:program manager</code> for the United States. To keep a phrase in one trade, add an Adzuna
+                    category: <code>ca/it-jobs:project manager</code>. This is the one to use most.
                 </p>
                 <p>
                     <b className="text-slate-700">A company board</b> follows one company you want to work for. The token is
