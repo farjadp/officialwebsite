@@ -10,7 +10,9 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { generateDocuments as generate, type GenerateResult } from "./generate"
 import { assertOwner } from "./guard"
+import { parseEducation, parseHistory } from "./history"
 import { runIngest, type BoardReport } from "./ingest"
 import { ProfileSchema, parseKeywordList, parseLanes, saveProfile } from "./profile"
 import { scorePending, type ScoreReport } from "./score"
@@ -113,7 +115,8 @@ export async function saveProfileAction(_previous: ProfileFormState, formData: F
     const field = (name: string) => String(formData.get(name) ?? "").trim()
 
     const { lanes, errors } = parseLanes(field("lanes"))
-    if (errors.length) return { errors }
+    const history = parseHistory(field("history"))
+    if (errors.length || history.errors.length) return { errors: [...errors, ...history.errors] }
 
     const parsed = ProfileSchema.safeParse({
         headline: field("headline").slice(0, 300),
@@ -121,6 +124,17 @@ export async function saveProfileAction(_previous: ProfileFormState, formData: F
         authorisation: { CA: field("authCA").slice(0, 300), US: field("authUS").slice(0, 300) },
         lanes,
         excludeTitleKeywords: parseKeywordList(field("exclude")),
+        contact: {
+            name: field("name").slice(0, 120),
+            email: field("email").slice(0, 200),
+            phone: field("phone").slice(0, 60),
+            location: field("location").slice(0, 120),
+            links: parseKeywordList(field("links")).slice(0, 6),
+        },
+        history: history.roles,
+        education: parseEducation(field("education")),
+        certifications: field("certifications").split("\n").map((line) => line.trim()).filter(Boolean),
+        skills: parseKeywordList(field("skills")),
     })
     if (!parsed.success) return { errors: parsed.error.issues.map((issue) => issue.message) }
 
@@ -143,5 +157,18 @@ export async function runNow(): Promise<RunReport> {
         return { boards, scoring }
     } catch (error) {
         return { error: message(error) }
+    }
+}
+
+// ─── Documents ──────────────────────────────────────────────────────────────
+
+export async function generateDocumentsAction(postingId: string): Promise<GenerateResult> {
+    await assertOwner()
+    try {
+        const result = await generate(postingId)
+        if (result.ok) revalidatePath(`${PATH}/${postingId}`)
+        return result
+    } catch (error) {
+        return { ok: false, error: message(error) }
     }
 }

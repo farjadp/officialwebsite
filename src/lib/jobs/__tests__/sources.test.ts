@@ -1,7 +1,7 @@
 // Fixtures are invented: this repository is public, and real postings and
 // target companies stay in the database.
 import { describe, it, expect } from "vitest"
-import { boardUrl, isValidToken, normalizeAshby, normalizeGreenhouse, normalizeLever, normalizeRemotive } from "../sources"
+import { adzunaUrl, boardUrl, isValidToken, normalizeAdzuna, normalizeAshby, normalizeGreenhouse, normalizeLever, normalizeRemotive } from "../sources"
 
 describe("normalizeGreenhouse", () => {
     it("reads a job and unescapes its content", () => {
@@ -122,5 +122,38 @@ describe("tokens", () => {
 
     it("encodes a search phrase into the query", () => {
         expect(boardUrl("REMOTIVE", "product manager")).toBe("https://remotive.com/api/remote-jobs?search=product%20manager")
+    })
+})
+
+describe("Adzuna", () => {
+    it("reads a result, strips the highlight and adds the searched country", () => {
+        const [job] = normalizeAdzuna(
+            {
+                results: [
+                    {
+                        id: "42",
+                        title: "Senior <strong>Product</strong> Lead",
+                        redirect_url: "https://www.adzuna.ca/land/ad/42",
+                        company: { display_name: "Acme" },
+                        location: { display_name: "Ottawa, Ontario" },
+                        category: { label: "IT Jobs" },
+                        description: "Lead the roadmap…",
+                        created: "2026-09-28T12:00:00Z",
+                    },
+                ],
+            },
+            "ca",
+        )
+        expect(job).toMatchObject({ title: "Senior Product Lead", company: "Acme", location: "Ottawa, Ontario, Canada", department: "IT Jobs" })
+    })
+
+    it("validates country-prefixed searches and keeps credentials out of the URL", () => {
+        expect(isValidToken("ADZUNA", "ca:product manager")).toBe(true)
+        expect(isValidToken("ADZUNA", "uk:product manager")).toBe(false)
+        expect(isValidToken("ADZUNA", "product manager")).toBe(false)
+        const url = adzunaUrl("us:full stack developer", 2)
+        expect(url).toContain("/jobs/us/search/2?")
+        expect(url).toContain("what_phrase=full+stack+developer")
+        expect(url).not.toContain("app_key")
     })
 })

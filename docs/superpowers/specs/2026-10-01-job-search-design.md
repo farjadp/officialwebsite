@@ -1,6 +1,6 @@
 # Job Search — design
 
-Date: 2026-10-01 · Status: approved; phase 1 built · Route: `/admin/jobs`
+Date: 2026-10-01 · Status: phases 1 and 2 built · Route: `/admin/jobs`
 
 ## Why
 
@@ -130,3 +130,24 @@ Vitest, as `src/lib/content/__tests__`:
 
 Auto-submitting applications; LinkedIn, Indeed or Glassdoor scraping; stealth
 browsers; storing third-party credentials.
+
+## Phase 2 as built (2026-10-01)
+
+- **Career record** in the profile: contact, history, education, certifications,
+  skills. History is edited as text (`## Company | City | YYYY-MM – present`,
+  `titles: A, B`, `- fact`) and parsed by `src/lib/jobs/history.ts`.
+- **One timeline, several titles.** Each role has one start and one end date,
+  used on every résumé. It lists every title that was true for it; a résumé
+  picks the one that fits the posting.
+- **Generation** (`documents.ts`, `generate.ts`, agent `jobs.resume`): the model
+  returns a draft; code copies employers, dates, contact, education and
+  certifications from the record, accepts a title only if the record lists it,
+  restores any role the model dropped, and sends the draft back once if it
+  contains a figure the record does not. Every version is kept (`JobDocument`).
+- **Export:** `/admin/jobs/[id]/documents` lays out the résumé and the cover
+  letter for print; the browser's "Save as PDF" is the export, so the text stays
+  selectable for applicant-tracking systems.
+- **Scoring** now estimates a realistic chance of being shortlisted, not fit.
+- **Adzuna** source (`ADZUNA`, token `ca:title` or `us:title`): a market-wide
+  title search, the main source once `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` exist.
+  The "Boards" tab is now "Searches".

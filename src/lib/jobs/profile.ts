@@ -9,6 +9,7 @@
 // ============================================================================
 
 import { z } from "zod"
+import { EducationSchema, RoleSchema } from "./history"
 
 export const PROFILE_KEY = "jobs.profile"
 
@@ -30,6 +31,21 @@ export const ProfileSchema = z.object({
     lanes: z.array(LaneSchema).default([]),
     /** A title containing any of these is rejected whatever lane it matches. */
     excludeTitleKeywords: z.array(z.string().min(1)).default([]),
+
+    // ─── What a résumé is built from (phase 2) ───
+    contact: z
+        .object({
+            name: z.string().default(""),
+            email: z.string().default(""),
+            phone: z.string().default(""),
+            location: z.string().default(""),
+            links: z.array(z.string()).default([]),
+        })
+        .default({ name: "", email: "", phone: "", location: "", links: [] }),
+    history: z.array(RoleSchema).default([]),
+    education: z.array(EducationSchema).default([]),
+    certifications: z.array(z.string().min(1)).default([]),
+    skills: z.array(z.string().min(1)).default([]),
 })
 export type Profile = z.infer<typeof ProfileSchema>
 

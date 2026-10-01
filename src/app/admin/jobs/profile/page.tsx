@@ -7,6 +7,7 @@
 // ============================================================================
 
 import { ProfileForm } from "@/components/admin/jobs/profile-form"
+import { formatEducation, formatHistory } from "@/lib/jobs/history"
 import { formatLanes, loadProfile } from "@/lib/jobs/profile"
 
 export const dynamic = "force-dynamic"
@@ -24,6 +25,15 @@ export default async function ProfilePage() {
                     authUS: profile.authorisation.US,
                     lanes: formatLanes(profile.lanes),
                     exclude: profile.excludeTitleKeywords.join(", "),
+                    name: profile.contact.name,
+                    email: profile.contact.email,
+                    phone: profile.contact.phone,
+                    location: profile.contact.location,
+                    links: profile.contact.links.join(", "),
+                    history: formatHistory(profile.history),
+                    education: formatEducation(profile.education),
+                    certifications: profile.certifications.join("\n"),
+                    skills: profile.skills.join(", "),
                 }}
             />
         </div>

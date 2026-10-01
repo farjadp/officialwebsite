@@ -15,7 +15,7 @@ export function BoardForm() {
             <div className="grid gap-4 sm:grid-cols-[11rem_1fr_1fr]">
                 <div>
                     <label htmlFor="kind" className="mb-1.5 block text-xs font-semibold text-slate-700">Board type</label>
-                    <select id="kind" name="kind" defaultValue="GREENHOUSE" className={INPUT}>
+                    <select id="kind" name="kind" defaultValue="ADZUNA" className={INPUT}>
                         {BOARD_KINDS.map((kind) => (
                             <option key={kind} value={kind}>{BOARD_KIND_LABEL[kind]}</option>
                         ))}
@@ -23,19 +23,26 @@ export function BoardForm() {
                 </div>
                 <div>
                     <label htmlFor="label" className="mb-1.5 block text-xs font-semibold text-slate-700">Name</label>
-                    <input id="label" name="label" required maxLength={120} placeholder="Company name" className={INPUT} />
+                    <input id="label" name="label" required maxLength={120} placeholder="Company, or what the search is for" className={INPUT} />
                 </div>
                 <div>
                     <label htmlFor="token" className="mb-1.5 block text-xs font-semibold text-slate-700">Token</label>
-                    <input id="token" name="token" required maxLength={80} placeholder="company-slug" className={INPUT} />
+                    <input id="token" name="token" required maxLength={80} placeholder="ca:product manager" className={INPUT} />
                 </div>
             </div>
-            <p className="text-xs leading-relaxed text-slate-500">
-                The token is the company’s slug in its careers URL: <code>boards.greenhouse.io/<b>slug</b></code>,{" "}
-                <code>jobs.lever.co/<b>slug</b></code>, <code>jobs.ashbyhq.com/<b>slug</b></code>. For a Remotive
-                search it is the phrase to search for. The board is fetched before it is saved, so a wrong slug is
-                refused here.
-            </p>
+            <div className="space-y-1.5 text-xs leading-relaxed text-slate-500">
+                <p>
+                    <b className="text-slate-700">A search</b> finds a job title across the whole market. Choose Adzuna and
+                    write the country and the title: <code>ca:program manager</code> for Canada,{" "}
+                    <code>us:program manager</code> for the United States. This is the one to use most.
+                </p>
+                <p>
+                    <b className="text-slate-700">A company board</b> follows one company you want to work for. The token is
+                    the slug in its careers URL: <code>boards.greenhouse.io/<b>slug</b></code>,{" "}
+                    <code>jobs.lever.co/<b>slug</b></code>, <code>jobs.ashbyhq.com/<b>slug</b></code>.
+                </p>
+                <p>Either is tried before it is saved, so a wrong one is refused here.</p>
+            </div>
             <div className="flex items-center gap-3">
                 <button
                     type="submit"

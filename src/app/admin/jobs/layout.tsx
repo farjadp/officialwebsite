@@ -16,8 +16,8 @@ export default async function JobsLayout({ children }: { children: React.ReactNo
     await requireOwnerPage()
 
     return (
-        <div className="max-w-6xl space-y-6">
-            <div className="flex items-center gap-3">
+        <div className="max-w-6xl space-y-6 print:max-w-none print:space-y-0">
+            <div className="flex items-center gap-3 print:hidden">
                 <Briefcase className="h-6 w-6 text-slate-400" />
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Job Search</h1>
@@ -26,7 +26,9 @@ export default async function JobsLayout({ children }: { children: React.ReactNo
                     </p>
                 </div>
             </div>
-            <JobsNav />
+            <div className="print:hidden">
+                <JobsNav />
+            </div>
             {children}
         </div>
     )

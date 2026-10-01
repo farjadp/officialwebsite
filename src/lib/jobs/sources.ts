@@ -1,10 +1,11 @@
 // ============================================================================
 // Hardware Source: sources.ts
 // Version: 1.0.0 — 2026-10-01
-// Why: The only place the job search touches the outside world. Four kinds of
-//      board, one shape out. Every endpoint here is the board's own public,
-//      unauthenticated posting API — nothing is scraped and nothing is read
-//      from behind a login.
+// Why: The only place the job search touches the outside world. Five kinds of
+//      source, one shape out. Four are a company's own public posting API; one,
+//      Adzuna, is a search across the Canadian or US market by title, through
+//      its official API and the owner's own key. Nothing is scraped and nothing
+//      is read from behind a login.
 // Env / Identity: Server only. Network egress through `safeFetch`. The
 //      normalisers are pure and are what the tests exercise.
 // ============================================================================
@@ -18,13 +19,39 @@ const USER_AGENT = "farjadp.info job search (+https://www.farjadp.info)"
 
 /** A board token is a slug or a search phrase — never a path or a URL. */
 export function isValidToken(kind: BoardKind, token: string): boolean {
+    if (kind === "ADZUNA") return /^(ca|us):[\w .+#&/-]{2,60}$/i.test(token)
     if (kind === "REMOTIVE") return /^[\w .+#&-]{2,60}$/.test(token)
     return /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,80}$/.test(token)
+}
+
+/** "ca:product manager" → its two halves. */
+export function adzunaSearch(token: string): { country: "ca" | "us"; what: string } {
+    const [country, ...rest] = token.split(":")
+    return { country: country.toLowerCase() === "us" ? "us" : "ca", what: rest.join(":").trim() }
+}
+
+const ADZUNA_PAGES = 2
+const ADZUNA_PER_PAGE = 50
+const ADZUNA_MAX_DAYS = 21
+
+/** The Adzuna URL without credentials; `fetchBoard` adds them, so they are never shown or logged. */
+export function adzunaUrl(token: string, page: number): string {
+    const { country, what } = adzunaSearch(token)
+    const query = new URLSearchParams({
+        what_phrase: what,
+        results_per_page: String(ADZUNA_PER_PAGE),
+        max_days_old: String(ADZUNA_MAX_DAYS),
+        sort_by: "date",
+        "content-type": "application/json",
+    })
+    return `https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?${query}`
 }
 
 export function boardUrl(kind: BoardKind, token: string): string {
     const slug = encodeURIComponent(token)
     switch (kind) {
+        case "ADZUNA":
+            return adzunaUrl(token, 1)
         case "GREENHOUSE":
             return `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`
         case "LEVER":
@@ -177,8 +204,39 @@ export function normalizeRemotive(payload: unknown): RawPosting[] {
     )
 }
 
+export function normalizeAdzuna(payload: unknown, country: "ca" | "us"): RawPosting[] {
+    if (!isObject(payload)) throw new Error("Adzuna: unexpected response shape")
+    const countryName = country === "ca" ? "Canada" : "United States"
+    return keep(
+        list(payload.results).map((job) => {
+            if (!isObject(job)) return null
+            const title = text(job.title)
+            const url = link(job.redirect_url)
+            if (job.id == null || !title || !url) return null
+            const place = isObject(job.location) ? text(job.location.display_name) : null
+            return {
+                externalId: String(job.id),
+                // Adzuna wraps matched words in <strong>.
+                title: htmlToText(title),
+                company: (isObject(job.company) ? text(job.company.display_name) : null) ?? "Unknown",
+                // The search is per country, so the country is known even when
+                // the place name alone ("Ottawa") would not say it.
+                location: place ? (place.includes(countryName) ? place : `${place}, ${countryName}`) : countryName,
+                remoteHint: null,
+                department: isObject(job.category) ? text(job.category.label) : null,
+                url,
+                // Adzuna returns a snippet of about 500 characters, not the full text.
+                description: htmlToText(text(job.description) ?? ""),
+                postedAt: date(job.created),
+            }
+        }),
+    )
+}
+
 export function normalize(kind: BoardKind, payload: unknown, label: string): RawPosting[] {
     switch (kind) {
+        case "ADZUNA":
+            throw new Error("Adzuna pages are read by fetchBoard")
         case "GREENHOUSE":
             return normalizeGreenhouse(payload, label)
         case "LEVER":
@@ -195,6 +253,7 @@ export function normalize(kind: BoardKind, payload: unknown, label: string): Raw
 /** Every posting currently on one board. Throws with a message fit to show. */
 export async function fetchBoard(kind: BoardKind, token: string, label: string): Promise<RawPosting[]> {
     if (!isValidToken(kind, token)) throw new Error(`"${token}" is not a valid ${kind} token`)
+    if (kind === "ADZUNA") return fetchAdzuna(token)
 
     const response = await safeFetch(boardUrl(kind, token), {
         headers: { "user-agent": USER_AGENT, accept: "application/json" },
@@ -204,4 +263,27 @@ export async function fetchBoard(kind: BoardKind, token: string, label: string):
     if (!response.ok) throw new Error(`${response.status} ${response.statusText} from ${kind}`)
 
     return normalize(kind, await response.json(), label)
+}
+
+async function fetchAdzuna(token: string): Promise<RawPosting[]> {
+    const id = process.env.ADZUNA_APP_ID?.trim()
+    const key = process.env.ADZUNA_APP_KEY?.trim()
+    if (!id || !key) throw new Error("Adzuna is not set up: ADZUNA_APP_ID and ADZUNA_APP_KEY are missing")
+
+    const { country } = adzunaSearch(token)
+    const all: RawPosting[] = []
+    for (let page = 1; page <= ADZUNA_PAGES; page++) {
+        const url = `${adzunaUrl(token, page)}&app_id=${encodeURIComponent(id)}&app_key=${encodeURIComponent(key)}`
+        const response = await safeFetch(url, {
+            headers: { "user-agent": USER_AGENT, accept: "application/json" },
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        })
+        // Never echo the URL: it carries the key.
+        if (response.status === 401 || response.status === 400) throw new Error("Adzuna refused the key")
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText} from Adzuna`)
+        const found = normalizeAdzuna(await response.json(), country)
+        all.push(...found)
+        if (found.length < ADZUNA_PER_PAGE) break
+    }
+    return all
 }

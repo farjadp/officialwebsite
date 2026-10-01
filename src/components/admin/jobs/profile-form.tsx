@@ -17,7 +17,23 @@ function Field({ id, label, hint, children }: { id: string; label: string; hint?
 }
 
 export function ProfileForm({ initial }: {
-    initial: { headline: string; summary: string; authCA: string; authUS: string; lanes: string; exclude: string }
+    initial: {
+        headline: string
+        summary: string
+        authCA: string
+        authUS: string
+        lanes: string
+        exclude: string
+        name: string
+        email: string
+        phone: string
+        location: string
+        links: string
+        history: string
+        education: string
+        certifications: string
+        skills: string
+    }
 }) {
     const [state, action, isPending] = useActionState<ProfileFormState, FormData>(saveProfileAction, {})
 
@@ -61,6 +77,60 @@ export function ProfileForm({ initial }: {
 
             <Field id="exclude" label="Never show titles containing" hint="Separated by commas. These beat a lane match.">
                 <input id="exclude" name="exclude" defaultValue={initial.exclude} placeholder="intern, junior" className={INPUT} />
+            </Field>
+
+            <div className="border-t border-slate-200 pt-6">
+                <h2 className="text-base font-bold text-slate-900">What résumés are built from</h2>
+                <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                    Every tailored résumé copies these exactly. The model chooses and rephrases; it cannot add an
+                    employer, a date, a title or a number that is not here.
+                </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+                <Field id="name" label="Name on the résumé">
+                    <input id="name" name="name" defaultValue={initial.name} maxLength={120} className={INPUT} />
+                </Field>
+                <Field id="email" label="Email">
+                    <input id="email" name="email" type="email" defaultValue={initial.email} maxLength={200} className={INPUT} />
+                </Field>
+                <Field id="phone" label="Phone">
+                    <input id="phone" name="phone" defaultValue={initial.phone} maxLength={60} className={INPUT} />
+                </Field>
+                <Field id="location" label="Location">
+                    <input id="location" name="location" defaultValue={initial.location} maxLength={120} className={INPUT} />
+                </Field>
+            </div>
+
+            <Field id="links" label="Links" hint="LinkedIn, website, GitHub — separated by commas.">
+                <input id="links" name="links" defaultValue={initial.links} className={INPUT} />
+            </Field>
+
+            <Field
+                id="history"
+                label="Career history"
+                hint="One block per role. Each role has ONE start and end date, used on every résumé. List every title that was true for it; each résumé picks the one that fits the posting. Facts are what the bullets are written from — put the real numbers here."
+            >
+                <textarea
+                    id="history"
+                    name="history"
+                    defaultValue={initial.history}
+                    rows={22}
+                    placeholder={"## Company | City | 2021-04 – present\ntitles: Founder & CEO, CTO\n- What was done, with the real numbers"}
+                    className={`${INPUT} font-mono text-[13px]`}
+                />
+            </Field>
+
+            <Field id="education" label="Education" hint="One per line: Degree | School | Year">
+                <textarea id="education" name="education" defaultValue={initial.education} rows={5} className={`${INPUT} font-mono text-[13px]`} />
+            </Field>
+
+            <Field id="certifications" label="Certifications and courses" hint="One per line.">
+                <textarea id="certifications" name="certifications" defaultValue={initial.certifications} rows={4} className={INPUT} />
+            </Field>
+
+            <Field id="skills" label="Skills" hint="Separated by commas. Only what you could be interviewed on.">
+                <textarea id="skills" name="skills" defaultValue={initial.skills} rows={3} className={INPUT} />
             </Field>
 
             <div className="flex items-start gap-3">

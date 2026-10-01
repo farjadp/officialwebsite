@@ -24,6 +24,7 @@ export const AGENT_NAMES = [
     // Not a content agent: the job search (src/lib/jobs) scores postings
     // through the same provider layer, so its model is chosen here too.
     "jobs.score",
+    "jobs.resume",
 ] as const
 export type AgentName = (typeof AGENT_NAMES)[number]
 
@@ -70,6 +71,7 @@ export const DEFAULT_AGENTS: Record<AgentName, ResolvedAgent> = {
     // On OpenAI because that is the key production has; gpt-4o is the id
     // already proven against it. Changeable from settings without a deploy.
     "jobs.score": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
+    "jobs.resume": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
 }
 
 /** Which writer each reviewer must not share a vendor with. */

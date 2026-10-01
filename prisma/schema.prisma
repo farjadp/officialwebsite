@@ -1084,6 +1084,25 @@ model JobPosting {
   appliedAt DateTime?
   notes     String?
 
+  documents JobDocument[]
+
   @@index([prefilter, status, score])
   @@index([boardId, closedAt])
+}
+
+// A tailored résumé and cover letter for one posting. Every generation is
+// kept, newest shown, so a draft that read better yesterday is not lost.
+model JobDocument {
+  id        String     @id @default(cuid())
+  postingId String
+  posting   JobPosting @relation(fields: [postingId], references: [id], onDelete: Cascade)
+
+  resume      Json // the assembled Resume (src/lib/jobs/documents.ts)
+  coverLetter String
+  notes       String[] @default([]) // what the guards corrected
+  model       String
+  costCents   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([postingId, createdAt])
 }

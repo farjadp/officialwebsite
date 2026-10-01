@@ -10,11 +10,14 @@ import { notFound } from "next/navigation"
 import { format } from "date-fns"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 import { prisma } from "@/lib/prisma"
+import { GenerateButton } from "@/components/admin/jobs/generate-button"
 import { NotesForm } from "@/components/admin/jobs/notes-form"
 import { StatusSelect } from "@/components/admin/jobs/status-select"
 import { loadProfile } from "@/lib/jobs/profile"
 
 export const dynamic = "force-dynamic"
+// Covers "Write résumé and cover letter": up to two model calls in one action.
+export const maxDuration = 120
 
 const AUTH_TEXT: Record<string, string> = {
     OK: "Your work authorisation covers this role.",
@@ -27,7 +30,13 @@ type Notes = { fit?: string; gaps?: string; authorisation?: string; model?: stri
 export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
     const [posting, profile] = await Promise.all([
-        prisma.jobPosting.findUnique({ where: { id }, include: { board: { select: { label: true } } } }),
+        prisma.jobPosting.findUnique({
+            where: { id },
+            include: {
+                board: { select: { label: true } },
+                documents: { orderBy: { createdAt: "desc" }, select: { id: true, createdAt: true } },
+            },
+        }),
         loadProfile(),
     ])
     if (!posting) notFound()
@@ -87,6 +96,27 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
                 </section>
 
                 <aside className="space-y-6">
+                    <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <h3 className="text-sm font-semibold text-slate-900">Résumé and cover letter</h3>
+                        <p className="text-xs leading-relaxed text-slate-500">
+                            Written for this posting from your career history. Dates, employers and titles come from your
+                            profile, never from the model.
+                        </p>
+                        {posting.documents.length > 0 && (
+                            <ul className="space-y-1 text-sm">
+                                {posting.documents.slice(0, 5).map((doc, index) => (
+                                    <li key={doc.id}>
+                                        <Link href={`/admin/jobs/${posting.id}/documents?doc=${doc.id}`} className="font-semibold text-[#1B4B43] hover:underline">
+                                            {index === 0 ? "Latest version" : "Earlier version"}
+                                        </Link>
+                                        <span className="text-xs text-slate-400"> · {format(doc.createdAt, "d MMM, HH:mm")}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        <GenerateButton postingId={posting.id} hasDocument={posting.documents.length > 0} />
+                    </section>
+
                     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="flex items-baseline justify-between">
                             <h3 className="text-sm font-semibold text-slate-900">Fit</h3>

@@ -26,9 +26,9 @@ export default async function BoardsPage() {
 
             {boards.length === 0 ? (
                 <div className="rounded-2xl border border-slate-200 bg-white p-14 text-center shadow-sm">
-                    <p className="font-semibold text-slate-600">No boards yet</p>
+                    <p className="font-semibold text-slate-600">No searches yet</p>
                     <p className="mt-1 text-sm text-slate-500">
-                        Add a company you would work for. Its open roles are read once a day.
+                        Add a title to search for across Canada or the US, or a company you would work for. Each one is read once a day.
                     </p>
                 </div>
             ) : (
@@ -36,9 +36,9 @@ export default async function BoardsPage() {
                     <table className="w-full text-left text-sm">
                         <thead className="border-b border-slate-200 text-xs text-slate-500">
                             <tr>
-                                <th scope="col" className="px-5 py-3 font-semibold">Board</th>
+                                <th scope="col" className="px-5 py-3 font-semibold">Search or board</th>
                                 <th scope="col" className="px-5 py-3 font-semibold">Type</th>
-                                <th scope="col" className="px-5 py-3 text-right font-semibold">Open roles</th>
+                                <th scope="col" className="px-5 py-3 text-right font-semibold">Found</th>
                                 <th scope="col" className="px-5 py-3 text-right font-semibold">In your lanes</th>
                                 <th scope="col" className="px-5 py-3 font-semibold">Last read</th>
                                 <th scope="col" className="px-5 py-3"><span className="sr-only">Actions</span></th>
