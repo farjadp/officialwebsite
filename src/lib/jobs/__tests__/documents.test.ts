@@ -57,6 +57,13 @@ describe("assemble", () => {
         expect(notes).toContain("Old Co was left out by the model and put back")
     })
 
+    it("gives a long role with no bullets its first fact, and leaves a short empty role alone", () => {
+        const { resume, notes } = assemble(profile, draft({ roles: [{ index: 0, title: "CTO", bullets: [] }, { index: 1, title: "Engineering Lead", bullets: [] }] }))
+        expect(resume.roles[0].bullets).toEqual(["Built a team of 12"])
+        expect(resume.roles[1].bullets).toEqual([])
+        expect(notes.some((n) => n.includes("Acme had no bullets"))).toBe(true)
+    })
+
     it("copies contact and education from the record, not the model", () => {
         const { resume } = assemble(profile, draft())
         expect(resume.contact).toEqual(["Toronto, ON", "t@example.com", "example.com"])

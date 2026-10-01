@@ -55,7 +55,7 @@ export const DOCUMENT_SYSTEM = [
     "- Never write a number that does not appear in <candidate>. If a fact has no number, write it without one.",
     "- Keep the words that qualify a figure or a role in it: 'nearly', 'about', 'more than', 'helped'. 'Helped teams secure nearly $5M' must not become 'Raised $5M'.",
     "- For each role, choose its title from that role's allowed titles, copied exactly. Pick the one closest to the posting.",
-    "- Include every role by its index. Give the roles most relevant to the posting 3-5 bullets and the others 0-2.",
+    "- Include every role by its index. Give the roles most relevant to the posting 3-5 bullets and the others 1-2. A role that lasted two years or more always gets at least one bullet: an empty long role reads as a gap.",
     "- Do not overstate. No 'world-class', 'visionary', 'passionate', 'spearheaded', 'rockstar'. No claim of seniority the facts do not support.",
     "",
     "What to write:",
@@ -137,6 +137,13 @@ export function draftText(draft: Draft): string {
     return [draft.headline, draft.summary, ...draft.roles.flatMap((role) => [role.title, ...role.bullets]), ...draft.skills, draft.coverLetter].join("\n")
 }
 
+function monthsBetween(start: string, end: string | null): number {
+    const [sy, sm] = start.split("-").map(Number)
+    const now = new Date()
+    const [ey, em] = end ? end.split("-").map(Number) : [now.getUTCFullYear(), now.getUTCMonth() + 1]
+    return (ey - sy) * 12 + (em - sm)
+}
+
 /** Turn a model draft into documents, enforcing what the model may not decide. */
 export function assemble(profile: Profile, draft: Draft): Documents {
     const notes: string[] = []
@@ -152,13 +159,14 @@ export function assemble(profile: Profile, draft: Draft): Documents {
         } else {
             notes.push(`${role.company} was left out by the model and put back`)
         }
-        return {
-            company: role.company,
-            location: role.location,
-            span: formatSpan(role),
-            title,
-            bullets: (written?.bullets ?? []).map((bullet) => bullet.trim()).filter(Boolean).slice(0, 6),
+        let bullets = (written?.bullets ?? []).map((bullet) => bullet.trim()).filter(Boolean).slice(0, 6)
+        // A long role with nothing under it reads as a gap; fall back to the
+        // owner's own first fact rather than leave it empty.
+        if (bullets.length === 0 && role.facts.length > 0 && monthsBetween(role.start, role.end) >= 24) {
+            bullets = [role.facts[0]]
+            notes.push(`${role.company} had no bullets; used the first fact from your profile`)
         }
+        return { company: role.company, location: role.location, span: formatSpan(role), title, bullets }
     })
 
     const contact = profile.contact
