@@ -157,7 +157,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
 
             {unscored > 0 && (
                 <p className="text-xs text-slate-500">
-                    {unscored} posting{unscored === 1 ? " is" : "s are"} waiting for a score. Up to 40 are scored per run.
+                    {unscored} posting{unscored === 1 ? " is" : "s are"} waiting for a score. Up to 100 are scored per run.
                 </p>
             )}
 

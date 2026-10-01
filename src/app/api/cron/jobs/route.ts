@@ -27,7 +27,10 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const boards = await runIngest()
+    // `?scoreOnly=1` works through a scoring backlog without reading the
+    // boards again — Adzuna's free tier counts every search.
+    const scoreOnly = new URL(request.url).searchParams.get("scoreOnly") === "1"
+    const boards = scoreOnly ? [] : await runIngest()
     const scoring = await scorePending()
 
     return NextResponse.json({

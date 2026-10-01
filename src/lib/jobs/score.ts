@@ -20,8 +20,8 @@ import { complete, ProviderKeyMissing } from "@/lib/content/provider"
 import { loadProfile, type Profile } from "./profile"
 import { AUTHORISATIONS } from "./types"
 
-export const DEFAULT_SCORES_PER_RUN = 40
-/** Calls in flight at once: 40 one after another would not fit the cron's 300 s. */
+export const DEFAULT_SCORES_PER_RUN = 100
+/** Calls in flight at once: 100 one after another would not fit the cron's 300 s. */
 const SCORE_CONCURRENCY = 5
 /** After this many failed attempts a posting is left unscored for a person. */
 export const MAX_SCORE_ATTEMPTS = 3
