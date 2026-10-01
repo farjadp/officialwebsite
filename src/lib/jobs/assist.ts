@@ -17,6 +17,7 @@ import { complete } from "@/lib/content/provider"
 import { figures, sourceText, type Resume } from "./documents"
 import type { Profile } from "./profile"
 import { droppedQualifiers, keywordCoverage, resumeText } from "./review"
+import { recordUsage } from "./usage"
 
 export const ASSIST_TARGETS = ["headline", "summary", "bullets", "cover"] as const
 export type AssistTarget = (typeof ASSIST_TARGETS)[number]
@@ -80,10 +81,12 @@ export async function assist(input: {
 
     if (input.target === "bullets") {
         const result = await complete({ agent: "jobs.assist", system: ASSIST_SYSTEM, user, schema: BulletsAnswer, schemaName: "bullets", maxTokens: 1_200 })
+        await recordUsage("jobs.assist", result)
         const bullets = result.data.bullets.map((b) => b.replace(/^[-•]\s*/, "").trim()).filter(Boolean).slice(0, 6)
         return { ok: true, bullets, warnings: warningsFor(bullets.join("\n"), known, source) }
     }
     const result = await complete({ agent: "jobs.assist", system: ASSIST_SYSTEM, user, schema: TextAnswer, schemaName: "rewrite", maxTokens: 1_500 })
+    await recordUsage("jobs.assist", result)
     const text = result.data.text.trim()
     return { ok: true, text, warnings: warningsFor(text, known, source) }
 }
@@ -140,6 +143,7 @@ export async function reviewDocument(input: { posting: PostingBrief; resume: Res
         schemaName: "resume_review",
         maxTokens: 3_000,
     })
+    await recordUsage("jobs.review", result)
 
     const full = `${body}\n${input.resume.education.map((e) => e.degree).join("\n")}\n${input.resume.certifications.join("\n")}`
     const { matched, missing } = keywordCoverage(result.data.keywords, full)

@@ -7,6 +7,7 @@
 // ============================================================================
 
 import { NextResponse } from "next/server"
+import { isPaused } from "@/lib/jobs/control"
 import { runIngest } from "@/lib/jobs/ingest"
 import { scorePending } from "@/lib/jobs/score"
 
@@ -25,6 +26,10 @@ function authorize(request: Request): boolean {
 export async function GET(request: Request) {
     if (!authorize(request)) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    if (await isPaused()) {
+        return NextResponse.json({ skipped: "paused from /admin/jobs" })
     }
 
     // `?scoreOnly=1` works through a scoring backlog without reading the

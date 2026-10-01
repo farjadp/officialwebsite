@@ -18,6 +18,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { complete, estimateCents, ProviderKeyMissing } from "@/lib/content/provider"
 import { loadProfile, type Profile } from "./profile"
+import { recordUsage } from "./usage"
 import { AUTHORISATIONS } from "./types"
 
 export const DEFAULT_SCORES_PER_RUN = 100
@@ -140,6 +141,7 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
                     scoredAt: new Date(),
                 },
             })
+            await recordUsage("jobs.score", result)
             report.scored++
             // Each call is a fraction of a cent; rounding per call reported 0 for 100 of them.
             spent += estimateCents(result.model, result.inputTokens, result.outputTokens)

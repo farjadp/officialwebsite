@@ -7,11 +7,13 @@
 // Env / Identity: Pure. No database, no network.
 // ============================================================================
 
-export const BOARD_KINDS = ["ADZUNA", "GREENHOUSE", "LEVER", "ASHBY", "REMOTIVE"] as const
+export const BOARD_KINDS = ["ADZUNA", "HIMALAYAS", "JOOBLE", "REMOTIVE", "GREENHOUSE", "LEVER", "ASHBY"] as const
 export type BoardKind = (typeof BOARD_KINDS)[number]
 
 export const BOARD_KIND_LABEL: Record<BoardKind, string> = {
     ADZUNA: "Adzuna search",
+    HIMALAYAS: "Himalayas search (remote)",
+    JOOBLE: "Jooble search",
     GREENHOUSE: "Greenhouse",
     LEVER: "Lever",
     ASHBY: "Ashby",

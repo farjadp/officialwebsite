@@ -38,6 +38,12 @@ export function BoardForm() {
                     category: <code>ca/it-jobs:project manager</code>. This is the one to use most.
                 </p>
                 <p>
+                    <b className="text-slate-700">Himalayas</b> lists remote jobs only: <code>ca:product manager</code> for jobs open to
+                    Canada, <code>ww:product manager</code> for worldwide. <b className="text-slate-700">Jooble</b> works like Adzuna
+                    (<code>ca:</code> or <code>us:</code>) once its key is set. <b className="text-slate-700">Remotive</b> takes a plain
+                    phrase and lists remote jobs worldwide.
+                </p>
+                <p>
                     <b className="text-slate-700">A company board</b> follows one company you want to work for. The token is
                     the slug in its careers URL: <code>boards.greenhouse.io/<b>slug</b></code>,{" "}
                     <code>jobs.lever.co/<b>slug</b></code>, <code>jobs.ashbyhq.com/<b>slug</b></code>.

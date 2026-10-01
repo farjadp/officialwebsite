@@ -20,6 +20,8 @@ const USER_AGENT = "farjadp.info job search (+https://www.farjadp.info)"
 /** A board token is a slug or a search phrase — never a path or a URL. */
 export function isValidToken(kind: BoardKind, token: string): boolean {
     if (kind === "ADZUNA") return /^(ca|us)(\/[a-z-]{2,40})?:[\w .+#&-]{2,60}$/i.test(token)
+    if (kind === "HIMALAYAS") return /^(ca|us|ww):[\w .+#&-]{2,60}$/i.test(token)
+    if (kind === "JOOBLE") return /^(ca|us):[\w .+#&-]{2,60}$/i.test(token)
     if (kind === "REMOTIVE") return /^[\w .+#&-]{2,60}$/.test(token)
     return /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,80}$/.test(token)
 }
@@ -53,11 +55,31 @@ export function adzunaUrl(token: string, page: number): string {
     return `https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?${query}`
 }
 
+/** "ca:product manager" → country (ca, us, or ww for worldwide-remote) and phrase. */
+function searchParts(token: string): { country: string; what: string } {
+    const colon = token.indexOf(":")
+    return { country: token.slice(0, colon).toLowerCase(), what: token.slice(colon + 1).trim() }
+}
+
+const HIMALAYAS_PAGES = 3
+
+export function himalayasUrl(token: string, page: number): string {
+    const { country, what } = searchParts(token)
+    const query = new URLSearchParams({ q: what, page: String(page) })
+    if (country === "ww") query.set("worldwide", "true")
+    else query.set("country", country.toUpperCase())
+    return `https://himalayas.app/jobs/api/search?${query}`
+}
+
 export function boardUrl(kind: BoardKind, token: string): string {
     const slug = encodeURIComponent(token)
     switch (kind) {
         case "ADZUNA":
             return adzunaUrl(token, 1)
+        case "HIMALAYAS":
+            return himalayasUrl(token, 1)
+        case "JOOBLE":
+            return "https://jooble.org/api/"
         case "GREENHOUSE":
             return `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`
         case "LEVER":
@@ -239,10 +261,66 @@ export function normalizeAdzuna(payload: unknown, country: "ca" | "us"): RawPost
     )
 }
 
+export function normalizeHimalayas(payload: unknown): RawPosting[] {
+    if (!isObject(payload)) throw new Error("Himalayas: unexpected response shape")
+    return keep(
+        list(payload.jobs).map((job) => {
+            if (!isObject(job)) return null
+            const title = text(job.title)
+            const url = link(job.applicationLink) ?? link(job.guid)
+            const id = text(job.guid) ?? url
+            if (!id || !title || !url) return null
+            const places = list(job.locationRestrictions).map(text).filter((place): place is string => Boolean(place))
+            const published = typeof job.pubDate === "number" || typeof job.pubDate === "string" ? Number(job.pubDate) : NaN
+            return {
+                externalId: id,
+                title,
+                company: text(job.companyName) ?? "Unknown",
+                // Himalayas lists only remote jobs; the restriction is who may apply.
+                location: places.length ? `Remote (${places.join(", ")})` : "Remote, anywhere",
+                remoteHint: true,
+                department: list(job.parentCategories).map(text).find(Boolean) ?? null,
+                url,
+                description: htmlToText(text(job.description) ?? text(job.excerpt) ?? ""),
+                postedAt: Number.isFinite(published) ? new Date(published * 1000) : null,
+            }
+        }),
+    )
+}
+
+export function normalizeJooble(payload: unknown, country: string): RawPosting[] {
+    if (!isObject(payload)) throw new Error("Jooble: unexpected response shape")
+    const countryName = country === "us" ? "United States" : "Canada"
+    return keep(
+        list(payload.jobs).map((job) => {
+            if (!isObject(job)) return null
+            const title = text(job.title)
+            const url = link(job.link)
+            if (job.id == null || !title || !url) return null
+            const place = text(job.location)
+            return {
+                externalId: String(job.id),
+                title: htmlToText(title),
+                company: text(job.company) ?? "Unknown",
+                location: place ? (place.includes(countryName) ? place : `${place}, ${countryName}`) : countryName,
+                remoteHint: null,
+                department: text(job.type),
+                url,
+                // A snippet, like Adzuna's: Jooble does not return full postings.
+                description: htmlToText(text(job.snippet) ?? ""),
+                postedAt: date(job.updated),
+            }
+        }),
+    )
+}
+
 export function normalize(kind: BoardKind, payload: unknown, label: string): RawPosting[] {
     switch (kind) {
         case "ADZUNA":
-            throw new Error("Adzuna pages are read by fetchBoard")
+        case "JOOBLE":
+            throw new Error(`${kind} pages are read by fetchBoard`)
+        case "HIMALAYAS":
+            return normalizeHimalayas(payload)
         case "GREENHOUSE":
             return normalizeGreenhouse(payload, label)
         case "LEVER":
@@ -260,6 +338,8 @@ export function normalize(kind: BoardKind, payload: unknown, label: string): Raw
 export async function fetchBoard(kind: BoardKind, token: string, label: string): Promise<RawPosting[]> {
     if (!isValidToken(kind, token)) throw new Error(`"${token}" is not a valid ${kind} token`)
     if (kind === "ADZUNA") return fetchAdzuna(token)
+    if (kind === "HIMALAYAS") return fetchHimalayas(token)
+    if (kind === "JOOBLE") return fetchJooble(token)
 
     const response = await safeFetch(boardUrl(kind, token), {
         headers: { "user-agent": USER_AGENT, accept: "application/json" },
@@ -290,6 +370,46 @@ async function fetchAdzuna(token: string): Promise<RawPosting[]> {
         const found = normalizeAdzuna(await response.json(), country)
         all.push(...found)
         if (found.length < ADZUNA_PER_PAGE) break
+    }
+    return all
+}
+
+async function fetchHimalayas(token: string): Promise<RawPosting[]> {
+    const all: RawPosting[] = []
+    for (let page = 1; page <= HIMALAYAS_PAGES; page++) {
+        const response = await safeFetch(himalayasUrl(token, page), {
+            headers: { "user-agent": USER_AGENT, accept: "application/json" },
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        })
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText} from Himalayas`)
+        const found = normalizeHimalayas(await response.json())
+        all.push(...found)
+        if (found.length < 20) break
+    }
+    return all
+}
+
+const JOOBLE_PAGES = 2
+
+async function fetchJooble(token: string): Promise<RawPosting[]> {
+    const key = process.env.JOOBLE_API_KEY?.trim()
+    if (!key) throw new Error("Jooble is not set up: JOOBLE_API_KEY is missing")
+    const { country, what } = searchParts(token)
+
+    const all: RawPosting[] = []
+    for (let page = 1; page <= JOOBLE_PAGES; page++) {
+        // The key is part of the path: never echo this URL.
+        const response = await safeFetch(`https://jooble.org/api/${encodeURIComponent(key)}`, {
+            method: "POST",
+            headers: { "user-agent": USER_AGENT, accept: "application/json", "content-type": "application/json" },
+            body: JSON.stringify({ keywords: what, location: country === "us" ? "United States" : "Canada", page: String(page) }),
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        })
+        if (response.status === 403 || response.status === 401) throw new Error("Jooble refused the key")
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText} from Jooble`)
+        const found = normalizeJooble(await response.json(), country)
+        all.push(...found)
+        if (found.length < 20) break
     }
     return all
 }

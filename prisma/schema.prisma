@@ -1109,3 +1109,17 @@ model JobDocument {
 
   @@index([postingId, createdAt])
 }
+
+// One row per model call the job search makes, for the usage page: tokens and
+// an estimated cost from the provider layer's rate table. Not a bill.
+model JobUsage {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  agent        String // jobs.score | jobs.resume | jobs.assist | jobs.review
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  costCents    Float // unrounded estimate
+
+  @@index([createdAt])
+}

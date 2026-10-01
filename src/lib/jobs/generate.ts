@@ -20,6 +20,7 @@ import {
 } from "./documents"
 import { loadProfile } from "./profile"
 import { droppedQualifiers } from "./review"
+import { recordUsage } from "./usage"
 
 export type GenerateResult = { ok: true; documentId: string } | { ok: false; error: string }
 
@@ -49,6 +50,7 @@ export async function generateDocuments(postingId: string): Promise<GenerateResu
             maxTokens: 4_000,
         })
         costCents += result.costCents
+        await recordUsage("jobs.resume", result)
 
         const text = draftText(result.data)
         const invented = inventedFigures(text, source)

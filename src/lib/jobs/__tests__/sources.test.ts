@@ -1,7 +1,7 @@
 // Fixtures are invented: this repository is public, and real postings and
 // target companies stay in the database.
 import { describe, it, expect } from "vitest"
-import { adzunaUrl, boardUrl, isValidToken, normalizeAdzuna, normalizeAshby, normalizeGreenhouse, normalizeLever, normalizeRemotive } from "../sources"
+import { adzunaUrl, boardUrl, himalayasUrl, normalizeHimalayas, normalizeJooble, isValidToken, normalizeAdzuna, normalizeAshby, normalizeGreenhouse, normalizeLever, normalizeRemotive } from "../sources"
 
 describe("normalizeGreenhouse", () => {
     it("reads a job and unescapes its content", () => {
@@ -162,5 +162,43 @@ describe("Adzuna", () => {
         expect(isValidToken("ADZUNA", "ca/../x:project manager")).toBe(false)
         expect(adzunaUrl("ca/it-jobs:project manager", 1)).toContain("category=it-jobs")
         expect(adzunaUrl("ca:project manager", 1)).not.toContain("category=")
+    })
+})
+
+describe("Himalayas", () => {
+    it("reads a remote job and who may apply", () => {
+        const [job] = normalizeHimalayas({
+            jobs: [
+                {
+                    title: "Senior Product Manager",
+                    companyName: "Acme",
+                    applicationLink: "https://himalayas.app/companies/acme/jobs/spm",
+                    guid: "https://himalayas.app/companies/acme/jobs/spm",
+                    locationRestrictions: ["Canada", "United States"],
+                    parentCategories: ["Product"],
+                    description: "<p>Own the roadmap</p>",
+                    pubDate: 1790875666,
+                },
+            ],
+        })
+        expect(job).toMatchObject({ company: "Acme", location: "Remote (Canada, United States)", remoteHint: true, description: "Own the roadmap" })
+        expect(job.postedAt?.getUTCFullYear()).toBe(2026)
+    })
+
+    it("searches by country or worldwide", () => {
+        expect(himalayasUrl("ca:product manager", 2)).toBe("https://himalayas.app/jobs/api/search?q=product+manager&page=2&country=CA")
+        expect(himalayasUrl("ww:cto", 1)).toContain("worldwide=true")
+        expect(isValidToken("HIMALAYAS", "ww:cto")).toBe(true)
+        expect(isValidToken("HIMALAYAS", "uk:cto")).toBe(false)
+    })
+})
+
+describe("Jooble", () => {
+    it("reads a result and adds the searched country", () => {
+        const [job] = normalizeJooble(
+            { jobs: [{ id: 99, title: "Program Manager", company: "Acme", location: "Toronto, ON", link: "https://jooble.org/desc/99", snippet: "Run <b>programs</b>", updated: "2026-09-30T00:00:00" }] },
+            "ca",
+        )
+        expect(job).toMatchObject({ externalId: "99", location: "Toronto, ON, Canada", description: "Run programs" })
     })
 })

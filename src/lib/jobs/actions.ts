@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma"
 import { assist, reviewDocument, ASSIST_TARGETS, type AssistResult, type AssistTarget, type ModelReview } from "./assist"
 import type { Resume } from "./documents"
 import { applyEdit, EditSchema, type Edit } from "./editor"
+import { isPaused, setPaused } from "./control"
 import { generateDocuments as generate, type GenerateResult } from "./generate"
 import { assertOwner } from "./guard"
 import { parseEducation, parseHistory } from "./history"
@@ -153,6 +154,7 @@ export type RunReport = { boards: BoardReport[]; scoring: ScoreReport } | { erro
 /** The same work the daily cron does, on demand. */
 export async function runNow(): Promise<RunReport> {
     await assertOwner()
+    if (await isPaused()) return { error: "The job search is paused. Resume it to read the sources." }
     try {
         const boards = await runIngest()
         const scoring = await scorePending()
@@ -246,4 +248,12 @@ export async function reviewAction(
     } catch (error) {
         return { ok: false, error: message(error) }
     }
+}
+
+// ─── Pause ──────────────────────────────────────────────────────────────────
+
+export async function setPausedAction(paused: boolean): Promise<void> {
+    await assertOwner()
+    await setPaused(paused)
+    revalidatePath(PATH, "layout")
 }
