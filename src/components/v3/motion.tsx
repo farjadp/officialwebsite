@@ -59,7 +59,6 @@ export function RoleSwitcher({
     return () => window.clearTimeout(id)
   }, [running, active, roles.length])
 
-  const role = roles[active]
 
   return (
     <div
@@ -79,7 +78,7 @@ export function RoleSwitcher({
               role="tab"
               id={`v3-tab-${r.key}`}
               aria-selected={selected}
-              aria-controls="v3-role-panel"
+              aria-controls={`v3-panel-${r.key}`}
               onClick={() => {
                 setActive(i)
                 setChosen(true)
@@ -94,7 +93,7 @@ export function RoleSwitcher({
                 </span>
                 {r.tab}
               </span>
-              <span className="relative block h-0.5 overflow-hidden bg-v3-line" aria-hidden>
+              <span className="relative mt-auto block h-0.5 overflow-hidden bg-v3-line" aria-hidden>
                 {selected && (
                   <span
                     // Re-keyed on every change so the fill restarts.
@@ -111,37 +110,46 @@ export function RoleSwitcher({
       </div>
 
       <div
-        id="v3-role-panel"
-        role="tabpanel"
-        aria-labelledby={`v3-tab-${role.key}`}
         aria-live={chosen ? "polite" : "off"}
-        className="grid min-h-[430px] md:min-h-[400px]"
+        className="grid"
       >
-        <AnimatePresence mode="wait" initial={false}>
+        {/*
+          All three panels are rendered into the same grid cell, so the cell is
+          always as tall as the tallest role at the current width. The hidden
+          ones keep their box (visibility, not display), which is what stops the
+          page jumping when the tabs rotate — the fixed min-height this used to
+          carry was a guess that wasted ~50px at some widths and was still too
+          short at others. `invisible` also takes them out of the tab order.
+        */}
+        {roles.map((r, i) => {
+          const shown = i === active
+          return (
           <motion.div
-            key={role.key}
-            className="col-start-1 row-start-1 flex flex-col gap-7"
-            initial={reduce ? false : "hidden"}
-            animate="shown"
-            exit={reduce ? undefined : "gone"}
+            key={r.key}
+            id={`v3-panel-${r.key}`}
+            role="tabpanel"
+            aria-labelledby={`v3-tab-${r.key}`}
+            aria-hidden={!shown}
+            className={`col-start-1 row-start-1 flex flex-col gap-7 ${shown ? "" : "invisible"}`}
+            initial={false}
+            animate={shown ? "shown" : "gone"}
             variants={{
-              hidden: {},
-              shown: { transition: { staggerChildren: 0.09 } },
-              gone: { opacity: 0, y: -12, transition: { duration: 0.25 } },
+              shown: { opacity: 1, y: 0, transition: reduce ? { duration: 0 } : { staggerChildren: 0.09 } },
+              gone: { opacity: 0, y: reduce ? 0 : -12, transition: { duration: reduce ? 0 : 0.25 } },
             }}
           >
             <motion.h1
               variants={RISE}
-              className="font-v3-display text-[clamp(2.6rem,5.4vw,4.9rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:font-light rtl:leading-[1.45] rtl:tracking-[-0.01em]"
+              className="text-balance font-v3-display text-[clamp(2.6rem,5.4vw,4.9rem)] font-light leading-[1.04] tracking-[-0.02em] rtl:font-light rtl:leading-[1.45] rtl:tracking-[-0.01em]"
             >
-              {role.headline}
-              <em className="text-v3-light not-italic ltr:italic">{role.accent}</em>
+              {r.headline}
+              <em className="text-v3-light not-italic ltr:italic">{r.accent}</em>
             </motion.h1>
             <motion.p variants={RISE} className="max-w-xl text-lg leading-relaxed text-v3-soft rtl:leading-loose">
-              {role.body}
+              {r.body}
             </motion.p>
             <motion.ul variants={RISE} className="flex flex-wrap gap-2.5 text-[13px] text-v3-soft">
-              {role.proof.map((p) => (
+              {r.proof.map((p) => (
                 <li key={p} className="rounded-full border border-v3-line px-3 py-1.5">
                   {p}
                 </li>
@@ -149,21 +157,22 @@ export function RoleSwitcher({
             </motion.ul>
             <motion.div variants={RISE} className="flex flex-wrap items-center gap-3">
               <Link
-                href={role.cta.href}
+                href={r.cta.href}
                 className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-v3-bone px-7 py-4 font-semibold text-v3-ink transition-transform duration-300 hover:-translate-y-0.5"
               >
-                {role.cta.label}
+                {r.cta.label}
                 <Arrow locale={locale} className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </Link>
               <Link
-                href={role.secondary.href}
+                href={r.secondary.href}
                 className="inline-flex min-h-12 items-center px-4 py-4 text-v3-bone underline decoration-v3-line underline-offset-8 transition-colors hover:text-v3-light hover:decoration-v3-light"
               >
-                {role.secondary.label}
+                {r.secondary.label}
               </Link>
             </motion.div>
           </motion.div>
-        </AnimatePresence>
+          )
+        })}
       </div>
     </div>
   )
