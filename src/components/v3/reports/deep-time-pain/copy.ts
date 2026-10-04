@@ -25,6 +25,15 @@ type Copy = {
     asOf: string
   }
   findings: { kicker: string; title: string; items: string[] }
+  spiral: {
+    title: string
+    lead: string
+    hint: string
+    selected: string
+    onClock: string
+    caption: string
+    noWebgl: string
+  }
   scale: {
     kicker: string
     title: string
@@ -113,22 +122,31 @@ export const COPY: Record<Locale, Copy> = {
         "That trick is not a human invention. It is far older than us — and on its own it does not explain how the badly injured stayed alive for years.",
       ],
       summary:
-        "The hormonal stress axis shared by vertebrates is very old: the line leading to lampreys — jawless fish — split from ours roughly 500 million years ago, and lampreys still run a version of it. Hormones buy minutes. The fossils of hominins who lived on for years after crushing injuries are consistent with something else: other people.",
+        "The hormonal stress axis shared by vertebrates is very old: the line leading to lampreys — jawless fish — split from ours more than 500 million years ago, and lampreys still run a version of it. Hormones buy minutes. The fossils of hominins who lived on for years after crushing injuries are consistent with something else: other people.",
       mega: "500",
       megaUnit: "million years",
-      megaLabel: "roughly how long vertebrates have carried the same hormonal stress axis",
+      megaLabel: "at least this long vertebrates have carried the same hormonal stress axis",
       asOf: "Dates follow the published literature; where it disagrees, the range is given.",
     },
     findings: {
       kicker: "What the evidence says",
       title: "Five findings",
       items: [
-        "The hormonal stress axis predates jaws. Sea lampreys, whose line split from ours roughly 500 million years ago, run the same hypothalamus–pituitary–adrenal pattern with a different steroid, 11-deoxycortisol. In stressed lamprey larvae it rose about fifteen-fold within six hours, and blood sugar about three-fold.",
+        "The hormonal stress axis predates jaws. Sea lampreys, whose line split from ours more than 500 million years ago, run the same hypothalamus–pituitary–interrenal pattern (the interrenal is the fish counterpart of the adrenal) with a different steroid, 11-deoxycortisol. In stressed lamprey larvae it rose about fifteen-fold within six hours, and blood sugar about three-fold.",
         "“Fight or flight” is not one circuit but three, running at different speeds: adrenaline in seconds, cortisol over minutes to hours, and a separate pain-suppressing pathway in between.",
         "Henry Beecher found that badly wounded soldiers asked for narcotics far less often than civilians with comparable surgical wounds — about 32% against 83%. The size of the wound was not what set the pain.",
         "The same descending pathway can turn pain down or up. Acute stress tends to suppress pain; prolonged stress tends to do the opposite and raise pain sensitivity.",
-        "Shanidar 1 lived to roughly 40–50 with a crushed left eye socket, one deaf ear, a withered arm lost above the elbow and a damaged leg. Hormones explain the first minutes. Years of that are consistent with a group that kept him.",
+        "Shanidar 1 lived to roughly 40–50 with a crushed left eye socket, one deaf ear, an arm lost above the elbow and a damaged leg. Hormones explain the first minutes. Years of that are consistent with a group that did not abandon him.",
       ],
+    },
+    spiral: {
+      title: "The spiral of deep time",
+      lead: "Wind the whole of Earth's history into a rising spiral, and space it so that every step up is ten times closer to now. On a scale like this, the last few hundred thousand years stop being a rounding error and get as much room as the first billion.",
+      hint: "Drag to turn the spiral. Choose an event to bring it to the front.",
+      selected: "Selected",
+      onClock: "On the 24-hour clock:",
+      caption: "The spacing is logarithmic: each marked step is ten times more recent than the one below it. That is the only way 4.54 billion years and a single human life can share one picture. The flat clock below shows the same events at true proportion.",
+      noWebgl: "This browser cannot draw the 3D spiral. The list beside it carries the same events.",
     },
     scale: {
       kicker: "The scale",
@@ -151,9 +169,9 @@ export const COPY: Record<Locale, Copy> = {
         you: "about the length of a finger",
         writing: "the length of a room",
         shanidar: "half a football pitch",
-        sapiens: "three football pitches end to end",
+        sapiens: "about three football pitches end to end",
         dmanisi: "a twenty-minute walk",
-        lamprey: "Toronto to Montreal, and then some",
+        lamprey: "about Toronto to Montreal as the crow flies",
         earth: "",
         cambrian: "",
         kpg: "",
@@ -162,7 +180,7 @@ export const COPY: Record<Locale, Copy> = {
         qafzeh: "",
       },
       rulerNote:
-        "Walk out of your front door in Toronto heading for Montreal, and the Shanidar Neanderthal is 50 metres behind you. The stress system he was using was built at the far end of the road.",
+        "Walk out of your front door in Toronto heading for Montreal, and the Shanidar Neanderthal is 50 metres behind you. The stress system he was using was built somewhere near Montreal.",
     },
     circuits: {
       kicker: "The mechanism",
@@ -197,7 +215,7 @@ export const COPY: Record<Locale, Copy> = {
     beecher: {
       kicker: "The modern human",
       title: "Analgesia on the battlefield",
-      lead: "In the Second World War, an anaesthetist named Henry Beecher studied 215 badly wounded soldiers at the Anzio front in Italy; fewer than a quarter said their pain was bad enough to want anything done about it. A decade later he put the question to civilians with comparable surgical wounds and compared the two: do you want a narcotic for the pain?",
+      lead: "In the Second World War, an anaesthetist named Henry Beecher studied 215 badly wounded soldiers on the Italian front, Anzio among them; most said their pain was not bad enough to want anything for it. A decade later he put the question to civilians with comparable surgical wounds and compared the two: do you want a narcotic for the pain?",
       soldiers: "Badly wounded soldiers who wanted a narcotic",
       civilians: "Civilians with comparable wounds",
       reading:
@@ -222,9 +240,9 @@ export const COPY: Record<Locale, Copy> = {
           body: "A crescent-shaped depression about 1.4 centimetres long on the right forehead, with healed margins — blunt-force trauma, possibly delivered by another hominin, though the cause cannot be known. The individual survived it. The date is unresolved: somewhere between about 130,000 and 230,000 years.",
         },
         qafzeh: {
-          place: "Qafzeh, Israel / Palestine",
+          place: "Qafzeh Cave, Lower Galilee, near Nazareth",
           title: "The injured teenager",
-          body: "A Homo sapiens of twelve or thirteen, about 90,000–100,000 years ago, with a healed depressed fracture of the right forehead that very probably affected behaviour and social function. Two deer antlers lay on the chest, read as a funerary offering. Injury, survival and deliberate burial in a single individual.",
+          body: "A Homo sapiens of twelve or thirteen, about 90,000–100,000 years ago, with a healed depressed fracture of the right forehead that very probably caused personality and neurological problems. Two deer antlers lay on the chest, read as a funerary offering. Injury, survival and deliberate burial in a single individual.",
         },
         shanidar: {
           place: "Shanidar Cave, Iraqi Kurdistan",
@@ -245,19 +263,19 @@ export const COPY: Record<Locale, Copy> = {
         },
         ear: {
           short: "Deafness in the right ear",
-          body: "Bony growths in both ear canals. The right canal is completely closed, so he was effectively deaf on that side, with at least partial hearing loss on the left. The original studies had missed it entirely; a 2017 re-examination found it. On a landscape with predators, someone who cannot hear depends on others hearing for him.",
+          body: "Bony growths in both ear canals; on the right they bridge across the opening. Erik Trinkaus recorded them in the late 1970s, but their effect on hearing was only assessed in 2017: he was probably effectively deaf on the right, with at least partial loss on the left. On a landscape with predators, someone who cannot hear depends on others hearing for him.",
         },
         arm: {
           short: "A withered right arm",
-          body: "The right arm is markedly atrophied, ending in a weakened stump just above the elbow; the forearm and hand were lost long before death. The withering may not be from injury at all — a long-standing reading is nerve damage or paralysis from early in life.",
+          body: "The right arm is markedly atrophied, ending in a weakened stump just above the elbow. The forearm and hand were lost long before death, most likely by amputation above the elbow after a fracture that never healed (Trinkaus & Villotte 2017). An older reading blamed nerve damage instead.",
         },
         leg: {
-          short: "Damage to the right leg",
-          body: "Injury and degenerative change in the right leg and foot. He almost certainly walked with a pronounced limp.",
+          short: "Damage to the right knee and foot",
+          body: "Injury and degenerative change in the right knee and foot. He probably walked with an abnormal gait.",
         },
       },
       caveat:
-        "The diagram is schematic, not a reconstruction of the skeleton. What caused the injuries is unknown — a hunting accident and violence are both possible — and so is the order in which they happened. The bones were themselves later damaged by rockfall in the cave, which complicates the reading.",
+        "The diagram is schematic, not a reconstruction of the skeleton. What caused the injuries is unknown — a hunting accident and violence are both possible — and so is the order in which they happened.",
     },
     limits: {
       kicker: "Reading it honestly",
@@ -271,7 +289,7 @@ export const COPY: Record<Locale, Copy> = {
       cannotTitle: "Cannot be read from a fossil",
       cannot: [
         "Whether Nandy had adrenaline in his blood at the moment of the blow, or whether his pain was suppressed. Hormones do not fossilise. That part is inference from living biology, not evidence from the bone.",
-        "Whether he was cared for. Fight or flight may have carried him through the first minutes; surviving years with one arm, one working eye and one deaf ear is consistent with a group that kept him — not proof of it. Every case in this report is debated on exactly this point.",
+        "Whether he was cared for. Fight or flight may have carried him through the first minutes; surviving years with one arm, one damaged eye and one deaf ear is consistent with a group that kept him — not proof of it. Every case in this report is debated on exactly this point.",
       ],
       closing:
         "The body postpones pain for a few critical minutes; that is an inheritance shared across vertebrates. Hormones buy minutes, and healing takes years. The bones that healed are consistent with the thing hormones cannot supply: people who did not leave the injured behind.",
@@ -281,26 +299,29 @@ export const COPY: Record<Locale, Copy> = {
       title: "How this was put together",
       notes: [
         "The 24-hour clock uses 4.54 billion years for the age of the Earth. Every time on it is computed from that figure, not placed by eye.",
-        "Where a date is contested — Maba in particular, and the Shanidar layers — the report gives the range rather than picking a number.",
-        "Divergence dates are estimates. The ~500-million-year figure is the split between the line leading to lampreys and ours, not the age of lampreys themselves. Human–chimpanzee estimates run from about 6.5 to 10 million years, some as far as 13; the clock uses 7.",
+        "Where a date is contested — Maba in particular, and the Shanidar layers — the text gives the range; the clock, the ruler and the spiral need one point, so they use a value inside it.",
+        "Divergence dates are estimates. The 500-million-year figure is a floor for the split between the line leading to lampreys and ours, not the age of lampreys themselves; published estimates run from about 500 to over 560 million years. Human–chimpanzee estimates run from about 6.5 to 10 million years, some as far as 13; the clock uses 7.",
         "Whether the lamprey system shows the ancestral vertebrate state is itself argued over (Thornton & Carroll 2011, with a reply from Close and colleagues).",
         "Hormones and soft tissue do not fossilise. Every statement about what an ancient individual felt is inference from living species, and is marked as such.",
         "This is a summary for general readers, written from the published literature. It is not a clinical or academic source, and nothing here is medical advice.",
       ],
       sourcesTitle: "Sources",
       sources: [
-        { label: "Close DA et al. (2010). 11-Deoxycortisol is a corticosteroid hormone in the lamprey. PNAS 107(31)", href: "https://www.pnas.org/doi/10.1073/pnas.0914026107" },
-        { label: "Shaughnessy CA, McCormick SD (2021). 11-Deoxycortisol is a stress responsive and gluconeogenic hormone in a jawless vertebrate, the sea lamprey. J Exp Biol 224(11)", href: "https://journals.biologists.com/jeb/article/224/11/jeb241943/269003/" },
-        { label: "Thornton JW, Carroll SM (2011). Lamprey endocrinology is not ancestral. PNAS 108(6)", href: "https://www.pnas.org/doi/full/10.1073/pnas.1014896108" },
-        { label: "Beecher HK (1946). Pain in men wounded in battle. Annals of Surgery 123(1)", href: "https://journals.lww.com/annalsofsurgery/citation/1946/01000/pain_in_men_wounded_in_battle.8.aspx" },
-        { label: "Beecher HK (1956). Relationship of significance of wound to pain experienced. JAMA 161(17)", href: "https://jamanetwork.com/journals/jama/fullarticle/323093" },
+        { label: "Close DA et al. (2010). 11-Deoxycortisol is a corticosteroid hormone in the lamprey. PNAS 107(31)", href: "https://doi.org/10.1073/pnas.0914026107" },
+        { label: "Shaughnessy CA, McCormick SD (2021). 11-Deoxycortisol is a stress responsive and gluconeogenic hormone in a jawless vertebrate, the sea lamprey. J Exp Biol 224(11)", href: "https://doi.org/10.1242/jeb.241943" },
+        { label: "Thornton JW, Carroll SM (2011). Lamprey endocrinology is not ancestral. PNAS 108(2)", href: "https://doi.org/10.1073/pnas.1014896108" },
+        { label: "Close DA et al. (2011). Reply to Thornton and Carroll: Lamprey endocrinology. PNAS 108(2)", href: "https://doi.org/10.1073/pnas.1015112108" },
+        { label: "Beecher HK (1946). Pain in men wounded in battle. Annals of Surgery 123(1)", href: "https://doi.org/10.1097/00000658-194601000-00008" },
+        { label: "Beecher HK (1956). Relationship of significance of wound to pain experienced. JAMA 161(17)", href: "https://doi.org/10.1001/jama.1956.02970170005002" },
         { label: "Butler RK, Finn DP (2009). Stress-induced analgesia. Progress in Neurobiology 88(3)", href: "https://doi.org/10.1016/j.pneurobio.2009.04.003" },
-        { label: "Jennings EM et al. (2014). Stress-induced hyperalgesia. Progress in Neurobiology 121", href: "https://researchrepository.universityofgalway.ie/entities/publication/3256bf51-d1c3-4989-a5e4-9a1d4114762f" },
-        { label: "Trinkaus E, Villotte S (2017). External auditory exostoses and hearing loss in the Shanidar 1 Neandertal. PLOS ONE 12(10)", href: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0186684" },
-        { label: "Wu X-J et al. (2011). Antemortem trauma and survival in the late Middle Pleistocene human cranium from Maba. PNAS 108(49)", href: "https://www.pnas.org/doi/10.1073/pnas.1117113108" },
-        { label: "Coqueugniot H et al. (2014). Earliest cranio-encephalic trauma from the Levantine Middle Palaeolithic. PLOS ONE 9(7)", href: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0102822" },
-        { label: "Lordkipanidze D et al. (2005). The earliest toothless hominin skull. Nature 434", href: "https://www.nature.com/articles/434717b" },
-        { label: "Hublin J-J et al. (2017). New fossils from Jebel Irhoud. Nature 546", href: "https://www.nature.com/articles/nature22336" },
+        { label: "Jennings EM et al. (2014). Stress-induced hyperalgesia. Progress in Neurobiology 121", href: "https://doi.org/10.1016/j.pneurobio.2014.06.003" },
+        { label: "Trinkaus E, Villotte S (2017). External auditory exostoses and hearing loss in the Shanidar 1 Neandertal. PLOS ONE 12(10)", href: "https://doi.org/10.1371/journal.pone.0186684" },
+        { label: "Wu X-J et al. (2011). Antemortem trauma and survival in the late Middle Pleistocene human cranium from Maba. PNAS 108(49)", href: "https://doi.org/10.1073/pnas.1117113108" },
+        { label: "Coqueugniot H et al. (2014). Earliest cranio-encephalic trauma from the Levantine Middle Palaeolithic. PLOS ONE 9(7)", href: "https://doi.org/10.1371/journal.pone.0102822" },
+        { label: "Lordkipanidze D et al. (2005). The earliest toothless hominin skull. Nature 434", href: "https://doi.org/10.1038/434717b" },
+        { label: "Surbeck M et al. (2020). A toothless bonobo skull challenges the notion of alternative subsistence strategies in early Homo. J Hum Evol 147", href: "https://doi.org/10.1016/j.jhevol.2020.102871" },
+        { label: "Richter D et al. (2017). The age of the hominin fossils from Jebel Irhoud, Morocco. Nature 546", href: "https://doi.org/10.1038/nature22335" },
+        { label: "Hublin J-J et al. (2017). New fossils from Jebel Irhoud, Morocco. Nature 546", href: "https://doi.org/10.1038/nature22336" },
         { label: "International Commission on Stratigraphy. International Chronostratigraphic Chart", href: "https://stratigraphy.org/chart" },
       ],
     },
@@ -315,7 +336,7 @@ export const COPY: Record<Locale, Copy> = {
     events: {
       earth: { name: "شکل‌گیری زمین", note: "۴٫۵۴ میلیارد سال پیش" },
       cambrian: { name: "آغاز کامبرین", note: "انفجار طرح‌های بدنی جانوران در ۲۰ تا ۲۵ میلیون سال بعد رخ می‌دهد" },
-      lamprey: { name: "جدا شدن خط لامپری‌ها از خط ما", note: "محور استرس از همین حدود وجود دارد" },
+      lamprey: { name: "جدا شدن خط لامپری‌ها از خط ما", note: "محور استرس از همان زمان وجود داشته است" },
       kpg: { name: "انقراض دایناسورهای غیرپرنده" },
       split: { name: "جدا شدن خط انسان و شامپانزه", note: "بیشتر برآوردها ۶٫۵ تا ۱۰ میلیون سال" },
       dmanisi: { name: "دمانیسی، گرجستان", note: "جمجمه‌ی بی‌دندان" },
@@ -333,27 +354,36 @@ export const COPY: Record<Locale, Copy> = {
         "این ترفند اختراع انسان نیست. خیلی قدیمی‌تر از ماست — و به‌تنهایی توضیح نمی‌دهد آدم‌های به‌شدت زخمی چطور سال‌ها زنده ماندند.",
       ],
       summary:
-        "محور هورمونی استرس که مهره‌داران در آن شریک‌اند بسیار کهن است: خطی که به لامپری‌ها — ماهی‌های بی‌آرواره — می‌رسد حدود ۵۰۰ میلیون سال پیش از خط ما جدا شد و لامپری‌ها هنوز نسخه‌ای از آن را دارند. هورمون چند دقیقه وقت می‌خرد. فسیل انسان‌تبارهایی که سال‌ها پس از آسیب‌های خردکننده زنده ماندند، با چیز دیگری سازگار است: آدم‌های دیگر.",
+        "محور هورمونی استرس که مهره‌داران در آن شریک‌اند بسیار کهن است: خطی که به لامپری‌ها — ماهی‌های بی‌آرواره — می‌رسد بیش از ۵۰۰ میلیون سال پیش از خط ما جدا شد و لامپری‌ها هنوز نسخه‌ای از آن را دارند. هورمون چند دقیقه وقت می‌خرد. فسیل انسان‌تبارهایی که سال‌ها پس از آسیب‌های خردکننده زنده ماندند، با چیز دیگری سازگار است: آدم‌های دیگر.",
       mega: "۵۰۰",
       megaUnit: "میلیون سال",
-      megaLabel: "تقریباً این‌قدر است که مهره‌داران همین محور هورمونی استرس را با خود می‌برند",
-      asOf: "تاریخ‌ها از ادبیات منتشرشده‌اند؛ هر جا اختلاف هست، بازه آورده شده.",
+      megaLabel: "دست‌کم این مدت است که مهره‌داران همین محور هورمونی استرس را با خود دارند",
+      asOf: "تاریخ‌ها بر پایه‌ی پژوهش‌های منتشرشده است؛ هر جا اختلاف هست، بازه آمده است.",
     },
     findings: {
       kicker: "شواهد چه می‌گویند",
       title: "پنج یافته",
       items: [
-        "محور هورمونی استرس از آرواره قدیمی‌تر است. لامپری دریایی، که خطش حدود ۵۰۰ میلیون سال پیش از خط ما جدا شد، همان الگوی هیپوتالاموس–هیپوفیز–فوق‌کلیه را با استروئیدی دیگر به نام ۱۱-دئوکسی‌کورتیزول اجرا می‌کند. در لاروهای لامپری زیر استرس، این هورمون ظرف شش ساعت حدود پانزده برابر و قند خون حدود سه برابر شد.",
-        "«جنگ یا گریز» یک مدار نیست، سه مدار است با سه سرعت: آدرنالین در چند ثانیه، کورتیزول در دقیقه تا ساعت، و مداری جداگانه برای مهار درد در میانه‌ی این دو.",
-        "هنری بیچر دید سربازان به‌شدت زخمی خیلی کمتر از غیرنظامیانی با جراحت مشابه داروی مُسکّن می‌خواهند؛ حدود ۳۲ درصد در برابر ۸۳ درصد. اندازه‌ی زخم تعیین‌کننده‌ی درد نبود.",
-        "همان مسیر پایین‌رونده می‌تواند درد را کم یا زیاد کند. استرس حاد معمولاً درد را مهار می‌کند؛ استرس طولانی معمولاً برعکس عمل می‌کند و حساسیت به درد را بالا می‌برد.",
-        "شانیدار ۱ با کاسه‌ی چشم چپِ خردشده، یک گوش ناشنوا، بازوی تحلیل‌رفته‌ای که بالای آرنج از دست رفته بود و پای آسیب‌دیده تا حدود ۴۰ تا ۵۰ سالگی زندگی کرد. هورمون دقایق اول را توضیح می‌دهد. سال‌ها دوام آوردن با گروهی سازگار است که او را نگه داشت.",
+        "محور هورمونی استرس از آرواره قدیمی‌تر است. لامپری دریایی، که خطش بیش از ۵۰۰ میلیون سال پیش از خط ما جدا شد، همان الگوی هیپوتالاموس–هیپوفیز–اینتررنال (معادل فوق‌کلیه در ماهی‌ها) را با استروئیدی دیگر به نام ۱۱-دئوکسی‌کورتیزول اجرا می‌کند. در لاروهای لامپری زیر استرس، این هورمون ظرف شش ساعت حدود پانزده برابر و قند خون حدود سه برابر شد.",
+        "«جنگ یا گریز» یک مدار نیست، سه مدار است با سه سرعت: آدرنالین در چند ثانیه، کورتیزول در چند دقیقه تا چند ساعت، و مداری جداگانه برای مهار درد در میانه‌ی این دو.",
+        "هنری بیچر دید سربازان به‌شدت زخمی خیلی کمتر از غیرنظامیانی با جراحت مشابه مسکّن اپیوئیدی (مثل مورفین) می‌خواهند؛ حدود ۳۲ درصد در برابر ۸۳ درصد. اندازه‌ی زخم تعیین‌کننده‌ی درد نبود.",
+        "همان مسیر نزولی مهار درد می‌تواند درد را کم یا زیاد کند. استرس حاد معمولاً درد را مهار می‌کند؛ استرس طولانی معمولاً برعکس عمل می‌کند و حساسیت به درد را بالا می‌برد.",
+        "شانیدار ۱ با کاسه‌ی چشم چپِ خردشده، یک گوش ناشنوا، بازویی که بالای آرنج از دست رفته بود و پای آسیب‌دیده تا حدود ۴۰ تا ۵۰ سالگی زندگی کرد. هورمون دقایق اول را توضیح می‌دهد. سال‌ها دوام آوردن با گروهی سازگار است که رهایش نکرد.",
       ],
+    },
+    spiral: {
+      title: "مارپیچ زمان ژرف",
+      lead: "کل تاریخ زمین را در یک مارپیچ رو به بالا بپیچید و فاصله‌ها را طوری بگذارید که هر پله‌ی بالاتر ده برابر به امروز نزدیک‌تر باشد. در چنین مقیاسی، چند صد هزار سال اخیر دیگر خطای گردکردن نیست و به اندازه‌ی یک میلیارد سال اول جا می‌گیرد.",
+      hint: "برای چرخاندن مارپیچ بکشید. یک رویداد را انتخاب کنید تا رو به شما بچرخد.",
+      selected: "انتخاب‌شده",
+      onClock: "روی ساعت ۲۴ ساعته:",
+      caption: "فاصله‌ها لگاریتمی‌اند: هر پله‌ی علامت‌دار ده برابر از پله‌ی پایینی به امروز نزدیک‌تر است. فقط این‌طور است که ۴٫۵۴ میلیارد سال و یک عمر انسان در یک تصویر جا می‌شوند. ساعت تخت پایین همین رویدادها را با نسبت واقعی نشان می‌دهد.",
+      noWebgl: "این مرورگر نمی‌تواند مارپیچ سه‌بعدی را نشان دهد. فهرست کنارش همان رویدادها را دارد.",
     },
     scale: {
       kicker: "مقیاس",
       title: "۵۰۰ میلیون سال اصلاً یعنی چقدر؟",
-      lead: "عددهای بزرگ برای ذهن ما معنا ندارند. پس کل عمر زمین را در یک شبانه‌روز ۲۴ ساعته فشرده می‌کنیم: سیاره ساعت ۰۰:۰۰ شکل می‌گیرد و «الان» دقیقاً نیمه‌شب است. بعد مرحله‌به‌مرحله بزرگ‌نمایی کنید و ببینید کل گونه‌ی ما چطور به یک خطای گِرد کردن تبدیل می‌شود.",
+      lead: "عددهای بزرگ برای ذهن ما معنا ندارند. پس کل عمر زمین را در یک شبانه‌روز ۲۴ ساعته فشرده می‌کنیم: سیاره ساعت ۰۰:۰۰ شکل می‌گیرد و «الان» دقیقاً نیمه‌شب است. بعد مرحله‌به‌مرحله بزرگ‌نمایی کنید و ببینید کل گونه‌ی ما چطور به یک خطای گردکردن تبدیل می‌شود.",
       dayLabel: "شبانه‌روز ۲۴ ساعته",
       nowLabel: "الان",
       birthLabel: "تولد زمین",
@@ -371,9 +401,9 @@ export const COPY: Record<Locale, Copy> = {
         you: "تقریباً اندازه‌ی یک انگشت",
         writing: "طول یک اتاق",
         shanidar: "نصف زمین فوتبال",
-        sapiens: "سه زمین فوتبال پشت سر هم",
+        sapiens: "حدود سه زمین فوتبال پشت سر هم",
         dmanisi: "حدود بیست دقیقه پیاده‌روی",
-        lamprey: "کمی بیشتر از جاده‌ی تهران تا اصفهان",
+        lamprey: "حدود جاده‌ی تهران تا اصفهان، به‌علاوه‌ی ۷۰ کیلومتر",
         earth: "",
         cambrian: "",
         kpg: "",
@@ -382,48 +412,48 @@ export const COPY: Record<Locale, Copy> = {
         qafzeh: "",
       },
       rulerNote:
-        "یعنی اگر از در خانه‌تان در تهران به سمت اصفهان راه بیفتید، نئاندرتالِ شانیدار فقط ۵۰ متر پشت سر شماست. سامانه‌ی استرسی که او استفاده می‌کرد، آن سر جاده ساخته شده بود.",
+        "یعنی اگر از در خانه‌تان در تهران به سمت اصفهان راه بیفتید، نئاندرتالِ شانیدار فقط ۵۰ متر پشت سر شماست. سامانه‌ی استرسی که او به کار می‌برد، آن سر جاده ساخته شده بود.",
     },
     circuits: {
       kicker: "سازوکار",
       title: "سه مدار، نه یک مدار",
-      lead: "آنچه «جنگ یا گریز» می‌نامیم — والتر کانن در ۱۹۱۵ آن را «ضرورت‌های جنگیدن یا گریختن» توصیف کرد — در واقع چند سامانه است که هم‌زمان و با سرعت‌های متفاوت کار می‌کنند. تفکیکشان مهم است، چون شاهد زمان‌های دور فقط به یکی از آن‌ها مربوط است.",
+      lead: "آنچه «جنگ یا گریز» می‌نامیم — والتر کانن در ۱۹۱۵ آن را «ضرورت‌های جنگیدن یا گریختن» توصیف کرد — در واقع چند سامانه است که هم‌زمان و با سرعت‌های متفاوت کار می‌کنند. تفکیکشان مهم است، چون شواهد زمان ژرف فقط به یکی از آن‌ها مربوط‌اند.",
       hint: "یک مدار را فعال کنید و مسیر سیگنال را ببینید. زمان‌ها واقعی‌اند؛ انیمیشن فشرده است.",
-      fire: "فعال کن",
+      fire: "فعال کنید",
       reset: "از نو",
-      arrives: "به بدن می‌رسد در",
+      arrives: "زمان رسیدن به بدن:",
       lanes: {
         adrenaline: {
           name: "مدار سریع: آدرنالین",
           timing: "چند ثانیه",
-          chain: ["تهدید", "آمیگدال", "هیپوتالاموس", "عصب سمپاتیک", "مغز غده‌ی فوق‌کلیه", "آدرنالین"],
-          body: "ضربان و فشار خون بالا می‌رود، قند در خون آزاد می‌شود، مردمک گشاد و توجه باریک می‌شود.",
+          chain: ["تهدید", "آمیگدالا", "هیپوتالاموس", "عصب سمپاتیک", "بخش مرکزی غده‌ی فوق‌کلیه", "آدرنالین"],
+          body: "ضربان و فشار خون بالا می‌رود، قند در خون آزاد می‌شود، مردمک‌ها گشاد می‌شوند و توجه متمرکز می‌شود.",
         },
         cortisol: {
           name: "مدار کند: کورتیزول",
-          timing: "دقیقه تا ساعت",
+          timing: "چند دقیقه تا چند ساعت",
           chain: ["هیپوتالاموس · CRH", "هیپوفیز · ACTH", "قشر غده‌ی فوق‌کلیه", "کورتیزول"],
           body: "انرژی لازم برای ادامه دادن را تأمین می‌کند و التهاب را مهار می‌کند.",
-          note: "شاهد زمان‌های دور اینجاست. لامپری دریایی همین محور را با استروئیدی دیگر، ۱۱-دئوکسی‌کورتیزول، اجرا می‌کند. در لاروهای زیر استرس این هورمون ظرف شش ساعت حدود پانزده برابر و قند خون حدود سه برابر شد. محور حفظ شده است؛ خود هورمون نه.",
+          note: "شواهد زمان ژرف اینجاست. لامپری دریایی همین محور را با استروئیدی دیگر، ۱۱-دئوکسی‌کورتیزول، اجرا می‌کند. در لاروهای زیر استرس این هورمون ظرف شش ساعت حدود پانزده برابر و قند خون حدود سه برابر شد. محور حفظ شده است؛ خود هورمون نه.",
         },
         analgesia: {
           name: "مدار مهار درد",
           timing: "چند دقیقه",
-          chain: ["ترس یا استرس شدید", "ماده‌ی خاکستری دور قنات مغز", "بصل‌النخاع شکمی‌میانی", "شاخ خلفی نخاع", "سیگنال درد کم می‌شود"],
-          body: "با اوپیوئیدهای خود بدن و اندوکانابینوئیدها منتقل می‌شود و سامانه‌های مونوآمین، گابا و گلوتامات هم درگیرند. نام این پدیده «بی‌دردی ناشی از استرس» است. همین مسیر می‌تواند درد را بیشتر هم بکند.",
+          chain: ["ترس یا استرس شدید", "ماده‌ی خاکستری دورقناتی (PAG)", "بخش شکمی‌میانیِ منقاری بصل‌النخاع (RVM)", "شاخ خلفی نخاع", "سیگنال درد کم می‌شود"],
+          body: "به‌واسطه‌ی اپیوئیدهای درون‌زاد و اندوکانابینوئیدها انجام می‌شود و سامانه‌های مونوآمین، گابا و گلوتامات هم درگیرند. نام این پدیده «بی‌دردی ناشی از استرس» است. همین مسیر می‌تواند درد را بیشتر هم بکند.",
         },
       },
     },
     beecher: {
       kicker: "انسان امروزی",
       title: "بی‌دردی در میدان جنگ",
-      lead: "در جنگ جهانی دوم، متخصص بیهوشی‌ای به نام هنری بیچر ۲۱۵ سرباز به‌شدت زخمی را در جبهه‌ی آنتسیو در ایتالیا بررسی کرد؛ کمتر از یک‌چهارمشان گفتند دردشان آن‌قدر هست که بخواهند کاری برایش بشود. یک دهه بعد همین پرسش را از غیرنظامیانی با جراحت جراحی مشابه پرسید و دو گروه را مقایسه کرد: برای درد مُسکّن می‌خواهید؟",
-      soldiers: "سربازان به‌شدت زخمی که مُسکّن خواستند",
+      lead: "در جنگ جهانی دوم، متخصص بیهوشی‌ای به نام هنری بیچر ۲۱۵ سرباز به‌شدت زخمی را در جبهه‌ی ایتالیا، از جمله آنزیو، بررسی کرد؛ بیشترشان گفتند دردشان آن‌قدر شدید نیست که چیزی برایش بخواهند. یک دهه بعد همین پرسش را از غیرنظامیانی با جراحت جراحی مشابه پرسید و دو گروه را مقایسه کرد: برای درد مسکّن اپیوئیدی می‌خواهید؟",
+      soldiers: "سربازان به‌شدت زخمی که مسکّن اپیوئیدی خواستند",
       civilians: "غیرنظامیان با جراحت مشابه",
       reading:
-        "برداشت بیچر: درد صرفاً اندازه‌ی زخم نیست. معنای موقعیت آن را تغییر می‌دهد. برای سرباز، زخم یعنی زنده ماندم و از جبهه دور می‌شوم.",
+        "برداشت بیچر: درد صرفاً اندازه‌ی زخم نیست. معنای موقعیت آن را تغییر می‌دهد. برای سرباز، زخم یعنی «زنده ماندم و از جبهه دور می‌شوم».",
       caveat:
-        "دو نکته که بازگویی‌های عامه حذف می‌کنند. این مطالعه مشاهده‌ای و غیرکور بود و گروه‌ها از پیش همسان نشده بودند؛ پس عددها را چشمگیر بدانید، نه دقیق. و اثر کوتاه‌مدت است: استرس طولانی و مزمن اغلب برعکس عمل می‌کند و آدم را به درد حساس‌تر می‌کند. این سازوکار برای چند دقیقه‌ی بحرانی ساخته شده، نه برای عمری که زیر فشار می‌گذرد.",
+        "دو نکته که بازگویی‌های عامه حذف می‌کنند. این مطالعه مشاهده‌ای و بدون کورسازی بود و گروه‌ها از پیش همسان نشده بودند؛ پس عددها را چشمگیر بدانید، نه دقیق. و اثر کوتاه‌مدت است: استرس طولانی و مزمن اغلب برعکس عمل می‌کند و آدم را به درد حساس‌تر می‌کند. این سازوکار برای چند دقیقه‌ی بحرانی ساخته شده، نه برای عمری که زیر فشار می‌گذرد.",
     },
     fossils: {
       kicker: "شواهد فسیلی",
@@ -439,12 +469,12 @@ export const COPY: Record<Locale, Copy> = {
         maba: {
           place: "مابا، جنوب چین",
           title: "فرورفتگی جوش‌خورده در جمجمه",
-          body: "فرورفتگی هلالی به طول حدود ۱٫۴ سانتی‌متر در پیشانی سمت راست با لبه‌های ترمیم‌شده؛ ضربه‌ی کوبنده که شاید کار انسان‌تبار دیگری بوده، هرچند علتش را نمی‌شود دانست. فرد زنده ماند. تاریخ هنوز قطعی نیست: جایی بین حدود ۱۳۰ تا ۲۳۰ هزار سال.",
+          body: "فرورفتگی هلالی به طول حدود ۱٫۴ سانتی‌متر در پیشانی سمت راست با لبه‌های ترمیم‌شده؛ ضربه با جسم کُند که شاید کار انسان‌تبار دیگری بوده، هرچند علتش را نمی‌شود دانست. فرد زنده ماند. تاریخ هنوز قطعی نیست: جایی بین حدود ۱۳۰ تا ۲۳۰ هزار سال.",
         },
         qafzeh: {
-          place: "قفزه، فلسطین/اسرائیل",
+          place: "غار قفزه، جلیل سفلی، نزدیک ناصره",
           title: "نوجوان آسیب‌دیده",
-          body: "انسان خردمندی دوازده یا سیزده ساله، حدود ۹۰ تا ۱۰۰ هزار سال پیش، با شکستگی فرورفته‌ی جوش‌خورده در پیشانی سمت راست که به احتمال زیاد بر رفتار و کارکرد اجتماعی‌اش اثر گذاشته بود. دو شاخ گوزن روی سینه‌اش بود که هدیه‌ی تدفین خوانده می‌شود. آسیب، بقا و تدفین عامدانه در یک فرد.",
+          body: "انسان خردمندی دوازده یا سیزده ساله، حدود ۹۰ تا ۱۰۰ هزار سال پیش، با شکستگی فرورفته‌ی جوش‌خورده در پیشانی سمت راست که به احتمال زیاد مشکلات شخصیتی و عصبی به‌همراه داشته است. دو شاخ گوزن روی سینه‌اش بود که پیشکشی تدفینی تعبیر می‌شود. آسیب، بقا و تدفین عامدانه در یک فرد.",
         },
         shanidar: {
           place: "غار شانیدار، کردستان عراق",
@@ -465,22 +495,22 @@ export const COPY: Record<Locale, Copy> = {
         },
         ear: {
           short: "ناشنوایی گوش راست",
-          body: "زائده‌های استخوانی در هر دو مجرای گوش. مجرای راست کاملاً بسته است، پس او از آن گوش عملاً ناشنوا بوده و دست‌کم بخشی از شنوایی گوش چپ را هم از دست داده بود. بررسی‌های اولیه کاملاً از قلمش انداخته بودند؛ بازبینی ۲۰۱۷ آن را پیدا کرد. در سرزمینی پر از شکارچی، کسی که نمی‌شنود به شنیدنِ دیگران وابسته است.",
+          body: "زائده‌های استخوانی در هر دو مجرای گوش؛ در گوش راست دهانه‌ی مجرا را سرتاسر پل زده‌اند. اریک ترینکاوس این زائده‌ها را اواخر دهه‌ی ۱۹۷۰ ثبت کرده بود، اما اثرشان بر شنوایی تازه در ۲۰۱۷ بررسی شد: احتمالاً از گوش راست عملاً ناشنوا بوده و دست‌کم بخشی از شنوایی گوش چپ را هم از دست داده بود. در سرزمینی پر از شکارچی، کسی که نمی‌شنود به شنیدنِ دیگران وابسته است.",
         },
         arm: {
           short: "بازوی راست تحلیل‌رفته",
-          body: "بازوی راست به‌وضوح تحلیل رفته و به ته‌مانده‌ای ضعیف کمی بالای آرنج ختم می‌شود؛ ساعد و دست مدت‌ها پیش از مرگ از دست رفته بودند. شاید این تحلیل اصلاً از آسیب نباشد — یک برداشت قدیمی، آسیب عصبی یا فلج از سنین پایین است.",
+          body: "بازوی راست به‌وضوح تحلیل رفته و به باقی‌مانده‌ای ضعیف از بازو کمی بالای آرنج ختم می‌شود. ساعد و دست مدت‌ها پیش از مرگ از دست رفته بودند؛ به احتمال زیاد با قطع عضو بالای آرنج، پس از شکستگی‌ای که جوش نخورد (ترینکاوس و ویلوت ۲۰۱۷). برداشتی قدیمی‌تر آن را به آسیب عصبی نسبت می‌داد.",
         },
         leg: {
-          short: "آسیب پای راست",
-          body: "آسیب و تغییرات تخریبی در پا و کف پای راست. تقریباً مسلم است که به‌شکل محسوسی می‌لنگیده.",
+          short: "آسیب زانو و پای راست",
+          body: "آسیب و تغییرات دژنراتیو در زانو و پای راست. احتمالاً با راه رفتنی غیرعادی حرکت می‌کرده است.",
         },
       },
       caveat:
-        "طرح شماتیک است، نه بازسازی اسکلت. علت آسیب‌ها معلوم نیست — حادثه‌ی شکار و خشونت هر دو ممکن‌اند — و ترتیب رخ دادنشان هم معلوم نیست. خود استخوان‌ها بعدها بر اثر ریزش سنگ در غار آسیب دیدند و همین خواندنشان را دشوارتر می‌کند.",
+        "طرح شماتیک است، نه بازسازی اسکلت. علت آسیب‌ها معلوم نیست — حادثه‌ی شکار و خشونت هر دو ممکن‌اند — و ترتیب رخ دادنشان هم معلوم نیست.",
     },
     limits: {
-      kicker: "خواندن منصفانه",
+      kicker: "خوانش صادقانه",
       title: "استخوان چه می‌گوید و چه نمی‌گوید",
       canTitle: "با اطمینان می‌شود گفت",
       can: [
@@ -491,7 +521,7 @@ export const COPY: Record<Locale, Copy> = {
       cannotTitle: "از فسیل نمی‌شود خواند",
       cannot: [
         "اینکه نَندی در لحظه‌ی ضربه آدرنالین در خون داشته یا دردش سرکوب شده بوده. هورمون فسیل نمی‌شود. این بخش استنتاج از زیست‌شناسی امروز است، نه شاهدی که استخوان بدهد.",
-        "اینکه از او مراقبت شده یا نه. «جنگ یا گریز» شاید او را در دقایق اول نگه داشته باشد؛ سال‌ها زندگی با یک دست، یک چشم سالم و یک گوش ناشنوا با گروهی سازگار است که او را نگه داشت — نه اثبات آن. همه‌ی نمونه‌های این گزارش دقیقاً سر همین نکته محل بحث‌اند.",
+        "اینکه از او مراقبت شده یا نه. «جنگ یا گریز» شاید او را در دقایق اول نگه داشته باشد؛ سال‌ها زندگی با یک دست، یک چشم آسیب‌دیده و یک گوش ناشنوا با گروهی سازگار است که رهایش نکرد — نه اثبات آن. همه‌ی نمونه‌های این گزارش دقیقاً سر همین نکته محل بحث‌اند.",
       ],
       closing:
         "بدن ما درد را برای چند دقیقه‌ی بحرانی عقب می‌اندازد؛ این میراثی است که مهره‌داران در آن شریک‌اند. هورمون چند دقیقه وقت می‌خرد و جوش خوردن سال‌ها طول می‌کشد. استخوان‌هایی که جوش خوردند با همان چیزی سازگارند که هورمون نمی‌تواند فراهم کند: آدم‌هایی که زخمی را تنها نگذاشتند.",
@@ -500,27 +530,30 @@ export const COPY: Record<Locale, Copy> = {
       kicker: "روش و منابع",
       title: "این گزارش چطور ساخته شد",
       notes: [
-        "ساعت ۲۴ ساعته عمر زمین را ۴٫۵۴ میلیارد سال می‌گیرد. هر زمانی روی آن از همین عدد محاسبه شده، نه با چشم گذاشته شده.",
-        "هر جا تاریخ محل اختلاف است — به‌ویژه مابا و لایه‌های شانیدار — گزارش بازه را می‌آورد و عددی را انتخاب نمی‌کند.",
-        "تاریخ‌های واگرایی برآوردند. عدد حدود ۵۰۰ میلیون سال، جدایی خطی است که به لامپری‌ها می‌رسد از خط ما، نه سن خود لامپری‌ها. برآوردهای جدایی انسان و شامپانزه از حدود ۶٫۵ تا ۱۰ میلیون سال است و بعضی تا ۱۳؛ ساعت عدد ۷ را به کار می‌برد.",
+        "ساعت ۲۴ ساعته عمر زمین را ۴٫۵۴ میلیارد سال می‌گیرد. هر زمانی روی آن از همین عدد محاسبه شده، نه با تخمین چشمی.",
+        "هر جا تاریخ محل اختلاف است — به‌ویژه مابا و لایه‌های شانیدار — متن بازه را می‌آورد؛ ساعت، خط‌کش و مارپیچ به یک نقطه نیاز دارند و مقداری درون همان بازه را به کار می‌برند.",
+        "تاریخ‌های واگرایی تخمینی‌اند. عدد ۵۰۰ میلیون سال کفِ برآورد جدایی خطی است که به لامپری‌ها می‌رسد از خط ما، نه سن خود لامپری‌ها؛ برآوردهای منتشرشده از حدود ۵۰۰ تا بیش از ۵۶۰ میلیون سال است. برآوردهای جدایی انسان و شامپانزه از حدود ۶٫۵ تا ۱۰ میلیون سال است و بعضی تا ۱۳؛ ساعت عدد ۷ را به کار می‌برد.",
         "اینکه سامانه‌ی لامپری حالت اجدادی مهره‌داران را نشان می‌دهد یا نه، خودش محل بحث است (تورنتون و کرول ۲۰۱۱، و پاسخ کلوز و همکاران).",
         "هورمون و بافت نرم فسیل نمی‌شوند. هر جمله‌ای درباره‌ی احساس یک فرد کهن، استنتاج از گونه‌های زنده‌ی امروز است و همان‌جا مشخص شده.",
-        "این یک خلاصه برای خواننده‌ی عمومی است که از ادبیات منتشرشده نوشته شده. منبع بالینی یا آکادمیک نیست و هیچ‌چیز آن توصیه‌ی پزشکی نیست.",
+        "این یک خلاصه برای خواننده‌ی عمومی است که بر پایه‌ی پژوهش‌های منتشرشده نوشته شده. منبع بالینی یا آکادمیک نیست و هیچ‌چیز آن توصیه‌ی پزشکی نیست.",
       ],
       sourcesTitle: "منابع",
       sources: [
-        { label: "Close DA et al. (2010). 11-Deoxycortisol is a corticosteroid hormone in the lamprey. PNAS 107(31)", href: "https://www.pnas.org/doi/10.1073/pnas.0914026107" },
-        { label: "Shaughnessy CA, McCormick SD (2021). 11-Deoxycortisol is a stress responsive and gluconeogenic hormone in a jawless vertebrate, the sea lamprey. J Exp Biol 224(11)", href: "https://journals.biologists.com/jeb/article/224/11/jeb241943/269003/" },
-        { label: "Thornton JW, Carroll SM (2011). Lamprey endocrinology is not ancestral. PNAS 108(6)", href: "https://www.pnas.org/doi/full/10.1073/pnas.1014896108" },
-        { label: "Beecher HK (1946). Pain in men wounded in battle. Annals of Surgery 123(1)", href: "https://journals.lww.com/annalsofsurgery/citation/1946/01000/pain_in_men_wounded_in_battle.8.aspx" },
-        { label: "Beecher HK (1956). Relationship of significance of wound to pain experienced. JAMA 161(17)", href: "https://jamanetwork.com/journals/jama/fullarticle/323093" },
+        { label: "Close DA et al. (2010). 11-Deoxycortisol is a corticosteroid hormone in the lamprey. PNAS 107(31)", href: "https://doi.org/10.1073/pnas.0914026107" },
+        { label: "Shaughnessy CA, McCormick SD (2021). 11-Deoxycortisol is a stress responsive and gluconeogenic hormone in a jawless vertebrate, the sea lamprey. J Exp Biol 224(11)", href: "https://doi.org/10.1242/jeb.241943" },
+        { label: "Thornton JW, Carroll SM (2011). Lamprey endocrinology is not ancestral. PNAS 108(2)", href: "https://doi.org/10.1073/pnas.1014896108" },
+        { label: "Close DA et al. (2011). Reply to Thornton and Carroll: Lamprey endocrinology. PNAS 108(2)", href: "https://doi.org/10.1073/pnas.1015112108" },
+        { label: "Beecher HK (1946). Pain in men wounded in battle. Annals of Surgery 123(1)", href: "https://doi.org/10.1097/00000658-194601000-00008" },
+        { label: "Beecher HK (1956). Relationship of significance of wound to pain experienced. JAMA 161(17)", href: "https://doi.org/10.1001/jama.1956.02970170005002" },
         { label: "Butler RK, Finn DP (2009). Stress-induced analgesia. Progress in Neurobiology 88(3)", href: "https://doi.org/10.1016/j.pneurobio.2009.04.003" },
-        { label: "Jennings EM et al. (2014). Stress-induced hyperalgesia. Progress in Neurobiology 121", href: "https://researchrepository.universityofgalway.ie/entities/publication/3256bf51-d1c3-4989-a5e4-9a1d4114762f" },
-        { label: "Trinkaus E, Villotte S (2017). External auditory exostoses and hearing loss in the Shanidar 1 Neandertal. PLOS ONE 12(10)", href: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0186684" },
-        { label: "Wu X-J et al. (2011). Antemortem trauma and survival in the late Middle Pleistocene human cranium from Maba. PNAS 108(49)", href: "https://www.pnas.org/doi/10.1073/pnas.1117113108" },
-        { label: "Coqueugniot H et al. (2014). Earliest cranio-encephalic trauma from the Levantine Middle Palaeolithic. PLOS ONE 9(7)", href: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0102822" },
-        { label: "Lordkipanidze D et al. (2005). The earliest toothless hominin skull. Nature 434", href: "https://www.nature.com/articles/434717b" },
-        { label: "Hublin J-J et al. (2017). New fossils from Jebel Irhoud. Nature 546", href: "https://www.nature.com/articles/nature22336" },
+        { label: "Jennings EM et al. (2014). Stress-induced hyperalgesia. Progress in Neurobiology 121", href: "https://doi.org/10.1016/j.pneurobio.2014.06.003" },
+        { label: "Trinkaus E, Villotte S (2017). External auditory exostoses and hearing loss in the Shanidar 1 Neandertal. PLOS ONE 12(10)", href: "https://doi.org/10.1371/journal.pone.0186684" },
+        { label: "Wu X-J et al. (2011). Antemortem trauma and survival in the late Middle Pleistocene human cranium from Maba. PNAS 108(49)", href: "https://doi.org/10.1073/pnas.1117113108" },
+        { label: "Coqueugniot H et al. (2014). Earliest cranio-encephalic trauma from the Levantine Middle Palaeolithic. PLOS ONE 9(7)", href: "https://doi.org/10.1371/journal.pone.0102822" },
+        { label: "Lordkipanidze D et al. (2005). The earliest toothless hominin skull. Nature 434", href: "https://doi.org/10.1038/434717b" },
+        { label: "Surbeck M et al. (2020). A toothless bonobo skull challenges the notion of alternative subsistence strategies in early Homo. J Hum Evol 147", href: "https://doi.org/10.1016/j.jhevol.2020.102871" },
+        { label: "Richter D et al. (2017). The age of the hominin fossils from Jebel Irhoud, Morocco. Nature 546", href: "https://doi.org/10.1038/nature22335" },
+        { label: "Hublin J-J et al. (2017). New fossils from Jebel Irhoud, Morocco. Nature 546", href: "https://doi.org/10.1038/nature22336" },
         { label: "International Commission on Stratigraphy. International Chronostratigraphic Chart", href: "https://stratigraphy.org/chart" },
       ],
     },

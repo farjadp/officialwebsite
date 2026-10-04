@@ -21,7 +21,7 @@ export function grouped(n: number, locale: Locale): string {
 export function years(n: number, locale: Locale): string {
   const fa = locale === "fa"
   if (n >= 1e9) return `${digits((n / 1e9).toFixed(2).replace(/\.?0+$/, ""), locale)} ${fa ? "میلیارد" : "billion"}`
-  if (n >= 1e6) return `${digits((n / 1e6).toFixed(1).replace(/\.0$/, ""), locale)} ${fa ? "میلیون" : "million"}`
+  if (n >= 1e6) return `${digits((n / 1e6).toFixed(n < 1e7 ? 2 : 1).replace(/\.?0+$/, ""), locale)} ${fa ? "میلیون" : "million"}`
   return grouped(Math.round(n), locale)
 }
 

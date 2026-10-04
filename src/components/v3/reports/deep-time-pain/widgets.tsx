@@ -215,7 +215,7 @@ function distance(m: number, locale: Locale): string {
   if (m < 1) return `${digits(String(Math.round(m * 100)), locale)} ${fa ? "سانتی‌متر" : "cm"}`
   if (m < 1000) return `${digits(m.toFixed(m < 10 ? 1 : 0).replace(/\.0$/, ""), locale)} ${fa ? "متر" : "m"}`
   const km = m / 1000
-  const shown = km < 10 ? km.toFixed(1).replace(/\.0$/, "") : grouped(Math.round(km), "en").replace(/,/g, fa ? "٬" : ",")
+  const shown = km < 10 ? km.toFixed(2).replace(/\.?0+$/, "") : grouped(Math.round(km), "en").replace(/,/g, fa ? "٬" : ",")
   return `${digits(shown, locale)} ${fa ? "کیلومتر" : "km"}`
 }
 
@@ -305,7 +305,7 @@ export function CircuitRace({ locale }: { locale: Locale }) {
           className="inline-flex min-h-12 items-center gap-3 rounded-full bg-v3-bone px-6 font-semibold text-v3-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-v3-light"
         >
           <Play className="h-4 w-4" aria-hidden />
-          {locale === "fa" ? "هر سه را با هم فعال کن" : "Fire all three"}
+          {locale === "fa" ? "هر سه را با هم فعال کنید" : "Fire all three"}
         </button>
       </div>
 

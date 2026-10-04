@@ -18,11 +18,21 @@ import { ReadingProgress } from "@/components/v3/reading-progress"
 import { ReportColophon } from "../colophon"
 import { reportJsonLd } from "../report-route"
 import { COPY } from "./copy"
-import { FOSSILS, eventAge } from "./data"
+import { FOSSILS, eventAge, type EventKey } from "./data"
 import { clockTime, digits, years } from "./fmt"
 import { BeecherDots, CircuitRace, DeepTimeZoom, HeroClock, ShanidarBody, YearRuler } from "./widgets"
+import { TimeSpiral } from "./spiral"
+import { Photo } from "../photo"
+import { PHOTOS } from "./photos"
 
 const WRAP = "mx-auto w-full max-w-[1280px] px-5 md:px-10 lg:px-14"
+
+const FOSSIL_PHOTO: Partial<Record<EventKey, keyof typeof PHOTOS>> = {
+  dmanisi: "dmanisi",
+  maba: "maba",
+  qafzeh: "qafzeh",
+  shanidar: "shanidar1",
+}
 
 function Block({ id, kicker, title, lead, children }: { id?: string; kicker: string; title: string; lead?: string; children?: ReactNode }) {
   return (
@@ -99,7 +109,8 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
             </p>
           </Reveal>
 
-          <Reveal immediate delay={0.2} className="flex flex-col gap-3">
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
+          <Reveal immediate delay={0.2} className="flex flex-col gap-3 lg:col-span-7">
             <p className="flex flex-wrap items-baseline gap-x-5 font-v3-display font-light leading-none">
               <span className="text-[clamp(5rem,17vw,14rem)] tracking-[-0.03em] text-v3-light drop-shadow-[0_0_60px_rgb(var(--v3-glow)/0.35)]">
                 <bdi dir="ltr">{c.hero.mega}</bdi>
@@ -108,6 +119,10 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
             </p>
             <p className="max-w-2xl text-v3-soft">{c.hero.megaLabel}</p>
           </Reveal>
+          <Reveal immediate delay={0.24} className="lg:col-span-5">
+            <Photo photo={PHOTOS.lamprey} locale={locale} ratio="1/1" priority sizes="(min-width: 1024px) 40vw, 100vw" />
+          </Reveal>
+          </div>
 
           <Reveal immediate delay={0.28}>
             <HeroClock locale={locale} />
@@ -140,6 +155,16 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
 
       {/* ── Scale ────────────────────────────────────────────────────── */}
       <Block id="scale" kicker={c.scale.kicker} title={c.scale.title} lead={c.scale.lead}>
+        <div className="mb-24 flex flex-col gap-8">
+          <Reveal className="flex flex-col gap-3">
+            <h3 className="font-v3-display text-3xl text-v3-bone md:text-4xl">{c.spiral.title}</h3>
+            <Lead>{c.spiral.lead}</Lead>
+          </Reveal>
+          <TimeSpiral locale={locale} />
+        </div>
+        <Reveal className="mb-8 flex flex-col gap-3">
+          <h3 className="font-v3-display text-3xl text-v3-bone md:text-4xl">{c.scale.dayLabel}</h3>
+        </Reveal>
         <DeepTimeZoom locale={locale} />
 
         <div className="mt-24 flex flex-col gap-8">
@@ -161,11 +186,19 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
 
       {/* ── Circuits ─────────────────────────────────────────────────── */}
       <Block id="circuits" kicker={c.circuits.kicker} title={c.circuits.title} lead={c.circuits.lead}>
-        <CircuitRace locale={locale} />
+        <div className="grid gap-12 lg:grid-cols-[15rem_1fr] lg:gap-14">
+          <Reveal className="mx-auto w-full max-w-[15rem] lg:mx-0">
+            <Photo photo={PHOTOS.cannon} locale={locale} ratio="3/4" sizes="240px" />
+          </Reveal>
+          <CircuitRace locale={locale} />
+        </div>
       </Block>
 
       {/* ── Beecher ──────────────────────────────────────────────────── */}
       <Block id="battlefield" kicker={c.beecher.kicker} title={c.beecher.title} lead={c.beecher.lead}>
+        <Reveal className="mb-16">
+          <Photo photo={PHOTOS.anzio} locale={locale} ratio="16/9" sizes="(min-width: 1280px) 1180px, 100vw" />
+        </Reveal>
         <BeecherDots locale={locale} />
         <div className="mt-14 grid gap-8 lg:grid-cols-2">
           <Reveal>
@@ -188,7 +221,7 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
             const age = eventAge(k)
             return (
               <li key={k} className="border-b border-v3-line/60 first:border-t">
-                <Reveal delay={i * 0.06} className="grid gap-6 py-10 md:grid-cols-[16rem_1fr] md:gap-12">
+                <Reveal delay={i * 0.06} className="grid gap-6 py-10 md:grid-cols-[16rem_1fr] md:gap-12 lg:grid-cols-[14rem_1fr_20rem]">
                   <div className="flex flex-col gap-1">
                     <span className={`font-v3-display text-3xl ${k === "shanidar" ? "text-v3-light" : "text-v3-bone"}`}>
                       {c.fossils.ages[k] ?? `${years(age, locale)} ${fa ? "سال" : "years"}`}
@@ -203,6 +236,13 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
                     <h3 className="font-v3-display text-2xl text-v3-bone md:text-3xl">{f.title}</h3>
                     <p className="max-w-3xl text-lg leading-relaxed text-v3-soft rtl:leading-loose">{f.body}</p>
                   </div>
+                  <Photo
+                    photo={PHOTOS[FOSSIL_PHOTO[k] ?? "shanidar1"]}
+                    locale={locale}
+                    ratio="4/3"
+                    sizes="(min-width: 1024px) 320px, 100vw"
+                    className="md:col-span-2 lg:col-span-1"
+                  />
                 </Reveal>
               </li>
             )
@@ -212,6 +252,9 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
 
       {/* ── Shanidar 1 ───────────────────────────────────────────────── */}
       <Block id="shanidar" kicker={c.shanidar.kicker} title={c.shanidar.title} lead={c.shanidar.lead}>
+        <Reveal className="mb-16">
+          <Photo photo={PHOTOS.shanidarCave} locale={locale} ratio="21/9" sizes="(min-width: 1280px) 1180px, 100vw" />
+        </Reveal>
         <ShanidarBody locale={locale} />
         <p className="mt-10 max-w-3xl text-sm leading-relaxed text-v3-mute rtl:leading-loose">{c.shanidar.caveat}</p>
       </Block>
@@ -273,7 +316,7 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
           </ul>
           <div className="flex flex-col gap-3">
             <h3 className="text-sm text-v3-mute">{c.method.sourcesTitle}</h3>
-            <ol className="flex list-decimal flex-col gap-2.5 ps-5 text-sm text-v3-soft marker:text-v3-mute" dir="ltr">
+            <ol className="flex list-decimal flex-col gap-2.5 ps-5 text-sm text-v3-soft marker:text-v3-mute font-(family-name:--font-instrument)" dir="ltr">
               {c.method.sources.map((s) => (
                 <li key={s.href}>
                   <a

@@ -49,7 +49,7 @@ export const EVENTS: TimeEvent[] = [
   { key: "kpg", age: 66_000_000 },
   { key: "split", age: 7_000_000 },
   { key: "dmanisi", age: 1_770_000 },
-  { key: "sapiens", age: 300_000, accent: true },
+  { key: "sapiens", age: 315_000, accent: true },
   { key: "maba", age: 180_000 },
   { key: "qafzeh", age: 95_000 },
   { key: "shanidar", age: 50_000, accent: true },
@@ -105,7 +105,7 @@ export const RULER: { key: EventKey; metres: number }[] = [
   { key: "you", metres: 0.08 },
   { key: "writing", metres: 5.3 },
   { key: "shanidar", metres: 50 },
-  { key: "sapiens", metres: 300 },
+  { key: "sapiens", metres: 315 },
   { key: "dmanisi", metres: 1_770 },
   { key: "lamprey", metres: 500_000 },
 ]

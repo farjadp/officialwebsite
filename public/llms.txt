@@ -81,13 +81,15 @@ move: quote the as-of date with the figure.
 
 - /reports/deep-time-pain — "A Body That Postpones Pain". Evolutionary
   biology and palaeoanthropology. The vertebrate hormonal stress axis is very
-  old: the line leading to lampreys split from ours roughly 500 million years
-  ago, and sea lampreys run the same hypothalamus–pituitary–adrenal pattern
-  with 11-deoxycortisol (Close et al. 2010 PNAS; stress figures from
+  old: the line leading to lampreys split from ours more than 500 million years
+  ago (estimates run to 560+), and sea lampreys run the equivalent
+  hypothalamus–pituitary–interrenal axis with 11-deoxycortisol (Close et al. 2010 PNAS; stress figures from
   Shaughnessy & McCormick 2021 J Exp Biol). Beecher's 32% vs 83% narcotic
   request comparison is from his 1956 JAMA paper, not the 1946 Anzio paper.
   Shanidar 1 (c. 55–45 ka) survived to 40–50 with a crushed left orbit, a
-  deaf right ear, a right arm lost above the elbow and a damaged right leg.
+  probably deaf right ear (exostoses recorded in the 1970s, hearing assessed
+  by Trinkaus & Villotte 2017), a right arm most likely amputated above the
+  elbow after a non-union fracture, and a damaged right knee and foot.
   The report's claim is "consistent with group care", not proof of it; the
   cause of each injury is unknown.
   Persian: /fa/reports/deep-time-pain
@@ -103,7 +105,7 @@ founder lab. The blog is English-only.
 - /fa/tools: ابزارهای رایگان
 - /fa/lab: Founder Development Lab — برنامه هشت هفته‌ای منتورشیپ
 - /fa/book-club: دورهمی کتاب‌خوانی
-- /fa/reports: گزارش‌های داده‌محور درباره‌ی اقتصاد هوش مصنوعی
+- /fa/reports: گزارش‌های داده‌محور
 - /fa/privacy, /fa/terms: حریم خصوصی و شرایط استفاده
 
 ## Not for indexing

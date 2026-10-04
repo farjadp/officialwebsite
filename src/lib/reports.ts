@@ -61,7 +61,8 @@ export const REPORTS: ReportMeta[] = [
     number: 2,
     published: "2026-10-03",
     dataAsOf: "2026-10-03",
-    readMinutes: 9,
+    updated: "2026-10-04",
+    readMinutes: 10,
     figure: "500M",
     figureFa: "۵۰۰",
     copy: {
@@ -69,17 +70,17 @@ export const REPORTS: ReportMeta[] = [
         title: "A Body That Postpones Pain",
         tagline: "500 million years of the stress response",
         summary:
-          "The stress response is about 500 million years old, and lampreys still run it. Fossils of hominins who survived crushing injuries for years suggest something more.",
+          "The vertebrate stress axis is more than 500 million years old, and lampreys still run a version of it. Fossils of people who lived for years after crushing injuries point to something more.",
         topic: "Evolutionary biology",
-        figureLabel: "years of the vertebrate stress axis",
+        figureLabel: "years, at least, of the vertebrate stress axis",
       },
       fa: {
         title: "بدنی که درد را عقب می‌اندازد",
         tagline: "۵۰۰ میلیون سال واکنش استرس",
         summary:
-          "واکنش استرس حدود ۵۰۰ میلیون سال قدمت دارد و لامپری‌ها هنوز آن را دارند. اما فسیل انسان‌تبارهایی که سال‌ها با آسیب سنگین زنده ماندند، چیز بیشتری می‌گوید.",
+          "محور استرس مهره‌داران بیش از ۵۰۰ میلیون سال قدمت دارد و لامپری‌ها هنوز نسخه‌ای از آن را دارند. فسیل انسان‌تبارهایی که سال‌ها با آسیب سنگین زنده ماندند، چیز بیشتری می‌گوید.",
         topic: "زیست‌شناسی تکاملی",
-        figureLabel: "میلیون سال؛ قدمت محور استرس مهره‌داران",
+        figureLabel: "میلیون سال، دست‌کم؛ قدمت محور استرس مهره‌داران",
       },
     },
   },
