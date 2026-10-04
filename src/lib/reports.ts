@@ -24,6 +24,8 @@ export type ReportMeta = {
   readMinutes: number
   /** The one number the report is about, shown large on the index. */
   figure: string
+  /** The Persian figure, when a digit swap of `figure` would read badly ("۵۰۰M"). */
+  figureFa?: string
   copy: Record<Locale, { title: string; tagline: string; summary: string; topic: string; figureLabel: string }>
 }
 
@@ -51,6 +53,33 @@ export const REPORTS: ReportMeta[] = [
           "ارزش بازار ۸ شرکت تکنولوژی آمریکایی ۲۵٫۷ تریلیون دلار است؛ بیشتر از GDP سالانه‌ی کل اتحادیه‌ی اروپا. این عدد کنار اقتصاد ۲۰ کشور اروپایی.",
         topic: "اقتصاد هوش مصنوعی",
         figureLabel: "۸ شرکت، یک ارزش بازار",
+      },
+    },
+  },
+  {
+    slug: "deep-time-pain",
+    number: 2,
+    published: "2026-10-03",
+    dataAsOf: "2026-10-03",
+    readMinutes: 9,
+    figure: "500M",
+    figureFa: "۵۰۰",
+    copy: {
+      en: {
+        title: "A Body That Postpones Pain",
+        tagline: "500 million years of the stress response",
+        summary:
+          "The stress response is about 500 million years old, and lampreys still run it. Fossils of hominins who survived crushing injuries for years suggest something more.",
+        topic: "Evolutionary biology",
+        figureLabel: "years of the vertebrate stress axis",
+      },
+      fa: {
+        title: "بدنی که درد را عقب می‌اندازد",
+        tagline: "۵۰۰ میلیون سال واکنش استرس",
+        summary:
+          "واکنش استرس حدود ۵۰۰ میلیون سال قدمت دارد و لامپری‌ها هنوز آن را دارند. اما فسیل انسان‌تبارهایی که سال‌ها با آسیب سنگین زنده ماندند، چیز بیشتری می‌گوید.",
+        topic: "زیست‌شناسی تکاملی",
+        figureLabel: "میلیون سال؛ قدمت محور استرس مهره‌داران",
       },
     },
   },

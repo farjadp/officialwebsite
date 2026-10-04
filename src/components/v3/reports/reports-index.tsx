@@ -86,7 +86,7 @@ export function ReportsIndex({ locale }: { locale: Locale }) {
           <ol className="flex flex-col">
             {reports.map((r, i) => {
               const m = r.copy[locale]
-              const figure = locale === "fa" ? localDigits(r.figure, "fa").replace(".", "٫") : r.figure
+              const figure = locale === "fa" ? r.figureFa ?? localDigits(r.figure, "fa").replace(".", "٫") : r.figure
               return (
                 <li key={r.slug}>
                   <Reveal delay={i * 0.08}>

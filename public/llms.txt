@@ -1,5 +1,5 @@
 # Farjad Pourmohammad — farjadp.info
-# Last updated: 2026-09-28
+# Last updated: 2026-10-03
 
 > Independent startup advisor and systems architect in Newmarket, Ontario, Canada.
 > Works with early-stage founders — including immigrant founders in the Canadian
@@ -78,6 +78,19 @@ move: quote the as-of date with the figure.
   Caveat the report makes itself: market cap is a stock and GDP is a flow, so
   this is a comparison of scale, not a claim that a company is richer than a
   country.
+
+- /reports/deep-time-pain — "A Body That Postpones Pain". Evolutionary
+  biology and palaeoanthropology. The vertebrate hormonal stress axis is very
+  old: the line leading to lampreys split from ours roughly 500 million years
+  ago, and sea lampreys run the same hypothalamus–pituitary–adrenal pattern
+  with 11-deoxycortisol (Close et al. 2010 PNAS; stress figures from
+  Shaughnessy & McCormick 2021 J Exp Biol). Beecher's 32% vs 83% narcotic
+  request comparison is from his 1956 JAMA paper, not the 1946 Anzio paper.
+  Shanidar 1 (c. 55–45 ka) survived to 40–50 with a crushed left orbit, a
+  deaf right ear, a right arm lost above the elbow and a damaged right leg.
+  The report's claim is "consistent with group care", not proof of it; the
+  cause of each injury is unknown.
+  Persian: /fa/reports/deep-time-pain
 
 ## Persian / Farsi
 

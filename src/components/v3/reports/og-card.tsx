@@ -34,7 +34,9 @@ import type { ReportMeta } from "@/lib/reports"
 function Fa({ children, style }: { children: string; style?: React.CSSProperties }) {
   const words = children.split(/\s+/).filter(Boolean).reverse()
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: "0.25em", ...style }}>
+    // wrap-reverse: the words are reversed, so the first words of the sentence
+    // land on the last line; reversing the line order puts them back on top.
+    <div style={{ display: "flex", flexWrap: "wrap-reverse", justifyContent: "flex-end", gap: "0.25em", ...style }}>
       {words.map((w, i) => (
         <div key={i} style={{ display: "flex" }}>
           {w.replace(/\u200C/g, "\u200A")}
@@ -86,7 +88,7 @@ export function OgCard({ locale, meta }: { locale: Locale; meta: ReportMeta }) {
   // Satori reorders bidirectional runs itself, so Persian needs no help with
   // word order — only with the digits, which must not stay Latin.
   const fa = (v: string) => v.replace(/\./g, "٫").replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)])
-  const figure = rtl ? fa(meta.figure) : meta.figure
+  const figure = rtl ? meta.figureFa ?? fa(meta.figure) : meta.figure
   const label = rtl ? `گزارش ${fa(String(meta.number).padStart(2, "0"))}` : `Report ${String(meta.number).padStart(2, "0")}`
 
   return (
