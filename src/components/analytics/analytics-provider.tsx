@@ -2,34 +2,38 @@
 
 // ============================================================================
 // Hardware Source: analytics-provider.tsx
-// Version: 1.0.0 — 2026-02-24
-// Why: Reusable UI component
+// Version: 2.0.0 — 2026-10-04
+// Why: Google Analytics 4 (gtag.js) on public pages
 // Env / Identity: Client Component
 // ============================================================================
 
-import { usePathname, useSearchParams } from "next/navigation"
-import { useEffect, Suspense } from "react"
+import Script from "next/script"
+import { usePathname } from "next/navigation"
 
-// This is a placeholder for PostHog or Plausible
-// You would typically wrap your app with a provider or use a useEffect to track pageviews
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
-function AnalyticsTracker() {
-    const pathname = usePathname()
-    const searchParams = useSearchParams()
-
-    useEffect(() => {
-        // Example: window.plausible('pageview')
-        // or posthog.capture('$pageview')
-        console.log(`Analytics: Pageview ${pathname}`)
-    }, [pathname, searchParams])
-
-    return null
-}
+// The admin area and sign-in pages (English and /fa) are Farjad's own traffic;
+// counting them would inflate every report. Page changes inside the app are
+// picked up by GA4's enhanced measurement (browser history events), so no
+// manual page_view calls are needed here.
+const EXCLUDED = /^(\/fa)?\/(admin|login)(\/|$)/
 
 export function AnalyticsProvider() {
+    const pathname = usePathname()
+
+    if (!GA_ID) return null
+    if (pathname && EXCLUDED.test(pathname)) return null
+
     return (
-        <Suspense fallback={null}>
-            <AnalyticsTracker />
-        </Suspense>
+        <>
+            {/* afterInteractive keeps the tag off the critical path for LCP. */}
+            <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+                strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+                {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+            </Script>
+        </>
     )
 }
