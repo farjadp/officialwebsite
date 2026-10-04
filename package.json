@@ -73,7 +73,9 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "three": "^0.186.1",
+    "topojson-client": "^3.1.0",
     "unpdf": "^1.8.1",
+    "world-atlas": "^2.0.2",
     "zod": "^4.1.13"
   },
   "devDependencies": {
@@ -85,6 +87,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.186.0",
+    "@types/topojson-client": "^3.1.5",
     "babel-plugin-react-compiler": "1.0.0",
     "baseline-browser-mapping": "^2.11.13",
     "dotenv": "^17.2.3",

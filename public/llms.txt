@@ -1,5 +1,5 @@
 # Farjad Pourmohammad — farjadp.info
-# Last updated: 2026-10-03
+# Last updated: 2026-10-04
 
 > Independent startup advisor and systems architect in Newmarket, Ontario, Canada.
 > Works with early-stage founders — including immigrant founders in the Canadian
@@ -93,6 +93,22 @@ move: quote the as-of date with the figure.
   The report's claim is "consistent with group care", not proof of it; the
   cause of each injury is unknown.
   Persian: /fa/reports/deep-time-pain
+
+- /reports/starlink-direct-to-cell-iran — "Starlink on an Ordinary Phone in
+  Iran?". Status as of 4 October 2026. Starlink Direct to Cell (Starlink
+  Mobile) is real and commercially live through partner operators in about
+  19 countries (SpaceX's S-1 says ~650 V1 Mobile satellites, ~7.4M monthly
+  devices, ~30 countries as of 31 March 2026). No public service has been
+  announced for Iran, and there is no SpaceX statement about one. The current
+  generation runs on partner operators' LTE spectrum; a field study (IEEE
+  Communications Magazine, June 2026) measured median signal of -121 dBm vs
+  -97 dBm for terrestrial LTE and estimated about 3 Mbps per beam outdoors,
+  shared by everyone in a footprint tens of kilometres across. Beeline
+  Kazakhstan launched service in late September 2026, Android only.
+  Reported Pentagon talks ($500M setup, $100M/month, Reuters 26 May 2026)
+  were denied by the Pentagon and Elon Musk. Second-generation satellites
+  start launching in 2027. The report's line: not impossible — not today.
+  Persian: /fa/reports/starlink-direct-to-cell-iran
 
 ## Persian / Farsi
 

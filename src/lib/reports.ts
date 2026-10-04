@@ -84,6 +84,34 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "starlink-direct-to-cell-iran",
+    number: 3,
+    published: "2026-10-04",
+    dataAsOf: "2026-10-04",
+    readMinutes: 12,
+    figure: "0",
+    // "۰" is a dot in Persian type and reads as nothing at display size.
+    figureFa: "صفر",
+    copy: {
+      en: {
+        title: "Starlink on an Ordinary Phone in Iran?",
+        tagline: "What is real today",
+        summary:
+          "Starlink Direct to Cell is real and live in several countries. Connecting an ordinary phone to it from inside Iran today is not. The capacity, the jamming and the agreements explain why.",
+        topic: "Telecom",
+        figureLabel: "public Direct to Cell services announced for Iran",
+      },
+      fa: {
+        title: "استارلینک روی گوشی معمولی در ایران؟",
+        tagline: "آنچه امروز واقعی است",
+        summary:
+          "Direct to Cell استارلینک واقعی است و در چند کشور فعال؛ اما وصل شدن با گوشی معمولی از داخل ایران، امروز واقعیت ندارد. ظرفیت، پارازیت و توافق‌ها می‌گویند چرا.",
+        topic: "مخابرات",
+        figureLabel: "سرویس عمومی Direct to Cell اعلام‌شده برای ایران",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

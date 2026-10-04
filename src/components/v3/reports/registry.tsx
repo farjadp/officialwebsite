@@ -10,8 +10,10 @@ import type { Locale } from "@/lib/nav"
 import type { ReportMeta } from "@/lib/reports"
 import { EightStocksReport } from "./eight-stocks/report"
 import { DeepTimePainReport } from "./deep-time-pain/report"
+import { DirectToCellReport } from "./direct-to-cell/report"
 
 export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: ReportMeta }) => ReactNode> = {
   "eight-stocks-twenty-economies": EightStocksReport,
   "deep-time-pain": DeepTimePainReport,
+  "starlink-direct-to-cell-iran": DirectToCellReport,
 }

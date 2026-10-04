@@ -31,8 +31,22 @@ import type { ReportMeta } from "@/lib/reports"
  * ZWNJ inside a word becomes a hair space, the one separator that survives
  * with its order and its letter shapes intact.
  */
+/** True for a run Satori should keep left-to-right: Latin words, digits, symbols. */
+const isLatin = (w: string) => /^[A-Za-z0-9$%.,:+\-–()&/]+$/.test(w)
+
 function Fa({ children, style }: { children: string; style?: React.CSSProperties }) {
-  const words = children.split(/\s+/).filter(Boolean).reverse()
+  // Adjacent Latin words ("Direct to Cell") are one left-to-right run inside
+  // the sentence, so they are joined before the sentence is reversed —
+  // otherwise they would come out as "Cell to Direct".
+  const tokens: string[] = []
+  for (const w of children.split(/\s+/).filter(Boolean)) {
+    const last = tokens[tokens.length - 1]
+    if (last !== undefined && isLatin(w) && isLatin(last.split(" ").pop()!)) tokens[tokens.length - 1] = `${last} ${w}`
+    else tokens.push(w)
+  }
+  // A Persian question mark straight after a final letter is mis-shaped by
+  // Satori; a hair space between them keeps both glyphs clean.
+  const words = tokens.map((w) => w.replace(/([^\s])؟/g, "$1\u200A؟")).reverse()
   return (
     // wrap-reverse: the words are reversed, so the first words of the sentence
     // land on the last line; reversing the line order puts them back on top.
