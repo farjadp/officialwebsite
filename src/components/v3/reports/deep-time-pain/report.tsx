@@ -316,7 +316,7 @@ export function DeepTimePainReport({ locale, meta }: { locale: Locale; meta: Rep
           </ul>
           <div className="flex flex-col gap-3">
             <h3 className="text-sm text-v3-mute">{c.method.sourcesTitle}</h3>
-            <ol className="flex list-decimal flex-col gap-2.5 ps-5 text-sm text-v3-soft marker:text-v3-mute font-(family-name:--font-instrument)" dir="ltr">
+            <ol className="flex list-decimal flex-col gap-2.5 ps-5 text-sm text-v3-soft marker:text-v3-mute font-(family-name:--font-instrument)! **:font-(family-name:--font-instrument)!" dir="ltr">
               {c.method.sources.map((s) => (
                 <li key={s.href}>
                   <a

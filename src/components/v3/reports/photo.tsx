@@ -7,6 +7,9 @@
 //      The credit is part of the component so it cannot be left off. It is
 //      set in the Latin face on purpose: the Persian face draws Latin digits
 //      as Persian ones, which turns "CC BY-SA 4.0" into "۴٫۰".
+//      It needs !important: iransans.css sets the Persian face on every span,
+//      a and li under [dir="rtl"] outside any cascade layer, which beats a
+//      plain Tailwind utility.
 // Env / Identity: React Server Component
 // ============================================================================
 
@@ -63,7 +66,7 @@ export function Photo({
       </div>
       <figcaption className="flex flex-col gap-1 text-sm leading-relaxed text-v3-soft rtl:leading-loose">
         <span>{photo.caption[locale]}</span>
-        <span className="text-xs text-v3-mute font-(family-name:--font-instrument) rtl:text-right" dir="ltr">
+        <span className="text-xs text-v3-mute font-(family-name:--font-instrument)! **:font-(family-name:--font-instrument)! rtl:text-right" dir="ltr">
           <span className="sr-only">{fa ? "اعتبار تصویر:" : "Image credit:"} </span>
           {photo.credit} ·{" "}
           {photo.licenseUrl ? (
