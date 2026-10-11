@@ -1,5 +1,5 @@
 # Farjad Pourmohammad — farjadp.info
-# Last updated: 2026-10-04
+# Last updated: 2026-10-11
 
 > Independent startup advisor and systems architect in Newmarket, Ontario, Canada.
 > Works with early-stage founders — including immigrant founders in the Canadian
@@ -109,6 +109,24 @@ move: quote the as-of date with the figure.
   were denied by the Pentagon and Elon Musk. Second-generation satellites
   start launching in 2027. The report's line: not impossible — not today.
   Persian: /fa/reports/starlink-direct-to-cell-iran
+
+- /reports/imessage-hidden-sms-cost — "The Hidden Cost of iMessage on an
+  Iranian Phone Bill". A fact-check of a viral claim that MCI (Hamrah-e Aval)
+  bills iPhone users for iMessage. Verdict: the charge is real but it is the
+  activation SMS — to register a phone number for iMessage/FaceTime the
+  iPhone sends a hidden text message to an Apple number abroad (Apple's own
+  support page says the carrier may charge for it), and it retries when
+  activation fails. iMessage content travels over data via APNs, end-to-end
+  encrypted, and is not billed per message; FaceTime is not billed per
+  minute. Fix: remove the phone number from iMessage and FaceTime (keep the
+  Apple ID email), turn off "Send as Text Message", and block
+  international SMS with the operator. MCI's own tariff page lists 45,000
+  toman per SMS to a UK mobile (checked 11 Oct 2026), so the tweet's
+  ~100,000 toman is two or three activation attempts — its "90 SMS at 167
+  or 447 rial" does not add up. MCI's page itself names iMessage, FaceTime
+  and Xiaomi Cloud as apps that send unwanted international SMS. Whether
+  Apple accepts +98 numbers at all is unconfirmed; the report says so.
+  Persian: /fa/reports/imessage-hidden-sms-cost
 
 ## Persian / Farsi
 

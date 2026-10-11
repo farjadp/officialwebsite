@@ -112,6 +112,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "imessage-hidden-sms-cost",
+    number: 4,
+    published: "2026-10-11",
+    dataAsOf: "2026-10-11",
+    readMinutes: 9,
+    figure: "1",
+    figureFa: "۱",
+    copy: {
+      en: {
+        title: "The Hidden Cost of iMessage on an Iranian Phone Bill",
+        tagline: "A fact-check",
+        summary:
+          "The charges are real, but iMessage is not being read or billed per message. An iPhone sends a hidden SMS to Apple to register the number, and retries it when activation fails. What the operator sees, what it doesn't, and the fix.",
+        topic: "Telecom",
+        figureLabel: "hidden text message per activation attempt",
+      },
+      fa: {
+        title: "هزینه‌ی پنهان iMessage در قبض همراه اول",
+        tagline: "راستی‌آزمایی",
+        summary:
+          "هزینه واقعی است، اما iMessage نه خوانده می‌شود و نه پیام‌به‌پیام فاکتور. آیفون برای ثبت شماره یک پیامک پنهان به اپل می‌فرستد و با هر شکست دوباره. اپراتور چه می‌بیند، چه نمی‌بیند، و راه‌حل.",
+        topic: "مخابرات",
+        figureLabel: "پیامک پنهان در هر تلاش برای فعال‌سازی",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

@@ -36,8 +36,7 @@ const isLatin = (w: string) => /^[A-Za-z0-9$%.,:+\-–()&/]+$/.test(w)
 
 function Fa({ children, style }: { children: string; style?: React.CSSProperties }) {
   // Adjacent Latin words ("Direct to Cell") are one left-to-right run inside
-  // the sentence, so they are joined before the sentence is reversed —
-  // otherwise they would come out as "Cell to Direct".
+  // the sentence, so they are joined into one item and keep their order.
   const tokens: string[] = []
   for (const w of children.split(/\s+/).filter(Boolean)) {
     const last = tokens[tokens.length - 1]
@@ -46,11 +45,14 @@ function Fa({ children, style }: { children: string; style?: React.CSSProperties
   }
   // A Persian question mark straight after a final letter is mis-shaped by
   // Satori; a hair space between them keeps both glyphs clean.
-  const words = tokens.map((w) => w.replace(/([^\s])؟/g, "$1\u200A؟")).reverse()
+  const words = tokens.map((w) => w.replace(/([^\s])؟/g, "$1\u200A؟"))
   return (
-    // wrap-reverse: the words are reversed, so the first words of the sentence
-    // land on the last line; reversing the line order puts them back on top.
-    <div style={{ display: "flex", flexWrap: "wrap-reverse", justifyContent: "flex-end", gap: "0.25em", ...style }}>
+    // Words in reading order, laid out by flex from the right: row-reverse
+    // fills each line right to left and wrap moves on to the next line, which
+    // is how a Persian paragraph breaks. Reversing the words instead (the
+    // earlier approach) filled lines from the END of the sentence and left the
+    // first word stranded alone on the top line.
+    <div style={{ display: "flex", flexDirection: "row-reverse", flexWrap: "wrap", justifyContent: "flex-start", gap: "0.25em", ...style }}>
       {words.map((w, i) => (
         <div key={i} style={{ display: "flex" }}>
           {w.replace(/\u200C/g, "\u200A")}
