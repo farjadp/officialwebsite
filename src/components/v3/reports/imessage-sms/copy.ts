@@ -82,7 +82,7 @@ export const COPY: Record<Locale, Copy> = {
   en: {
     hero: {
       kicker: "Report 04",
-      lead: "A fact-check of claims that went round Twitter and Telegram — and a review of a ChatGPT analysis of them — against Apple's own documentation, encyclopaedic sources and peer-reviewed papers.",
+      lead: "A fact-check of claims that went round Twitter and Telegram — and of the technical explanation that travelled with them — against Apple's own documentation, encyclopaedic sources and peer-reviewed papers.",
       verdictTitle: "The verdict in four lines",
       verdict: [
         { kind: "true", label: "True", text: "The cost is real. To activate iMessage and FaceTime with a phone number, an iPhone sends a hidden international text message to Apple, and Apple itself says the operator may charge for it." },
@@ -209,9 +209,9 @@ export const COPY: Record<Locale, Copy> = {
       mock: { title: "iMessage", section: "Send & Receive", number: "+98 912 ··· ··· ·", email: "name@icloud.com", on: "The number is ticked: activation SMS can still be sent.", off: "Number removed: no activation SMS is sent.", hint: "Tap the number to see what changes." },
     },
     review: {
-      kicker: "The AI's turn",
-      title: "What ChatGPT got right, and what it missed",
-      lead: "The thread was first put to ChatGPT. Its analysis is worth reviewing on its own, because it is a good example of an answer that is technically correct and still misses the point.",
+      kicker: "The first technical answer",
+      title: "What the technical answer got right, and what it missed",
+      lead: "A technical explanation circulated alongside the thread, and it is worth reviewing on its own: it is a good example of an answer that is correct about the protocols and still misses the point.",
       ok: {
         title: "What it got right",
         items: [
@@ -281,7 +281,7 @@ The fix:
   fa: {
     hero: {
       kicker: "گزارش ۰۴",
-      lead: "راستی‌آزمایی ادعاهایی که در توییتر و تلگرام دست‌به‌دست شد، و بازبینی تحلیل ChatGPT از همان ادعاها، بر پایه‌ی مستندات رسمی اپل، منابع دانشنامه‌ای و مقالات داوری‌شده.",
+      lead: "راستی‌آزمایی ادعاهایی که در توییتر و تلگرام دست‌به‌دست شد، و توضیح فنی‌ای که همراهش می‌چرخید، بر پایه‌ی مستندات رسمی اپل، منابع دانشنامه‌ای و مقالات داوری‌شده.",
       verdictTitle: "حکم نهایی در چهار خط",
       verdict: [
         { kind: "true", label: "درست", text: "هزینه واقعی است. آیفون برای فعال‌سازی iMessage و FaceTime با شماره تلفن، یک پیامک پنهان بین‌الملل به اپل می‌فرستد و خود اپل می‌گوید اپراتور ممکن است برای آن هزینه بگیرد." },
@@ -408,9 +408,9 @@ The fix:
       mock: { title: "iMessage", section: "Send & Receive", number: "+98 912 ··· ··· ·", email: "name@icloud.com", on: "شماره تیک دارد: پیامک فعال‌سازی هنوز می‌تواند فرستاده شود.", off: "شماره برداشته شد: پیامک فعال‌سازی فرستاده نمی‌شود.", hint: "روی شماره بزنید تا ببینید چه عوض می‌شود." },
     },
     review: {
-      kicker: "نوبت هوش مصنوعی",
-      title: "ChatGPT چه را درست گفت و چه را جا انداخت",
-      lead: "این رشته‌توییت اول به ChatGPT داده شده بود. تحلیلش به‌تنهایی ارزش بازبینی دارد، چون نمونه‌ی خوبی است از پاسخی که از نظر فنی درست است و باز هم اصل ماجرا را نمی‌بیند.",
+      kicker: "اولین پاسخ فنی",
+      title: "پاسخ فنی چه را درست گفت و چه را جا انداخت",
+      lead: "همراه این رشته‌توییت یک توضیح فنی هم دست‌به‌دست می‌شد که به‌تنهایی ارزش بازبینی دارد؛ نمونه‌ی خوبی است از پاسخی که درباره‌ی پروتکل‌ها درست می‌گوید و باز هم اصل ماجرا را نمی‌بیند.",
       ok: {
         title: "آنچه درست گفت",
         items: [

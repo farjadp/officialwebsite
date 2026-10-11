@@ -188,7 +188,7 @@ export function ImessageSmsReport({ locale, meta }: { locale: Locale; meta: Repo
         </div>
       </Block>
 
-      {/* ── AI review ────────────────────────────────────────────────── */}
+      {/* ── The technical answer ────────────────────────────────────────────────── */}
       <Block id="review" kicker={c.review.kicker} title={c.review.title} lead={c.review.lead}>
         <div className="grid gap-5 md:grid-cols-2">
           <Reveal>
