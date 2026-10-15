@@ -17,7 +17,8 @@ import { ArrowDownUp, Hash, PersonStanding, Percent, Search } from "lucide-react
 import { useMemo, useRef, useState } from "react"
 import type { Locale } from "@/lib/nav"
 import { COPY } from "./copy"
-import { BY_SHARE, COUNTRIES, FEMALE_STRIP, HUNDRED_PICKS, REGIONS, WORLD, YEARS, byIso, flag, rankByShare, rankByStock, type CountryRow } from "./data"
+import { BY_SHARE, COUNTRIES, FEMALE_STRIP, HUNDRED_PICKS, REGIONS, WORLD, YEARS, byIso, rankByShare, rankByStock, type CountryRow } from "./data"
+import { CountryFlag } from "./flag"
 import { dg, int, nameOf, pc, people } from "./fmt"
 import { stamp } from "./passport"
 
@@ -212,7 +213,7 @@ export function HundredPeople({ locale }: { locale: Locale }) {
                   on ? "border-v3-light bg-v3-light text-v3-ink" : "border-v3-line text-v3-soft hover:border-v3-light hover:text-v3-bone"
                 }`}
               >
-                <span aria-hidden>{r ? flag(i) : "🌍"}</span>
+                {r ? <CountryFlag iso={i} /> : <span aria-hidden>🌍</span>}
                 {r ? nameOf(r, locale) : t.world}
               </button>
             )
@@ -376,9 +377,7 @@ export function RankFlip({ locale }: { locale: Locale }) {
                 >
                   <span className="text-center text-xs tabular-nums text-v3-mute">{dg(String(i + 1), locale)}</span>
                   <span className="flex min-w-0 items-center gap-2 text-v3-bone">
-                    <span aria-hidden className="text-lg leading-none">
-                      {flag(r[0])}
-                    </span>
+                    <CountryFlag iso={r[0]} className="text-lg leading-none" />
                     <span className="truncate">{nameOf(r, locale)}</span>
                   </span>
                   <span className="h-3 overflow-hidden rounded-full bg-v3-line/40">
@@ -507,7 +506,7 @@ export function CountryExplorer({ locale }: { locale: Locale }) {
                 <li key={m[0] || m[1]} role="option" aria-selected={false}>
                   <button type="button" onClick={() => choose(m[0])} className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-start text-sm text-v3-bone hover:bg-v3-raise">
                     <span className="flex items-center gap-2">
-                      <span aria-hidden>{flag(m[0])}</span>
+                      <CountryFlag iso={m[0]} />
                       {nameOf(m, locale)}
                     </span>
                     <span className="text-xs tabular-nums text-v3-mute">{people(m[4][7], locale, true)}</span>
@@ -531,7 +530,7 @@ export function CountryExplorer({ locale }: { locale: Locale }) {
                   iso === i ? "border-v3-light text-v3-light" : "border-v3-line text-v3-soft hover:border-v3-light"
                 }`}
               >
-                <span aria-hidden>{flag(i)}</span>
+                <CountryFlag iso={i} />
                 {nameOf(qr, locale)}
               </button>
             )
@@ -551,7 +550,7 @@ export function CountryExplorer({ locale }: { locale: Locale }) {
         >
           <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl border border-v3-light/40 bg-v3-raise p-6 shadow-[0_0_80px_-40px_rgb(var(--v3-glow)/0.8)] md:p-8">
             <span aria-hidden className="pointer-events-none absolute -end-6 -top-10 select-none text-[9rem] leading-none opacity-10 saturate-50 md:text-[12rem]">
-              {flag(iso)}
+              <CountryFlag iso={iso} />
             </span>
             <div className="relative flex flex-wrap items-end justify-between gap-4">
               <div className="flex flex-col gap-1">
@@ -653,7 +652,7 @@ export function GenderStrip({ locale }: { locale: Locale }) {
                   className={`grid w-full grid-cols-[var(--nc)_1fr_var(--vc)] items-center gap-0 rounded-md py-1 text-start text-sm transition-colors ${hot === r[0] ? "bg-v3-raise" : ""}`}
                 >
                   <span className="flex items-center gap-2 truncate pe-2 text-v3-soft" dir={locale === "fa" ? "rtl" : "ltr"}>
-                    <span aria-hidden>{flag(r[0])}</span>
+                    <CountryFlag iso={r[0]} />
                     <span className="truncate">{nameOf(r, locale)}</span>
                   </span>
                   <span className="relative h-4">

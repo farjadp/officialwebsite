@@ -16,7 +16,8 @@ import { Flame, Hash, Lock, Percent, RotateCcw, Target, Trophy, Venus } from "lu
 import { useCallback, useEffect, useRef, useState, type ComponentType } from "react"
 import type { Locale } from "@/lib/nav"
 import { COPY } from "./copy"
-import { LEVEL_COUNT, LEVEL_EST, LEVEL_GENDER, LEVEL_SHARE, byIso, flag, type CountryRow, type EstItem, type VsItem } from "./data"
+import { LEVEL_COUNT, LEVEL_EST, LEVEL_GENDER, LEVEL_SHARE, byIso, type CountryRow, type EstItem, type VsItem } from "./data"
+import { CountryFlag } from "./flag"
 import { dg, fx, nameOf, pc, people } from "./fmt"
 import { stamp } from "./passport"
 
@@ -347,9 +348,7 @@ export function MigrantGame({ locale }: { locale: Locale }) {
                           }`}
                         >
                           {state === "right" && answer?.ok && !reduce && <Burst />}
-                          <span aria-hidden className="text-4xl leading-none md:text-5xl">
-                            {flag(iso)}
-                          </span>
+                          <CountryFlag iso={iso} className="text-4xl leading-none md:text-5xl" />
                           <span className="font-medium text-v3-bone">{nameOf(r, locale)}</span>
                           <span className={`min-h-[1.5em] text-sm tabular-nums ${state === "right" ? "text-v3-light" : "text-v3-mute"}`}>{answer ? unit(valueOf(level.kind, r)) : ""}</span>
                         </motion.button>

@@ -22,6 +22,7 @@ import { ReportColophon } from "../colophon"
 import { Photo } from "../photo"
 import { reportJsonLd } from "../report-route"
 import { COPY } from "./copy"
+import { CountryFlag } from "./flag"
 import { MigrantGame } from "./game"
 import { Passport } from "./passport"
 import { PHOTOS } from "./photos"
@@ -189,9 +190,7 @@ export function MigrantStockReport({ locale, meta }: { locale: Locale; meta: Rep
             <Reveal key={s.title} delay={i * 0.08}>
               <Card tone={i === 0 ? "lit" : "raised"}>
                 <h3 className="font-v3-display text-3xl text-v3-bone">
-                  <span aria-hidden className="me-3">
-                    {i === 0 ? "🇮🇷" : "🇨🇦"}
-                  </span>
+                  <CountryFlag iso={i === 0 ? "IR" : "CA"} className="me-3" />
                   {s.title}
                 </h3>
                 {s.body.map((p, k) => (
