@@ -12,10 +12,12 @@ import { EightStocksReport } from "./eight-stocks/report"
 import { DeepTimePainReport } from "./deep-time-pain/report"
 import { DirectToCellReport } from "./direct-to-cell/report"
 import { ImessageSmsReport } from "./imessage-sms/report"
+import { MigrantStockReport } from "./migrant-stock/report"
 
 export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: ReportMeta }) => ReactNode> = {
   "eight-stocks-twenty-economies": EightStocksReport,
   "deep-time-pain": DeepTimePainReport,
   "starlink-direct-to-cell-iran": DirectToCellReport,
   "imessage-hidden-sms-cost": ImessageSmsReport,
+  "international-migrants-304-million": MigrantStockReport,
 }

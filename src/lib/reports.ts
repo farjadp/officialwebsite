@@ -139,6 +139,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "international-migrants-304-million",
+    number: 5,
+    published: "2026-10-15",
+    dataAsOf: "2024-07-01",
+    readMinutes: 11,
+    figure: "304M",
+    figureFa: "۳۰۴",
+    copy: {
+      en: {
+        title: "Where the World's Migrants Live",
+        tagline: "304 million, and a share that barely moved",
+        summary:
+          "The number of international migrants nearly doubled between 1990 and 2024, yet they are still under 4% of humanity. UN data on 233 countries, a ranking that flips, a country explorer and a four-level guessing game.",
+        topic: "Migration",
+        figureLabel: "international migrants, mid-2024",
+      },
+      fa: {
+        title: "مهاجران جهان کجا زندگی می‌کنند",
+        tagline: "۳۰۴ میلیون نفر، و سهمی که آهسته بالا رفت",
+        summary:
+          "تعداد مهاجران بین‌المللی از ۱۹۹۰ تا ۲۰۲۴ تقریباً دو برابر شد، اما هنوز کمتر از ۴ درصد جمعیت جهان‌اند. داده‌ی سازمان ملل درباره‌ی ۲۳۳ کشور، رتبه‌بندی‌ای که وارونه می‌شود، جست‌وجوی کشور و یک بازی چهارمرحله‌ای.",
+        topic: "مهاجرت",
+        figureLabel: "میلیون مهاجر بین‌المللی",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

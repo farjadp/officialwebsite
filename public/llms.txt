@@ -127,6 +127,16 @@ move: quote the as-of date with the figure.
   and Xiaomi Cloud as apps that send unwanted international SMS. Whether
   Apple accepts +98 numbers at all is unconfirmed; the report says so.
   Persian: /fa/reports/imessage-hidden-sms-cost
+- /reports/international-migrants-304-million — "Where the World's Migrants Live". UN DESA
+  International Migrant Stock 2024 for 233 countries and areas: 304 million
+  international migrants at mid-2024 (3.7% of world population, 48% women),
+  nearly double 1990's 154 million while the share rose only from 2.9%. Count
+  and share give opposite rankings (the US is 1st by number, 33rd by share;
+  Qatar 76.7%, UAE 74.0%). Notes that 48 countries count foreign citizens
+  rather than the foreign-born, refugees are added in 159, and the figures are
+  stocks, not flows. Close-ups of Iran (3.8M, U-shaped since 1990) and Canada
+  (8.8M, 22.2%). Interactive explorer and a four-level guessing game.
+  Persian: /fa/reports/international-migrants-304-million
 
 ## Persian / Farsi
 
