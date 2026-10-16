@@ -31,13 +31,13 @@ import { CameraMoves, CodeBlock, CompareTable, Mixed, Note, PipelineBuilder, Pip
 const WRAP = "mx-auto w-full max-w-[1280px] px-5 md:px-10 lg:px-14"
 const LATIN = "font-(family-name:--font-instrument)! **:font-(family-name:--font-instrument)!"
 
-function Block({ id, kicker, title, lead, children, tone }: { id?: string; kicker: string; title: string; lead?: string; children?: ReactNode; tone?: "beam" }) {
+function Block({ id, kicker, title, lead, children, tone }: { id?: string; kicker?: string; title: string; lead?: string; children?: ReactNode; tone?: "beam" }) {
   return (
     <section id={id} className="relative isolate scroll-mt-20 overflow-hidden border-b border-v3-line/70">
       {tone === "beam" && <Beam className="[animation-delay:-6s]" />}
       <div className={`${WRAP} py-20 md:py-28`}>
         <Reveal className="mb-12 flex flex-col gap-4 md:mb-16">
-          <Kicker>{kicker}</Kicker>
+          {kicker && <Kicker>{kicker}</Kicker>}
           <Headline className="max-w-4xl">{title}</Headline>
           {lead && <Lead className="mt-2">{lead}</Lead>}
         </Reveal>
@@ -452,7 +452,7 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
       </Block>
 
       {/* ── Mistakes ─────────────────────────────────────────────────── */}
-      <Block id="mistakes" kicker={c.pitfalls.kicker} title={c.pitfalls.title}>
+      <Block id="mistakes" title={c.pitfalls.kicker}>
         <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {c.pitfalls.items.map((p, i) => (
             <li key={i}>

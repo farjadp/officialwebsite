@@ -105,7 +105,7 @@ type Copy = {
     samples: string
     rule: string
   }
-  pitfalls: { kicker: string; title: string; items: Callout[] }
+  pitfalls: { kicker: string; items: Callout[] }
   checklist: { kicker: string; title: string; lead: string; items: string[]; done: (n: number, of: number) => string; reset: string }
   method: { kicker: string; title: string; changelogTitle: string; corrections: string[]; sourcesTitle: string; verified: string }
   colophon: { shareTitle: string; disclaimer: string; cta: string }
@@ -465,7 +465,6 @@ export const COPY: Record<Locale, Copy> = {
     },
     pitfalls: {
       kicker: "اشتباه‌های رایج",
-      title: "چیزهایی که پست اصلی نگفته",
       items: [
         { title: "همه را یک‌جا نصب کردن", body: "۹ مجموعه یعنی بیش از ۱۰۰ اسکیل. هر کدام در شروع هر جلسه خوانده می‌شود و جای فکر کردن مدل را می‌گیرد. با ۳ تا ۴ اسکیل شروع کن." },
         { title: "این یک «تیم» نیست، یک جلسه‌ی ترمینال است", body: "تا Claude Code را باز نکنی، هیچ اتفاقی نمی‌افتد. برای تولید روزانه بدون حضور خودت، باید همین مراحل را روی یک سرور بگذاری؛ مثلاً سرویس رندری که از JSON ویدیو می‌سازد و برای تأیید به تلگرام می‌فرستد. آن کار سخت‌تر است و پلی‌بوک جداگانه‌ای می‌خواهد." },
@@ -870,7 +869,6 @@ Shot 3: J-cut: the city sound starts one second before the picture. Then an FPV 
     },
     pitfalls: {
       kicker: "Common mistakes",
-      title: "What the original post didn't say",
       items: [
         { title: "Installing everything at once", body: "Nine sets is more than 100 skills. Each is read at the start of every session and takes room the model would think in. Start with three or four." },
         { title: "It isn't a team, it's a terminal session", body: "Nothing happens until you open Claude Code. For daily output without you there, the same stages have to run on a server, such as a render service that builds video from JSON and sends it to Telegram for approval. That is harder, and a playbook of its own." },
