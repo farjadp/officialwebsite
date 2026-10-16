@@ -99,20 +99,20 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                 ...(hasRoute("bookClub", locale) ? [{ href: href(ROUTES.bookClub), label: t.bookClub, note: t.bookClubNote }] : []),
             ],
         },
-        ...(hasRoute("lab", locale)
-            ? [
-                  {
-                      label: t.lab,
-                      items: [
-                          { href: href(ROUTES.lab), label: t.labProgramme, note: t.labProgrammeNote },
-                          { href: href(ROUTES.labPerks), label: t.labPerks, note: t.labPerksNote },
-                      ],
-                  },
-              ]
-            : []),
         { label: t.tools, href: href(ROUTES.tools) },
-        { label: t.about, href: href(ROUTES.about) },
-        ...(hasRoute("resume", locale) ? [{ label: t.resume, href: href(ROUTES.resume) }] : []),
+        // Everything about Farjad and working with him, in the order he set:
+        // who he is, how to reach him, booking, the résumé, then the Lab.
+        {
+            label: t.aboutMenu,
+            items: [
+                { href: href(ROUTES.about), label: t.aboutMe, note: t.aboutMeNote },
+                { href: href(ROUTES.contact), label: t.contactMe, note: t.contactMeNote },
+                { href: href(ROUTES.booking), label: t.consult, note: t.consultNote },
+                ...(hasRoute("resume", locale) ? [{ href: href(ROUTES.resume), label: t.resume, note: t.resumeNote }] : []),
+                ...(hasRoute("lab", locale) ? [{ href: href(ROUTES.lab), label: t.mentorship, note: t.mentorshipNote }] : []),
+                ...(hasRoute("labPerks", locale) ? [{ href: href(ROUTES.labPerks), label: t.perks, note: t.perksNote }] : []),
+            ],
+        },
     ]
 
     const portal: Item[] = [

@@ -124,6 +124,18 @@ type NavLabels = {
     reports: string
     playbooks: string
     library: string
+    aboutMenu: string
+    aboutMe: string
+    aboutMeNote: string
+    contactMe: string
+    contactMeNote: string
+    consult: string
+    consultNote: string
+    resumeNote: string
+    mentorship: string
+    mentorshipNote: string
+    perks: string
+    perksNote: string
     blogNote: string
     reportsNote: string
     playbooksNote: string
@@ -169,6 +181,18 @@ export const NAV: Record<Locale, NavLabels> = {
         reports: "Reports",
         playbooks: "Playbooks",
         library: "Library",
+        aboutMenu: "About",
+        aboutMe: "About me",
+        aboutMeNote: "Who I am and how I work",
+        contactMe: "Contact",
+        contactMeNote: "Write to me",
+        consult: "Book a session",
+        consultNote: "Pick a time on my calendar",
+        resumeNote: "Roles, results, dates",
+        mentorship: "Mentorship programme",
+        mentorshipNote: "Eight weeks, five teams",
+        perks: "Partnerships & perks",
+        perksNote: "Offer a perk to the teams",
         blogNote: "Long-form thinking",
         reportsNote: "Numbers I checked, then drew",
         playbooksNote: "Step-by-step, tested and dated",
@@ -212,6 +236,18 @@ export const NAV: Record<Locale, NavLabels> = {
         reports: "گزارش‌ها",
         playbooks: "پلی‌بوک‌ها",
         library: "کتابخانه",
+        aboutMenu: "درباره",
+        aboutMe: "درباره من",
+        aboutMeNote: "من کی هستم و چطور کار می‌کنم",
+        contactMe: "تماس با من",
+        contactMeNote: "برایم بنویس",
+        consult: "وقت مشاوره",
+        consultNote: "یک زمان از تقویمم انتخاب کن",
+        resumeNote: "سمت‌ها، نتیجه‌ها، تاریخ‌ها",
+        mentorship: "دوره منتورشیپ",
+        mentorshipNote: "۸ هفته، ۵ تیم",
+        perks: "همکاری و پرک",
+        perksNote: "ارائه‌ی Perk به تیم‌ها",
         blogNote: "یادداشت‌های بلند",
         reportsNote: "عددهایی که چک کردم، بعد کشیدم",
         playbooksNote: "قدم‌به‌قدم، آزموده و تاریخ‌دار",
