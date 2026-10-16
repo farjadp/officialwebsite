@@ -21,8 +21,10 @@ import type { PlaybookMeta } from "@/lib/playbooks"
 import { Beam, Card, Headline, Kicker, Lead, Reveal, Spotlight, V3Button, V3Page } from "@/components/v3/kit"
 import { ReadingProgress } from "@/components/v3/reading-progress"
 import { ReportColophon } from "@/components/v3/reports/colophon"
+import { Photo } from "@/components/v3/reports/photo"
 import { playbookJsonLd } from "../playbook-route"
 import { COPY } from "./copy"
+import { CAMERA, HERO, STAGE_PHOTOS } from "./photos"
 import { PREREQS, SOURCES, STAGES, TOOL, TOOLS, type StageId, type ToolId } from "./data"
 import { CameraMoves, CodeBlock, CompareTable, Mixed, Note, PipelineBuilder, PipelineMap, PromptBox, RunChecklist } from "./widgets"
 
@@ -102,11 +104,12 @@ function ToolHead({ id, locale }: { id: ToolId; locale: Locale }) {
 
 /** One stage of the pipeline: its number, title, lead, and the tools under it. */
 function Stage({ id, n, locale, lead, children }: { id: StageId; n: number; locale: Locale; lead: string; children: ReactNode }) {
+  const photo = STAGE_PHOTOS[id]
   const c = COPY[locale]
   return (
-    <section id={`stage-${id}`} className="relative isolate scroll-mt-20 overflow-hidden border-b border-v3-line/70">
+    <section id={`stage-${id}`} className="relative isolate scroll-mt-20 border-b border-v3-line/70">
       <div className={`${WRAP} grid gap-12 py-20 md:py-28 lg:grid-cols-12`}>
-        <Reveal className="flex min-w-0 flex-col gap-4 lg:col-span-4">
+        <Reveal className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-24 lg:col-span-4 lg:self-start">
           <span aria-hidden className="font-v3-display text-[clamp(6rem,14vw,11rem)] font-light leading-none text-v3-light drop-shadow-[0_0_50px_rgb(var(--v3-glow)/0.3)]">
             {localDigits(n, locale)}
           </span>
@@ -116,6 +119,7 @@ function Stage({ id, n, locale, lead, children }: { id: StageId; n: number; loca
           <Headline size="card" className="md:text-4xl">
             {c.stepTitles[id]}
           </Headline>
+          <Photo photo={photo} locale={locale} className="mt-6" ratio="4/3" sizes="(min-width: 1024px) 30vw, 100vw" />
         </Reveal>
         <div className="flex min-w-0 flex-col gap-8 lg:col-span-8">
           <Reveal>
@@ -186,8 +190,9 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
             <p className="max-w-3xl text-lg leading-relaxed text-v3-soft md:text-xl rtl:leading-loose">{c.hero.lead}</p>
           </Reveal>
 
-          <div className="grid gap-5 lg:grid-cols-12">
-            <Reveal immediate delay={0.18} className="lg:col-span-7">
+          <div className="grid gap-5 lg:grid-cols-12 lg:items-start">
+            <div className="flex min-w-0 flex-col gap-5 lg:col-span-7">
+            <Reveal immediate delay={0.18}>
               <Card tone="lit">
                 <span className="text-sm text-v3-light">{c.hero.specs.outcome}</span>
                 <p className="text-xl leading-relaxed text-v3-bone rtl:leading-loose">
@@ -205,7 +210,7 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
                 </dl>
               </Card>
             </Reveal>
-            <Reveal immediate delay={0.24} className="grid grid-cols-2 gap-5 lg:col-span-5">
+            <Reveal immediate delay={0.24} className="grid grid-cols-2 gap-5 sm:grid-cols-3">
               <Card tone="raised">
                 <span className="font-v3-display text-7xl font-light leading-none text-v3-light">{localDigits(TOOLS.length, locale)}</span>
                 <span className="text-sm text-v3-mute">{c.hero.specs.tools}</span>
@@ -214,12 +219,16 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
                 <span className="font-v3-display text-7xl font-light leading-none text-v3-bone">{localDigits(STAGES.length, locale)}</span>
                 <span className="text-sm text-v3-mute">{c.hero.specs.stages}</span>
               </Card>
-              <Card tone="plain" className="col-span-2">
+              <Card tone="plain" className="col-span-2 sm:col-span-1">
                 <span className="text-sm text-v3-mute">{c.hero.specs.verified}</span>
                 <time dateTime={meta.verified} className="text-lg text-v3-bone">
                   {formatReportDate(meta.verified, locale)}
                 </time>
               </Card>
+            </Reveal>
+            </div>
+            <Reveal immediate delay={0.3} className="min-w-0 lg:col-span-5">
+              <Photo photo={HERO} locale={locale} priority sizes="(min-width: 1024px) 40vw, 100vw" />
             </Reveal>
           </div>
 
@@ -421,6 +430,9 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
       {/* ── Camera moves ─────────────────────────────────────────────── */}
       <Block id="camera" kicker={c.moves.kicker} title={c.moves.title} lead={c.moves.lead}>
         <div className="flex flex-col gap-16">
+          <Reveal>
+            <Photo photo={CAMERA} locale={locale} ratio="21/9" sizes="(min-width: 1280px) 1200px, 100vw" />
+          </Reveal>
           <div className="flex flex-col gap-4">
             <h3 className="font-v3-display text-2xl text-v3-bone md:text-3xl">{c.moves.which.title}</h3>
             <Table locale={locale} head={c.moves.which.head} rows={c.moves.which.rows} />
