@@ -88,9 +88,17 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
                 { href: href(ROUTES.stats), label: t.stats, note: t.statsNote },
             ],
         },
-        ...(hasRoute("blog", locale) ? [{ label: t.blog, href: href(ROUTES.blog) }] : []),
-        { label: t.reports, href: href(ROUTES.reports) },
-        ...(hasRoute("bookClub", locale) ? [{ label: t.bookClub, href: href(ROUTES.bookClub) }] : []),
+        // Everything to read, in one menu: the bar ran out of room once
+        // playbooks joined essays, reports and the book club.
+        {
+            label: t.library,
+            items: [
+                ...(hasRoute("blog", locale) ? [{ href: href(ROUTES.blog), label: t.blog, note: t.blogNote }] : []),
+                { href: href(ROUTES.reports), label: t.reports, note: t.reportsNote },
+                { href: href(ROUTES.playbooks), label: t.playbooks, note: t.playbooksNote },
+                ...(hasRoute("bookClub", locale) ? [{ href: href(ROUTES.bookClub), label: t.bookClub, note: t.bookClubNote }] : []),
+            ],
+        },
         ...(hasRoute("lab", locale)
             ? [
                   {

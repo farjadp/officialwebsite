@@ -40,6 +40,7 @@ Tool scores are conversation starters, not assessments — see /terms.
 - /tools: All free founder diagnostics
 - /blog: In-depth articles on startups, systems and strategy (English)
 - /reports: Short data reports, each figure checked against a named source (English and Persian)
+- /playbooks: Step-by-step guides, every command tested and dated (English and Persian)
 - /portfolio: Case studies, startups built and companies advised
 - /startups: The 25+ startups mentored and advised
 - /work: Active ventures and past experiments
@@ -138,6 +139,17 @@ move: quote the as-of date with the figure.
   (8.8M, 22.2%). Interactive explorer and a four-level guessing game.
   Persian: /fa/reports/international-migrants-304-million
 
+## Playbooks
+
+- /playbooks/claude-code-content-team — "A Content Team Inside Claude Code".
+  How one person wires nine open-source Claude Code skill sets (last30days,
+  marketingskills, humanizer, baoyu-skills, frontend-slides, HyperFrames,
+  video-use, ElevenLabs skills, Postiz) into a six-stage content pipeline:
+  topic, writing, images, video, voice, scheduling, with a human approval
+  after every stage. Install commands, keys and costs checked 2026-10-15.
+  Includes a pipeline builder, a security checklist and 24 named camera moves.
+  Persian: /fa/playbooks/claude-code-content-team
+
 ## Persian / Farsi
 
 The Persian site lives under /fa. It mirrors the services, the tools and the
@@ -150,6 +162,7 @@ founder lab. The blog is English-only.
 - /fa/lab: Founder Development Lab — برنامه هشت هفته‌ای منتورشیپ
 - /fa/book-club: دورهمی کتاب‌خوانی
 - /fa/reports: گزارش‌های داده‌محور
+- /fa/playbooks: پلی‌بوک‌ها، راهنماهای قدم‌به‌قدم
 - /fa/privacy, /fa/terms: حریم خصوصی و شرایط استفاده
 
 ## Not for indexing

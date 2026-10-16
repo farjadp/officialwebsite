@@ -13,6 +13,7 @@
 // this table.
 // ============================================================================
 
+import { PLAYBOOKS } from "@/lib/playbooks"
 import { REPORTS } from "@/lib/reports"
 
 export type Locale = "en" | "fa"
@@ -39,6 +40,7 @@ export const ROUTES = {
     bookClub: "/book-club",
     intro: "/intro",
     reports: "/reports",
+    playbooks: "/playbooks",
     lab: "/lab",
     labPerks: "/lab/perks",
 } as const
@@ -93,6 +95,10 @@ export function counterpartPath(pathname: string, target: Locale): string {
     if (/^\/reports\/[a-z0-9-]+$/.test(bare) && REPORTS.some((r) => `/reports/${r.slug}` === bare)) {
         return localePath(target, bare)
     }
+    // Playbooks are bilingual too.
+    if (/^\/playbooks\/[a-z0-9-]+$/.test(bare) && PLAYBOOKS.some((p) => `/playbooks/${p.slug}` === bare)) {
+        return localePath(target, bare)
+    }
     const entry = (Object.entries(ROUTES) as [RouteKey, string][]).find(
         ([, path]) => path === bare
     )
@@ -116,6 +122,12 @@ type NavLabels = {
     bookClub: string
     intro: string
     reports: string
+    playbooks: string
+    library: string
+    blogNote: string
+    reportsNote: string
+    playbooksNote: string
+    bookClubNote: string
     lab: string
     labProgramme: string
     labProgrammeNote: string
@@ -155,6 +167,12 @@ export const NAV: Record<Locale, NavLabels> = {
         bookClub: "Book Club",
         intro: "In Plain Language",
         reports: "Reports",
+        playbooks: "Playbooks",
+        library: "Library",
+        blogNote: "Long-form thinking",
+        reportsNote: "Numbers I checked, then drew",
+        playbooksNote: "Step-by-step, tested and dated",
+        bookClubNote: "Reading together",
         lab: "Lab",
         labProgramme: "The Programme",
         labProgrammeNote: "Eight weeks, five teams",
@@ -192,6 +210,12 @@ export const NAV: Record<Locale, NavLabels> = {
         bookClub: "باشگاه کتاب",
         intro: "به زبان ساده",
         reports: "گزارش‌ها",
+        playbooks: "پلی‌بوک‌ها",
+        library: "کتابخانه",
+        blogNote: "یادداشت‌های بلند",
+        reportsNote: "عددهایی که چک کردم، بعد کشیدم",
+        playbooksNote: "قدم‌به‌قدم، آزموده و تاریخ‌دار",
+        bookClubNote: "دورهمی کتاب‌خوانی",
         lab: "منتورشیپ",
         labProgramme: "دوره‌ی منتورشیپ",
         labProgrammeNote: "۸ هفته، ۵ تیم",
@@ -241,6 +265,7 @@ type FooterLabels = {
     bookClub: string
     intro: string
     reports: string
+    playbooks: string
     lab: string
     labPerks: string
     privacy: string
@@ -279,6 +304,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         bookClub: "Book Club",
         intro: "In Plain Language",
         reports: "Reports",
+        playbooks: "Playbooks",
         lab: "Lab",
         labPerks: "Perk Partners",
         privacy: "Privacy Policy",
@@ -315,6 +341,7 @@ export const FOOTER: Record<Locale, FooterLabels> = {
         bookClub: "باشگاه کتاب",
         intro: "به زبان ساده",
         reports: "گزارش‌ها",
+        playbooks: "پلی‌بوک‌ها",
         lab: "منتورشیپ",
         labPerks: "شرکای Perk",
         privacy: "سیاست حریم خصوصی",

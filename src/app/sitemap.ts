@@ -15,6 +15,7 @@ import { prisma } from '@/lib/prisma'
 import { SITE_URL } from '@/lib/seo'
 import { PORTFOLIO_ITEMS } from './(public)/portfolio/data'
 import { REPORTS, reportModified } from '@/lib/reports'
+import { PLAYBOOKS, playbookModified } from '@/lib/playbooks'
 
 type Entry = MetadataRoute.Sitemap[number]
 
@@ -51,6 +52,7 @@ const BILINGUAL_PATHS = [
     '/lab',
     '/lab/perks',
     '/reports',
+    '/playbooks',
     '/privacy',
     '/terms',
 ]
@@ -120,6 +122,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ]
     })
 
+    // Playbooks are bilingual and dated by their last revision.
+    const playbookEntries: Entry[] = PLAYBOOKS.flatMap((p) => {
+        const when = new Date(`${playbookModified(p)}T00:00:00.000Z`)
+        const languages = {
+            en: `${SITE_URL}/playbooks/${p.slug}`,
+            fa: `${SITE_URL}/fa/playbooks/${p.slug}`,
+        }
+        return [
+            { ...entry(`/playbooks/${p.slug}`, 0.8, 'monthly', when), alternates: { languages } },
+            { ...entry(`/fa/playbooks/${p.slug}`, 0.7, 'monthly', when), alternates: { languages } },
+        ]
+    })
+
     // Blog posts carry a real lastModified, so they get an honest one.
     let postEntries: Entry[] = []
     try {
@@ -134,5 +149,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error('Failed to query posts for sitemap generation', e)
     }
 
-    return [...staticEntries, ...portfolioEntries, ...reportEntries, ...postEntries]
+    return [...staticEntries, ...portfolioEntries, ...reportEntries, ...playbookEntries, ...postEntries]
 }

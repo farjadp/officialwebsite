@@ -98,14 +98,20 @@ export async function ogFonts(locale: Locale) {
  * The card. The headline figure is the point of it, so it is set at the size
  * it would be on a billboard; everything else supports it.
  */
-export function OgCard({ locale, meta }: { locale: Locale; meta: ReportMeta }) {
+/** What a card needs from a report or a playbook. */
+type CardMeta = Pick<ReportMeta, "number" | "figure" | "figureFa"> & {
+  copy: Record<Locale, Pick<ReportMeta["copy"]["en"], "title" | "tagline" | "figureLabel">>
+}
+
+export function OgCard({ locale, meta, kind = "report" }: { locale: Locale; meta: CardMeta; kind?: "report" | "playbook" }) {
   const m = meta.copy[locale]
   const rtl = locale === "fa"
   // Satori reorders bidirectional runs itself, so Persian needs no help with
   // word order — only with the digits, which must not stay Latin.
   const fa = (v: string) => v.replace(/\./g, "٫").replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)])
   const figure = rtl ? meta.figureFa ?? fa(meta.figure) : meta.figure
-  const label = rtl ? `گزارش ${fa(String(meta.number).padStart(2, "0"))}` : `Report ${String(meta.number).padStart(2, "0")}`
+  const word = kind === "playbook" ? (rtl ? "پلی‌بوک" : "Playbook") : rtl ? "گزارش" : "Report"
+  const label = rtl ? `${word} ${fa(String(meta.number).padStart(2, "0"))}` : `${word} ${String(meta.number).padStart(2, "0")}`
 
   return (
     <div
@@ -219,12 +225,17 @@ export function OgCard({ locale, meta }: { locale: Locale; meta: ReportMeta }) {
 }
 
 /** The card for the reports index: the section, not one report. */
-export function OgIndexCard({ locale, count }: { locale: Locale; count: number }) {
+export function OgIndexCard({ locale, count, kind = "report" }: { locale: Locale; count: number; kind?: "report" | "playbook" }) {
   const rtl = locale === "fa"
   const faDigits = (v: string) => v.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)])
-  const t = rtl
-    ? { kicker: "گزارش‌ها", title: "عددهایی که چک کردم،\nبعد به تصویر کشیدم", foot: `${faDigits(String(count))} گزارش منتشر شده`, name: "فرجاد" }
-    : { kicker: "Reports", title: "Numbers I checked,\nthen drew.", foot: `${count} published`, name: "Farjad" }
+  const t =
+    kind === "playbook"
+      ? rtl
+        ? { kicker: "پلی‌بوک‌ها", title: "راهی که خودم رفتم،\nقدم‌به‌قدم", foot: `${faDigits(String(count))} پلی‌بوک منتشر شده`, name: "فرجاد", path: "farjadp.info/playbooks" }
+        : { kicker: "Playbooks", title: "Done it myself,\nhere is how.", foot: `${count} published`, name: "Farjad", path: "farjadp.info/playbooks" }
+      : rtl
+        ? { kicker: "گزارش‌ها", title: "عددهایی که چک کردم،\nبعد به تصویر کشیدم", foot: `${faDigits(String(count))} گزارش منتشر شده`, name: "فرجاد", path: "farjadp.info/reports" }
+        : { kicker: "Reports", title: "Numbers I checked,\nthen drew.", foot: `${count} published`, name: "Farjad", path: "farjadp.info/reports" }
 
   return (
     <div
@@ -263,7 +274,7 @@ export function OgIndexCard({ locale, count }: { locale: Locale; count: number }
         }}
       >
         <T rtl={rtl} style={{ color: LIGHT }}>{t.kicker}</T>
-        <div style={{ display: "flex" }}>farjadp.info/reports</div>
+        <div style={{ display: "flex" }}>{t.path}</div>
       </div>
       <div
         style={{

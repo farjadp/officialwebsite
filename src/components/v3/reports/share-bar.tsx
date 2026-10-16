@@ -15,7 +15,7 @@ const COPY = {
   fa: { share: "این گزارش را به اشتراک بگذارید", copy: "کپی لینک", copied: "لینک کپی شد" },
 }
 
-export function ShareBar({ locale, url, title }: { locale: Locale; url: string; title: string }) {
+export function ShareBar({ locale, url, title, label }: { locale: Locale; url: string; title: string; label?: string }) {
   const t = COPY[locale]
   const [copied, setCopied] = useState(false)
   const u = encodeURIComponent(url)
@@ -39,7 +39,7 @@ export function ShareBar({ locale, url, title }: { locale: Locale; url: string; 
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-sm text-v3-mute">{t.share}</span>
+      <span className="text-sm text-v3-mute">{label ?? t.share}</span>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"

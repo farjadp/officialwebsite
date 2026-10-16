@@ -1,7 +1,7 @@
 // ============================================================================
 // File Path: src/components/v3/reports/colophon.tsx
 // Why: The byline, contact links, copyright and share row that close every
-//      report. One copy, so the rights line cannot drift between reports.
+//      report and playbook. One copy, so the rights line cannot drift.
 // Env / Identity: React Server Component (ShareBar inside it is a client one)
 // ============================================================================
 
@@ -28,6 +28,9 @@ const COPY = {
     rights:
       "© 2026 Farjad (FarjadTalks). All rights reserved. You may quote or republish with credit and a link to this page.",
     back: "All reports",
+    backPlaybooks: "All playbooks",
+    byPlaybook: "Written and tested by",
+    sharePlaybook: "Share this playbook",
   },
   fa: {
     by: "تهیه و تحلیل",
@@ -36,6 +39,9 @@ const COPY = {
     rights:
       "© ۲۰۲۶ فرجاد (FarjadTalks). همه‌ی حقوق محفوظ است. نقل و بازنشر با ذکر نام و لینک همین صفحه آزاد است.",
     back: "همه‌ی گزارش‌ها",
+    backPlaybooks: "همه‌ی پلی‌بوک‌ها",
+    byPlaybook: "نوشته و آزموده‌ی",
+    sharePlaybook: "این پلی‌بوک را به اشتراک بگذارید",
   },
 }
 
@@ -45,6 +51,7 @@ export function ReportColophon({
   shareTitle,
   disclaimer,
   action,
+  kind = "report",
 }: {
   locale: Locale
   /** The report's own path, without a locale prefix: "/reports/<slug>". */
@@ -53,13 +60,16 @@ export function ReportColophon({
   /** The one line that says what this particular report is and is not. */
   disclaimer: string
   action: ReactNode
+  /** Which section the page belongs to: sets the byline, share label and back link. */
+  kind?: "report" | "playbook"
 }) {
   const t = COPY[locale]
+  const playbook = kind === "playbook"
   return (
     <footer className="mx-auto flex w-full max-w-[1280px] flex-col gap-12 px-5 py-20 md:px-10 md:py-24 lg:px-14">
       <div className="grid gap-10 md:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <span className="text-sm text-v3-mute">{t.by}</span>
+          <span className="text-sm text-v3-mute">{playbook ? t.byPlaybook : t.by}</span>
           <span className="font-v3-display text-4xl text-v3-bone">{t.name}</span>
           <span className="text-v3-soft">{t.bio}</span>
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-v3-soft" dir="ltr">
@@ -76,14 +86,14 @@ export function ReportColophon({
             ))}
           </div>
         </div>
-        <ShareBar locale={locale} url={absoluteUrl(localePath(locale, path))} title={shareTitle} />
+        <ShareBar locale={locale} url={absoluteUrl(localePath(locale, path))} title={shareTitle} label={playbook ? t.sharePlaybook : undefined} />
       </div>
       <p className="border-t border-v3-line/70 pt-6 text-sm leading-relaxed text-v3-mute rtl:leading-loose">
         {t.rights} {disclaimer}
       </p>
       <div className="flex flex-wrap gap-3">
-        <V3Button href={localePath(locale, "/reports")} variant="secondary" locale={locale}>
-          {t.back}
+        <V3Button href={localePath(locale, playbook ? "/playbooks" : "/reports")} variant="secondary" locale={locale}>
+          {playbook ? t.backPlaybooks : t.back}
         </V3Button>
         {action}
       </div>
