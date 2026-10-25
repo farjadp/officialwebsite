@@ -138,6 +138,17 @@ move: quote the as-of date with the figure.
   stocks, not flows. Close-ups of Iran (3.8M, U-shaped since 1990) and Canada
   (8.8M, 22.2%). Interactive explorer and a four-level guessing game.
   Persian: /fa/reports/international-migrants-304-million
+- /reports/siege-of-vienna-1683-scarce-resources — "300,000 Against 12,000?".
+  The Siege of Vienna (14 July – 12 September 1683) as a strategic-thinking
+  case: power is effective resources, not total ones. Corrects the famous
+  numbers (Ottomans ~100,000–150,000 in total, ~60,000–90,000 fighting; about
+  11,000 soldiers and 5,000 armed citizens held the city; a 65,000–80,000
+  relief army under Sobieski won at the Kahlenberg). Covers the scarce
+  resources (time, heavy guns, supplies, attention), the opportunity cost of
+  Kara Mustafa's five choices (playable), interior lines, the cavalry charge,
+  four myths (incl. the croissant and the first coffee house) and the
+  startup-versus-incumbent transfer.
+  Persian: /fa/reports/siege-of-vienna-1683-scarce-resources
 
 ## Playbooks
 

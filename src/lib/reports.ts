@@ -166,6 +166,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "siege-of-vienna-1683-scarce-resources",
+    number: 6,
+    published: "2026-10-25",
+    dataAsOf: "2026-10-25",
+    readMinutes: 12,
+    figure: "60",
+    figureFa: "۶۰",
+    copy: {
+      en: {
+        title: "300,000 Against 12,000?",
+        tagline: "The Siege of Vienna and the law of scarce resources",
+        summary:
+          "In 1683 the largest Ottoman army in decades failed before Vienna. The famous numbers are wrong, and the lesson gets stronger once they are fixed: power is effective resources, not total ones. Play the Grand Vizier's five decisions.",
+        topic: "Strategic thinking",
+        figureLabel: "days a small garrison bought, and that was enough",
+      },
+      fa: {
+        title: "۳۰۰ هزار در برابر ۱۲ هزار؟",
+        tagline: "محاصره‌ی وین و قانون منابع کمیاب",
+        summary:
+          "در ۱۶۸۳ بزرگ‌ترین ارتش عثمانی در دهه‌ها پشت دیوارهای وین شکست خورد. عددهای مشهور غلط‌اند و با اصلاحشان درس قوی‌تر می‌شود: قدرت یعنی منابع مؤثر، نه منابع کل. جای صدراعظم بنشین و پنج تصمیمش را بگیر.",
+        topic: "تفکر استراتژیک",
+        figureLabel: "روزی که یک پادگان کوچک خرید، و همین کافی بود",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

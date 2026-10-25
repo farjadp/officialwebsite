@@ -13,6 +13,7 @@ import { DeepTimePainReport } from "./deep-time-pain/report"
 import { DirectToCellReport } from "./direct-to-cell/report"
 import { ImessageSmsReport } from "./imessage-sms/report"
 import { MigrantStockReport } from "./migrant-stock/report"
+import { Vienna1683Report } from "./vienna-1683/report"
 
 export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: ReportMeta }) => ReactNode> = {
   "eight-stocks-twenty-economies": EightStocksReport,
@@ -20,4 +21,5 @@ export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: Repor
   "starlink-direct-to-cell-iran": DirectToCellReport,
   "imessage-hidden-sms-cost": ImessageSmsReport,
   "international-migrants-304-million": MigrantStockReport,
+  "siege-of-vienna-1683-scarce-resources": Vienna1683Report,
 }
