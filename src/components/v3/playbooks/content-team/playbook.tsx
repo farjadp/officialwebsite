@@ -278,7 +278,9 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
                   <li key={i} className="flex gap-3 text-v3-bone">
                     <span className="font-v3-display text-xl leading-none text-v3-light">{localDigits(i + 1, locale)}</span>
                     <span>
-                      <Mixed text={r} locale={locale} />
+                      <span className="min-w-0 [overflow-wrap:anywhere]">
+                        <Mixed text={r} locale={locale} />
+                      </span>
                     </span>
                   </li>
                 ))}
@@ -364,7 +366,9 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
           {s.video.vu.does.map((d, i) => (
             <li key={i} className="flex gap-4 border-b border-v3-line/60 py-3 leading-relaxed text-v3-bone last:border-b-0 rtl:leading-loose">
               <span aria-hidden className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-v3-light" />
-              <Mixed text={d} locale={locale} />
+              <span className="min-w-0 [overflow-wrap:anywhere]">
+                <Mixed text={d} locale={locale} />
+              </span>
             </li>
           ))}
         </ul>
@@ -496,7 +500,9 @@ export function ContentTeamPlaybook({ locale, meta }: { locale: Locale; meta: Pl
               {c.method.corrections.map((note, i) => (
                 <li key={i} className="flex gap-4 border-b border-v3-line/60 py-4 leading-relaxed text-v3-soft last:border-b-0 rtl:leading-loose">
                   <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-v3-light" aria-hidden />
-                  <Mixed text={note} locale={locale} />
+                  <span className="min-w-0 [overflow-wrap:anywhere]">
+                    <Mixed text={note} locale={locale} />
+                  </span>
                 </li>
               ))}
             </ul>

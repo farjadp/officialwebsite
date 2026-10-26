@@ -161,6 +161,15 @@ move: quote the as-of date with the figure.
   Includes a pipeline builder, a security checklist and 24 named camera moves.
   Persian: /fa/playbooks/claude-code-content-team
 
+- /playbooks/animated-science-explainer — "Animated Science Videos with Claude
+  Code". A prompt that has Claude Code build a whole animated explainer
+  ("What if the Sun vanished?"): canvas and WebGL art, an original mascot,
+  narration timed to the word (ElevenLabs or local kokoro-onnx +
+  faster-whisper), damped-spring camera, a Playwright/Edge render and a
+  -14 LUFS mix. Includes a live, scrubbable version of the 30-second script
+  drawn on the page, the corrected prompt and a science check of the script.
+  Checked 2026-10-26. Persian: /fa/playbooks/animated-science-explainer
+
 ## Persian / Farsi
 
 The Persian site lives under /fa. It mirrors the services, the tools and the

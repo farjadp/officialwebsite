@@ -52,6 +52,46 @@ export type PlaybookMeta = {
 
 export const PLAYBOOKS: PlaybookMeta[] = [
   {
+    slug: "animated-science-explainer",
+    number: 2,
+    published: "2026-10-26",
+    verified: "2026-10-26",
+    readMinutes: 16,
+    figure: "8:20",
+    figureFa: "۸:۲۰",
+    changelog: [
+      {
+        date: "2026-10-26",
+        en: "First edition. Model names, render flags, loudness targets and the science in the sample script checked against primary sources.",
+        fa: "نسخه‌ی اول. نام مدل‌ها، تنظیمات رندر، معیار بلندی صدا و علمِ سناریوی نمونه با منبع‌های اصلی تطبیق داده شد.",
+      },
+    ],
+    copy: {
+      en: {
+        title: "Animated Science Videos with Claude Code",
+        tagline: "Every frame drawn in code, every move on a spoken word",
+        summary:
+          "A prompt that has Claude Code build a whole animated explainer: space drawn in canvas and WebGL, an original mascot, narration timed to the word, camera moves on springs, sound and a GPU render. How it works, what each part does, and a live version you can scrub on this page.",
+        topic: "AI video",
+        figureLabel: "the light you see left the Sun this long ago",
+        outcome: "A rendered 1080p explainer video in the flat, bright style of channels like Kurzgesagt, built from one HTML file whose every frame is a function of time.",
+        level: "Comfortable with a terminal, Python and Node. Expect a few rounds of fixes, not one prompt.",
+        cost: "Free with the local voice (kokoro-onnx). ElevenLabs costs per character once you pass its free quota.",
+      },
+      fa: {
+        title: "ویدیوی انیمیشنی علمی با Claude Code",
+        tagline: "هر فریم با کد، هر حرکت روی یک کلمه‌ی نریشن",
+        summary:
+          "پرامپتی که از Claude Code می‌خواهد یک ویدیوی توضیحی انیمیشنی کامل بسازد: فضای کشیده‌شده با Canvas و WebGL، کاراکتر اختصاصی، نریشنی که کلمه‌به‌کلمه با تصویر هماهنگ است، حرکت دوربین فنری، صدا و رندر با GPU. این‌که چطور کار می‌کند، هر بخشش چه می‌کند، و یک نسخه‌ی زنده که همین‌جا می‌توانی جلو و عقبش ببری.",
+        topic: "ویدیو با هوش مصنوعی",
+        figureLabel: "نوری که می‌بینی این‌قدر پیش از خورشید راه افتاده",
+        outcome: "یک ویدیوی توضیحی ۱۰۸۰p به سبک تخت و رنگی کانال‌هایی مثل Kurzgesagt، ساخته‌شده از یک فایل HTML که هر فریمش تابعی از زمان است.",
+        level: "آشنایی با ترمینال، Python و Node. انتظار چند دور اصلاح داشته باش، نه یک پرامپت و تمام.",
+        cost: "با صدای محلی (kokoro-onnx) رایگان است. ElevenLabs بعد از سهمیه‌ی رایگان به ازای هر کاراکتر پول می‌گیرد.",
+      },
+    },
+  },
+  {
     slug: "claude-code-content-team",
     number: 1,
     published: "2026-10-15",

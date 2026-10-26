@@ -9,7 +9,9 @@ import type { ReactNode } from "react"
 import type { Locale } from "@/lib/nav"
 import type { PlaybookMeta } from "@/lib/playbooks"
 import { ContentTeamPlaybook } from "./content-team/playbook"
+import { ScienceExplainerPlaybook } from "./science-explainer/playbook"
 
 export const PLAYBOOK_COMPONENTS: Record<string, (p: { locale: Locale; meta: PlaybookMeta }) => ReactNode> = {
   "claude-code-content-team": ContentTeamPlaybook,
+  "animated-science-explainer": ScienceExplainerPlaybook,
 }
