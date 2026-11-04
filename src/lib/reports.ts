@@ -193,6 +193,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "startup-ecosystems-2026-concentration",
+    number: 7,
+    published: "2026-11-04",
+    dataAsOf: "2026-11-04",
+    readMinutes: 12,
+    figure: "86%",
+    figureFa: "۸۶٪",
+    copy: {
+      en: {
+        title: "Concentration, Not Diversification",
+        tagline: "What the 2026 startup reports really say",
+        summary:
+          "The 2026 StartupBlink and Startup Genome reports are read as a redrawn startup map. Checked line by line, they show the opposite: late-stage up 17%, Series A up 2%, half of late-stage money in AI and 86% of that in North America.",
+        topic: "Startup ecosystems",
+        figureLabel: "of late-stage AI-native funding went to North America",
+      },
+      fa: {
+        title: "تمرکز، نه پراکندگی",
+        tagline: "گزارش‌های استارتاپی ۲۰۲۶ واقعاً چه می‌گویند",
+        summary:
+          "گزارش‌های ۲۰۲۶ استارتاپ‌بلینک و استارتاپ ژنوم را نشانه‌ی نقشه‌ای تازه می‌خوانند. اگر خط‌به‌خط چک شوند، برعکسش را می‌گویند: مرحله‌ی رشد +۱۷٪، سری A +۲٪، نیمی از پول مرحله‌ی رشد در هوش مصنوعی و ۸۶٪ آن در آمریکای شمالی.",
+        topic: "اکوسیستم استارتاپی",
+        figureLabel: "از سرمایه‌ی مرحله‌ی رشد شرکت‌های هوش مصنوعی به آمریکای شمالی رفت",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

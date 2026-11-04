@@ -149,6 +149,17 @@ move: quote the as-of date with the figure.
   four myths (incl. the croissant and the first coffee house) and the
   startup-versus-incumbent transfer.
   Persian: /fa/reports/siege-of-vienna-1683-scarce-resources
+- /reports/startup-ecosystems-2026-concentration — "Concentration, Not
+  Diversification". What the StartupBlink Global Startup Ecosystem Index 2026
+  and Startup Genome GSER 2026 actually say once a summary of them is
+  fact-checked: late-stage funding +17% to ~US$210B but Series A only +2%;
+  US$108B of late-stage went to AI-native companies (~51%, derived) and 86% of
+  that to North America; the US added ~60 score points to Singapore's ~13
+  despite growing slower; 1,113 unicorns (US 594 or 620 depending on
+  StartupBlink's publication). Corrects common misquotes (1,213 unicorns, 120
+  countries, "Series A +28%"). Includes a catch-up calculator and labelled
+  falsification conditions for each interpretation.
+  Persian: /fa/reports/startup-ecosystems-2026-concentration
 
 ## Playbooks
 
