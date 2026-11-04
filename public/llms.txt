@@ -154,11 +154,13 @@ move: quote the as-of date with the figure.
   and Startup Genome GSER 2026 actually say once a summary of them is
   fact-checked: late-stage funding +17% to ~US$210B but Series A only +2%;
   US$108B of late-stage went to AI-native companies (~51%, derived) and 86% of
-  that to North America; the US added ~60 score points to Singapore's ~13
-  despite growing slower; 1,113 unicorns (US 594 or 620 depending on
-  StartupBlink's publication). Corrects common misquotes (1,213 unicorns, 120
-  countries, "Series A +28%"). Includes a catch-up calculator and labelled
-  falsification conditions for each interpretation.
+  that to North America (64% of all late-stage); the US added ~60 score
+  points, about as many as the next nine countries combined, despite
+  growing slower than Singapore. Unicorns from the 2026 index's country
+  pages: US 620 against 411 for the next nine together (no global total is
+  published; the circulating 1,113 is StartupBlink's 2023 map). Notes GSER's
+  Q1 2026 Series A signal (+28% over the 2025 quarterly average). Includes a
+  catch-up calculator and labelled falsification conditions for each read.
   Persian: /fa/reports/startup-ecosystems-2026-concentration
 
 ## Playbooks
