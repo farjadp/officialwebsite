@@ -45,15 +45,19 @@ async function shortlist(params: URLSearchParams) {
     const limit = clampInt(params.get("limit"), 10, 1, 50)
     const minScore = clampInt(params.get("minScore"), 70, 0, 100)
     const includeShortlisted = params.get("includeShortlisted") !== "0"
+    // Search boards (Adzuna, Himalayas, Jooble) drop a filled job from results long
+    // before two missed runs close it; recently seen is the better "still open" signal.
+    const seenWithinDays = clampInt(params.get("seenWithinDays"), 3, 1, 60)
 
     const postings = await prisma.jobPosting.findMany({
         where: {
             closedAt: null,
+            lastSeenAt: { gte: new Date(Date.now() - seenWithinDays * 86_400_000) },
             score: { gte: minScore },
             status: { in: includeShortlisted ? ["NEW", "SHORTLISTED"] : ["NEW"] },
         },
-        // Freshest strong matches first: an old posting is less likely to still be open.
-        orderBy: [{ score: "desc" }, { firstSeenAt: "desc" }],
+        // Strongest first; among equals the newest by the board's own date.
+        orderBy: [{ score: "desc" }, { postedAt: { sort: "desc", nulls: "last" } }, { firstSeenAt: "desc" }],
         take: limit,
         select: {
             id: true,

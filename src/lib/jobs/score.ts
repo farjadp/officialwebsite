@@ -29,6 +29,10 @@ const SCORE_CONCURRENCY = 5
 /** After this many failed attempts a posting is left unscored for a person. */
 export const MAX_SCORE_ATTEMPTS = 3
 const DESCRIPTION_CHARS_FOR_MODEL = 7_000
+/** Postings older than this (by the board's own date) are not worth a model call. */
+export const MAX_POSTING_AGE_DAYS = 30
+/** Not in a board's results for this long: probably gone, so not scored. */
+export const MAX_DAYS_SINCE_SEEN = 3
 
 export const ScoreSchema = z.object({
     score: z.number().int().min(0).max(100),
@@ -91,20 +95,28 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
         return { ...report, stopped: "The profile has no summary to score against" }
     }
 
+    const now = Date.now()
     const waiting = {
         prefilter: "PASS",
         score: null,
         closedAt: null,
         status: "NEW",
         scoreAttempts: { lt: MAX_SCORE_ATTEMPTS },
-        // US-only roles need US work authorisation he does not have: scoring them buys nothing.
-        OR: [{ country: null }, { country: { not: "US" } }],
+        lastSeenAt: { gte: new Date(now - MAX_DAYS_SINCE_SEEN * 86_400_000) },
+        AND: [
+            // US-only roles need US work authorisation he does not have: scoring them buys nothing.
+            { OR: [{ country: null }, { country: { not: "US" } }] },
+            // A month-old posting is usually filled; money goes to fresh ones.
+            { OR: [{ postedAt: null }, { postedAt: { gte: new Date(now - MAX_POSTING_AGE_DAYS * 86_400_000) } }] },
+        ],
     }
+    // Newest by the board's own date first; a backlog read on one day all shares one firstSeenAt.
+    const orderBy = [{ postedAt: { sort: "desc" as const, nulls: "last" as const } }, { firstSeenAt: "desc" as const }]
     const select = { id: true, title: true, company: true, location: true, remote: true, description: true }
     // Roles the candidate can take today come first; a US-only role waits its turn.
     const canada = await prisma.jobPosting.findMany({
         where: { ...waiting, country: { in: ["CA", "NA"] } },
-        orderBy: { firstSeenAt: "desc" },
+        orderBy,
         take: limit,
         select,
     })
@@ -112,7 +124,7 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
         canada.length < limit
             ? await prisma.jobPosting.findMany({
                   where: { ...waiting, id: { notIn: canada.map((posting) => posting.id) } },
-                  orderBy: { firstSeenAt: "desc" },
+                  orderBy,
                   take: limit - canada.length,
                   select,
               })
