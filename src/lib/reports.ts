@@ -220,6 +220,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "undecided-fifth-2026-midterms",
+    number: 8,
+    published: "2026-11-10",
+    dataAsOf: "2026-10-08",
+    readMinutes: 12,
+    figure: "20%",
+    figureFa: "۲۰٪",
+    copy: {
+      en: {
+        title: "The Undecided Fifth",
+        tagline: "What Pew's last big poll before the 2026 midterms really measured",
+        summary:
+          "Pew's last major pre-midterm survey gave Democratic House candidates 44% to 36% among registered voters. The eight points made the headline. The fifth who had not picked either party, and where they sat, told the more precise story.",
+        topic: "U.S. elections",
+        figureLabel: "of registered voters chose another candidate or were not sure, a month out",
+      },
+      fa: {
+        title: "یک‌پنجم مردد",
+        tagline: "آخرین نظرسنجی بزرگ پیو پیش از میان‌دوره‌ای ۲۰۲۶ واقعاً چه سنجید",
+        summary:
+          "آخرین نظرسنجی بزرگ پیو پیش از انتخابات میان‌دوره‌ای به نامزدهای دموکرات مجلس ۴۴٪ در برابر ۳۶٪ داد. تیتر همان هشت امتیاز بود. اما یک‌پنجمی که هیچ‌کدام از دو حزب را انتخاب نکرده بودند، و جایی که نشسته بودند، روایت دقیق‌تری می‌گفت.",
+        topic: "انتخابات آمریکا",
+        figureLabel: "یک ماه مانده، هیچ‌کدام از دو حزب را انتخاب نکرده بودند",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

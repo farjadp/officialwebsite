@@ -22,6 +22,9 @@
   --color-v3-soft: var(--v3-soft);
   --color-v3-bone: var(--v3-bone);
   --color-v3-light: var(--v3-accent);
+  /* Party colours for election charts (report 08): muted to sit in the warm palette. */
+  --color-v3-dem: var(--v3-dem);
+  --color-v3-rep: var(--v3-rep);
   /* Fixed in both themes: chrome laid over photography, which is always dark. */
   --color-v3-media: #141312;
   --color-v3-media-bone: #ede8df;
@@ -90,6 +93,8 @@
   --v3-accent: #e8c48a;
   --v3-glow: 232 196 138;
   --v3-sheen: #2b2825;
+  --v3-dem: #8fb0d6;
+  --v3-rep: #e0907a;
   color-scheme: dark;
 }
 
@@ -106,6 +111,8 @@
   --v3-accent: #8d5d16;
   --v3-glow: 141 93 22;
   --v3-sheen: #d8d0c0;
+  --v3-dem: #34557a;
+  --v3-rep: #a3412b;
   color-scheme: light;
 }
 

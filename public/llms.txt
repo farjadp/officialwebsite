@@ -163,6 +163,22 @@ move: quote the as-of date with the figure.
   catch-up calculator and labelled falsification conditions for each read.
   Persian: /fa/reports/startup-ecosystems-2026-concentration
 
+- /reports/undecided-fifth-2026-midterms — "The Undecided Fifth". An analysis
+  of Pew Research Center's survey of 3,917 registered voters (5,062 adults,
+  American Trends Panel, fielded Sept. 28 – Oct. 4, 2026, published Oct. 8).
+  House vote preference: 44% Democratic candidate, 36% Republican candidate,
+  20% another candidate (5%) or not sure (15%), after a lean follow-up. The
+  uncommitted share was 2.5 times the lead and concentrated among Republican-
+  leaning independents (38%), independents/other incl. leaners (36%), Asian
+  voters (27%, English speakers only), HS or less (26%) and ages 30–49 (26%).
+  Consolidation: 82% of Dem/lean Dem backed the Democrat, 73% of Rep/lean Rep
+  the Republican. Supporters of Democratic candidates were more engaged on all
+  three Pew measures, reversing October 2022. Includes a labelled uniform-swing
+  "what if only one group voted" model on 2024 certified state results (The
+  American Presidency Project) — a model, not survey data or a forecast. Not an
+  account of the Nov. 3, 2026 results; takes no partisan position.
+  Persian: /fa/reports/undecided-fifth-2026-midterms
+
 ## Playbooks
 
 - /playbooks/claude-code-content-team — "A Content Team Inside Claude Code".
