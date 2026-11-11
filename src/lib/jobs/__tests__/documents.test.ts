@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { assemble, buildDocumentPrompt, figures, inventedFigures, missingForDocuments, sourceText, type Draft } from "../documents"
+import { assemble, buildDocumentPrompt, draftDrift, evidencedSkills, figures, inventedFigures, isEvidenced, missingForDocuments, sourceText, type Draft } from "../documents"
 import { ProfileSchema } from "../profile"
 
 const profile = ProfileSchema.parse({
@@ -7,10 +7,11 @@ const profile = ProfileSchema.parse({
     authorisation: { CA: "Permanent resident", US: "" },
     contact: { name: "Test Person", email: "t@example.com", phone: "", location: "Toronto, ON", links: ["example.com"] },
     history: [
-        { company: "Acme", location: "Toronto", start: "2021-04", end: null, titles: ["Founder & CEO", "CTO"], facts: ["Built a team of 12"] },
+        { company: "Acme", location: "Toronto", start: "2021-04", end: null, titles: ["Founder & CEO", "CTO", "Founder & CTO"], facts: ["Built a team of 12", "Co-founded the company and led development of the first version"] },
         { company: "Old Co", location: "", start: "2015-01", end: "2019-12", titles: ["Engineering Lead"], facts: [] },
     ],
     education: [{ degree: "MSc Software", school: "U", year: "2014" }],
+    skills: ["TypeScript", "Node.js", "Software architecture"],
 })
 
 const draft = (over: Partial<Draft> = {}): Draft => ({
@@ -21,6 +22,7 @@ const draft = (over: Partial<Draft> = {}): Draft => ({
         { index: 1, title: "Engineering Lead", bullets: [] },
     ],
     skills: ["TypeScript"],
+    requirements: [],
     coverLetter: "Hello.",
     ...over,
 })
@@ -82,5 +84,40 @@ describe("prompt and readiness", () => {
     it("names what is missing before a résumé can be made", () => {
         expect(missingForDocuments(profile)).toEqual([])
         expect(missingForDocuments(ProfileSchema.parse({}))).toEqual(["a name", "an email address", "a career history"])
+    })
+})
+
+describe("drift from the record", () => {
+    it("drops a skill the record does not show and says so", () => {
+        const documents = assemble(profile, draft({ skills: ["TypeScript", "Microservices", "DevOps", "Node.js"] }))
+        expect(documents.resume.skills).toEqual(["TypeScript", "Node.js"])
+        expect(documents.notes.filter((note) => note.startsWith("Removed the skill"))).toHaveLength(2)
+    })
+
+    it("accepts a skill named in a role fact", () => {
+        expect(isEvidenced("Product development", evidencedSkills(profile))).toBe(false)
+        expect(isEvidenced("Development", evidencedSkills(profile))).toBe(true)
+        expect(isEvidenced("Kubernetes", evidencedSkills(profile))).toBe(false)
+    })
+
+    it("flags a verb the record does not use", () => {
+        const issues = draftDrift(profile, draft({ coverLetter: "At Acme I co-led development of the first version." }))
+        expect(issues.some((issue) => issue.includes("co-led"))).toBe(true)
+        expect(draftDrift(profile, draft({ coverLetter: "I co-founded Acme." }))).toEqual([])
+    })
+
+    it("flags a letter that gives a role a different title than the résumé", () => {
+        const issues = draftDrift(profile, draft({ roles: [{ index: 0, title: "Founder & CEO", bullets: [] }], coverLetter: "As Founder & CTO of Acme I built a team." }))
+        expect(issues.some((issue) => issue.includes("use one title"))).toBe(true)
+    })
+
+    it("tells the owner which posting requirements the record does not meet", () => {
+        const documents = assemble(profile, draft({ requirements: [{ requirement: "RFP responses", evidence: "" }, { requirement: "TypeScript", evidence: "TypeScript" }] }))
+        expect(documents.notes.some((note) => note.includes("RFP responses") && !note.includes("TypeScript"))).toBe(true)
+    })
+
+    it("lists education newest first", () => {
+        const p = ProfileSchema.parse({ ...profile, education: [{ degree: "BA", school: "U", year: "2010" }, { degree: "PhD", school: "U", year: "2019" }] })
+        expect(assemble(p, draft()).resume.education.map((e) => e.degree)).toEqual(["PhD", "BA"])
     })
 })

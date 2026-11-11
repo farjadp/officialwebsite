@@ -28,6 +28,10 @@ export const AI_TELLS: string[] = [
     "in today's", "ever-evolving", "drive impactful", "impactful", "unlock", "empower", "empowering",
     "strategic thinker", "go-getter", "self-starter", "excited to apply", "i am writing to express",
     "align with your", "thrilled",
+    "resonates", "aligns well", "align well", "aligns with", "positions me", "well-prepared", "well prepared",
+    "compelling opportunity", "harness", "unique expertise", "extensive experience", "eager to", "deeply interested",
+    "innovative environment", "leading-edge", "contribute effectively", "i look forward to", "thank you for considering",
+    "my passion", "strong background",
 ]
 
 const QUALIFIERS = ["nearly", "almost", "about", "around", "approximately", "roughly", "more than", "over", "up to", "close to", "~"]

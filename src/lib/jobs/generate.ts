@@ -13,13 +13,14 @@ import {
     buildDocumentPrompt,
     DOCUMENT_SYSTEM,
     DraftSchema,
+    draftDrift,
     draftText,
     inventedFigures,
     missingForDocuments,
     sourceText,
 } from "./documents"
 import { loadProfile } from "./profile"
-import { droppedQualifiers } from "./review"
+import { droppedQualifiers, findTells } from "./review"
 import { assertBudget } from "./budget"
 import { recordUsage } from "./usage"
 
@@ -61,13 +62,26 @@ export async function generateDocuments(postingId: string): Promise<GenerateResu
             continue
         }
         const dropped = droppedQualifiers(text, source)
-        if (dropped.length && attempt === 0) {
-            feedback = `\n\nYour previous draft stated these figures without the qualifier <candidate> gives them ("nearly", "more than"…): ${dropped.join(", ")}. Keep the qualifiers.`
+        const tells = findTells(text).map((hit) => hit.phrase)
+        const drift = draftDrift(profile, result.data)
+        if (attempt === 0 && (dropped.length || tells.length || drift.length)) {
+            feedback = [
+                "",
+                "",
+                "Your previous draft has problems. Rewrite the whole draft and fix them:",
+                dropped.length && `- These figures lost the qualifier <candidate> gives them ("nearly", "more than"…): ${dropped.join(", ")}. Keep the qualifiers.`,
+                tells.length && `- These phrases make it read as machine-written: ${tells.join(", ")}. Say the concrete thing instead.`,
+                ...drift.map((issue) => `- ${issue}.`),
+            ]
+                .filter((line): line is string => typeof line === "string")
+                .join("\n")
             continue
         }
 
         const documents = assemble(profile, result.data)
         if (dropped.length) documents.notes.push(`Check the wording around ${dropped.join(", ")}: the profile qualifies these figures`)
+        if (tells.length) documents.notes.push(`Still reads machine-written in places: ${tells.join(", ")}`)
+        for (const issue of drift.filter((item) => !item.startsWith("The skill"))) documents.notes.push(issue)
         const saved = await prisma.jobDocument.create({
             data: {
                 postingId: posting.id,
