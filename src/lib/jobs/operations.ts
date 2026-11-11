@@ -10,6 +10,9 @@
 
 import { prisma } from "@/lib/prisma"
 import { logActivity } from "./activity"
+import { budgetState } from "./budget"
+import { agentDocumentsCap, budgetWarning } from "./cost"
+import { USAGE_TIMEZONE } from "./usage"
 import { isPaused } from "./control"
 import { generateDocuments, type GenerateResult } from "./generate"
 import { runIngest, type BoardReport } from "./ingest"
@@ -72,6 +75,7 @@ export async function runJobSearch(trigger: Trigger, options: { scoreOnly?: bool
             `Run finished (${trigger}): ${totals.created} new postings, ${totals.closed} closed, ${scoring.scored} scored`,
             totals,
         )
+        await warnIfBudgetLow()
         return { ok: true, boards, scoring }
     } catch (error) {
         await logActivity("run", "error", `Run failed (${trigger}): ${message(error)}`)
@@ -79,7 +83,33 @@ export async function runJobSearch(trigger: Trigger, options: { scoreOnly?: bool
     }
 }
 
-/** Write a tailored résumé and cover letter for one posting. */
+/** One warning line when today's or this month's AI spend passes 80% of its cap. */
+async function warnIfBudgetLow(): Promise<void> {
+    try {
+        const warning = budgetWarning(await budgetState())
+        if (warning) await logActivity("control", "warn", warning)
+    } catch (error) {
+        console.error("[jobs.operations] budget check failed", error)
+    }
+}
+
+/** Résumés written today (Toronto day), whoever asked for them. */
+async function documentsWrittenToday(): Promise<number> {
+    const rows = await prisma.$queryRaw<{ count: bigint }[]>`
+        SELECT count(*) AS count FROM "JobDocument"
+        WHERE date_trunc('day', "createdAt" AT TIME ZONE 'UTC' AT TIME ZONE ${USAGE_TIMEZONE})
+            = date_trunc('day', now() AT TIME ZONE ${USAGE_TIMEZONE})`
+    return Number(rows[0]?.count ?? 0)
+}
+
+/**
+ * Write a tailored résumé and cover letter for one posting.
+ *
+ * Two extra rules save money when the agent asks: a posting that already has
+ * a résumé gets that one back instead of a new one, and the agent stops at
+ * `JOBS_AGENT_DOCUMENTS_PER_DAY` (default 10) résumés a day. The owner's own
+ * button is never limited this way — only by the AI budget.
+ */
 export async function prepareDocuments(postingId: string, trigger: Trigger): Promise<GenerateResult> {
     const posting = await prisma.jobPosting.findUnique({
         where: { id: postingId },
@@ -87,13 +117,37 @@ export async function prepareDocuments(postingId: string, trigger: Trigger): Pro
     })
     const label = posting ? `${posting.title} at ${posting.company}` : postingId
 
+    if (trigger === "agent") {
+        const existing = await prisma.jobDocument.findFirst({
+            where: { postingId },
+            orderBy: { createdAt: "desc" },
+            select: { id: true },
+        })
+        if (existing) return { ok: true, documentId: existing.id }
+
+        const cap = agentDocumentsCap(process.env.JOBS_AGENT_DOCUMENTS_PER_DAY)
+        const today = await documentsWrittenToday()
+        if (today >= cap) {
+            const error = `Daily limit reached: ${today} résumés written today (limit ${cap})`
+            await logActivity("documents", "warn", `Résumé not written (agent): ${label} — ${error}`, { postingId })
+            return { ok: false, error }
+        }
+    }
+
     try {
         const result = await generateDocuments(postingId)
         if (result.ok) {
-            await logActivity("documents", "info", `Résumé and cover letter written (${trigger}): ${label}`, {
+            const saved = await prisma.jobDocument.findUnique({
+                where: { id: result.documentId },
+                select: { costCents: true },
+            })
+            const cost = saved ? ` — about $${(saved.costCents / 100).toFixed(3)}` : ""
+            await logActivity("documents", "info", `Résumé and cover letter written (${trigger}): ${label}${cost}`, {
                 postingId,
                 documentId: result.documentId,
+                costCents: saved?.costCents ?? null,
             })
+            await warnIfBudgetLow()
         } else {
             await logActivity("documents", "warn", `Résumé not written (${trigger}): ${label} — ${result.error}`, {
                 postingId,
