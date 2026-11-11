@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { withApiLogging } from '@/lib/api-logger'
+import { JOBS_LOG_SOURCE } from '@/lib/jobs/activity'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -29,10 +30,14 @@ async function getHandler(req: NextRequest) {
               }
             : {}
 
+        // The job search is the owner's private business; editors never see its log lines.
+        const ownerOnly =
+            session.user.role === 'OWNER' ? {} : { NOT: { source: JOBS_LOG_SOURCE } }
         const where = {
             ...(level ? { level } : {}),
             ...(source ? { source } : {}),
             ...searchFilter,
+            ...ownerOnly,
         }
 
         const [logs, levelCounts, sourceRows] = await Promise.all([
@@ -44,11 +49,12 @@ async function getHandler(req: NextRequest) {
             // Counts respect source/q filters so the chips reflect the current view
             prisma.systemLog.groupBy({
                 by: ['level'],
-                where: { ...(source ? { source } : {}), ...searchFilter },
+                where: { ...(source ? { source } : {}), ...searchFilter, ...ownerOnly },
                 _count: { _all: true },
             }),
             prisma.systemLog.findMany({
                 select: { source: true },
+                where: ownerOnly,
                 distinct: ['source'],
                 take: 20,
             }),
@@ -79,16 +85,20 @@ async function deleteHandler(req: NextRequest) {
         const id = searchParams.get('id')
         const olderThanDaysRaw = searchParams.get('olderThanDays')
 
+        // Editors cannot remove the owner's job-search log lines either.
+        const ownerOnly =
+            session.user.role === 'OWNER' ? {} : { NOT: { source: JOBS_LOG_SOURCE } }
+
         if (id) {
-            await prisma.systemLog.delete({ where: { id } })
-            return NextResponse.json({ success: true })
+            const result = await prisma.systemLog.deleteMany({ where: { id, ...ownerOnly } })
+            return NextResponse.json({ success: result.count > 0 })
         }
 
         if (olderThanDaysRaw) {
             const days = Math.max(1, parseInt(olderThanDaysRaw, 10) || 7)
             const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
             const result = await prisma.systemLog.deleteMany({
-                where: { createdAt: { lt: cutoff } },
+                where: { createdAt: { lt: cutoff }, ...ownerOnly },
             })
             return NextResponse.json({ success: true, deleted: result.count })
         }

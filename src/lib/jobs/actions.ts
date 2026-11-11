@@ -14,15 +14,17 @@ import { assist, reviewDocument, ASSIST_TARGETS, type AssistResult, type AssistT
 import type { Resume } from "./documents"
 import { applyEdit, EditSchema, type Edit } from "./editor"
 import { DEFAULT_CAPS, saveCaps } from "./budget"
-import { isPaused, setPaused } from "./control"
-import { generateDocuments as generate, type GenerateResult } from "./generate"
+import { setPaused } from "./control"
+import type { GenerateResult } from "./generate"
+import { isActivityKind, isActivityLevel, listActivity, logActivity, type ActivityEntry } from "./activity"
+import { isJobStatus, prepareDocuments, runJobSearch, updateStatus } from "./operations"
 import { assertOwner } from "./guard"
 import { parseEducation, parseHistory } from "./history"
-import { runIngest, type BoardReport } from "./ingest"
+import type { BoardReport } from "./ingest"
 import { ProfileSchema, loadProfile, parseKeywordList, parseLanes, saveProfile } from "./profile"
-import { scorePending, type ScoreReport } from "./score"
+import type { ScoreReport } from "./score"
 import { fetchBoard, isValidToken } from "./sources"
-import { BOARD_KINDS, JOB_STATUSES, type BoardKind, type JobStatus } from "./types"
+import { BOARD_KINDS, type BoardKind } from "./types"
 
 const PATH = "/admin/jobs"
 
@@ -34,22 +36,10 @@ function message(error: unknown): string {
 
 export async function setStatus(id: string, status: string): Promise<{ ok: boolean }> {
     await assertOwner()
-    if (!(JOB_STATUSES as readonly string[]).includes(status)) return { ok: false }
-    const next = status as JobStatus
-
-    const current = await prisma.jobPosting.findUnique({ where: { id }, select: { appliedAt: true } })
-    if (!current) return { ok: false }
-
-    await prisma.jobPosting.update({
-        where: { id },
-        data: {
-            status: next,
-            // The date of the first application is kept through later states.
-            ...(next === "APPLIED" && !current.appliedAt ? { appliedAt: new Date() } : {}),
-        },
-    })
-    revalidatePath(PATH)
-    return { ok: true }
+    if (!isJobStatus(status)) return { ok: false }
+    const result = await updateStatus(id, status, "owner")
+    if (result.ok) revalidatePath(PATH)
+    return { ok: result.ok }
 }
 
 export async function saveNotes(id: string, notes: string): Promise<{ ok: boolean }> {
@@ -155,28 +145,19 @@ export type RunReport = { boards: BoardReport[]; scoring: ScoreReport } | { erro
 /** The same work the daily cron does, on demand. */
 export async function runNow(): Promise<RunReport> {
     await assertOwner()
-    if (await isPaused()) return { error: "The job search is paused. Resume it to read the sources." }
-    try {
-        const boards = await runIngest()
-        const scoring = await scorePending()
-        revalidatePath(PATH)
-        return { boards, scoring }
-    } catch (error) {
-        return { error: message(error) }
-    }
+    const result = await runJobSearch("owner")
+    if (!result.ok) return { error: result.error }
+    revalidatePath(PATH)
+    return { boards: result.boards, scoring: result.scoring }
 }
 
 // ─── Documents ──────────────────────────────────────────────────────────────
 
 export async function generateDocumentsAction(postingId: string): Promise<GenerateResult> {
     await assertOwner()
-    try {
-        const result = await generate(postingId)
-        if (result.ok) revalidatePath(`${PATH}/${postingId}`)
-        return result
-    } catch (error) {
-        return { ok: false, error: message(error) }
-    }
+    const result = await prepareDocuments(postingId, "owner")
+    if (result.ok) revalidatePath(`${PATH}/${postingId}`)
+    return result
 }
 
 // ─── Editor ─────────────────────────────────────────────────────────────────
@@ -256,6 +237,7 @@ export async function reviewAction(
 export async function setPausedAction(paused: boolean): Promise<void> {
     await assertOwner()
     await setPaused(paused)
+    await logActivity("control", "info", paused ? "Job search paused by the owner" : "Job search resumed by the owner")
     revalidatePath(PATH, "layout")
 }
 
@@ -282,4 +264,17 @@ export async function resetBudgetAction(): Promise<void> {
     await assertOwner()
     await saveCaps(DEFAULT_CAPS)
     revalidatePath(PATH, "layout")
+}
+
+// ─── Activity ───────────────────────────────────────────────────────────────
+
+/** The live activity page polls this for lines newer than the last it has. */
+export async function activityAction(query: { after?: string; kind?: string; level?: string }): Promise<ActivityEntry[]> {
+    await assertOwner()
+    return listActivity({
+        after: query.after,
+        kind: isActivityKind(query.kind) ? query.kind : undefined,
+        level: isActivityLevel(query.level) ? query.level : undefined,
+        limit: 200,
+    })
 }

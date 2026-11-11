@@ -9,6 +9,7 @@ const TABS = [
     { href: "/admin/jobs/boards", label: "Searches" },
     { href: "/admin/jobs/profile", label: "Profile" },
     { href: "/admin/jobs/usage", label: "Usage" },
+    { href: "/admin/jobs/activity", label: "Activity" },
 ]
 
 export function JobsNav() {

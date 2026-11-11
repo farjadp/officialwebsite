@@ -7,9 +7,7 @@
 // ============================================================================
 
 import { NextResponse } from "next/server"
-import { isPaused } from "@/lib/jobs/control"
-import { runIngest } from "@/lib/jobs/ingest"
-import { scorePending } from "@/lib/jobs/score"
+import { runJobSearch } from "@/lib/jobs/operations"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 300
@@ -28,16 +26,17 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    if (await isPaused()) {
-        return NextResponse.json({ skipped: "paused from /admin/jobs" })
-    }
-
     // `?scoreOnly=1` works through a scoring backlog without reading the
     // boards again — Adzuna's free tier counts every search.
     const scoreOnly = new URL(request.url).searchParams.get("scoreOnly") === "1"
-    const boards = scoreOnly ? [] : await runIngest()
-    const scoring = await scorePending()
+    const result = await runJobSearch("cron", { scoreOnly })
+    if (!result.ok) {
+        return result.paused
+            ? NextResponse.json({ skipped: "paused from /admin/jobs" })
+            : NextResponse.json({ error: result.error }, { status: 500 })
+    }
 
+    const { boards, scoring } = result
     return NextResponse.json({
         // Board names are the owner's target list: counts only in the response.
         boards: boards.length,
