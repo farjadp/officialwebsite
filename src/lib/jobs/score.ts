@@ -18,6 +18,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { complete, estimateCents, ProviderKeyMissing } from "@/lib/content/provider"
 import { loadProfile, type Profile } from "./profile"
+import { scoringStopReason } from "./cost"
 import { budgetState } from "./budget"
 import { recordUsage } from "./usage"
 import { AUTHORISATIONS } from "./types"
@@ -96,6 +97,8 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
         closedAt: null,
         status: "NEW",
         scoreAttempts: { lt: MAX_SCORE_ATTEMPTS },
+        // US-only roles need US work authorisation he does not have: scoring them buys nothing.
+        OR: [{ country: null }, { country: { not: "US" } }],
     }
     const select = { id: true, title: true, company: true, location: true, remote: true, description: true }
     // Roles the candidate can take today come first; a US-only role waits its turn.
@@ -162,6 +165,11 @@ export async function scorePending(limit = DEFAULT_SCORES_PER_RUN): Promise<Scor
         const budget = await budgetState()
         if (!budget.ok) {
             stopped = budget.reason ?? "AI budget reached"
+            break
+        }
+        const reserve = scoringStopReason(budget)
+        if (reserve) {
+            stopped = reserve
             break
         }
         await Promise.all(pending.slice(i, i + SCORE_CONCURRENCY).map(scoreOne))

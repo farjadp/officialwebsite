@@ -10,6 +10,7 @@ const TABS = [
     { href: "/admin/jobs/profile", label: "Profile" },
     { href: "/admin/jobs/usage", label: "Usage" },
     { href: "/admin/jobs/activity", label: "Activity" },
+    { href: "/admin/jobs/review", label: "30-day review" },
 ]
 
 export function JobsNav() {

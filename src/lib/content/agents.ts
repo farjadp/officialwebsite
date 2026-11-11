@@ -72,9 +72,7 @@ export const DEFAULT_AGENTS: Record<AgentName, ResolvedAgent> = {
     "art.prompt": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     // On OpenAI because that is the key production has; gpt-4o is the id
     // already proven against it. Changeable from settings without a deploy.
-    // Scoring runs on hundreds of postings a week; the small model costs about a
-    // seventeenth as much, and the job-hunter agent re-reads the top picks anyway.
-    "jobs.score": { provider: "openai", model: "gpt-4o-mini" },
+    "jobs.score": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     "jobs.resume": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     "jobs.assist": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },
     "jobs.review": { provider: "openai", model: DEFAULT_MODEL_FOR_PROVIDER.openai },

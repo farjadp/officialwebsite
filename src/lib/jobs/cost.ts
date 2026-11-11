@@ -18,6 +18,24 @@ export function agentDocumentsCap(raw: string | undefined): number {
 
 type Spend = { dailyCents: number; monthlyCents: number; todayCents: number; monthCents: number }
 
+/**
+ * Money scoring leaves untouched so the day's (and month's) résumés can still
+ * be written: résumés are what Farjad applies with, so they come first.
+ */
+export const RESUME_RESERVE_DAY_CENTS = 20
+export const RESUME_RESERVE_MONTH_CENTS = 150
+
+/** Why scoring should stop now to protect the résumé reserve; null to go on. */
+export function scoringStopReason(state: Spend): string | null {
+    if (state.dailyCents > 0 && state.todayCents >= state.dailyCents - RESUME_RESERVE_DAY_CENTS) {
+        return `Scoring paused for today: the last ${dollars(RESUME_RESERVE_DAY_CENTS)} of the daily budget is kept for résumés`
+    }
+    if (state.monthlyCents > 0 && state.monthCents >= state.monthlyCents - RESUME_RESERVE_MONTH_CENTS) {
+        return `Scoring paused for the month: the last ${dollars(RESUME_RESERVE_MONTH_CENTS)} of the monthly budget is kept for résumés`
+    }
+    return null
+}
+
 const dollars = (cents: number) => `$${(cents / 100).toFixed(2)}`
 
 /** A warning once spend passes 80% of a cap; null while there is room. */
