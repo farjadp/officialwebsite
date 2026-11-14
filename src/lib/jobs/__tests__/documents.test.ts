@@ -111,6 +111,12 @@ describe("drift from the record", () => {
         expect(issues.some((issue) => issue.includes("use one title"))).toBe(true)
     })
 
+    it("flags 'founder of' in the letter when the résumé title is not a founder title", () => {
+        const issues = draftDrift(profile, draft({ roles: [{ index: 0, title: "CTO", bullets: [] }], coverLetter: "As the founder of Acme I built a team." }))
+        expect(issues.some((issue) => issue.includes("founder of Acme"))).toBe(true)
+        expect(draftDrift(profile, draft({ roles: [{ index: 0, title: "CTO", bullets: [] }], coverLetter: "As CTO of Acme I built a team." }))).toEqual([])
+    })
+
     it("tells the owner which posting requirements the record does not meet", () => {
         const documents = assemble(profile, draft({ requirements: [{ requirement: "RFP responses", evidence: "" }, { requirement: "TypeScript", evidence: "TypeScript" }] }))
         expect(documents.notes.some((note) => note.includes("RFP responses") && !note.includes("TypeScript"))).toBe(true)

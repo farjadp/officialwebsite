@@ -61,7 +61,7 @@ export const DOCUMENT_SYSTEM = [
     "- Never write a number that does not appear in <candidate>. If a fact has no number, write it without one. Do not state years of experience ('a decade', 'two decades') unless <candidate> states that span; then copy it with its qualifier.",
     "- Keep the words that qualify a figure or a role in it: 'nearly', 'about', 'more than', 'helped'. 'Helped teams secure nearly $5M' must not become 'Raised $5M'.",
     "- Keep each fact's verb. 'Led' stays 'led', 'co-founded' stays 'co-founded'. Never turn 'led' into 'co-led' or 'co-founded' into 'founded'.",
-    "- For each role, choose its title from that role's allowed titles, copied exactly. Pick the one closest to the posting. When the cover letter names that role, it uses the same title.",
+    "- For each role, choose its title from that role's allowed titles, copied exactly. Pick the one closest to the posting: when a role offers a technical title (CTO, engineering) and a strategy title (Chief Strategy Officer), use the technical one for engineering, development and technology-leadership postings and the strategy one for strategy, consulting, AI-strategy and product-strategy postings. When the cover letter names that role, it uses the same title and no other: never call the candidate 'founder' of a company whose chosen title does not say Founder.",
     "- Include every role by its index. Give the roles most relevant to the posting 3-5 bullets and the others 1-2. A role that lasted two years or more always gets at least one bullet: an empty long role reads as a gap.",
     "- Do not overstate. No 'world-class', 'visionary', 'passionate', 'spearheaded', 'rockstar'. No claim of seniority the facts do not support.",
     "",
@@ -247,6 +247,10 @@ export function draftDrift(profile: Profile, draft: Draft): string[] {
         const chosen = written.title.trim().toLowerCase()
         const other = role.titles.find((title) => title.trim().split(/\s+/).length > 1 && title.toLowerCase() !== chosen && !chosen.includes(title.toLowerCase()) && new RegExp(`(^|[^a-z])${title.toLowerCase().replace(/[.*+?^${}()|[\]\\&]/g, "\\$&")}(?=$|[^a-z])`).test(letter))
         if (other) issues.push(`The letter calls the ${role.company} role "${other}" but the résumé says "${written.title}"; use one title`)
+        const company = role.company.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        if (!chosen.includes("founder") && new RegExp(`founder (of|at) ${company}|${company}('s)? (co-)?founder`).test(letter)) {
+            issues.push(`The letter calls the candidate a founder of ${role.company}, but the résumé title is "${written.title}"; use that title`)
+        }
     }
     for (const skill of draft.skills) {
         if (skill.trim() && !isEvidenced(skill, evidencedSkills(profile))) issues.push(`The skill "${skill.trim()}" is not in the record`)
