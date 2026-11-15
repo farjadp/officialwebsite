@@ -32,6 +32,7 @@ import { PHOTOS as P05 } from "./migrant-stock/photos"
 import { PHOTOS as P06 } from "./vienna-1683/photos"
 import { PHOTOS as P07 } from "./startup-concentration/photos"
 import { PHOTOS as P08 } from "./undecided-fifth/photos"
+import { PHOTOS as P09 } from "./language-energy/photos"
 
 const COPY = {
   en: {
@@ -69,6 +70,7 @@ const COVERS: Record<string, ReportPhoto | undefined> = {
   "siege-of-vienna-1683-scarce-resources": P06.hero,
   "startup-ecosystems-2026-concentration": P07.hero,
   "undecided-fifth-2026-midterms": P08.hero,
+  "language-energy-divide-179x": P09.hero,
 }
 
 const LATIN = "font-(family-name:--font-instrument)! **:font-(family-name:--font-instrument)!"

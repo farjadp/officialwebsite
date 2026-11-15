@@ -31,6 +31,7 @@ import { WORLD, YEARS } from "./migrant-stock/data"
 import { FORCES, SIEGE_DAYS } from "./vienna-1683/data"
 import { FUNDING } from "./startup-concentration/data"
 import { SURVEY, group as pewGroup } from "./undecided-fifth/data"
+import { ENGLISH as LE_EN, PERSIAN as LE_FA, lang as leLang } from "./language-energy/data"
 
 const W = 280
 const H = 140
@@ -432,8 +433,52 @@ function EightStocksPreview({ locale }: P) {
   )
 }
 
+// ── 09 · Unit grid: one English answer's energy, Persian ≈4, Pashto ≈179 ───
+
+function LanguageEnergyPreview({ locale }: P) {
+  const m = fa(locale)
+  const mx = mxFor(m)
+  const an = anchorFor(m)
+  const pashto = leLang("pbt_Arab")
+  const nPes = Math.round(LE_FA.jPerAnswer / LE_EN.jPerAnswer)
+  const nPbt = Math.round(pashto.jPerAnswer / LE_EN.jPerAnswer)
+  const COLS = 30
+  const P = 8.6
+  const X0 = 12
+  const label = m
+    ? `انرژی یک جواب به انگلیسی را یک نقطه بگیر: فارسی حدود ${d(nPes, locale)} نقطه است و پشتو ${d(nPbt, locale)} نقطه.`
+    : `Count one English answer's energy as one dot: Persian is about ${nPes} dots, Pashto ${nPbt}.`
+  return (
+    <Frame label={label}>
+      <text x={mx(X0)} y={14} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={TXT}>
+        {m ? "انگلیسی ۱ · فارسی" : "English 1 · Persian"} {m ? `≈${d(nPes, locale)}` : `≈${nPes}`}
+      </text>
+      <text x={mx(W - 12)} y={14} textAnchor={ta(locale, an("end"))} direction={dirOf(locale)} className={TXT_PT}>
+        {m ? `پشتو ${d(nPbt, locale)}` : `Pashto ${nPbt}`}
+      </text>
+      <Marks mirror={m}>
+        <g className={CTX}>
+          <circle cx={X0 + 3} cy={30} r={3.2} className="fill-v3-bone" />
+          {Array.from({ length: nPes }, (_, i) => (
+            <circle key={i} cx={X0 + 3 + (i + 2) * P} cy={30} r={3.2} className="fill-v3-mute" />
+          ))}
+        </g>
+        <g className={PT}>
+          {Array.from({ length: nPbt }, (_, i) => (
+            <circle key={i} cx={X0 + 3 + (i % COLS) * P} cy={48 + Math.floor(i / COLS) * P} r={3.2} className="fill-v3-light" />
+          ))}
+        </g>
+      </Marks>
+      <text x={mx(X0)} y={110} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={TXT}>
+        {m ? "انرژی هر جواب، Qwen3-8B، ۱۲۲ زبان" : "Energy per answer, Qwen3-8B, 122 languages"}
+      </text>
+    </Frame>
+  )
+}
+
 /** One preview per report slug. A slug missing here simply shows no chart. */
 export const REPORT_PREVIEWS: Record<string, (p: P) => ReactNode> = {
+  "language-energy-divide-179x": LanguageEnergyPreview,
   "undecided-fifth-2026-midterms": UndecidedPreview,
   "startup-ecosystems-2026-concentration": ConcentrationPreview,
   "siege-of-vienna-1683-scarce-resources": ViennaPreview,
@@ -446,6 +491,7 @@ export const REPORT_PREVIEWS: Record<string, (p: P) => ReactNode> = {
 
 /** For the tests: the numbers each preview draws, from the same imports. */
 export const PREVIEW_FACTS = {
+  languageEnergy: { persian: LE_FA.jPerAnswer / LE_EN.jPerAnswer, pashto: leLang("pbt_Arab").jPerAnswer / LE_EN.jPerAnswer },
   undecided: { und: pewGroup("all").und, notSure: SURVEY.notSure, other: SURVEY.other },
   concentrationNA: FUNDING.aiLate * FUNDING.aiNorthAmerica,
   viennaDefenders: FORCES.defendersSoldiers + FORCES.defendersCitizens,

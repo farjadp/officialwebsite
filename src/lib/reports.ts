@@ -247,6 +247,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "language-energy-divide-179x",
+    number: 9,
+    published: "2026-11-15",
+    dataAsOf: "2026-10-24",
+    readMinutes: 11,
+    figure: "179×",
+    figureFa: "۱۷۹×",
+    copy: {
+      en: {
+        title: "The Language Tax",
+        tagline: "Same question, up to 179× the energy — and where Persian sits",
+        summary:
+          "An EMNLP 2026 study measured the electricity a language model uses to answer the same questions in 122 languages. Pashto took 179 times as much as English, for worse answers. Persian costs about four times English. Pick your language and see its bill.",
+        topic: "AI and energy",
+        figureLabel: "the energy to answer the same 900 questions in Pashto as in English",
+      },
+      fa: {
+        title: "مالیات زبان",
+        tagline: "یک سؤال، تا ۱۷۹ برابر انرژی؛ و فارسی کجای این صف است",
+        summary:
+          "پژوهشی در EMNLP 2026 برقی را که یک مدل زبانی برای جواب دادن به همان سؤال‌ها در ۱۲۲ زبان مصرف می‌کند اندازه گرفت. پشتو ۱۷۹ برابر انگلیسی برد، با جواب‌های بدتر. فارسی حدود چهار برابر انگلیسی است. زبانت را انتخاب کن و قبضش را ببین.",
+        topic: "هوش مصنوعی و انرژی",
+        figureLabel: "انرژیِ جواب به همان ۹۰۰ سؤال به پشتو، در برابر انگلیسی",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

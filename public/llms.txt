@@ -179,6 +179,23 @@ move: quote the as-of date with the figure.
   account of the Nov. 3, 2026 results; takes no partisan position.
   Persian: /fa/reports/undecided-fifth-2026-midterms
 
+- /reports/language-energy-divide-179x — "The Language Tax". A summary of
+  Deng, Shen, Feng, Nwatu, Chung, Chowdhury, Chen & Mihalcea (2026), "The
+  Language–Energy Divide: Measuring Energy Costs of Multilingual LLM
+  Inference", EMNLP 2026 (University of Michigan, University of Aberdeen,
+  University of Cambridge). Qwen3-8B on one NVIDIA L40S answering the 900
+  Belebele questions in each of 122 languages: energy per output token varies
+  up to 8.3x; total energy for the same requests varies up to 179x (English
+  17.6 kJ, Pashto 3,147 kJ), from two compounding factors (more output tokens
+  and higher per-token cost for low-resource, non-Latin-script languages). The
+  costliest languages also score lowest (English 94.6%, Shan 10.6%);
+  co-occurrence, not cause. The gap persists across five models, two GPUs, six
+  batch sizes and three tasks (8-language subset). Western Persian: 0.143
+  J/token, ~563 tokens and ~80.8 J per answer, ~4.1x English (our arithmetic
+  on the authors' released data), 67.4% correct. Commercial assistants (GPT,
+  Gemini, Claude) were not measured.
+  Persian: /fa/reports/language-energy-divide-179x
+
 ## Playbooks
 
 - /playbooks/claude-code-content-team — "A Content Team Inside Claude Code".
