@@ -12,6 +12,7 @@ import { Arrow, Card, Checklist, CountUp, Kicker, PageHero, Reveal, Section, V3P
 import Link from "next/link"
 import { CaseStudyGateForm } from "../gate-form"
 import { COPY } from "./copy"
+import { BelinkPanelGallery } from "./gallery"
 
 export function BelinkCaseStudyTeaser({ locale }: { locale: Locale }) {
     const t = COPY[locale]
@@ -46,6 +47,8 @@ export function BelinkCaseStudyTeaser({ locale }: { locale: Locale }) {
                     ))}
                 </div>
             </section>
+
+            <BelinkPanelGallery locale={locale} compact />
 
             <Section id="get" bordered={false}>
                 <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">

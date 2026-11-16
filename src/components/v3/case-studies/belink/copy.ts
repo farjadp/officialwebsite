@@ -79,6 +79,14 @@ type Copy = {
         companies: string
         of: string
     }
+    gallery: {
+        kicker: string
+        title: string
+        lead: string
+        overview: string
+        table: string
+        redacted: string
+    }
     expired: {
         title: string
         body: string
@@ -102,6 +110,7 @@ export const COPY: Record<Locale, Copy> = {
             insideTitle: "What you get by email",
             inside: [
                 "The five-stage pipeline: collect, clean, classify, score, work",
+                "Screens of the working panel, with every company-level field redacted",
                 "How complete the directory really is, field by field",
                 "The founding wave of 2014–2018, and what came after",
                 "The ten largest sectors, and why half the directory has none",
@@ -126,8 +135,8 @@ export const COPY: Record<Locale, Copy> = {
             sending: "Sending…",
             privacyLink: "Privacy policy",
             privacyNote: "One email with one link. Nothing else unless you tick the second box.",
-            successTitle: "Check your inbox",
-            successBody: "If {email} can receive mail, the link is on its way. It can take a minute — check spam or promotions if it doesn't show up.",
+            successTitle: "Sent — check your inbox",
+            successBody: "We've emailed the case study link to {email}. It usually arrives within a minute — if you don't see it, check spam or promotions.",
             successAgain: "Use a different address",
             errorGeneric: "Something went wrong. Please try again.",
             errorNetwork: "Couldn't reach the site. Check your connection and try again.",
@@ -202,6 +211,14 @@ export const COPY: Record<Locale, Copy> = {
             companies: "companies",
             of: "of",
         },
+        gallery: {
+            kicker: "The working panel",
+            title: "What it looks like inside",
+            lead: "Screens from the private panel. Every company-level field — name, address, founders, email, phone, website, score — is replaced by grey bars before capture.",
+            overview: "Overview: totals, field coverage and the hot / warm / cold / skip split across all 13,636 companies.",
+            table: "Filters and the company table. Sector and founding year stay; everything that identifies a company is redacted.",
+            redacted: "Redacted",
+        },
         expired: {
             title: "This link has expired or isn't valid",
             body: "Reading links are personal and last 30 days. Ask for a fresh one — it takes a few seconds.",
@@ -223,6 +240,7 @@ export const COPY: Record<Locale, Copy> = {
             insideTitle: "آنچه با ایمیل می‌گیرید",
             inside: [
                 "خط تولید پنج‌مرحله‌ای: جمع‌آوری، پاک‌سازی، دسته‌بندی، امتیازدهی، کار",
+                "تصویرهایی از پنل کاری، با همه‌ی فیلدهای سطح شرکت پوشانده‌شده",
                 "این فهرست واقعاً چقدر کامل است، فیلد به فیلد",
                 "موج تأسیس ۲۰۱۴ تا ۲۰۱۸ و آنچه بعد از آن آمد",
                 "ده حوزه‌ی بزرگ، و اینکه چرا نیمی از فهرست حوزه ندارد",
@@ -247,8 +265,8 @@ export const COPY: Record<Locale, Copy> = {
             sending: "در حال ارسال…",
             privacyLink: "سیاست حریم خصوصی",
             privacyNote: "یک ایمیل با یک لینک. اگر گزینه‌ی دوم را نزنید، چیز دیگری نمی‌آید.",
-            successTitle: "صندوق ایمیلتان را ببینید",
-            successBody: "اگر {email} ایمیل دریافت می‌کند، لینک در راه است. ممکن است یکی دو دقیقه طول بکشد؛ اگر نیامد، پوشه‌ی اسپم یا تبلیغات را هم نگاه کنید.",
+            successTitle: "فرستاده شد؛ ایمیلتان را ببینید",
+            successBody: "لینک کیس‌استادی را به {email} ایمیل کردیم. معمولاً تا یک دقیقه می‌رسد؛ اگر ندیدید، پوشه‌ی اسپم یا تبلیغات را نگاه کنید.",
             successAgain: "با ایمیل دیگری",
             errorGeneric: "مشکلی پیش آمد. لطفاً دوباره امتحان کنید.",
             errorNetwork: "به سایت وصل نشد. اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.",
@@ -322,6 +340,14 @@ export const COPY: Record<Locale, Copy> = {
             ctaButton: "رزرو گفت‌وگو",
             companies: "شرکت",
             of: "از",
+        },
+        gallery: {
+            kicker: "پنل کاری",
+            title: "از درون چه شکلی است",
+            lead: "تصویرهایی از پنل خصوصی. همه‌ی فیلدهای سطح شرکت، یعنی نام، نشانی، مؤسسان، ایمیل، تلفن، وب‌سایت و امتیاز، پیش از گرفتن تصویر با نوار خاکستری جایگزین شده‌اند.",
+            overview: "نمای کلی: جمع‌ها، میزان پر بودن فیلدها و تقسیم داغ، گرم، سرد و ردشده در کل ۱۳٬۶۳۶ شرکت.",
+            table: "فیلترها و جدول شرکت‌ها. حوزه و سال تأسیس مانده‌اند؛ هر چیزی که شرکتی را مشخص کند پوشانده شده.",
+            redacted: "پوشانده‌شده",
         },
         expired: {
             title: "این لینک منقضی شده یا معتبر نیست",

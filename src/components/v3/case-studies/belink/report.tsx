@@ -11,6 +11,7 @@ import { Card, Checklist, Headline, Kicker, PageHero, Reveal, Section, V3Button,
 import { Bars } from "../bars"
 import { PrintButton } from "../print-button"
 import { COPY } from "./copy"
+import { BelinkPanelGallery } from "./gallery"
 import { COVERAGE, EMAIL_TYPES, ERAS, SECTORS, SECTOR_FIELDS, TOTAL, YEARS_VALID, pct } from "./data"
 
 function num(n: number, locale: Locale) {
@@ -57,6 +58,8 @@ export function BelinkCaseStudyReport({ locale }: { locale: Locale }) {
                         ))}
                     </ol>
                 </Section>
+
+                <BelinkPanelGallery locale={locale} />
 
                 <Section kicker={r.dataKicker} title={r.dataTitle} lead={r.dataLead}>
                     <div className="grid gap-x-16 gap-y-16 lg:grid-cols-2">
