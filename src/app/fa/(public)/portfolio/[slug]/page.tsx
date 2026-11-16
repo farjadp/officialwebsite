@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowRight, Target, Activity, Zap, CheckCircle2, ChevronLeft, Eye, Briefcase, Calendar, Globe, Code } from "lucide-react";
 import { PremiumCaseStudyPage } from "@/components/portfolio/premium-case-study";
+import { BelinkCaseStudyTeaser } from "@/components/v3/case-studies/belink/teaser";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,10 @@ export default async function CaseStudyPageFA({ params }: { params: Promise<{ sl
         viewCount = updatedMetric.views;
     } catch (e) {
         console.error("View tracking error:", e);
+    }
+
+    if (slug === "belink") {
+        return <BelinkCaseStudyTeaser locale="fa" />;
     }
 
     if (slug === "herestate") {

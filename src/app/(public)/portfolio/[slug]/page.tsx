@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Target, Activity, Zap, CheckCircle2, ChevronRight, Eye, Briefcase, Calendar, Globe, Code } from "lucide-react";
 import { PremiumCaseStudyPage } from "@/components/portfolio/premium-case-study";
+import { BelinkCaseStudyTeaser } from "@/components/v3/case-studies/belink/teaser";
 
 // Make it dynamic so view counter always runs on load
 export const dynamic = "force-dynamic";
@@ -44,6 +45,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     } catch (e) {
         // Silently fail if DB has issues
         console.error("View tracking error:", e);
+    }
+
+    if (slug === "belink") {
+        return <BelinkCaseStudyTeaser locale="en" />;
     }
 
     if (slug === "herestate") {

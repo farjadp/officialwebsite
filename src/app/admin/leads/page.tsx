@@ -9,6 +9,7 @@ const TOOL_LABELS: Record<string, string> = {
     "investor-readiness": "Investor Readiness",
     "startup-readiness": "Startup Readiness",
     "trl-assessment": "TRL Assessment",
+    "case-study:belink": "Case study · Belink",
     "unknown": "Unknown Tool",
 }
 
@@ -24,7 +25,9 @@ export default async function AdminLeadsPage() {
     })
 
     const totalLeads = leads.length
-    const avgScore = totalLeads > 0 ? Math.round(leads.reduce((a, b) => a + b.score, 0) / totalLeads) : 0
+    // Case-study requests carry no score; keep them out of the average.
+    const scored = leads.filter((l) => !l.toolId.startsWith("case-study:"))
+    const avgScore = scored.length > 0 ? Math.round(scored.reduce((a, b) => a + b.score, 0) / scored.length) : 0
     const toolCounts = leads.reduce<Record<string, number>>((acc, l) => {
         acc[l.toolId] = (acc[l.toolId] || 0) + 1
         return acc
@@ -108,9 +111,13 @@ export default async function AdminLeadsPage() {
                                             </span>
                                         </td>
                                         <td className="px-5 py-4">
-                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${SCORE_COLOR(lead.score)}`}>
-                                                {lead.score} / 100
-                                            </span>
+                                            {lead.toolId.startsWith("case-study:") ? (
+                                                <span className="text-xs text-slate-400">—</span>
+                                            ) : (
+                                                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${SCORE_COLOR(lead.score)}`}>
+                                                    {lead.score} / 100
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-5 py-4 text-slate-500 text-xs">{lead.segment}</td>
                                         <td className="px-5 py-4 text-slate-400 text-xs whitespace-nowrap">

@@ -106,6 +106,8 @@ export const RATE_RULES = {
     bugReport: { limit: 10, windowMs: 60 * 60 * 1000 },
     /** Makes ~10 outbound requests per call against a caller-supplied host. */
     websiteAudit: { limit: 8, windowMs: 60 * 60 * 1000, message: "You have run several audits recently. Please try again in a little while." },
+    /** Gated case-study requests: each one sends an email, so keep it tight. */
+    caseStudy: { limit: 6, windowMs: 60 * 60 * 1000, message: "Too many requests from this address. Please try again in an hour. / تعداد درخواست‌ها از این نشانی زیاد است. لطفاً یک ساعت دیگر دوباره امتحان کنید." },
     /** File uploads. */
     upload: { limit: 10, windowMs: 60 * 60 * 1000 },
 } as const satisfies Record<string, RateLimitRule>

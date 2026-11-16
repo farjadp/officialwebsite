@@ -279,6 +279,19 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     },
     // --- CATEGORY: GITHUB PROJECTS ---
     {
+        // کیس‌استادی با دریافت ایمیلی؛ /fa/portfolio/belink صفحه‌ی خودش را دارد
+        // (src/components/v3/case-studies/belink). فقط ارقام تجمیعی.
+        id: "belink",
+        title: "نقشه‌ی اکوسیستم بلینک",
+        category: "GitHub Projects",
+        role: "سازنده / استراتژیست داده",
+        summary: "فهرست استارتاپ‌های ایرانی در بلینک را به یک دیتاست پاک‌شده، امتیازدار و قابل جست‌وجو از ۱۳٬۶۳۶ شرکت تبدیل کردم؛ و یک کیس‌استادی درباره‌ی اینکه اکوسیستم وقتی یک‌جا دیده شود چه شکلی دارد.",
+        techStack: ["JavaScript", "Data cleaning", "Lead scoring"],
+        visibility: "Private",
+        yearRange: "2026",
+        tags: ["داده", "اکوسیستم استارتاپی", "ایران", "کیس‌استادی"],
+    },
+    {
         id: "officialwebsite",
         title: "وب‌سایت شخصی فرجاد",
         category: "GitHub Projects",

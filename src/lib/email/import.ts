@@ -447,8 +447,15 @@ export async function fetchMailchimpSuppressions(
 export async function importFromSiteTables(listId?: string): Promise<ImportSummary> {
     const [subscribers, leads] = await Promise.all([
         prisma.subscriber.findMany(),
-        prisma.lead.findMany({ select: { email: true, name: true, segment: true, toolId: true } }),
+        prisma.lead.findMany({ select: { email: true, name: true, segment: true, toolId: true, answers: true } }),
     ])
+
+    // A case-study request is consent to receive THAT document only. Such a
+    // lead joins the mailing suite only if it ticked the separate marketing
+    // opt-in (CASL); the request route already adds those itself.
+    const mailable = leads.filter(
+        (l) => !l.toolId.startsWith("case-study:") || (l.answers as { marketingOptIn?: unknown } | null)?.marketingOptIn === true
+    )
 
     const rows: ParsedRow[] = [
         ...subscribers.map((s) => ({
@@ -458,7 +465,7 @@ export async function importFromSiteTables(listId?: string): Promise<ImportSumma
                 origin: s.source ?? "subscriber",
             } as Record<string, string>,
         })),
-        ...leads.map((l) => ({
+        ...mailable.map((l) => ({
             email: l.email,
             firstName: l.name?.split(" ")[0],
             lastName: l.name?.split(" ").slice(1).join(" ") || undefined,

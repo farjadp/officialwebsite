@@ -275,6 +275,19 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     },
     // --- CATEGORY: GITHUB PROJECTS ---
     {
+        // Email-gated case study: /portfolio/belink renders its own page
+        // (src/components/v3/case-studies/belink). Aggregates only.
+        id: "belink",
+        title: "Belink Ecosystem Map",
+        category: "GitHub Projects",
+        role: "Builder / Data Strategist",
+        summary: "Turned Belink's directory of Iranian startups into a cleaned, scored and searchable dataset of 13,636 companies — and a case study on what the ecosystem looks like all at once.",
+        techStack: ["JavaScript", "Data cleaning", "Lead scoring"],
+        visibility: "Private",
+        yearRange: "2026",
+        tags: ["Data", "Startup Ecosystem", "Iran", "Case Study"],
+    },
+    {
         id: "officialwebsite",
         title: "Farjad Personal Website",
         category: "GitHub Projects",

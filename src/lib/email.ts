@@ -1,5 +1,6 @@
 import { Resend } from "resend"
 import { escapeHtml } from "@/lib/email/sanitize"
+import { buildCaseStudyEmail, type CaseStudyEmailInput } from "@/lib/email/case-study-email"
 
 const FROM =
     process.env.EMAIL_FROM ||
@@ -158,4 +159,26 @@ export async function sendPerkOfferNotification(offer: {
         `,
     })
     if (error) throw new Error(`Resend rejected the perk notification: ${error.message}`)
+}
+
+/**
+ * Delivers a gated case study: one requested, transactional email carrying a
+ * signed reading link. Sent from the transactional sender (EMAIL_FROM), never
+ * the campaign subdomain, so it is not throttled by campaign limits.
+ * Throws on any Resend error; the caller records the failure.
+ */
+export async function sendCaseStudyLink(input: CaseStudyEmailInput & { to: string }) {
+    const { subject, html, text } = buildCaseStudyEmail({
+        ...input,
+        postalAddress: input.postalAddress ?? process.env.EMAIL_POSTAL_ADDRESS,
+    })
+    const { error } = await getResend().emails.send({
+        from: FROM,
+        to: input.to,
+        subject,
+        html,
+        text,
+        tags: [{ name: "category", value: "case-study" }],
+    })
+    if (error) throw new Error(`Resend rejected the case-study email: ${error.message}`)
 }

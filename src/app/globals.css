@@ -367,3 +367,22 @@ html[data-header-hidden] .v3-under-header { top: 0; }
     break-inside: avoid;
   }
 }
+
+/* ─── Gated case-study print (Save as PDF) ──────────────────────────────────
+   The v3 palette is CSS variables, so swapping them on the report wrapper
+   turns light-on-charcoal into ink-on-paper without touching any markup. */
+@media print {
+  .v3-print {
+    --v3-ink: #ffffff;
+    --v3-raise: #f6f3ec;
+    --v3-line: #d9d2c5;
+    --v3-mute: #6b655c;
+    --v3-soft: #3a3631;
+    --v3-bone: #141312;
+    --v3-accent: #8a6a2f;
+    --v3-glow: 138 106 47;
+  }
+  .v3-print .v3-beam { display: none !important; }
+  .v3-print section { break-inside: avoid-page; }
+  .v3-print [style*="opacity"] { opacity: 1 !important; transform: none !important; }
+}
