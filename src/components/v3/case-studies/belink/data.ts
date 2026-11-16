@@ -59,7 +59,7 @@ export const SECTORS = [
     { en: "Real estate", fa: "املاک", n: 242 },
     { en: "Financial services", fa: "خدمات مالی", n: 210 },
     { en: "Media, arts & entertainment", fa: "رسانه، هنر و سرگرمی", n: 209 },
-    { en: "Petrochemicals & chemicals", fa: "پتروشیمی و صنایع شیمیایی", n: 194 },
+    { en: "Petrochemicals & chemicals", fa: "صنایع پتروشیمی و شیمیایی", n: 194 },
     { en: "Professional services", fa: "خدمات حرفه‌ای", n: 190 },
     { en: "Travel & tourism", fa: "سفر و گردشگری", n: 148 },
     { en: "Education", fa: "آموزش", n: 123 },

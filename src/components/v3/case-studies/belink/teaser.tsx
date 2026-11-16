@@ -13,6 +13,7 @@ import Link from "next/link"
 import { CaseStudyGateForm } from "../gate-form"
 import { COPY } from "./copy"
 import { BelinkPanelGallery } from "./gallery"
+import { BelinkSampleSheet } from "./sheet"
 
 export function BelinkCaseStudyTeaser({ locale }: { locale: Locale }) {
     const t = COPY[locale]
@@ -49,6 +50,8 @@ export function BelinkCaseStudyTeaser({ locale }: { locale: Locale }) {
             </section>
 
             <BelinkPanelGallery locale={locale} compact />
+
+            <BelinkSampleSheet locale={locale} limit={5} />
 
             <Section id="get" bordered={false}>
                 <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">

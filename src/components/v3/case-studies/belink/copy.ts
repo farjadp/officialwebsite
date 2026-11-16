@@ -87,6 +87,16 @@ type Copy = {
         table: string
         redacted: string
     }
+    sheet: {
+        kicker: string
+        title: string
+        lead: string
+        file: string
+        cols: { name: string; sector: string; year: string; website: string; email: string; phone: string; social: string }
+        masked: string
+        more: string
+        footnote: string
+    }
     expired: {
         title: string
         body: string
@@ -111,6 +121,7 @@ export const COPY: Record<Locale, Copy> = {
             inside: [
                 "The five-stage pipeline: collect, clean, classify, score, work",
                 "Screens of the working panel, with every company-level field redacted",
+                "Ten sample rows in a spreadsheet view, contacts masked",
                 "How complete the directory really is, field by field",
                 "The founding wave of 2014–2018, and what came after",
                 "The ten largest sectors, and why half the directory has none",
@@ -219,6 +230,16 @@ export const COPY: Record<Locale, Copy> = {
             table: "Filters and the company table. Sector and founding year stay; everything that identifies a company is redacted.",
             redacted: "Redacted",
         },
+        sheet: {
+            kicker: "A look at the data",
+            title: "Ten rows from the sheet",
+            lead: "One company from each of the ten largest sectors, exactly as the panel holds them. Company emails and phones are masked here; no founder names or lead scores are shown.",
+            file: "belink_sample.xlsx",
+            cols: { name: "Company", sector: "Sector", year: "Founded", website: "Website", email: "Email", phone: "Phone", social: "Social" },
+            masked: "masked",
+            more: "5 more rows in the full case study",
+            footnote: "Sample of 10 from 13,636 rows. Contact fields masked on purpose.",
+        },
         expired: {
             title: "This link has expired or isn't valid",
             body: "Reading links are personal and last 30 days. Ask for a fresh one — it takes a few seconds.",
@@ -241,6 +262,7 @@ export const COPY: Record<Locale, Copy> = {
             inside: [
                 "خط تولید پنج‌مرحله‌ای: جمع‌آوری، پاک‌سازی، دسته‌بندی، امتیازدهی، کار",
                 "تصویرهایی از پنل کاری، با همه‌ی فیلدهای سطح شرکت پوشانده‌شده",
+                "ده ردیف نمونه در نمای جدولی، با تماس‌های پوشیده",
                 "این فهرست واقعاً چقدر کامل است، فیلد به فیلد",
                 "موج تأسیس ۲۰۱۴ تا ۲۰۱۸ و آنچه بعد از آن آمد",
                 "ده حوزه‌ی بزرگ، و اینکه چرا نیمی از فهرست حوزه ندارد",
@@ -348,6 +370,16 @@ export const COPY: Record<Locale, Copy> = {
             overview: "نمای کلی: جمع‌ها، میزان پر بودن فیلدها و تقسیم داغ، گرم، سرد و ردشده در کل ۱۳٬۶۳۶ شرکت.",
             table: "فیلترها و جدول شرکت‌ها. حوزه و سال تأسیس مانده‌اند؛ هر چیزی که شرکتی را مشخص کند پوشانده شده.",
             redacted: "پوشانده‌شده",
+        },
+        sheet: {
+            kicker: "نگاهی به داده",
+            title: "ده ردیف از جدول",
+            lead: "از هر کدام از ده حوزه‌ی بزرگ یک شرکت، همان‌طور که در پنل ثبت شده. ایمیل و تلفن شرکت‌ها اینجا نیمه‌پوشیده است و نام مؤسسان و امتیاز لیدها نشان داده نمی‌شود.",
+            file: "belink_sample.xlsx",
+            cols: { name: "شرکت", sector: "حوزه", year: "تأسیس", website: "وب‌سایت", email: "ایمیل", phone: "تلفن", social: "شبکه‌ها" },
+            masked: "پوشیده",
+            more: "۵ ردیف دیگر در نسخه‌ی کامل",
+            footnote: "نمونه‌ی ۱۰ ردیف از ۱۳٬۶۳۶. فیلدهای تماس عمداً پوشیده شده‌اند.",
         },
         expired: {
             title: "این لینک منقضی شده یا معتبر نیست",

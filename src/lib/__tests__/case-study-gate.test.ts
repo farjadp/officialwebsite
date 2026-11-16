@@ -14,6 +14,7 @@ import {
 import { buildCaseStudyEmail } from "@/lib/email/case-study-email"
 import { COVERAGE, ERAS, EMAIL_TYPES, SECTORS, TOTAL, YEARS_VALID } from "@/components/v3/case-studies/belink/data"
 import { COPY } from "@/components/v3/case-studies/belink/copy"
+import { SAMPLE_ROWS } from "@/components/v3/case-studies/belink/sample"
 
 const SECRET = "test-secret-not-real"
 const NOW = Date.UTC(2026, 10, 16, 12)
@@ -144,5 +145,17 @@ describe("published Belink figures", () => {
         const shape = (o: unknown): unknown =>
             Array.isArray(o) ? o.map(shape) : o && typeof o === "object" ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, shape(v)])) : typeof o
         expect(shape(COPY.fa)).toEqual(shape(COPY.en))
+    })
+})
+
+describe("public Belink sample rows", () => {
+    it("never expose a full email or phone number", () => {
+        expect(SAMPLE_ROWS.length).toBe(10)
+        for (const r of SAMPLE_ROWS) {
+            expect(r.email).toMatch(/^[a-z0-9]\*\*\*@[^@\s]+$/)
+            expect(r.phone).toMatch(/^\d{3}-••••-\d{2}$/)
+            expect(JSON.stringify(r)).not.toMatch(/\d{6,}/)
+            expect(Object.keys(r).sort()).toEqual(["email", "name", "phone", "sector", "social", "website", "year"])
+        }
     })
 })
