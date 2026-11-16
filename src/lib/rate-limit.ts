@@ -108,6 +108,8 @@ export const RATE_RULES = {
     websiteAudit: { limit: 8, windowMs: 60 * 60 * 1000, message: "You have run several audits recently. Please try again in a little while." },
     /** Gated case-study requests: each one sends an email, so keep it tight. */
     caseStudy: { limit: 6, windowMs: 60 * 60 * 1000, message: "Too many requests from this address. Please try again in an hour. / تعداد درخواست‌ها از این نشانی زیاد است. لطفاً یک ساعت دیگر دوباره امتحان کنید." },
+    /** Gated dataset downloads: a person downloads once or twice. */
+    caseStudyDownload: { limit: 10, windowMs: 60 * 60 * 1000, message: "Too many downloads. Please try again later. / تعداد دانلودها زیاد است. لطفاً بعداً دوباره امتحان کنید." },
     /** File uploads. */
     upload: { limit: 10, windowMs: 60 * 60 * 1000 },
 } as const satisfies Record<string, RateLimitRule>

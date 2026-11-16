@@ -9,7 +9,7 @@ import type { Locale } from "@/components/home/v3/copy"
 import { localePath } from "@/lib/nav"
 import { Card, Checklist, Headline, Kicker, PageHero, Reveal, Section, V3Button, V3Page } from "@/components/v3/kit"
 import { Bars } from "../bars"
-import { PrintButton } from "../print-button"
+import { DownloadPanel, FloatingDownload } from "../download-panel"
 import { COPY } from "./copy"
 import { BelinkPanelGallery } from "./gallery"
 import { BelinkSampleSheet } from "./sheet"
@@ -23,7 +23,7 @@ function percent(n: number, of: number, locale: Locale) {
     return locale === "fa" ? `${num(v, locale)}٪` : `${v}%`
 }
 
-export function BelinkCaseStudyReport({ locale }: { locale: Locale }) {
+export function BelinkCaseStudyReport({ locale, downloadHref }: { locale: Locale; downloadHref: string }) {
     const t = COPY[locale]
     const r = t.report
     const emailTotal = EMAIL_TYPES.corporate + EMAIL_TYPES.free
@@ -32,7 +32,9 @@ export function BelinkCaseStudyReport({ locale }: { locale: Locale }) {
     return (
         <V3Page>
             <div className="v3-print">
-                <PageHero kicker={t.kicker} title={t.title} accent={t.accent} lead={t.lead} actions={<PrintButton label={r.print} />} />
+                <PageHero kicker={t.kicker} title={t.title} accent={t.accent} lead={t.lead} />
+                <DownloadPanel href={downloadHref} t={r.download} printLabel={r.print} locale={locale} />
+                <FloatingDownload href={downloadHref} label={r.download.floating} />
 
                 <Section kicker={r.problemKicker} title={r.problemTitle}>
                     <div className="grid gap-8 md:grid-cols-2">

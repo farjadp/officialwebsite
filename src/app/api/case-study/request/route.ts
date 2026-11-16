@@ -32,6 +32,7 @@ import {
     linkSecret,
     requestSchema,
     sendsFromAnswers,
+    downloadPath,
     signLink,
     type GateLocale,
 } from "@/lib/case-study-gate"
@@ -169,6 +170,8 @@ async function handler(req: NextRequest) {
                 locale,
                 title: study.title[locale],
                 link,
+                downloadLink: "dataFile" in study ? `${baseUrl(req)}${downloadPath(token)}` : undefined,
+                downloadLabel: locale === "fa" ? "دانلود فایل اکسل (۱۳٬۶۳۶ شرکت)" : "Download the Excel (13,636 companies)",
                 name: data.name,
                 expiresAt,
             })

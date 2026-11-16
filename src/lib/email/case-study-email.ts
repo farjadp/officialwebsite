@@ -17,6 +17,9 @@ export type CaseStudyEmailInput = {
     locale: GateLocale
     title: string
     link: string
+    /** Direct download of the dataset, when the study has one. */
+    downloadLink?: string
+    downloadLabel?: string
     name?: string
     expiresAt: Date
     postalAddress?: string
@@ -27,6 +30,7 @@ const COPY = {
         subject: (t: string) => `Your case study: ${t}`,
         hello: (n?: string) => (n ? `Hi ${n},` : "Hi,"),
         body: "Here is the case study you asked for on farjadp.info. It opens in your browser, and you can save it as a PDF from there.",
+        bodyData: "Here is the case study you asked for on farjadp.info, and the Excel file of the full dataset. Both links are personal to you.",
         button: "Read the case study",
         expires: (d: string) => `The link is personal to you and works until ${d}.`,
         fallback: "If the button does not work, copy this address into your browser:",
@@ -37,6 +41,7 @@ const COPY = {
         subject: (t: string) => `کیس‌استادی شما: ${t}`,
         hello: (n?: string) => (n ? `سلام ${n}،` : "سلام،"),
         body: "این همان کیس‌استادی‌ای است که در farjadp.info درخواست کردید. در مرورگر باز می‌شود و از همان‌جا می‌توانید آن را PDF کنید.",
+        bodyData: "این همان کیس‌استادی‌ای است که در farjadp.info درخواست کردید، همراه با فایل اکسل کل دیتاست. هر دو لینک مخصوص شماست.",
         button: "خواندن کیس‌استادی",
         expires: (d: string) => `این لینک مخصوص شماست و تا ${d} کار می‌کند.`,
         fallback: "اگر دکمه کار نکرد، این نشانی را در مرورگر باز کنید:",
@@ -65,6 +70,8 @@ export function buildCaseStudyEmail(input: CaseStudyEmailInput) {
     const name = input.name?.trim() ? input.name.trim().slice(0, 60) : undefined
     const title = escapeHtml(input.title)
     const link = escapeHtml(input.link)
+    const dl = input.downloadLink ? escapeHtml(input.downloadLink) : ""
+    const dlLabel = escapeHtml(input.downloadLabel ?? "")
     const expires = formatDate(input.expiresAt, input.locale)
     const postal = input.postalAddress?.trim()
 
@@ -81,7 +88,8 @@ export function buildCaseStudyEmail(input: CaseStudyEmailInput) {
 <h1 style="margin:0 0 24px;font-family:${font};font-weight:400;font-size:26px;line-height:1.35;color:#1c1917;">${title}</h1>
 <div style="height:1px;background:#e8c48a;margin:0 0 24px;"></div>
 <p style="margin:0 0 12px;font-family:${bodyFont};font-size:16px;line-height:1.8;color:#1c1917;">${escapeHtml(c.hello(name))}</p>
-<p style="margin:0 0 28px;font-family:${bodyFont};font-size:16px;line-height:1.8;color:#44403c;">${c.body}</p>
+<p style="margin:0 0 28px;font-family:${bodyFont};font-size:16px;line-height:1.8;color:#44403c;">${dl ? c.bodyData : c.body}</p>
+${dl ? `<a href="${dl}" style="display:inline-block;background:#e8c48a;color:#1c1917;text-decoration:none;padding:14px 28px;border-radius:999px;font-family:${bodyFont};font-size:15px;font-weight:700;margin:0 0 12px;">&#11015; ${dlLabel}</a><br>` : ""}
 <a href="${link}" style="display:inline-block;background:#1c1917;color:#faf7f2;text-decoration:none;padding:14px 28px;border-radius:999px;font-family:${bodyFont};font-size:15px;font-weight:600;">${c.button}</a>
 <p style="margin:28px 0 8px;font-family:${bodyFont};font-size:13px;line-height:1.7;color:#78716c;">${escapeHtml(c.expires(expires))}</p>
 <p style="margin:0 0 4px;font-family:${bodyFont};font-size:12px;line-height:1.7;color:#78716c;">${c.fallback}</p>
@@ -101,8 +109,9 @@ ${postal ? `<p style="margin:0;font-family:${bodyFont};font-size:12px;line-heigh
     const text = [
         c.hello(name),
         "",
-        c.body,
+        input.downloadLink ? c.bodyData : c.body,
         "",
+        ...(input.downloadLink ? [`${input.downloadLabel}: ${input.downloadLink}`] : []),
         `${c.button}: ${input.link}`,
         "",
         c.expires(expires),

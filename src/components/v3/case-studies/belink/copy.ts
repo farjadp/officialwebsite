@@ -72,6 +72,14 @@ type Copy = {
         methodKicker: string
         method: string[]
         print: string
+        download: {
+            kicker: string
+            title: string
+            meta: string
+            button: string
+            note: string
+            floating: string
+        }
         ctaTitle: string
         ctaAccent: string
         ctaBody: string
@@ -119,6 +127,7 @@ export const COPY: Record<Locale, Copy> = {
             insideKicker: "Inside the full case study",
             insideTitle: "What you get by email",
             inside: [
+                "The full dataset as Excel: 13,636 companies, emails and phones masked",
                 "The five-stage pipeline: collect, clean, classify, score, work",
                 "Screens of the working panel, with every company-level field redacted",
                 "Ten sample rows in a spreadsheet view, contacts masked",
@@ -134,7 +143,7 @@ export const COPY: Record<Locale, Copy> = {
         form: {
             kicker: "Get the case study",
             title: "Sent to your inbox",
-            body: "Enter your email and I'll send you a private link to the full case study. It opens in your browser and saves as a PDF.",
+            body: "Enter your email and I'll send you a private link to the full case study and the Excel file of all 13,636 companies.",
             email: "Email",
             emailPlaceholder: "you@company.com",
             name: "Name",
@@ -142,7 +151,7 @@ export const COPY: Record<Locale, Copy> = {
             optional: "optional",
             consent: CONSENT_TEXT.delivery.en,
             marketing: CONSENT_TEXT.marketing.en,
-            submit: "Email me the case study",
+            submit: "Email me the case study + Excel",
             sending: "Sending…",
             privacyLink: "Privacy policy",
             privacyNote: "One email with one link. Nothing else unless you tick the second box.",
@@ -215,6 +224,14 @@ export const COPY: Record<Locale, Copy> = {
                 "No company, person or contact detail from the dataset is published here.",
             ],
             print: "Save as PDF",
+            download: {
+                kicker: "Your download",
+                title: "The full dataset, as Excel",
+                meta: "13,636 companies · sector, sub-sectors, founding year, website, Belink profile · emails and phones masked",
+                button: "Download Excel",
+                note: "1.3 MB · three sheets: Companies, Summary, About",
+                floating: "Excel",
+            },
             ctaTitle: "Have a messy directory of your own?",
             ctaAccent: "Let's turn it into decisions.",
             ctaBody: "I help founders and teams turn scattered data into something they can act on — and use AI where it actually helps.",
@@ -260,6 +277,7 @@ export const COPY: Record<Locale, Copy> = {
             insideKicker: "در نسخه‌ی کامل کیس‌استادی",
             insideTitle: "آنچه با ایمیل می‌گیرید",
             inside: [
+                "کل دیتاست به‌صورت اکسل: ۱۳٬۶۳۶ شرکت، با ایمیل و تلفن پوشیده",
                 "خط تولید پنج‌مرحله‌ای: جمع‌آوری، پاک‌سازی، دسته‌بندی، امتیازدهی، کار",
                 "تصویرهایی از پنل کاری، با همه‌ی فیلدهای سطح شرکت پوشانده‌شده",
                 "ده ردیف نمونه در نمای جدولی، با تماس‌های پوشیده",
@@ -275,7 +293,7 @@ export const COPY: Record<Locale, Copy> = {
         form: {
             kicker: "دریافت کیس‌استادی",
             title: "به صندوق ایمیل شما",
-            body: "ایمیلتان را وارد کنید تا یک لینک خصوصی به نسخه‌ی کامل برایتان بفرستم. در مرورگر باز می‌شود و می‌توانید PDF بگیرید.",
+            body: "ایمیلتان را وارد کنید تا لینک خصوصی نسخه‌ی کامل کیس‌استادی و فایل اکسل هر ۱۳٬۶۳۶ شرکت را برایتان بفرستم.",
             email: "ایمیل",
             emailPlaceholder: "you@company.com",
             name: "نام",
@@ -283,7 +301,7 @@ export const COPY: Record<Locale, Copy> = {
             optional: "اختیاری",
             consent: CONSENT_TEXT.delivery.fa,
             marketing: CONSENT_TEXT.marketing.fa,
-            submit: "کیس‌استادی را برایم بفرست",
+            submit: "کیس‌استادی و اکسل را برایم بفرست",
             sending: "در حال ارسال…",
             privacyLink: "سیاست حریم خصوصی",
             privacyNote: "یک ایمیل با یک لینک. اگر گزینه‌ی دوم را نزنید، چیز دیگری نمی‌آید.",
@@ -356,6 +374,14 @@ export const COPY: Record<Locale, Copy> = {
                 "هیچ شرکت، فرد یا اطلاعات تماسی از این دیتاست اینجا منتشر نشده است.",
             ],
             print: "ذخیره به‌صورت PDF",
+            download: {
+                kicker: "دانلود شما",
+                title: "کل دیتاست، به‌صورت اکسل",
+                meta: "۱۳٬۶۳۶ شرکت · حوزه، زیرحوزه‌ها، سال تأسیس، وب‌سایت، پروفایل بلینک · ایمیل و تلفن پوشیده",
+                button: "دانلود فایل اکسل",
+                note: "۱٫۳ مگابایت · سه شیت: Companies، Summary، About",
+                floating: "اکسل",
+            },
             ctaTitle: "شما هم یک فهرست شلوغ دارید؟",
             ctaAccent: "بیایید آن را به تصمیم تبدیل کنیم.",
             ctaBody: "به بنیان‌گذاران و تیم‌ها کمک می‌کنم داده‌های پراکنده را به چیزی تبدیل کنند که بشود بر اساسش عمل کرد، و هوش مصنوعی را جایی به کار ببرند که واقعاً کمک می‌کند.",

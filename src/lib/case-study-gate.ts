@@ -31,6 +31,17 @@ export const GATED_CASE_STUDIES = {
         pagePath: "/portfolio/belink",
         /** Path of the report the signed link opens. */
         reportPath: "/portfolio/belink/report",
+        /**
+         * The full dataset, contacts masked, in a PRIVATE Vercel Blob (anonymous
+         * fetch → 403). Served only by /api/case-study/download with a valid link.
+         * Built outside the repo; the raw data never enters git.
+         */
+        dataFile: {
+            blobPath: "case-studies/belink/belink-ecosystem-2026-B5JTjeK0UpPUhMh8JfEOjQe9poOa7b.xlsx",
+            filename: "belink-ecosystem-2026.xlsx",
+            sizeLabel: "1.3 MB",
+            rows: 13_636,
+        },
     },
 } as const
 
@@ -38,6 +49,11 @@ export type GatedSlug = keyof typeof GATED_CASE_STUDIES
 
 export function isGatedSlug(value: unknown): value is GatedSlug {
     return typeof value === "string" && Object.prototype.hasOwnProperty.call(GATED_CASE_STUDIES, value)
+}
+
+/** The download URL for a signed link token. */
+export function downloadPath(token: string) {
+    return `/api/case-study/download?t=${encodeURIComponent(token)}`
 }
 
 export const leadToolId = (slug: GatedSlug) => `case-study:${slug}`

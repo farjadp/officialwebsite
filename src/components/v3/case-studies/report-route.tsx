@@ -8,7 +8,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { isGatedSlug, linkSecret, verifyLink } from "@/lib/case-study-gate"
+import { downloadPath, isGatedSlug, linkSecret, verifyLink } from "@/lib/case-study-gate"
 import type { Locale } from "@/components/home/v3/copy"
 import { BelinkCaseStudyReport, BelinkLinkExpired } from "./belink/report"
 
@@ -35,5 +35,5 @@ export async function renderGatedReport(slug: string, token: string | undefined,
     }
 
     if (!valid) return <BelinkLinkExpired locale={locale} />
-    return <BelinkCaseStudyReport locale={locale} />
+    return <BelinkCaseStudyReport locale={locale} downloadHref={downloadPath(token!)} />
 }

@@ -159,3 +159,23 @@ describe("public Belink sample rows", () => {
         }
     })
 })
+
+describe("dataset download", () => {
+    it("puts a download button above the read button when a dataset exists", () => {
+        const { html, text } = buildCaseStudyEmail({
+            locale: "en",
+            title: "T",
+            link: "https://www.farjadp.info/portfolio/belink/report?t=a",
+            downloadLink: "https://www.farjadp.info/api/case-study/download?t=a",
+            downloadLabel: "Download the Excel",
+            expiresAt: new Date(NOW + LINK_TTL_MS),
+        })
+        expect(html.indexOf("/api/case-study/download")).toBeGreaterThan(-1)
+        expect(html.indexOf("/api/case-study/download")).toBeLessThan(html.indexOf("/portfolio/belink/report"))
+        expect(text).toContain("Download the Excel: https://www.farjadp.info/api/case-study/download?t=a")
+    })
+    it("leaves the download out when there is no dataset", () => {
+        const { html } = buildCaseStudyEmail({ locale: "fa", title: "T", link: "https://x/r", expiresAt: new Date(NOW) })
+        expect(html).not.toContain("download")
+    })
+})
