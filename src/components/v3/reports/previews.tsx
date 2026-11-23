@@ -32,6 +32,7 @@ import { FORCES, SIEGE_DAYS } from "./vienna-1683/data"
 import { FUNDING } from "./startup-concentration/data"
 import { SURVEY, group as pewGroup } from "./undecided-fifth/data"
 import { ENGLISH as LE_EN, PERSIAN as LE_FA, lang as leLang } from "./language-energy/data"
+import { RESULTS as SC_RESULTS } from "./synthetic-consumers/data"
 
 const W = 280
 const H = 140
@@ -476,8 +477,52 @@ function LanguageEnergyPreview({ locale }: P) {
   )
 }
 
+// ── 10 · Comparison bars: how well each way of asking matched real answers ─
+
+function SyntheticConsumersPreview({ locale }: P) {
+  const m = fa(locale)
+  const mx = mxFor(m)
+  const an = anchorFor(m)
+  const X0 = 8
+  const BW = 200
+  const r = SC_RESULTS.gpt4o
+  const rows = [
+    { k: r.dlr.k, en: "Ask for a number", fa: "پرسیدن عدد", gold: false },
+    { k: r.flr.k, en: "Words, then a number", fa: "جمله، بعد عدد", gold: false },
+    { k: r.ssr.k, en: "SSR", fa: "SSR", gold: true },
+  ]
+  const label = m
+    ? `شباهت توزیع پاسخ‌های مصنوعی به پاسخ‌های واقعی: پرسیدن عدد ${d(r.dlr.k.toFixed(2), locale).replace(".", "٫")}، جمله و بعد عدد ${d(r.flr.k.toFixed(2), locale).replace(".", "٫")}، SSR ${d(r.ssr.k.toFixed(2), locale).replace(".", "٫")}.`
+    : `How closely synthetic answers matched real ones: asking for a number ${r.dlr.k}, words then a number ${r.flr.k}, SSR ${r.ssr.k}.`
+  return (
+    <Frame label={label}>
+      <text x={mx(X0)} y={14} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={TXT}>
+        {m ? "شباهت به پاسخ‌های واقعی (GPT-4o)" : "Match to real answers (GPT-4o)"}
+      </text>
+      {rows.map((row, i) => {
+        const y = 30 + i * 34
+        return (
+          <g key={i}>
+            <text x={mx(X0)} y={y + 6} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={row.gold ? TXT_PT : TXT}>
+              {m ? row.fa : row.en}
+            </text>
+            <Marks mirror={m}>
+              <rect x={X0} y={y + 11} width={BW} height={12} rx={2} className={`fill-v3-line ${CTX}`} />
+              <rect x={X0} y={y + 11} width={BW * row.k} height={12} rx={2} className={`${row.gold ? "fill-v3-light" : "fill-v3-mute"} ${row.gold ? GROW_PT : GROW}`} />
+            </Marks>
+            <text x={mx(X0 + BW + 10)} y={y + 21} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={row.gold ? TXT_PT : TXT}>
+              {m ? d(row.k.toFixed(2), locale).replace(".", "٫") : row.k.toFixed(2)}
+            </text>
+          </g>
+        )
+      })}
+    </Frame>
+  )
+}
+
 /** One preview per report slug. A slug missing here simply shows no chart. */
 export const REPORT_PREVIEWS: Record<string, (p: P) => ReactNode> = {
+  "synthetic-shopper-ai-surveys": SyntheticConsumersPreview,
   "language-energy-divide-179x": LanguageEnergyPreview,
   "undecided-fifth-2026-midterms": UndecidedPreview,
   "startup-ecosystems-2026-concentration": ConcentrationPreview,

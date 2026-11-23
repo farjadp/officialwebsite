@@ -17,6 +17,7 @@ import { Vienna1683Report } from "./vienna-1683/report"
 import { StartupConcentrationReport } from "./startup-concentration/report"
 import { UndecidedFifthReport } from "./undecided-fifth/report"
 import { LanguageEnergyReport } from "./language-energy/report"
+import { SyntheticConsumersReport } from "./synthetic-consumers/report"
 
 export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: ReportMeta }) => ReactNode> = {
   "eight-stocks-twenty-economies": EightStocksReport,
@@ -28,4 +29,5 @@ export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: Repor
   "startup-ecosystems-2026-concentration": StartupConcentrationReport,
   "undecided-fifth-2026-midterms": UndecidedFifthReport,
   "language-energy-divide-179x": LanguageEnergyReport,
+  "synthetic-shopper-ai-surveys": SyntheticConsumersReport,
 }

@@ -274,6 +274,33 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "synthetic-shopper-ai-surveys",
+    number: 10,
+    published: "2026-11-23",
+    dataAsOf: "2025-10-27",
+    readMinutes: 11,
+    figure: "90%",
+    figureFa: "۹۰٪",
+    copy: {
+      en: {
+        title: "The Synthetic Shopper",
+        tagline: "Can AI stand in for a consumer panel? What one preprint found, and what it did not",
+        summary:
+          "Asked for a 1–5 rating, AI shoppers answer 3. Asked in words, with their answers mapped by meaning, they reached about 90% of the agreement a repeat human panel reaches on 57 real product concepts — with caveats. A preprint by PyMC Labs and Colgate-Palmolive, read carefully.",
+        topic: "AI and market research",
+        figureLabel: "of the agreement a repeat human survey reaches, recovered by AI shoppers",
+      },
+      fa: {
+        title: "خریدار مصنوعی",
+        tagline: "آیا هوش مصنوعی جای پنل مصرف‌کننده را می‌گیرد؟",
+        summary:
+          "اگر از خریداران هوش مصنوعی نمره‌ی ۱ تا ۵ بخواهی، ۳ می‌گویند. اگر با کلمات جواب بدهند و جوابشان از روی معنا به نمره تبدیل شود، روی ۵۷ ایده‌ی واقعی محصول به حدود ۹۰٪ توافقی می‌رسند که یک پنل انسانی تکراری به آن می‌رسد؛ با چند شرط مهم. پیش‌انتشاری از PyMC Labs و کلگیت-پامولیو، با دقت خوانده‌شده.",
+        topic: "هوش مصنوعی و تحقیقات بازار",
+        figureLabel: "از توافقی که یک نظرسنجی تکراری انسانی به آن می‌رسد",
+      },
+    },
+  },
 ]
 
 export function getReport(slug: string): ReportMeta | undefined {

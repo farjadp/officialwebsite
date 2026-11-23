@@ -196,6 +196,25 @@ move: quote the as-of date with the figure.
   Gemini, Claude) were not measured.
   Persian: /fa/reports/language-energy-divide-179x
 
+- /reports/synthetic-shopper-ai-surveys — "The Synthetic Shopper". A summary of Maier,
+  Aslak, Fiaschi, Rismal, Fletcher, Luhmann, Dow, Pappas & Wiecki (2025), "LLMs
+  Reproduce Human Purchase Intent via Semantic Similarity Elicitation of Likert
+  Ratings", arXiv:2510.08338 v3 — a preprint (not peer-reviewed) by PyMC Labs
+  and Colgate-Palmolive authors. 57 US personal-care concept surveys, 9,300
+  respondents (private data). Asked directly for a 1–5 rating, GPT-4o and
+  Gemini 2.0 Flash personas mostly answered 3 (distribution match 0.26/0.39).
+  Semantic similarity rating (free-text answer mapped by embedding similarity
+  to five reference sentences) reached ~90% of the human test–retest ceiling
+  for product rankings (GPT-4o 90.2%, Gemini 90.6%) and distribution match 0.88
+  (GPT-4o) / 0.80 (Gemini), with the product image. With text-only stimulus
+  SSR fell to 82.5%/73.0% and GPT-4o direct rating reached 89.6%. Without
+  demographic personas, Gemini's ranking fell to 15.5% (averaged reference sets;
+  50% with the best single set). Caveats: reference sentences tuned on the same
+  57 surveys; one domain; stated purchase intent, not purchases; the data
+  provider is unnamed; an independent 2026 test (Heath & Alexander) found SSR
+  improves distribution shape but not models' bias.
+  Persian: /fa/reports/synthetic-shopper-ai-surveys
+
 ## Playbooks
 
 - /playbooks/claude-code-content-team — "A Content Team Inside Claude Code".
