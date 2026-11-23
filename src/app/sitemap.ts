@@ -14,10 +14,13 @@ import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { SITE_URL } from '@/lib/seo'
 import { PORTFOLIO_ITEMS } from './(public)/portfolio/data'
-import { REPORTS, reportModified } from '@/lib/reports'
+import { liveReports, reportModified } from '@/lib/reports'
 import { PLAYBOOKS, playbookModified } from '@/lib/playbooks'
 
 type Entry = MetadataRoute.Sitemap[number]
+
+/** Hourly, so a scheduled report (lib/reports.ts) is listed on its day. */
+export const revalidate = 3600
 
 /**
  * Static English routes that also exist under /fa.
@@ -110,7 +113,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ])
 
     // Reports are bilingual and dated by their publication day.
-    const reportEntries: Entry[] = REPORTS.flatMap((r) => {
+    const reportEntries: Entry[] = liveReports().flatMap((r) => {
         const when = new Date(`${reportModified(r)}T00:00:00.000Z`)
         const languages = {
             en: `${SITE_URL}/reports/${r.slug}`,

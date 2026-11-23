@@ -33,6 +33,7 @@ import { FUNDING } from "./startup-concentration/data"
 import { SURVEY, group as pewGroup } from "./undecided-fifth/data"
 import { ENGLISH as LE_EN, PERSIAN as LE_FA, lang as leLang } from "./language-energy/data"
 import { RESULTS as SC_RESULTS } from "./synthetic-consumers/data"
+import { COUNTRY_SPREAD as GZ_SPREAD, STRONG_PER_100 as GZ_STRONG, TRUSTED as GZ_TRUSTED } from "./gen-z-unbound/data"
 
 const W = 280
 const H = 140
@@ -520,8 +521,135 @@ function SyntheticConsumersPreview({ locale }: P) {
   )
 }
 
+// ── 11 · Unit rows: strong right-wing views per hundred ─────────────────────
+
+function GenZPoliticsPreview({ locale }: P) {
+  const m = fa(locale)
+  const mx = mxFor(m)
+  const an = anchorFor(m)
+  const X0 = 8
+  const PITCH = 25
+  const rows = [
+    { n: GZ_STRONG.boomers.right, en: "Boomers", fa: "بومرها", gold: false },
+    { n: GZ_STRONG.genz.right, en: "Gen Z", fa: "نسل زد", gold: true },
+  ]
+  const max = GZ_STRONG.boomers.right
+  const label = m
+    ? `از هر صد نفر، راستِ پررنگ: بومرها ${d(GZ_STRONG.boomers.right, locale)}، نسل زد ${d(GZ_STRONG.genz.right, locale)}.`
+    : `Strong right-wing views, per hundred: Boomers ${GZ_STRONG.boomers.right}, Gen Z ${GZ_STRONG.genz.right}.`
+  return (
+    <Frame label={label}>
+      <text x={mx(X0)} y={14} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={TXT}>
+        {m ? "راستِ پررنگ، از هر صد نفر" : "Strong right-wing, per hundred"}
+      </text>
+      {rows.map((row, i) => {
+        const y = 34 + i * 50
+        return (
+          <g key={i}>
+            <text x={mx(X0)} y={y + 6} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={row.gold ? TXT_PT : TXT}>
+              {m ? `${row.fa} · ${d(row.n, locale)}` : `${row.en} · ${row.n}`}
+            </text>
+            <Marks mirror={m}>
+              {Array.from({ length: max }, (_, k) =>
+                k < row.n ? (
+                  <rect key={k} x={X0 + k * PITCH} y={y + 14} width={18} height={18} rx={9} className={`${row.gold ? "fill-v3-light" : "fill-v3-mute"} ${row.gold ? PT : CTX}`} />
+                ) : (
+                  <rect key={k} x={X0 + k * PITCH + 1} y={y + 15} width={16} height={16} rx={8} className={`fill-none stroke-v3-mute ${CTX}`} strokeWidth={1.5} strokeDasharray="2 3" />
+                ),
+              )}
+            </Marks>
+          </g>
+        )
+      })}
+    </Frame>
+  )
+}
+
+// ── 12 · Comparison bars: points between the four countries per question ──
+
+function GenZCountriesPreview({ locale }: P) {
+  const m = fa(locale)
+  const mx = mxFor(m)
+  const an = anchorFor(m)
+  const X0 = 8
+  const BW = 220
+  const { boomers, genz } = GZ_SPREAD
+  const rows = [
+    { v: boomers, en: "Boomers", fa: "بومرها", gold: false },
+    { v: genz, en: "Gen Z", fa: "نسل زد", gold: true },
+  ]
+  const label = m
+    ? `اختلافِ چهار کشور در سهمِ هر طرف، در هر پرسش: بومرها ${d(boomers, locale)} امتیاز، نسل زد ${d(genz, locale)} امتیاز.`
+    : `Gap between the four countries in the share taking each side, per question: Boomers ${boomers} points, Gen Z ${genz}.`
+  return (
+    <Frame label={label}>
+      <text x={mx(X0)} y={14} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={TXT}>
+        {m ? "اختلافِ کشورها در هر پرسش (امتیاز)" : "Points between countries, per question"}
+      </text>
+      {rows.map((row, i) => {
+        const y = 32 + i * 44
+        return (
+          <g key={i}>
+            <text x={mx(X0)} y={y + 6} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={row.gold ? TXT_PT : TXT}>
+              {m ? `${row.fa} · ${d(row.v, locale)}` : `${row.en} · ${row.v}`}
+            </text>
+            <Marks mirror={m}>
+              <rect x={X0} y={y + 12} width={BW} height={12} rx={2} className={`fill-v3-line ${CTX}`} />
+              <rect x={X0} y={y + 12} width={BW * (row.v / boomers)} height={12} rx={2} className={`${row.gold ? "fill-v3-light" : "fill-v3-mute"} ${row.gold ? GROW_PT : GROW}`} />
+            </Marks>
+          </g>
+        )
+      })}
+    </Frame>
+  )
+}
+
+// ── 13 · Comparison bars: whom people trust a lot or completely ────────────
+
+function GenZTrustPreview({ locale }: P) {
+  const m = fa(locale)
+  const mx = mxFor(m)
+  const an = anchorFor(m)
+  const X0 = 8
+  const BW = 200
+  const rows = [
+    { v: GZ_TRUSTED.doctor, en: "Their own doctor", fa: "پزشکِ خودشان", gold: true },
+    { v: GZ_TRUSTED.friendsFamily, en: "Friends and family", fa: "دوستان و خانواده", gold: false },
+  ]
+  const label = m
+    ? `زیاد یا کاملاً اعتماد دارند: به پزشک خودشان ${d(GZ_TRUSTED.doctor, locale)}٪، به دوستان و خانواده ${d(GZ_TRUSTED.friendsFamily, locale)}٪.`
+    : `Trust a lot or completely: their own doctor ${GZ_TRUSTED.doctor}%, friends and family ${GZ_TRUSTED.friendsFamily}%.`
+  return (
+    <Frame label={label}>
+      <text x={mx(X0)} y={14} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={TXT}>
+        {m ? `زیاد یا کاملاً اعتماد دارند، از ${d(GZ_TRUSTED.sources, locale)} منبع` : `Trusted a lot or completely, of ${GZ_TRUSTED.sources} sources`}
+      </text>
+      {rows.map((row, i) => {
+        const y = 32 + i * 44
+        return (
+          <g key={i}>
+            <text x={mx(X0)} y={y + 6} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={row.gold ? TXT_PT : TXT}>
+              {m ? row.fa : row.en}
+            </text>
+            <Marks mirror={m}>
+              <rect x={X0} y={y + 12} width={BW} height={12} rx={2} className={`fill-v3-line ${CTX}`} />
+              <rect x={X0} y={y + 12} width={BW * (row.v / 100)} height={12} rx={2} className={`${row.gold ? "fill-v3-light" : "fill-v3-mute"} ${row.gold ? GROW_PT : GROW}`} />
+            </Marks>
+            <text x={mx(X0 + BW + 10)} y={y + 22} textAnchor={ta(locale, an("start"))} direction={dirOf(locale)} className={row.gold ? TXT_PT : TXT}>
+              {m ? `${d(row.v, locale)}٪` : `${row.v}%`}
+            </text>
+          </g>
+        )
+      })}
+    </Frame>
+  )
+}
+
 /** One preview per report slug. A slug missing here simply shows no chart. */
 export const REPORT_PREVIEWS: Record<string, (p: P) => ReactNode> = {
+  "gen-z-trust-you-can-check": GenZTrustPreview,
+  "gen-z-four-countries-one-generation": GenZCountriesPreview,
+  "gen-z-unbound-politics": GenZPoliticsPreview,
   "synthetic-shopper-ai-surveys": SyntheticConsumersPreview,
   "language-energy-divide-179x": LanguageEnergyPreview,
   "undecided-fifth-2026-midterms": UndecidedPreview,
@@ -545,4 +673,5 @@ export const PREVIEW_FACTS = {
   deepTimeDeg: (eventAge("lamprey") / EARTH_AGE) * 360,
   eightStocksTotal: COMPANIES.reduce((s, c) => s + c.cap, 0),
   eu27: EU27_GDP,
+  genz: { strongRight: GZ_STRONG, spread: GZ_SPREAD, doctor: GZ_TRUSTED.doctor },
 }

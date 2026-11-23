@@ -16,6 +16,9 @@ const TITLE = "Reports: numbers I checked, then drew | Farjad"
 const DESCRIPTION =
   "Short data reports on AI, startups and the economy by Farjad. Each claim is checked against named sources and turned into interactive figures."
 
+/** Hourly, so a scheduled report (lib/reports.ts) joins the index on its day. */
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   alternates: localeAlternates("/reports", "en"),
   title: { absolute: TITLE },

@@ -16,6 +16,9 @@ const TITLE = "گزارش‌ها: عددهایی که چک کردم، بعد ب�
 const DESCRIPTION =
   "گزارش‌های کوتاه و مستند فرجاد درباره‌ی هوش مصنوعی، استارتاپ و اقتصاد، با نمودارهای تعاملی."
 
+/** Hourly, so a scheduled report (lib/reports.ts) joins the index on its day. */
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   alternates: localeAlternates("/reports", "fa"),
   title: { absolute: TITLE },

@@ -7,6 +7,13 @@
 //      To publish a report: add an entry here, add its component to
 //      components/v3/reports/registry.tsx under the same slug. The index,
 //      both routes, the sitemap and the language switcher pick it up.
+//
+//      Scheduled release: a report whose `published` day is still ahead (in
+//      Toronto) is in the register but not live. getReport, liveReports and
+//      reportsByDate hide it, so its page 404s and nothing lists it. The
+//      report routes, the index, the sitemap and the OG cards revalidate
+//      hourly, so it appears on its own within the hour after midnight on
+//      its day, with no new deploy.
 // ============================================================================
 
 import type { Locale } from "@/lib/nav"
@@ -301,9 +308,114 @@ export const REPORTS: ReportMeta[] = [
       },
     },
   },
+  {
+    slug: "gen-z-unbound-politics",
+    number: 11,
+    published: "2026-11-23",
+    dataAsOf: "2026-04-26",
+    readMinutes: 9,
+    figure: "2%",
+    figureFa: "۲٪",
+    copy: {
+      en: {
+        title: "Eight in a Hundred, and Two",
+        tagline: "Gen Z's politics come unbundled",
+        summary:
+          "Per hundred Boomers in the US, UK, France and Germany, about eight hold strong right-wing views across the board; per hundred Gen Z, two. A survey with 51,929 responses finds young people's views less bundled and less polarised, mostly on the right.",
+        topic: "Society and politics",
+        figureLabel: "of Gen Z hold strong right-wing views across the board (Boomers: 8%)",
+      },
+      fa: {
+        title: "هشت از صد، و دو",
+        tagline: "سیاستِ نسل زد از بسته درآمده",
+        summary:
+          "از هر صد بومر در آمریکا، بریتانیا، فرانسه و آلمان حدود هشت نفر تقریباً در همه‌چیز راستِ پررنگ‌اند؛ از هر صد نفر از نسل زد، دو نفر. نظرسنجی‌ای با ۵۱٬۹۲۹ پاسخ نشان می‌دهد نظرهای جوان‌ها کمتر به هم بسته و کمتر قطبی است، بیشتر در سمت راست.",
+        topic: "جامعه و سیاست",
+        figureLabel: "از نسل زد در همه‌چیز راستِ پررنگ‌اند (بومرها: ۸٪)",
+      },
+    },
+  },
+  {
+    slug: "gen-z-four-countries-one-generation",
+    number: 12,
+    published: "2026-11-26",
+    dataAsOf: "2026-04-26",
+    readMinutes: 8,
+    figure: "4 vs 11",
+    figureFa: "۴ در برابر ۱۱",
+    copy: {
+      en: {
+        title: "One Generation, Four Countries",
+        tagline: "Young people now think alike across borders",
+        summary:
+          "Among Boomers, the US, UK, France and Germany hold recognisably national sets of views. Among Gen Z, the share taking each side differs between the four countries by about 4 points per question, against 11 for Boomers, and 46% of the celebrities they name are known in all four.",
+        topic: "Society and culture",
+        figureLabel: "points between the four countries per policy question, Gen Z vs Boomers",
+      },
+      fa: {
+        title: "یک نسل، چهار کشور",
+        tagline: "جوان‌ها حالا فراتر از مرزها شبیه هم فکر می‌کنند",
+        summary:
+          "میان بومرها، آمریکا، بریتانیا، فرانسه و آلمان هر کدام مجموعه‌ی نظرِ ملیِ قابل تشخیصی دارند. میان نسل زد، سهمِ هر طرفِ هر پرسش بین این چهار کشور حدود ۴ امتیاز فرق دارد، در برابر ۱۱ امتیاز میان بومرها، و ۴۶٪ سلبریتی‌هایی که نام می‌برند در هر چهار کشور شناخته‌شده‌اند.",
+        topic: "جامعه و فرهنگ",
+        figureLabel: "امتیاز اختلافِ چهار کشور در هر پرسش سیاستی، نسل زد در برابر بومرها",
+      },
+    },
+  },
+  {
+    slug: "gen-z-trust-you-can-check",
+    number: 13,
+    published: "2026-11-29",
+    dataAsOf: "2026-04-26",
+    readMinutes: 9,
+    figure: "87%",
+    figureFa: "۸۷٪",
+    copy: {
+      en: {
+        title: "Trust You Can Check",
+        tagline: "What still earns trust",
+        summary:
+          "Every generation in four countries says its trust in institutions has fallen, politicians most. What holds up is trust people can check for themselves: 87% trust their own doctor. The survey's best explanation is the end of national broadcast culture, and it says plainly that this is not yet a finding.",
+        topic: "Trust and media",
+        figureLabel: "trust their own doctor a lot or completely",
+      },
+      fa: {
+        title: "اعتمادی که بشود وارسی‌اش کرد",
+        tagline: "چه چیزی هنوز اعتماد می‌خرد",
+        summary:
+          "همه‌ی نسل‌ها در چهار کشور می‌گویند اعتمادشان به نهادها کم شده، بیشتر از همه به سیاستمدارها. آنچه سر پا مانده اعتمادی است که آدم‌ها خودشان می‌توانند وارسی کنند: ۸۷٪ به پزشک خودشان اعتماد دارند. بهترین توضیحِ گزارش، پایانِ فرهنگِ پخشِ ملی است، و صریح می‌گوید این هنوز یافته نیست.",
+        topic: "اعتماد و رسانه",
+        figureLabel: "به پزشک خودشان زیاد یا کاملاً اعتماد دارند",
+      },
+    },
+  },
 ]
 
-export function getReport(slug: string): ReportMeta | undefined {
+/** Today's date in Toronto, ISO (YYYY-MM-DD): the day a scheduled report goes live. */
+export function torontoToday(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", year: "numeric", month: "2-digit", day: "2-digit" }).format(now)
+}
+
+/** Whether a report's publication day has come. */
+export function isLive(r: ReportMeta, now: Date = new Date()): boolean {
+  // Local review of scheduled reports only; never set this on Vercel.
+  if (process.env.REPORTS_PREVIEW_SCHEDULED === "1") return true
+  return r.published <= torontoToday(now)
+}
+
+/** The reports a visitor may see today, in register order. */
+export function liveReports(now: Date = new Date()): ReportMeta[] {
+  return REPORTS.filter((r) => isLive(r, now))
+}
+
+/** A live report by slug; a scheduled one is treated as absent. */
+export function getReport(slug: string, now: Date = new Date()): ReportMeta | undefined {
+  const r = REPORTS.find((x) => x.slug === slug)
+  return r && isLive(r, now) ? r : undefined
+}
+
+/** Any report in the register, live or scheduled (series navigation). */
+export function findReport(slug: string): ReportMeta | undefined {
   return REPORTS.find((r) => r.slug === slug)
 }
 
@@ -312,9 +424,9 @@ export function reportModified(r: ReportMeta): string {
   return r.updated ?? r.published
 }
 
-/** Newest first. */
-export function reportsByDate(): ReportMeta[] {
-  return [...REPORTS].sort((a, b) => b.published.localeCompare(a.published))
+/** Live reports, newest first. */
+export function reportsByDate(now: Date = new Date()): ReportMeta[] {
+  return liveReports(now).sort((a, b) => b.published.localeCompare(a.published) || b.number - a.number)
 }
 
 export function formatReportDate(iso: string, locale: Locale): string {

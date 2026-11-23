@@ -34,6 +34,7 @@ import { PHOTOS as P07 } from "./startup-concentration/photos"
 import { PHOTOS as P08 } from "./undecided-fifth/photos"
 import { PHOTOS as P09 } from "./language-energy/photos"
 import { PHOTOS as P10 } from "./synthetic-consumers/photos"
+import { PHOTOS as GZ } from "./gen-z-unbound/photos"
 
 const COPY = {
   en: {
@@ -73,6 +74,9 @@ const COVERS: Record<string, ReportPhoto | undefined> = {
   "undecided-fifth-2026-midterms": P08.hero,
   "language-energy-divide-179x": P09.hero,
   "synthetic-shopper-ai-surveys": P10.hero,
+  "gen-z-unbound-politics": GZ.part1,
+  "gen-z-four-countries-one-generation": GZ.part2,
+  "gen-z-trust-you-can-check": GZ.part3,
 }
 
 const LATIN = "font-(family-name:--font-instrument)! **:font-(family-name:--font-instrument)!"

@@ -215,6 +215,37 @@ move: quote the as-of date with the figure.
   improves distribution shape but not models' bias.
   Persian: /fa/reports/synthetic-shopper-ai-surveys
 
+- Gen Z series (three parts), a reading of Electric Twin, "Gen Z is Unbound"
+  (PDF dated October 2026, published 19 November 2026): 51,929 online-panel
+  survey responses, US, UK, France and Germany, two waves (30 Jan–6 Mar and
+  22–26 Apr 2026). A company report, not peer-reviewed; Electric Twin sells
+  AI-simulated "synthetic audiences" and lists the academic co-author, Prof.
+  Michael Muthukrishna (LSE), as its science advisor. Cross-sectional, so age
+  and generation cannot be separated; in Europe, vote was asked in wave 2 only.
+- /reports/gen-z-unbound-politics — part 1, "Eight in a Hundred, and Two"
+  (2026-11-23). Strong right-wing views on 6+ of 8 party-dividing items: 8.4%
+  of Boomers, 2.0% of Gen Z; strong left about 10% in both. How well one of 13
+  positions predicts the rest: Boomers 16%, Gen X 11%, Millennials 8.0%, Gen Z
+  5.3%. Gap between left- and right-wing voters (0–100 right-coded share):
+  Boomers 28 points, Gen Z 15; the shift is on the right (US −19.4, UK −15.3,
+  Germany −9.2, France −3.7 not significant).
+  Persian: /fa/reports/gen-z-unbound-politics
+- /reports/gen-z-four-countries-one-generation — part 2, "One Generation, Four
+  Countries" (2026-11-26). Share taking each side differs between the four
+  countries by about 11 points per question among Boomers, about 4 among Gen
+  Z. A model guesses country from 13 answers 42% (Boomers) vs 29% (Gen Z),
+  chance 25%. 46% of Gen Z's celebrity answers name someone known in all four
+  countries vs 17% of Boomers' (wave 2). Platform mixes stay nearly as national.
+  Persian: /fa/reports/gen-z-four-countries-one-generation
+- /reports/gen-z-trust-you-can-check — part 3, "Trust You Can Check"
+  (2026-11-29). Every generation reports a net decline in trust in ten
+  institutions (self-reported change), largest for politicians and
+  government; 87% trust their own doctor a lot or completely, 83% friends and
+  family. Gen Z use 6.2 of 21 platforms weekly, Boomers 3.0. Everything
+  measured explains about a fifth of the bundling gap; the authors call the
+  "broadcast account" their best explanation, "not yet a finding".
+  Persian: /fa/reports/gen-z-trust-you-can-check
+
 ## Playbooks
 
 - /playbooks/claude-code-content-team — "A Content Team Inside Claude Code".

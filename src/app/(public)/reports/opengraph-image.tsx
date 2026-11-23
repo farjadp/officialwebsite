@@ -5,15 +5,16 @@
 // ============================================================================
 
 import { ImageResponse } from "next/og"
-import { REPORTS } from "@/lib/reports"
+import { liveReports } from "@/lib/reports"
 import { OG_SIZE, OgIndexCard, ogFonts } from "@/components/v3/reports/og-card"
 
 export const size = OG_SIZE
+export const revalidate = 3600
 export const contentType = "image/png"
 export const alt = "Reports by Farjad"
 
 export default async function Image() {
-  return new ImageResponse(<OgIndexCard locale="en" count={REPORTS.length} />, {
+  return new ImageResponse(<OgIndexCard locale="en" count={liveReports().length} />, {
     ...OG_SIZE,
     fonts: await ogFonts("en"),
   })

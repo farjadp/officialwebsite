@@ -18,6 +18,9 @@ import { StartupConcentrationReport } from "./startup-concentration/report"
 import { UndecidedFifthReport } from "./undecided-fifth/report"
 import { LanguageEnergyReport } from "./language-energy/report"
 import { SyntheticConsumersReport } from "./synthetic-consumers/report"
+import { GenZPart1Report } from "./gen-z-unbound/part1/report"
+import { GenZPart2Report } from "./gen-z-unbound/part2/report"
+import { GenZPart3Report } from "./gen-z-unbound/part3/report"
 
 export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: ReportMeta }) => ReactNode> = {
   "eight-stocks-twenty-economies": EightStocksReport,
@@ -30,4 +33,7 @@ export const REPORT_COMPONENTS: Record<string, (p: { locale: Locale; meta: Repor
   "undecided-fifth-2026-midterms": UndecidedFifthReport,
   "language-energy-divide-179x": LanguageEnergyReport,
   "synthetic-shopper-ai-surveys": SyntheticConsumersReport,
+  "gen-z-unbound-politics": GenZPart1Report,
+  "gen-z-four-countries-one-generation": GenZPart2Report,
+  "gen-z-trust-you-can-check": GenZPart3Report,
 }

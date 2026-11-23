@@ -8,7 +8,11 @@ import { ReportRoute, reportMetadata, reportStaticParams } from "@/components/v3
 
 type Props = { params: Promise<{ slug: string }> }
 
-export const dynamicParams = false
+// Scheduled reports (lib/reports.ts) render on demand after their day; an
+// unknown or not-yet-live slug gets notFound(). Hourly revalidation lets a
+// scheduled report appear without a deploy.
+export const dynamicParams = true
+export const revalidate = 3600
 
 export function generateStaticParams() {
   return reportStaticParams()

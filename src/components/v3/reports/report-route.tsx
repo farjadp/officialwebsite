@@ -15,11 +15,12 @@ import { notFound } from "next/navigation"
 import type { Locale } from "@/lib/nav"
 import { localePath } from "@/lib/nav"
 import { SITE_URL, absoluteUrl, localeAlternates } from "@/lib/seo"
-import { REPORTS, getReport, reportModified } from "@/lib/reports"
+import { getReport, liveReports, reportModified } from "@/lib/reports"
 import { REPORT_COMPONENTS } from "./registry"
 
+/** Pages built at deploy time. A scheduled report renders on demand once its day comes. */
 export function reportStaticParams() {
-  return REPORTS.map((r) => ({ slug: r.slug }))
+  return liveReports().map((r) => ({ slug: r.slug }))
 }
 
 export function reportMetadata(slug: string, locale: Locale): Metadata {

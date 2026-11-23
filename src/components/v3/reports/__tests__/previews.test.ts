@@ -17,5 +17,8 @@ describe("report previews", () => {
     expect(PREVIEW_FACTS.eightStocksTotal).toBe(25680)
     expect(PREVIEW_FACTS.eightStocksTotal).toBeGreaterThan(PREVIEW_FACTS.eu27)
     expect(PREVIEW_FACTS.dtc.live + PREVIEW_FACTS.dtc.announced).toBeGreaterThan(0)
+    expect(PREVIEW_FACTS.genz.strongRight).toEqual({ boomers: { left: 10, right: 8 }, genz: { left: 10, right: 2 } })
+    expect(PREVIEW_FACTS.genz.spread).toEqual({ boomers: 11, genz: 4 })
+    expect(PREVIEW_FACTS.genz.doctor).toBe(87)
   })
 })

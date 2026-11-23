@@ -11,6 +11,7 @@ import { reportStaticParams } from "@/components/v3/reports/report-route"
 
 export const size = OG_SIZE
 export const contentType = "image/png"
+export const revalidate = 3600
 export const alt = "Report by Farjad"
 
 export function generateStaticParams() {
