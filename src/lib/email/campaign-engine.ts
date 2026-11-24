@@ -17,6 +17,7 @@ import {
     recordSend,
     campaignQuotaRemaining,
     throttleDelayMs,
+    hourlyAllowance,
     sleep,
 } from "./provider"
 
@@ -175,7 +176,23 @@ export async function drainQueue(
         return result
     }
 
-    const batchSize = Math.min(limit, quota)
+    const throttle = await prisma.campaign.findUnique({
+        where: { id: campaignId },
+        select: { throttlePerHour: true },
+    })
+    const sentLastHour = await prisma.campaignRecipient.count({
+        where: { campaignId, sentAt: { gte: new Date(Date.now() - 3_600_000) } },
+    })
+    const allowance = hourlyAllowance(throttle?.throttlePerHour ?? 0, sentLastHour)
+    if (allowance <= 0) {
+        // Not exhausted for the day: the next tick inside a new hour sends more
+        result.remainingQueued = await prisma.campaignRecipient.count({
+            where: { campaignId, status: "QUEUED" },
+        })
+        return result
+    }
+
+    const batchSize = Math.min(limit, quota, allowance)
     const recentCutoff = new Date(Date.now() - MIN_HOURS_BETWEEN_SENDS * 3_600_000)
 
     const dueWhere = {

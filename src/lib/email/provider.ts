@@ -258,6 +258,19 @@ export async function recordFailure(kind: "bounced" | "complained"): Promise<voi
 }
 
 /** Spacing between messages so a batch does not arrive as a burst. */
+/**
+ * How many more a campaign may send in the current rolling hour.
+ *
+ * The throttle used to only space sends a couple of seconds apart inside one
+ * cron tick, so "3 per hour" still let the full daily allowance out. Counting
+ * the last hour's sends makes the number on the settings page a real ceiling:
+ * 1 per hour is at most 24 a day.
+ */
+export function hourlyAllowance(perHour: number, sentLastHour: number): number {
+    if (!perHour || perHour <= 0) return Number.MAX_SAFE_INTEGER
+    return Math.max(0, Math.floor(perHour) - Math.max(0, sentLastHour))
+}
+
 export function throttleDelayMs(perHour: number): number {
     if (!perHour || perHour <= 0) return 0
     return Math.max(0, Math.floor(3_600_000 / perHour))
